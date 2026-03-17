@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Circuit">
+<meta name="theme-color" content="#0A0B0E">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Circuit Training</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>▲</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#0A0B0E;--surface:#111318;--surface-light:#181B22;
+--border:#1F2430;--border-light:#2A3040;
+--amber:#E4A832;--amber-dim:#9A7425;--amber-glow:#E4A83240;
+--green:#34D399;--green-bright:#4ADE80;--green-dim:#166534;
+--red:#F87171;--red-glow:#F8717130;
+--blue:#60A5FA;
+--text:#D1D5DB;--text-bright:#F3F4F6;--text-dim:#6B7280;--text-muted:#4B5563;
+--safe-bottom:env(safe-area-inset-bottom,0px);
+--safe-top:env(safe-area-inset-top,0px);
+}
+html,body{
+background:var(--bg);color:var(--text);
+font-family:'Barlow Condensed','Oswald',sans-serif;
+min-height:100vh;min-height:100dvh;
+overflow-x:hidden;-webkit-tap-highlight-color:transparent;
+-webkit-user-select:none;user-select:none;
+}
+body{padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}
+button{font-family:inherit;cursor:pointer;-webkit-appearance:none;border:none;background:none}
+button:active{opacity:.78;transform:scale(.98)}
+
+.screen{display:none;min-height:100vh;min-height:100dvh}
+.screen.active{display:flex;flex-direction:column}
+
+/* Home */
+#home{padding:32px 20px;max-width:520px;margin:0 auto;width:100%}
+.home-header{margin-bottom:28px}
+.home-logo{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.home-logo span{color:var(–amber);font-size:20px;font-weight:800}
+.home-logo h1{font-size:26px;font-weight:800;color:var(–text-bright);letter-spacing:2px;margin:0}
+.home-sub{color:var(–text-dim);font-size:12px;letter-spacing:1.5px;margin-top:4px}
+
+/* Energy Selector */
+.energy-label{color:var(–text-dim);font-size:10px;font-weight:700;letter-spacing:2px;margin-bottom:10px}
+.energy-row{display:flex;gap:8px;margin-bottom:24px}
+.energy-btn{flex:1;border-radius:10px;padding:14px 8px;text-align:center;transition:all .2s;border-width:2px;border-style:solid}
+.energy-icon{font-size:22px;margin-bottom:4px}
+.energy-name{font-size:13px;font-weight:800;letter-spacing:1.5px}
+.energy-desc{font-size:9px;margin-top:4px;line-height:1.4;letter-spacing:.3px}
+
+.day-btn{display:block;width:100%;background:var(–surface);border:1px solid var(–border);border-radius:10px;padding:22px 20px;margin-bottom:10px;text-align:left;transition:border-color .15s}
+.day-btn-top{display:flex;justify-content:space-between;align-items:center}
+.day-btn-label{display:flex;align-items:baseline;gap:10px}
+.day-btn-id{color:var(–amber);font-size:28px;font-weight:800;font-family:‘Oswald’,sans-serif}
+.day-btn-title{color:var(–text-bright);font-size:17px;font-weight:700;letter-spacing:1px}
+.day-btn-focus{color:var(–text-dim);font-size:12px;margin-top:4px;letter-spacing:.5px}
+.day-btn-meta{color:var(–text-muted);font-size:10px;margin-top:3px;letter-spacing:.5px}
+.day-btn-arrow{color:var(–amber-dim);font-size:24px;font-weight:300}
+.history-btn{display:block;width:100%;border:1px solid var(–border);border-radius:10px;padding:16px 20px;margin-top:20px;text-align:center;color:var(–text-dim);font-size:13px;font-weight:700;letter-spacing:2px}
+.clear-btn{display:block;width:100%;padding:12px 20px;margin-top:8px;text-align:center;color:var(–text-muted);font-size:10px;font-weight:600;letter-spacing:1.5px}
+.install-banner{display:none;background:var(–surface);border:1px solid var(–amber-dim);border-radius:10px;padding:16px 18px;margin-top:20px;text-align:center}
+.install-banner.show{display:block}
+.install-banner-title{color:var(–amber);font-size:12px;font-weight:800;letter-spacing:1.5px;margin-bottom:6px}
+.install-banner-text{color:var(–text-dim);font-size:11px;line-height:1.6}
+
+/* Workout */
+#workout{position:relative}
+.wk-topbar{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(–border)}
+.wk-end{color:var(–text-dim);font-size:13px;font-weight:700;letter-spacing:1px;padding:8px 4px}
+.wk-day-label{color:var(–amber);font-size:13px;font-weight:800;letter-spacing:2px}
+.wk-energy-tag{font-size:10px;font-weight:700;letter-spacing:1px;padding:2px 7px;border-radius:3px;margin-left:8px}
+.wk-step-count{color:var(–text-dim);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.wk-progress{height:3px;background:var(–border)}
+.wk-progress-bar{height:100%;background:linear-gradient(90deg,var(–amber),var(–green-bright));transition:width .4s ease}
+.wk-body{flex:1;padding:20px 18px;display:flex;flex-direction:column}
+.wk-circuit-tag{display:inline-block;background:#E4A83215;border:1px solid #9A742550;color:var(–amber);padding:5px 12px;border-radius:4px;font-size:10px;font-weight:800;letter-spacing:2px;margin-right:8px}
+.wk-circuit-sub{color:var(–text-dim);font-size:10px;letter-spacing:1.5px;font-weight:600}
+.wk-round-tag{color:var(–blue);font-size:10px;font-weight:700;letter-spacing:1px;margin-left:10px}
+.wk-name{font-size:32px;font-weight:800;color:var(–text-bright);line-height:1.15;letter-spacing:.5px;margin:16px 0 6px;font-family:‘Oswald’,sans-serif;text-transform:uppercase}
+.wk-muscles{color:var(–text-dim);font-size:12px;letter-spacing:.5px}
+.wk-reps{font-size:52px;font-weight:800;color:var(–green-bright);font-family:‘Oswald’,sans-serif;font-variant-numeric:tabular-nums;margin:12px 0 16px;line-height:1}
+.wk-detail-toggle{border:1px solid var(–border);border-radius:8px;padding:14px 16px;color:var(–text-dim);font-size:13px;font-weight:700;letter-spacing:1.5px;text-align:left;margin-bottom:8px;transition:all .15s}
+.wk-detail-toggle.open{background:var(–surface-light);border-color:var(–border-light);color:var(–amber)}
+.wk-detail{background:var(–surface);border:1px solid var(–border);border-radius:10px;padding:16px 18px;margin-top:4px;display:none;max-height:50vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.wk-detail.open{display:block}
+.wk-detail-section{margin-bottom:14px}
+.wk-detail-section:last-child{margin-bottom:0}
+.wk-detail-label{font-size:9px;font-weight:800;letter-spacing:2.5px;margin-bottom:5px}
+.wk-detail-text{font-size:14px;color:var(–text);line-height:1.65}
+.wk-actions{display:flex;gap:10px;margin-top:16px;padding-bottom:max(20px,var(–safe-bottom))}
+.wk-skip{flex:1;border:1px solid var(–border);border-radius:12px;padding:22px 0;color:var(–text-dim);font-size:14px;font-weight:700;letter-spacing:2px}
+.wk-done{flex:2.5;background:var(–amber);border-radius:12px;padding:22px 0;color:var(–bg);font-size:18px;font-weight:800;letter-spacing:3px;font-family:‘Oswald’,sans-serif}
+
+/* Rest */
+#rest-overlay{position:fixed;inset:0;background:var(–bg);z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;transition:background .3s}
+#rest-overlay.active{display:flex}
+#rest-overlay.flash{background:#F8717115}
+.rest-label{color:var(–text-dim);font-size:14px;letter-spacing:4px;font-weight:700;margin-bottom:16px}
+.rest-number{font-size:110px;font-weight:800;color:var(–amber);font-family:‘Oswald’,sans-serif;font-variant-numeric:tabular-nums;line-height:1;transition:color .3s,text-shadow .3s}
+.rest-number.urgent{color:var(–red);text-shadow:0 0 40px var(–red-glow)}
+.rest-bar-bg{width:60%;max-width:260px;height:4px;background:var(–border);border-radius:2px;margin-top:24px}
+.rest-bar{height:100%;border-radius:2px;transition:width 1s linear,background .3s}
+.rest-skip{margin-top:40px;border:1px solid var(–border);color:var(–text-dim);padding:16px 40px;border-radius:8px;font-size:14px;font-weight:600;letter-spacing:2px}
+
+/* Complete */
+#complete{align-items:center;justify-content:center;padding:24px}
+.complete-check{font-size:56px;margin-bottom:20px}
+.complete-title{font-size:28px;font-weight:800;color:var(–green-bright);letter-spacing:3px;margin-bottom:10px}
+.complete-sub{color:var(–text-dim);font-size:15px;margin-bottom:4px}
+.complete-energy{font-size:12px;font-weight:700;letter-spacing:1.5px;margin-bottom:6px}
+.complete-dur{color:var(–text-muted);font-size:13px;margin-bottom:36px}
+.complete-btn{background:var(–amber);color:var(–bg);border-radius:10px;padding:20px 52px;font-size:16px;font-weight:800;letter-spacing:2px}
+
+/* History */
+#history-screen{padding:24px 16px;max-width:520px;margin:0 auto;width:100%}
+.hist-back{color:var(–amber);font-size:13px;font-weight:700;letter-spacing:1px;margin-bottom:20px;padding:8px 0}
+.hist-title{font-size:16px;font-weight:800;color:var(–text-bright);letter-spacing:1.5px;margin-bottom:20px}
+.hist-empty{color:var(–text-dim);font-size:13px;text-align:center;margin-top:40px;line-height:1.6}
+.hist-date{font-size:11px;font-weight:700;color:var(–text-dim);letter-spacing:2px;margin-bottom:8px}
+.hist-entry{background:var(–surface);border:1px solid var(–border);border-radius:8px;padding:14px 16px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.hist-day-id{color:var(–amber);font-weight:800;font-size:15px;margin-right:10px}
+.hist-day-title{color:var(–text-dim);font-size:11px}
+.hist-energy-tag{font-size:9px;font-weight:700;letter-spacing:1px;margin-left:8px}
+.hist-status{font-size:11px;font-weight:700}
+.hist-status.done{color:var(–green-bright)}
+.hist-status.partial{color:var(–red)}
+.hist-duration{color:var(–text-muted);font-size:9px;margin-top:2px}
+.hist-group{margin-bottom:18px}
+</style>
+
+</head>
+<body>
+
+<div id="home" class="screen active">
+<div class="home-header">
+<div class="home-logo"><span>▲</span><h1>CIRCUIT TRAINING</h1></div>
+<div class="home-sub">CLIMBING · STRENGTH · DEFINITION</div>
+</div>
+<div class="energy-label">HOW DO YOU FEEL TODAY?</div>
+<div class="energy-row" id="energy-row"></div>
+<div id="day-buttons"></div>
+<button class="history-btn" id="history-btn">SESSION HISTORY (<span id="hist-count">0</span>)</button>
+<button class="clear-btn" id="clear-btn">CLEAR HISTORY</button>
+<div class="install-banner" id="install-banner">
+<div class="install-banner-title">INSTALL AS APP</div>
+<div class="install-banner-text" id="install-text"></div>
+</div>
+</div>
+
+<div id="workout" class="screen">
+<div class="wk-topbar">
+<button class="wk-end" id="wk-end-btn">✕ END</button>
+<div id="wk-topbar-center" style="display:flex;align-items:center;gap:8px"></div>
+<div class="wk-step-count" id="wk-step-count"></div>
+</div>
+<div class="wk-progress"><div class="wk-progress-bar" id="wk-progress-bar"></div></div>
+<div class="wk-body">
+<div id="wk-circuit-info" style="margin-bottom:16px"></div>
+<div class="wk-name" id="wk-name"></div>
+<div class="wk-muscles" id="wk-muscles"></div>
+<div class="wk-reps" id="wk-reps"></div>
+<button class="wk-detail-toggle" id="wk-detail-toggle">▸ SHOW FORM GUIDE</button>
+<div class="wk-detail" id="wk-detail"></div>
+<div style="flex:1"></div>
+<div class="wk-actions">
+<button class="wk-skip" id="wk-skip-btn">SKIP</button>
+<button class="wk-done" id="wk-done-btn">DONE ✓</button>
+</div>
+</div>
+</div>
+
+<div id="rest-overlay">
+<div class="rest-label">REST</div>
+<div class="rest-number" id="rest-number">60</div>
+<div class="rest-bar-bg"><div class="rest-bar" id="rest-bar"></div></div>
+<button class="rest-skip" id="rest-skip-btn">SKIP</button>
+</div>
+
+<div id="complete" class="screen">
+<div class="complete-check">✓</div>
+<div class="complete-title">SESSION COMPLETE</div>
+<div class="complete-sub" id="complete-sub"></div>
+<div class="complete-energy" id="complete-energy"></div>
+<div class="complete-dur" id="complete-dur"></div>
+<button class="complete-btn" id="complete-btn">DONE</button>
+</div>
+
+<div id="history-screen" class="screen">
+<button class="hist-back" id="hist-back-btn">← BACK</button>
+<div class="hist-title">SESSION HISTORY</div>
+<div id="hist-list"></div>
+</div>
+
+<script>
+const ENERGY={
+fresh:{label:"FRESH",icon:"⚡",color:"#4ADE80",repMult:1.2,roundOffset:0,restOffset:0,desc:"+20% reps · full rounds · standard rest"},
+normal:{label:"NORMAL",icon:"●",color:"#E4A832",repMult:1.0,roundOffset:0,restOffset:10,desc:"Baseline reps · full rounds · +10s rest"},
+tired:{label:"TIRED",icon:"◒",color:"#F87171",repMult:0.75,roundOffset:-1,restOffset:20,desc:"−25% reps · −1 round · +20s rest"}
+};
+
+function scaleReps(s,m){return s.replace(/(\d+)/g,function(x){var n=parseInt(x);return n<=3?x:Math.max(3,Math.round(n*m));})}
+
+const DAYS=[{id:"A",title:"PUSH + CORE",focus:"Chest · Shoulders · Triceps · Abs",circuits:[{name:"CIRCUIT 1",subtitle:"CHEST & SHOULDERS",rounds:3,restSeconds:60,exercises:[{name:"Wide Push-Ups",reps:"12–15",muscles:"Outer chest, front delts",setup:"Hands 1.5× shoulder width, fingers pointed slightly outward. Body straight from head to heels.",execution:"Lower yourself over 3 seconds until chest nearly touches the floor. Push up explosively. Don't let hips sag or pike up.",cue:"Imagine spreading the floor apart with your hands as you push up.",breathing:"Inhale on the way down, exhale as you push up.",mistakes:"Flaring elbows to 90° (keep them ~45°), sagging lower back, incomplete range of motion."},{name:"Diamond Push-Ups",reps:"10–12",muscles:"Inner chest, triceps",setup:"Hands together under your chest, index fingers and thumbs forming a diamond shape. Elbows close to your body.",execution:"Lower chest to your hands, keeping elbows tracking back along your ribs — not flaring out. Press back up to full lockout.",cue:"Squeeze your chest at the top like you're trying to crush something between your pecs.",breathing:"Inhale down, exhale up.",mistakes:"Elbows flaring wide (defeats the purpose), hands too far forward, not reaching full depth."},{name:"Pike Push-Ups (feet elevated)",reps:"8–10",muscles:"Anterior deltoids, upper chest, triceps",setup:"Feet on a chair or bed. Walk hands back until your body forms an inverted V. Hips high, head between arms.",execution:"Bend elbows and lower the top of your head toward the floor between your hands. Press back up to straight arms.",cue:"Think of pressing the floor away from you, not pushing yourself up.",breathing:"Inhale as head lowers, exhale as you press up.",mistakes:"Not enough hip angle (turns into a decline push-up instead), looking forward instead of down."},{name:"Band Front + Lateral Raise",reps:"10+10",muscles:"Front & side deltoids",setup:"Stand on the center of the band, feet hip-width. Hold ends with arms at your sides, slight bend in elbows.",execution:"10 front raises then immediately 10 lateral raises. No rest between.",cue:"Lead with your pinky finger on the lateral raises — tips the shoulder into better activation.",breathing:"Exhale on every raise, inhale on the return.",mistakes:"Using momentum/swinging, shrugging shoulders up to ears, lifting above shoulder height."}]},{name:"CIRCUIT 2",subtitle:"SHOULDERS & CORE",rounds:3,restSeconds:45,exercises:[{name:"Decline Push-Ups",reps:"10–12",muscles:"Upper chest, front deltoids",setup:"Feet elevated on chair/bed, hands on floor slightly wider than shoulders. Body in a straight line angled downward.",execution:"Lower chest toward the floor with a 2-second negative. Push up powerfully.",cue:"Aim your sternum at the floor between your hands.",breathing:"Inhale down, exhale up.",mistakes:"Feet too high (turns into a pike), sagging hips, bouncing at the bottom."},{name:"Band Overhead Press",reps:"12–15",muscles:"All three deltoid heads, triceps",setup:"Stand on band, feet shoulder-width. Bring band to shoulder height, palms facing forward, elbows at 90°.",execution:"Press straight overhead until arms are fully extended. Lower slowly back to shoulder height. Keep core braced.",cue:"Push your head 'through the window' of your arms at the top.",breathing:"Exhale on the press, inhale on the return.",mistakes:"Arching lower back (brace abs hard), pressing forward instead of straight up, incomplete lockout."},{name:"High Plank Knee-to-Opposite-Elbow",reps:"12 / side",muscles:"Obliques, transverse abs, hip flexors",setup:"High plank position — hands under shoulders, body straight, core locked.",execution:"Bring right knee to left elbow in a slow, controlled cross-body crunch. Return to plank. Alternate sides.",cue:"Try to touch your knee to the opposite elbow — the intention drives the rotation.",breathing:"Exhale as knee drives across, inhale as you return.",mistakes:"Rushing (kills the anti-rotation benefit), hips rocking side to side, shoulders drifting forward."},{name:"Russian Twists",reps:"20 total",muscles:"Obliques, rectus abdominis",setup:"Sit on the floor, knees bent, feet off the ground. Lean back ~45°. Hands together in front of chest.",execution:"Rotate your torso to touch hands to the floor on each side. Each touch = 1 rep.",cue:"Eyes and chest follow your hands — rotate from the ribcage, not just the arms.",breathing:"Exhale on each rotation.",mistakes:"Only moving arms (not rotating torso), feet on the ground (too easy), rounding the back."}]},{name:"FINISHER",subtitle:"CORE BURN",rounds:2,restSeconds:30,exercises:[{name:"Plank Knee-to-Elbow (same side)",reps:"10 / side",muscles:"Obliques, hip flexors, serratus anterior",setup:"High plank. Hands directly under shoulders, feet hip-width.",execution:"Bring right knee to right elbow on the outside of your body. Squeeze oblique at the top. Return slowly.",cue:"Imagine touching your knee to the outside of your elbow — crunch sideways.",breathing:"Exhale on the crunch, inhale on the return.",mistakes:"Letting hips rotate open, rushing through reps, shifting weight to one hand."},{name:"Hollow Body Hold",reps:"30 seconds",muscles:"Deep abs, hip flexors, quads",setup:"Lie on back. Arms overhead, legs straight. Press lower back firmly into the floor.",execution:"Lift arms, shoulders, and legs off the floor. Hold. Lower back MUST stay pressed into the floor.",cue:"Imagine you're a banana — long, curved, rigid. Squeeze everything.",breathing:"Short, controlled breaths. Don't hold your breath.",mistakes:"Lower back arching off floor (#1 mistake — raise legs higher to fix), chin tucked too hard, holding breath."}]}]},{id:"B",title:"PULL + BICEPS",focus:"Back · Rear Delts · Biceps · Grip",circuits:[{name:"CIRCUIT 1",subtitle:"VERTICAL PULL",rounds:4,restSeconds:60,exercises:[{name:"Pull-Ups (shoulder width)",reps:"5–6",muscles:"Lats, teres major, biceps, forearms",setup:"Hang from bar with pronated grip (palms away), hands shoulder-width. Full dead hang.",execution:"Pull until chin clears the bar. Squeeze lats at top for 1 second. Lower over 3 seconds to full dead hang.",cue:"Drive your elbows down toward your hips, not back behind you.",breathing:"Exhale as you pull up, inhale as you lower.",mistakes:"Kipping/swinging, not reaching full dead hang, chin jutting forward."},{name:"Chin-Ups (supinated)",reps:"5–7",muscles:"Biceps, lower lats, brachialis",setup:"Palms facing you, hands shoulder-width or slightly narrower. Full dead hang.",execution:"Pull up leading with your chest. Squeeze biceps hard at the top. Lower with control over 3 seconds.",cue:"Imagine curling the bar down to your collarbone.",breathing:"Exhale up, inhale down.",mistakes:"Half reps (not going to full hang), excessive kipping, leaning back too far."},{name:"Band Pull-Aparts",reps:"15–20",muscles:"Rear deltoids, rhomboids, middle traps",setup:"Hold band at shoulder height with straight arms, hands shoulder-width apart. Palms down.",execution:"Pull the band apart by squeezing shoulder blades together until band touches chest. Return slowly.",cue:"Pretend someone has a finger on your spine between your shoulder blades — squeeze it.",breathing:"Exhale as you pull apart, inhale on return.",mistakes:"Bending elbows (keep arms straight), shrugging shoulders up, too narrow a grip."}]},{name:"CIRCUIT 2",subtitle:"BACK WIDTH & BICEPS",rounds:3,restSeconds:45,exercises:[{name:"Wide-Grip Pull-Ups",reps:"4–6",muscles:"Upper lats, teres minor, rear delts",setup:"Hands well outside shoulder width, pronated grip. Full dead hang.",execution:"Pull up, aiming to bring chest to bar. Wider grip = harder. Lower with control.",cue:"Imagine pulling the bar apart as you pull yourself up.",breathing:"Exhale up, inhale down.",mistakes:"Not going wide enough, shortened range of motion, relying on momentum."},{name:"Band Bicep Curls",reps:"15–18",muscles:"Biceps, brachialis",setup:"Stand on band with feet hip-width. Hold ends with palms up, arms fully extended.",execution:"Curl both hands to shoulders. Squeeze hard at top for 1 second. Lower over 3 seconds.",cue:"Pin your elbows to your ribs. Only your forearms should move.",breathing:"Exhale as you curl up, inhale on the slow negative.",mistakes:"Swinging body for momentum, elbows drifting forward, fast/uncontrolled lowering."},{name:"Band Bent-Over Row",reps:"12–15",muscles:"Lats, rhomboids, rear delts, biceps",setup:"Stand on band, feet hip-width. Hinge forward at hips ~45°, back flat.",execution:"Row band to lower ribs, squeezing shoulder blades together. Hold 1 second. Lower with control.",cue:"Lead with your elbows, not your hands. Imagine starting a lawnmower.",breathing:"Exhale on the row, inhale on the return.",mistakes:"Rounding the back, standing too upright, jerking the band up."},{name:"Isometric Chin-Up Hold",reps:"15–20 sec",muscles:"Biceps, forearms, lats (isometric)",setup:"Pull yourself to top of a chin-up position (palms facing you, chin over bar).",execution:"Hold that top position. Squeeze everything. When you can't hold, lower as slowly as possible.",cue:"Crush the bar with your grip. Keep chest proud and chin above bar.",breathing:"Short controlled breaths. Don't hold your breath.",mistakes:"Chin dropping below bar too quickly, forgetting the slow negative after the hold."}]},{name:"FINISHER",subtitle:"GRIP & REAR DELTS",rounds:2,restSeconds:30,exercises:[{name:"Dead Hang",reps:"30–40 sec",muscles:"Forearms, grip, shoulders (decompression)",setup:"Hang from bar, pronated grip, shoulder-width. Full body weight.",execution:"Active hang — pull shoulders slightly down (away from ears). Hold. Builds climbing grip endurance.",cue:"Shoulders in your back pockets, not up by your ears.",breathing:"Slow, deep breaths. Relax everything except grip and shoulder engagement.",mistakes:"Passive hang (shoulders shrugging up), holding breath, gripping too narrow."},{name:"Band Face Pull",reps:"15",muscles:"Rear delts, external rotators, middle traps",setup:"Loop band over pull-up bar at head height. Grab both ends, step back until tension.",execution:"Pull toward your face, splitting band to either side of your head. Elbows high, squeeze shoulder blades.",cue:"Finish with a double bicep pose — that's the end position.",breathing:"Exhale on the pull, inhale on the return.",mistakes:"Pulling to chest instead of face, elbows dropping low, not enough external rotation."}]}]},{id:"C",title:"LEGS + FULL BODY",focus:"Quads · Glutes · Core · Integrated Strength",circuits:[{name:"CIRCUIT 1",subtitle:"LOWER BODY STRENGTH",rounds:3,restSeconds:60,exercises:[{name:"Bulgarian Split Squat",reps:"10 / leg",muscles:"Quads, glutes, hip flexors (stretch)",setup:"Stand ~2 feet in front of a chair. Place top of one foot on chair behind you. Front foot flat, torso upright.",execution:"Lower until front thigh is parallel to floor. Drive up through front heel explosively. All reps one leg, then switch.",cue:"Imagine sitting straight down into a hole, not lunging forward.",breathing:"Inhale as you lower, exhale as you drive up.",mistakes:"Front knee caving inward, leaning forward too much, back foot bearing too much weight."},{name:"Squat Pulse (bottom third)",reps:"15",muscles:"Quads (constant tension)",setup:"Feet shoulder-width, toes slightly out. Arms in front for balance.",execution:"Squat to parallel and stay there. Pulse up and down ~6 inches. Never come above halfway point.",cue:"Stay in the pain cave. Your quads should be screaming by rep 10.",breathing:"Quick controlled breaths. Don't hold.",mistakes:"Coming up too high (losing tension), shifting to toes, rounding back."},{name:"Band Good Mornings",reps:"12–15",muscles:"Hamstrings, glutes, lower back",setup:"Loop band behind neck and stand on it with both feet, shoulder-width apart.",execution:"Hinge at hips, pushing butt back, until torso nearly parallel to floor. Drive hips forward to return.",cue:"Push your butt toward the wall behind you. Feel the hamstring stretch.",breathing:"Inhale on the hinge down, exhale as you stand up.",mistakes:"Rounding the back, bending knees too much (it's a hip hinge), looking up."},{name:"Single-Leg Calf Raise",reps:"15 / side",muscles:"Gastrocnemius, soleus",setup:"Stand on one foot. Other foot hooked behind ankle. Hold wall or bar for balance.",execution:"Rise to full tiptoe — squeeze calf hard at top for 1 second. Lower slowly, full stretch at bottom.",cue:"Imagine pushing the floor away with the ball of your foot.",breathing:"Exhale on the rise, inhale on the lower.",mistakes:"Bouncing instead of controlled movement, not reaching full range, going too fast."}]},{name:"CIRCUIT 2",subtitle:"INTEGRATED POWER",rounds:3,restSeconds:45,exercises:[{name:"Jump Squats",reps:"10",muscles:"Quads, glutes, calves (explosive)",setup:"Feet shoulder-width, toes slightly out.",execution:"Squat to parallel, then explode upward into max height jump. Land soft with bent knees, immediately descend.",cue:"Quiet landings — if feet are slapping the floor, absorb more through your legs.",breathing:"Inhale during squat, exhale explosively on jump.",mistakes:"Landing with straight legs (injury risk), shallow squat, not using arms."},{name:"Push-Up to Pike",reps:"8–10",muscles:"Chest, shoulders, core (transition)",setup:"Start in push-up position, hands shoulder-width.",execution:"One full push-up. At top, walk hands back to pike. One pike push-up. Walk forward. That's 1 rep.",cue:"Flow between positions — control and shoulder mobility as much as strength.",breathing:"Exhale on each push-up, inhale during transitions.",mistakes:"Rushing transitions, losing core tightness, shallow push-up or pike."},{name:"Pull-Up (mixed grip)",reps:"4–5 / grip",muscles:"Lats, biceps, forearms (asymmetric)",setup:"One hand pronated (over), one supinated (under). Shoulder-width or slightly wider.",execution:"Pull up to chin over bar. 4–5 reps, then switch grips and do 4–5 more.",cue:"Try to pull evenly — the body will want to twist toward the supinated hand.",breathing:"Exhale up, inhale down.",mistakes:"Twisting body toward one side, not switching grips, shortened range."},{name:"High Plank Knee-to-Opposite-Elbow",reps:"12 / side",muscles:"Obliques, transverse abs, hip flexors",setup:"High plank — hands under shoulders, body straight, core locked.",execution:"Right knee to left elbow, slow cross-body crunch. Return. Alternate. 2 seconds each direction.",cue:"Try to touch knee to opposite elbow — the intention drives the rotation.",breathing:"Exhale as knee drives across, inhale as you return.",mistakes:"Rushing, hips rocking side to side, shoulders drifting forward."}]},{name:"FINISHER",subtitle:"CORE DEFINITION",rounds:2,restSeconds:30,exercises:[{name:"Russian Twists",reps:"24 total",muscles:"Obliques, rectus abdominis",setup:"Sit on floor, knees bent, feet off ground. Lean back ~45°. Hands together.",execution:"Rotate torso to touch hands to floor on each side. Each touch = 1 rep. Feet elevated entire time.",cue:"Eyes and chest follow hands — rotate from ribcage, not just arms.",breathing:"Exhale on each rotation.",mistakes:"Only moving arms, feet on ground (too easy), rounding the back."},{name:"Plank Knee-to-Elbow (same side)",reps:"10 / side",muscles:"Obliques, hip flexors, serratus anterior",setup:"High plank. Hands under shoulders, feet hip-width.",execution:"Right knee to right elbow outside your body. Squeeze oblique. Return slowly. All reps one side, then switch.",cue:"Touch knee to outside of elbow — crunch sideways.",breathing:"Exhale on crunch, inhale on return.",mistakes:"Hips rotating open, rushing, shifting weight to one hand."},{name:"Dead Bug",reps:"10 / side",muscles:"Deep transverse abs, hip flexors, coordination",setup:"Lie on back, arms up toward ceiling, knees 90° (tabletop). Lower back pressed into floor.",execution:"Extend right arm overhead and left leg straight out simultaneously, hovering above floor. Return. Alternate.",cue:"Lower back is glued to floor. The moment it peels up, you've gone too far.",breathing:"Exhale as you extend, inhale as you return.",mistakes:"Lower back arching, moving too fast, incomplete extension."}]}]}];
+
+// ─── STATE ──────────────────────────────────────────────────────────────
+var S={screen:'home',dayIndex:0,energyKey:'normal',stepIndex:0,exercises:[],
+completedSteps:new Set(),showDetail:false,sessionStart:null,
+history:[],restInterval:null,restTotal:0,restRemaining:0};
+
+function buildList(di,ek){
+var day=DAYS[di],p=ENERGY[ek],list=[];
+day.circuits.forEach(function(c,ci){
+var rounds=Math.max(1,c.rounds+p.roundOffset);
+var rest=c.restSeconds+p.restOffset;
+for(var r=0;r<rounds;r++){
+c.exercises.forEach(function(ex,ei){
+list.push({name:ex.name,reps:scaleReps(ex.reps,p.repMult),muscles:ex.muscles,
+setup:ex.setup,execution:ex.execution,cue:ex.cue,breathing:ex.breathing,mistakes:ex.mistakes,
+circuitName:c.name,circuitSubtitle:c.subtitle,round:r+1,totalRounds:rounds,
+restSeconds:rest,isLastInRound:ei===c.exercises.length-1,isLastRound:r===rounds-1});
+});
+}
+});
+return list;
+}
+
+function playBeep(f,d,c){try{var x=new(window.AudioContext||window.webkitAudioContext)();for(var i=0;i<c;i++){var o=x.createOscillator(),g=x.createGain();o.connect(g);g.connect(x.destination);o.frequency.value=f;o.type='square';g.gain.value=.15;var s=x.currentTime+i*.3;o.start(s);o.stop(s+d/1000);}}catch(e){}}
+function loadHistory(){try{S.history=JSON.parse(localStorage.getItem('wk-hist-v2')||'[]')}catch(e){S.history=[]}}
+function saveHistory(){try{localStorage.setItem('wk-hist-v2',JSON.stringify(S.history))}catch(e){}}
+function $(id){return document.getElementById(id)}
+
+// ─── SCREENS ────────────────────────────────────────────────────────────
+function showScreen(n){
+document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
+var el=$(n==='history'?'history-screen':n);
+if(el)el.classList.add('active');
+S.screen=n;window.scrollTo(0,0);
+}
+
+function renderEnergy(){
+var row=$('energy-row');row.innerHTML='';
+['fresh','normal','tired'].forEach(function(k){
+var p=ENERGY[k],active=S.energyKey===k;
+var btn=document.createElement('button');
+btn.className='energy-btn';
+btn.style.background=active?p.color+'12':'var(--surface)';
+btn.style.borderColor=active?p.color:'var(--border)';
+btn.innerHTML='<div class="energy-icon">'+p.icon+'</div><div class="energy-name" style="color:'+(active?p.color:'var(--text-dim)')+'">'+p.label+'</div><div class="energy-desc" style="color:'+(active?'var(--text)':'var(--text-muted)')+'">'+p.desc+'</div>';
+btn.onclick=function(){S.energyKey=k;renderHome()};
+row.appendChild(btn);
+});
+}
+
+function renderHome(){
+renderEnergy();
+var c=$('day-buttons');c.innerHTML='';
+var ep=ENERGY[S.energyKey];
+DAYS.forEach(function(day,i){
+var total=day.circuits.reduce(function(s,ci){return s+ci.exercises.length*Math.max(1,ci.rounds+ep.roundOffset)},0);
+var btn=document.createElement('button');
+btn.className='day-btn';
+btn.innerHTML='<div class="day-btn-top"><div><div class="day-btn-label"><span class="day-btn-id">'+day.id+'</span><span class="day-btn-title">'+day.title+'</span></div><div class="day-btn-focus">'+day.focus+'</div><div class="day-btn-meta">'+total+' exercises · '+day.circuits.length+' circuits</div></div><div class="day-btn-arrow">›</div></div>';
+btn.onclick=function(){startWorkout(i)};
+c.appendChild(btn);
+});
+$('hist-count').textContent=S.history.length;
+var standalone=window.matchMedia('(display-mode:standalone)').matches||window.navigator.standalone;
+var banner=$('install-banner');
+if(!standalone){banner.classList.add('show');$('install-text').innerHTML=/android/i.test(navigator.userAgent)?'Tap <strong>⋮ menu</strong> → <strong>"Add to Home screen"</strong>':'Tap <strong>Share</strong> → <strong>"Add to Home Screen"</strong>';}
+else banner.classList.remove('show');
+showScreen('home');
+}
+
+function renderWorkout(){
+var day=DAYS[S.dayIndex],ex=S.exercises[S.stepIndex];if(!ex)return;
+var progress=S.exercises.length>0?Math.round(S.completedSteps.size/S.exercises.length*100):0;
+var ep=ENERGY[S.energyKey];
+$('wk-topbar-center').innerHTML='<span class="wk-day-label">DAY '+day.id+'</span><span class="wk-energy-tag" style="color:'+ep.color+';background:'+ep.color+'15">'+ep.label+'</span>';
+$('wk-step-count').textContent=(S.stepIndex+1)+'/'+S.exercises.length;
+$('wk-progress-bar').style.width=progress+'%';
+$('wk-circuit-info').innerHTML='<span class="wk-circuit-tag">'+ex.circuitName+'</span><span class="wk-circuit-sub">'+ex.circuitSubtitle+'</span><span class="wk-round-tag">ROUND '+ex.round+'/'+ex.totalRounds+'</span>';
+$('wk-name').textContent=ex.name;
+$('wk-muscles').textContent=ex.muscles;
+$('wk-reps').textContent=ex.reps;
+S.showDetail=false;
+var tog=$('wk-detail-toggle');tog.textContent='▸ SHOW FORM GUIDE';tog.classList.remove('open');
+var det=$('wk-detail');det.classList.remove('open');
+var sections=[{l:'SETUP',t:ex.setup,c:'var(--blue)'},{l:'EXECUTION',t:ex.execution,c:'var(--green-bright)'},{l:'CUE',t:ex.cue,c:'var(--amber)'},{l:'BREATHING',t:ex.breathing,c:'var(--text-dim)'},{l:'AVOID',t:ex.mistakes,c:'var(--red)'}];
+det.innerHTML=sections.map(function(s){return '<div class="wk-detail-section"><div class="wk-detail-label" style="color:'+s.c+'">'+s.l+'</div><div class="wk-detail-text">'+s.t+'</div></div>'}).join('');
+showScreen('workout');
+}
+
+function renderHistory(){
+var list=$('hist-list');
+if(!S.history.length){list.innerHTML='<div class="hist-empty">No sessions recorded yet.<br>Complete a workout to see your history here.</div>';showScreen('history');return}
+var grouped={};
+S.history.forEach(function(h){var d=new Date(h.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});if(!grouped[d])grouped[d]=[];grouped[d].push(h)});
+list.innerHTML=Object.entries(grouped).reverse().map(function(pair){var date=pair[0],sessions=pair[1];
+return '<div class="hist-group"><div class="hist-date">'+date.toUpperCase()+'</div>'+sessions.map(function(s){
+var eTag=s.energy&&ENERGY[s.energy]?'<span class="hist-energy-tag" style="color:'+ENERGY[s.energy].color+'">'+ENERGY[s.energy].label+'</span>':'';
+return '<div class="hist-entry"><div><span class="hist-day-id">DAY '+s.day+'</span><span class="hist-day-title">'+s.title+'</span>'+eTag+'</div><div style="text-align:right"><div class="hist-status '+(s.completed?'done':'partial')+'">'+(s.completed?'COMPLETED':s.progress+'%')+'</div><div class="hist-duration">'+s.duration+'</div></div></div>'}).join('')+'</div>'}).join('');
+showScreen('history');
+}
+
+function renderComplete(){
+var day=DAYS[S.dayIndex],ep=ENERGY[S.energyKey];
+var dur=S.sessionStart?Math.round((Date.now()-S.sessionStart)/60000):0;
+$('complete-sub').textContent='DAY '+day.id+' — '+day.title;
+$('complete-energy').textContent=ep.icon+' '+ep.label+' MODE';
+$('complete-energy').style.color=ep.color;
+$('complete-dur').textContent=dur+' minutes';
+showScreen('complete');
+}
+
+// ─── REST TIMER ─────────────────────────────────────────────────────────
+function startRest(sec){
+S.restTotal=sec;S.restRemaining=sec;
+$('rest-overlay').classList.add('active');$('rest-overlay').classList.remove('flash');
+updateRest();
+S.restInterval=setInterval(function(){
+S.restRemaining--;
+if(S.restRemaining<=3&&S.restRemaining>0)playBeep(660,100,1);
+if(S.restRemaining<=0){clearInterval(S.restInterval);playBeep(1047,150,3);$('rest-overlay').classList.add('flash');setTimeout(endRest,1200)}
+updateRest();
+},1000);
+}
+function updateRest(){
+var n=$('rest-number');n.textContent=Math.max(0,S.restRemaining);
+n.classList.toggle('urgent',S.restRemaining<=3);
+var pct=(S.restTotal-S.restRemaining)/S.restTotal*100;
+var bar=$('rest-bar');bar.style.width=pct+'%';
+bar.style.background=S.restRemaining<=3?'var(--red)':'var(--amber)';
+}
+function endRest(){clearInterval(S.restInterval);$('rest-overlay').classList.remove('active','flash');S.stepIndex++;renderWorkout()}
+
+// ─── ACTIONS ────────────────────────────────────────────────────────────
+function startWorkout(di){
+S.dayIndex=di;S.exercises=buildList(di,S.energyKey);S.stepIndex=0;
+S.completedSteps=new Set();S.showDetail=false;S.sessionStart=Date.now();
+renderWorkout();
+}
+function markDone(){
+S.completedSteps.add(S.stepIndex);var ex=S.exercises[S.stepIndex];
+if(S.stepIndex+1>=S.exercises.length){
+var dur=Math.round((Date.now()-S.sessionStart)/60000);
+S.history.push({date:new Date().toISOString(),day:DAYS[S.dayIndex].id,title:DAYS[S.dayIndex].title,completed:true,progress:100,duration:dur+' min',energy:S.energyKey});
+saveHistory();renderComplete();return;
+}
+if(ex.isLastInRound)startRest(ex.restSeconds);
+else{S.stepIndex++;renderWorkout()}
+}
+function skipEx(){if(S.stepIndex+1<S.exercises.length){S.stepIndex++;renderWorkout()}}
+function endSession(){
+if(S.completedSteps.size>0){
+var dur=Math.round((Date.now()-S.sessionStart)/60000);
+var prog=Math.round(S.completedSteps.size/S.exercises.length*100);
+S.history.push({date:new Date().toISOString(),day:DAYS[S.dayIndex].id,title:DAYS[S.dayIndex].title,completed:false,progress:prog,duration:dur+' min',energy:S.energyKey});
+saveHistory();
+}
+renderHome();
+}
+
+// ─── SWIPE ──────────────────────────────────────────────────────────────
+var touchX=0;
+document.addEventListener('touchstart',function(e){touchX=e.touches[0].clientX},{passive:true});
+document.addEventListener('touchend',function(e){
+if(S.screen!=='workout')return;
+var d=e.changedTouches[0].clientX-touchX;
+if(Math.abs(d)>60){
+if(d<0&&S.stepIndex+1<S.exercises.length){S.stepIndex++;renderWorkout()}
+else if(d>0&&S.stepIndex>0){S.stepIndex--;renderWorkout()}
+}
+});
+
+// ─── EVENTS ─────────────────────────────────────────────────────────────
+$('history-btn').onclick=renderHistory;
+$('hist-back-btn').onclick=renderHome;
+$('wk-end-btn').onclick=endSession;
+$('wk-done-btn').onclick=markDone;
+$('wk-skip-btn').onclick=skipEx;
+$('rest-skip-btn').onclick=endRest;
+$('complete-btn').onclick=renderHome;
+$('clear-btn').onclick=function(){if(confirm('Clear all session history?')){S.history=[];saveHistory();renderHome()}};
+$('wk-detail-toggle').onclick=function(){
+S.showDetail=!S.showDetail;
+var t=$('wk-detail-toggle'),d=$('wk-detail');
+t.textContent=S.showDetail?'▾ HIDE FORM GUIDE':'▸ SHOW FORM GUIDE';
+t.classList.toggle('open',S.showDetail);d.classList.toggle('open',S.showDetail);
+};
+
+// ─── WAKE LOCK ──────────────────────────────────────────────────────────
+var wl=null;
+async function reqWake(){try{if('wakeLock' in navigator)wl=await navigator.wakeLock.request('screen')}catch(e){}}
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&S.screen==='workout')reqWake()});
+
+// ─── SERVICE WORKER ─────────────────────────────────────────────────────
+if('serviceWorker' in navigator){
+var sw="var C='circuit-v2';self.addEventListener('install',function(e){e.waitUntil(caches.open(C).then(function(c){return c.addAll(['/'])}).then(function(){return self.skipWaiting()}))});self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(x){return x!==C}).map(function(x){return caches.delete(x)}))}).then(function(){return self.clients.claim()}))});self.addEventListener('fetch',function(e){e.respondWith(caches.match(e.request).then(function(r){return r||fetch(e.request).then(function(res){if(res.status===200){var c=res.clone();caches.open(C).then(function(cache){cache.put(e.request,c)})}return res}).catch(function(){return caches.match('/')})}))});";
+var blob=new Blob([sw],{type:'application/javascript'});
+navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(function(){});
+}
+
+// ─── INIT ───────────────────────────────────────────────────────────────
+loadHistory();renderHome();
+</script>
+
+</body>
+</html>
