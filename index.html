@@ -19,367 +19,493 @@
 --border:#1F2430;--border-light:#2A3040;
 --amber:#E4A832;--amber-dim:#9A7425;--amber-glow:#E4A83240;
 --green:#34D399;--green-bright:#4ADE80;--green-dim:#166534;
---red:#F87171;--red-glow:#F8717130;
---blue:#60A5FA;
+--red:#F87171;--red-glow:#F8717130;--blue:#60A5FA;--cyan:#22D3EE;--purple:#A78BFA;
 --text:#D1D5DB;--text-bright:#F3F4F6;--text-dim:#6B7280;--text-muted:#4B5563;
---safe-bottom:env(safe-area-inset-bottom,0px);
---safe-top:env(safe-area-inset-top,0px);
+--safe-bottom:env(safe-area-inset-bottom,0px);--safe-top:env(safe-area-inset-top,0px);
 }
-html,body{
-background:var(--bg);color:var(--text);
-font-family:'Barlow Condensed','Oswald',sans-serif;
-min-height:100vh;min-height:100dvh;
-overflow-x:hidden;-webkit-tap-highlight-color:transparent;
--webkit-user-select:none;user-select:none;
-}
+html,body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed','Oswald',sans-serif;min-height:100vh;min-height:100dvh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
 body{padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}
 button{font-family:inherit;cursor:pointer;-webkit-appearance:none;border:none;background:none}
 button:active{opacity:.78;transform:scale(.98)}
+.screen{display:none;min-height:100vh;min-height:100dvh}.screen.active{display:flex;flex-direction:column}
 
-.screen{display:none;min-height:100vh;min-height:100dvh}
-.screen.active{display:flex;flex-direction:column}
-
-/* Home */
-#home{padding:32px 20px;max-width:520px;margin:0 auto;width:100%}
-.home-header{margin-bottom:28px}
+#home{padding:24px 20px 32px;max-width:520px;margin:0 auto;width:100%}
+.home-header{margin-bottom:20px}
 .home-logo{display:flex;align-items:center;gap:10px;margin-bottom:4px}
 .home-logo span{color:var(–amber);font-size:20px;font-weight:800}
 .home-logo h1{font-size:26px;font-weight:800;color:var(–text-bright);letter-spacing:2px;margin:0}
 .home-sub{color:var(–text-dim);font-size:12px;letter-spacing:1.5px;margin-top:4px}
 
-/* Energy Selector */
+.mode-row{display:flex;gap:6px;margin-bottom:20px;background:var(–surface);border-radius:8px;padding:4px;border:1px solid var(–border)}
+.mode-btn{flex:1;text-align:center;padding:10px 6px;border-radius:6px;font-size:11px;font-weight:800;letter-spacing:1.5px;transition:all .2s}
+
 .energy-label{color:var(–text-dim);font-size:10px;font-weight:700;letter-spacing:2px;margin-bottom:10px}
-.energy-row{display:flex;gap:8px;margin-bottom:24px}
-.energy-btn{flex:1;border-radius:10px;padding:14px 8px;text-align:center;transition:all .2s;border-width:2px;border-style:solid}
-.energy-icon{font-size:22px;margin-bottom:4px}
-.energy-name{font-size:13px;font-weight:800;letter-spacing:1.5px}
-.energy-desc{font-size:9px;margin-top:4px;line-height:1.4;letter-spacing:.3px}
+.energy-row{display:flex;gap:8px;margin-bottom:20px}
+.energy-btn{flex:1;border-radius:10px;padding:12px 6px;text-align:center;transition:all .2s;border-width:2px;border-style:solid}
+.energy-icon{font-size:20px;margin-bottom:2px}
+.energy-name{font-size:12px;font-weight:800;letter-spacing:1.5px}
+.energy-desc{font-size:8px;margin-top:3px;line-height:1.3;letter-spacing:.2px}
 
-.day-btn{display:block;width:100%;background:var(–surface);border:1px solid var(–border);border-radius:10px;padding:22px 20px;margin-bottom:10px;text-align:left;transition:border-color .15s}
+.day-btn{display:block;width:100%;background:var(–surface);border:1px solid var(–border);border-radius:10px;padding:18px 16px;margin-bottom:8px;text-align:left;transition:border-color .15s}
 .day-btn-top{display:flex;justify-content:space-between;align-items:center}
-.day-btn-label{display:flex;align-items:baseline;gap:10px}
-.day-btn-id{color:var(–amber);font-size:28px;font-weight:800;font-family:‘Oswald’,sans-serif}
-.day-btn-title{color:var(–text-bright);font-size:17px;font-weight:700;letter-spacing:1px}
-.day-btn-focus{color:var(–text-dim);font-size:12px;margin-top:4px;letter-spacing:.5px}
-.day-btn-meta{color:var(–text-muted);font-size:10px;margin-top:3px;letter-spacing:.5px}
-.day-btn-arrow{color:var(–amber-dim);font-size:24px;font-weight:300}
-.history-btn{display:block;width:100%;border:1px solid var(–border);border-radius:10px;padding:16px 20px;margin-top:20px;text-align:center;color:var(–text-dim);font-size:13px;font-weight:700;letter-spacing:2px}
-.clear-btn{display:block;width:100%;padding:12px 20px;margin-top:8px;text-align:center;color:var(–text-muted);font-size:10px;font-weight:600;letter-spacing:1.5px}
-.install-banner{display:none;background:var(–surface);border:1px solid var(–amber-dim);border-radius:10px;padding:16px 18px;margin-top:20px;text-align:center}
-.install-banner.show{display:block}
-.install-banner-title{color:var(–amber);font-size:12px;font-weight:800;letter-spacing:1.5px;margin-bottom:6px}
-.install-banner-text{color:var(–text-dim);font-size:11px;line-height:1.6}
+.day-btn-label{display:flex;align-items:baseline;gap:8px}
+.day-btn-id{font-size:24px;font-weight:800;font-family:‘Oswald’,sans-serif}
+.day-btn-title{color:var(–text-bright);font-size:15px;font-weight:700;letter-spacing:1px}
+.day-btn-focus{color:var(–text-dim);font-size:11px;margin-top:3px;letter-spacing:.5px}
+.day-btn-meta{color:var(–text-muted);font-size:9px;margin-top:2px;letter-spacing:.5px}
+.day-btn-arrow{color:var(–amber-dim);font-size:22px;font-weight:300}
+.bottom-btns{margin-top:16px;display:flex;gap:8px}
+.history-btn,.clear-btn{flex:1;border:1px solid var(–border);border-radius:8px;padding:14px 12px;text-align:center;color:var(–text-dim);font-size:11px;font-weight:700;letter-spacing:1.5px}
+.clear-btn{color:var(–text-muted);font-size:10px}
 
-/* Workout */
 #workout{position:relative}
-.wk-topbar{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(–border)}
-.wk-end{color:var(–text-dim);font-size:13px;font-weight:700;letter-spacing:1px;padding:8px 4px}
-.wk-day-label{color:var(–amber);font-size:13px;font-weight:800;letter-spacing:2px}
-.wk-energy-tag{font-size:10px;font-weight:700;letter-spacing:1px;padding:2px 7px;border-radius:3px;margin-left:8px}
+.wk-topbar{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(–border)}
+.wk-end{color:var(–text-dim);font-size:13px;font-weight:700;letter-spacing:1px;padding:6px 4px}
 .wk-step-count{color:var(–text-dim);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
 .wk-progress{height:3px;background:var(–border)}
 .wk-progress-bar{height:100%;background:linear-gradient(90deg,var(–amber),var(–green-bright));transition:width .4s ease}
-.wk-body{flex:1;padding:20px 18px;display:flex;flex-direction:column}
-.wk-circuit-tag{display:inline-block;background:#E4A83215;border:1px solid #9A742550;color:var(–amber);padding:5px 12px;border-radius:4px;font-size:10px;font-weight:800;letter-spacing:2px;margin-right:8px}
+.wk-body{flex:1;padding:18px 16px;display:flex;flex-direction:column}
+.wk-circuit-tag{display:inline-block;padding:4px 10px;border-radius:4px;font-size:9px;font-weight:800;letter-spacing:2px;margin-right:6px}
 .wk-circuit-sub{color:var(–text-dim);font-size:10px;letter-spacing:1.5px;font-weight:600}
-.wk-round-tag{color:var(–blue);font-size:10px;font-weight:700;letter-spacing:1px;margin-left:10px}
-.wk-name{font-size:32px;font-weight:800;color:var(–text-bright);line-height:1.15;letter-spacing:.5px;margin:16px 0 6px;font-family:‘Oswald’,sans-serif;text-transform:uppercase}
-.wk-muscles{color:var(–text-dim);font-size:12px;letter-spacing:.5px}
-.wk-reps{font-size:52px;font-weight:800;color:var(–green-bright);font-family:‘Oswald’,sans-serif;font-variant-numeric:tabular-nums;margin:12px 0 16px;line-height:1}
-.wk-detail-toggle{border:1px solid var(–border);border-radius:8px;padding:14px 16px;color:var(–text-dim);font-size:13px;font-weight:700;letter-spacing:1.5px;text-align:left;margin-bottom:8px;transition:all .15s}
+.wk-round-tag{color:var(–blue);font-size:10px;font-weight:700;letter-spacing:1px;margin-left:8px}
+.wk-name{font-size:30px;font-weight:800;color:var(–text-bright);line-height:1.15;letter-spacing:.5px;margin:14px 0 4px;font-family:‘Oswald’,sans-serif;text-transform:uppercase}
+.wk-muscles{color:var(–text-dim);font-size:11px;letter-spacing:.5px}
+.wk-reps{font-size:48px;font-weight:800;color:var(–green-bright);font-family:‘Oswald’,sans-serif;font-variant-numeric:tabular-nums;margin:10px 0 14px;line-height:1}
+.wk-detail-toggle{border:1px solid var(–border);border-radius:8px;padding:12px 14px;color:var(–text-dim);font-size:12px;font-weight:700;letter-spacing:1.5px;text-align:left;margin-bottom:6px;transition:all .15s}
 .wk-detail-toggle.open{background:var(–surface-light);border-color:var(–border-light);color:var(–amber)}
-.wk-detail{background:var(–surface);border:1px solid var(–border);border-radius:10px;padding:16px 18px;margin-top:4px;display:none;max-height:50vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.wk-detail{background:var(–surface);border:1px solid var(–border);border-radius:10px;padding:14px 16px;margin-top:4px;display:none;max-height:45vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .wk-detail.open{display:block}
-.wk-detail-section{margin-bottom:14px}
-.wk-detail-section:last-child{margin-bottom:0}
-.wk-detail-label{font-size:9px;font-weight:800;letter-spacing:2.5px;margin-bottom:5px}
-.wk-detail-text{font-size:14px;color:var(–text);line-height:1.65}
-.wk-actions{display:flex;gap:10px;margin-top:16px;padding-bottom:max(20px,var(–safe-bottom))}
-.wk-skip{flex:1;border:1px solid var(–border);border-radius:12px;padding:22px 0;color:var(–text-dim);font-size:14px;font-weight:700;letter-spacing:2px}
-.wk-done{flex:2.5;background:var(–amber);border-radius:12px;padding:22px 0;color:var(–bg);font-size:18px;font-weight:800;letter-spacing:3px;font-family:‘Oswald’,sans-serif}
+.wk-detail-section{margin-bottom:12px}.wk-detail-section:last-child{margin-bottom:0}
+.wk-detail-label{font-size:9px;font-weight:800;letter-spacing:2.5px;margin-bottom:4px}
+.wk-detail-text{font-size:13px;color:var(–text);line-height:1.6}
+.wk-actions{display:flex;gap:10px;margin-top:14px;padding-bottom:max(20px,var(–safe-bottom))}
+.wk-skip{flex:1;border:1px solid var(–border);border-radius:12px;padding:20px 0;color:var(–text-dim);font-size:14px;font-weight:700;letter-spacing:2px}
+.wk-done{flex:2.5;border-radius:12px;padding:20px 0;color:var(–bg);font-size:18px;font-weight:800;letter-spacing:3px;font-family:‘Oswald’,sans-serif}
 
-/* Rest */
 #rest-overlay{position:fixed;inset:0;background:var(–bg);z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;transition:background .3s}
-#rest-overlay.active{display:flex}
-#rest-overlay.flash{background:#F8717115}
+#rest-overlay.active{display:flex}#rest-overlay.flash{background:#F8717115}
 .rest-label{color:var(–text-dim);font-size:14px;letter-spacing:4px;font-weight:700;margin-bottom:16px}
-.rest-number{font-size:110px;font-weight:800;color:var(–amber);font-family:‘Oswald’,sans-serif;font-variant-numeric:tabular-nums;line-height:1;transition:color .3s,text-shadow .3s}
-.rest-number.urgent{color:var(–red);text-shadow:0 0 40px var(–red-glow)}
+.rest-number{font-size:100px;font-weight:800;font-family:‘Oswald’,sans-serif;font-variant-numeric:tabular-nums;line-height:1;transition:color .3s,text-shadow .3s}
+.rest-number.urgent{color:var(–red)!important;text-shadow:0 0 40px var(–red-glow)!important}
 .rest-bar-bg{width:60%;max-width:260px;height:4px;background:var(–border);border-radius:2px;margin-top:24px}
 .rest-bar{height:100%;border-radius:2px;transition:width 1s linear,background .3s}
 .rest-skip{margin-top:40px;border:1px solid var(–border);color:var(–text-dim);padding:16px 40px;border-radius:8px;font-size:14px;font-weight:600;letter-spacing:2px}
 
-/* Complete */
 #complete{align-items:center;justify-content:center;padding:24px}
 .complete-check{font-size:56px;margin-bottom:20px}
-.complete-title{font-size:28px;font-weight:800;color:var(–green-bright);letter-spacing:3px;margin-bottom:10px}
+.complete-title{font-size:28px;font-weight:800;letter-spacing:3px;margin-bottom:10px}
 .complete-sub{color:var(–text-dim);font-size:15px;margin-bottom:4px}
 .complete-energy{font-size:12px;font-weight:700;letter-spacing:1.5px;margin-bottom:6px}
 .complete-dur{color:var(–text-muted);font-size:13px;margin-bottom:36px}
-.complete-btn{background:var(–amber);color:var(–bg);border-radius:10px;padding:20px 52px;font-size:16px;font-weight:800;letter-spacing:2px}
+.complete-btn{border-radius:10px;padding:20px 52px;font-size:16px;font-weight:800;letter-spacing:2px}
 
-/* History */
 #history-screen{padding:24px 16px;max-width:520px;margin:0 auto;width:100%}
 .hist-back{color:var(–amber);font-size:13px;font-weight:700;letter-spacing:1px;margin-bottom:20px;padding:8px 0}
 .hist-title{font-size:16px;font-weight:800;color:var(–text-bright);letter-spacing:1.5px;margin-bottom:20px}
 .hist-empty{color:var(–text-dim);font-size:13px;text-align:center;margin-top:40px;line-height:1.6}
 .hist-date{font-size:11px;font-weight:700;color:var(–text-dim);letter-spacing:2px;margin-bottom:8px}
-.hist-entry{background:var(–surface);border:1px solid var(–border);border-radius:8px;padding:14px 16px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
-.hist-day-id{color:var(–amber);font-weight:800;font-size:15px;margin-right:10px}
-.hist-day-title{color:var(–text-dim);font-size:11px}
-.hist-energy-tag{font-size:9px;font-weight:700;letter-spacing:1px;margin-left:8px}
-.hist-status{font-size:11px;font-weight:700}
-.hist-status.done{color:var(–green-bright)}
-.hist-status.partial{color:var(–red)}
-.hist-duration{color:var(–text-muted);font-size:9px;margin-top:2px}
-.hist-group{margin-bottom:18px}
+.hist-entry{background:var(–surface);border:1px solid var(–border);border-radius:8px;padding:12px 14px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.hist-group{margin-bottom:16px}
 </style>
 
 </head>
 <body>
-
 <div id="home" class="screen active">
-<div class="home-header">
-<div class="home-logo"><span>▲</span><h1>CIRCUIT TRAINING</h1></div>
-<div class="home-sub">CLIMBING · STRENGTH · DEFINITION</div>
+  <div class="home-header">
+    <div class="home-logo"><span>▲</span><h1>CIRCUIT TRAINING</h1></div>
+    <div class="home-sub">CLIMBING · STRENGTH · DEFINITION</div>
+  </div>
+  <div class="mode-row" id="mode-row"></div>
+  <div class="energy-label">HOW DO YOU FEEL TODAY?</div>
+  <div class="energy-row" id="energy-row"></div>
+  <div id="mode-desc" style="color:var(--text-muted);font-size:10px;letter-spacing:.5px;margin-bottom:14px;line-height:1.5"></div>
+  <div id="day-buttons"></div>
+  <div class="bottom-btns">
+    <button class="history-btn" id="history-btn">HISTORY (<span id="hist-count">0</span>)</button>
+    <button class="clear-btn" id="clear-btn">CLEAR</button>
+  </div>
 </div>
-<div class="energy-label">HOW DO YOU FEEL TODAY?</div>
-<div class="energy-row" id="energy-row"></div>
-<div id="day-buttons"></div>
-<button class="history-btn" id="history-btn">SESSION HISTORY (<span id="hist-count">0</span>)</button>
-<button class="clear-btn" id="clear-btn">CLEAR HISTORY</button>
-<div class="install-banner" id="install-banner">
-<div class="install-banner-title">INSTALL AS APP</div>
-<div class="install-banner-text" id="install-text"></div>
-</div>
-</div>
-
 <div id="workout" class="screen">
-<div class="wk-topbar">
-<button class="wk-end" id="wk-end-btn">✕ END</button>
-<div id="wk-topbar-center" style="display:flex;align-items:center;gap:8px"></div>
-<div class="wk-step-count" id="wk-step-count"></div>
+  <div class="wk-topbar">
+    <button class="wk-end" id="wk-end-btn">✕ END</button>
+    <div id="wk-topbar-center" style="display:flex;align-items:center;gap:6px"></div>
+    <div class="wk-step-count" id="wk-step-count"></div>
+  </div>
+  <div class="wk-progress"><div class="wk-progress-bar" id="wk-progress-bar"></div></div>
+  <div class="wk-body">
+    <div id="wk-circuit-info" style="margin-bottom:14px"></div>
+    <div class="wk-name" id="wk-name"></div>
+    <div class="wk-muscles" id="wk-muscles"></div>
+    <div class="wk-reps" id="wk-reps"></div>
+    <button class="wk-detail-toggle" id="wk-detail-toggle">▸ SHOW FORM GUIDE</button>
+    <div class="wk-detail" id="wk-detail"></div>
+    <div style="flex:1"></div>
+    <div class="wk-actions">
+      <button class="wk-skip" id="wk-skip-btn">SKIP</button>
+      <button class="wk-done" id="wk-done-btn">DONE ✓</button>
+    </div>
+  </div>
 </div>
-<div class="wk-progress"><div class="wk-progress-bar" id="wk-progress-bar"></div></div>
-<div class="wk-body">
-<div id="wk-circuit-info" style="margin-bottom:16px"></div>
-<div class="wk-name" id="wk-name"></div>
-<div class="wk-muscles" id="wk-muscles"></div>
-<div class="wk-reps" id="wk-reps"></div>
-<button class="wk-detail-toggle" id="wk-detail-toggle">▸ SHOW FORM GUIDE</button>
-<div class="wk-detail" id="wk-detail"></div>
-<div style="flex:1"></div>
-<div class="wk-actions">
-<button class="wk-skip" id="wk-skip-btn">SKIP</button>
-<button class="wk-done" id="wk-done-btn">DONE ✓</button>
-</div>
-</div>
-</div>
-
 <div id="rest-overlay">
-<div class="rest-label">REST</div>
-<div class="rest-number" id="rest-number">60</div>
-<div class="rest-bar-bg"><div class="rest-bar" id="rest-bar"></div></div>
-<button class="rest-skip" id="rest-skip-btn">SKIP</button>
+  <div class="rest-label">REST</div>
+  <div class="rest-number" id="rest-number">60</div>
+  <div class="rest-bar-bg"><div class="rest-bar" id="rest-bar"></div></div>
+  <button class="rest-skip" id="rest-skip-btn">SKIP</button>
 </div>
-
 <div id="complete" class="screen">
-<div class="complete-check">✓</div>
-<div class="complete-title">SESSION COMPLETE</div>
-<div class="complete-sub" id="complete-sub"></div>
-<div class="complete-energy" id="complete-energy"></div>
-<div class="complete-dur" id="complete-dur"></div>
-<button class="complete-btn" id="complete-btn">DONE</button>
+  <div class="complete-check">✓</div>
+  <div class="complete-title" id="complete-title">SESSION COMPLETE</div>
+  <div class="complete-sub" id="complete-sub"></div>
+  <div class="complete-energy" id="complete-energy"></div>
+  <div class="complete-dur" id="complete-dur"></div>
+  <button class="complete-btn" id="complete-btn">DONE</button>
 </div>
-
 <div id="history-screen" class="screen">
-<button class="hist-back" id="hist-back-btn">← BACK</button>
-<div class="hist-title">SESSION HISTORY</div>
-<div id="hist-list"></div>
+  <button class="hist-back" id="hist-back-btn">← BACK</button>
+  <div class="hist-title">SESSION HISTORY</div>
+  <div id="hist-list"></div>
 </div>
 
 <script>
-const ENERGY={
-fresh:{label:"FRESH",icon:"⚡",color:"#4ADE80",repMult:1.2,roundOffset:0,restOffset:0,desc:"+20% reps · full rounds · standard rest"},
-normal:{label:"NORMAL",icon:"●",color:"#E4A832",repMult:1.0,roundOffset:0,restOffset:10,desc:"Baseline reps · full rounds · +10s rest"},
-tired:{label:"TIRED",icon:"◒",color:"#F87171",repMult:0.75,roundOffset:-1,restOffset:20,desc:"−25% reps · −1 round · +20s rest"}
+// ═══════════════════════════════════════════════════════════════════════
+// MODE & ENERGY CONFIG
+// ═══════════════════════════════════════════════════════════════════════
+var MODES={
+  home:{label:"HOME",icon:"🏠",color:"#E4A832",desc:"Bodyweight circuits · Mat, pull-up bar, resistance band"},
+  gym:{label:"GYM",icon:"🏋️",color:"#22D3EE",desc:"Minimum Bouldering · KB, DB, rings, TRX, hangboard, campus board"},
+  fingers:{label:"FINGERS",icon:"🤏",color:"#A78BFA",desc:"Hangboard protocol · 20mm edges · Strength & endurance"}
 };
+var ENERGY={
+  fresh:{label:"FRESH",icon:"⚡",color:"#4ADE80",repMult:1.2,roundOffset:0,restOffset:0,desc:"+20% reps · full rounds"},
+  normal:{label:"NORMAL",icon:"●",color:"#E4A832",repMult:1.0,roundOffset:0,restOffset:10,desc:"Baseline · +10s rest"},
+  tired:{label:"TIRED",icon:"◒",color:"#F87171",repMult:.75,roundOffset:-1,restOffset:20,desc:"−25% reps · −1 round"}
+};
+function scaleReps(s,m){return s.replace(/(\d+)/g,function(x){var n=parseInt(x);return n<=3?x:Math.max(3,Math.round(n*m))})}
 
-function scaleReps(s,m){return s.replace(/(\d+)/g,function(x){var n=parseInt(x);return n<=3?x:Math.max(3,Math.round(n*m));})}
+// ═══════════════════════════════════════════════════════════════════════
+// EXERCISE DATA — HOME
+// ═══════════════════════════════════════════════════════════════════════
+var HOME_DAYS=[
+{id:"A",title:"PUSH + CORE",focus:"Chest · Shoulders · Triceps · Abs",circuits:[
+{name:"CIRCUIT 1",subtitle:"CHEST & SHOULDERS",rounds:3,restSeconds:60,exercises:[
+{name:"Wide Push-Ups",reps:"12–15",muscles:"Outer chest, front delts",setup:"Hands 1.5× shoulder width, fingers slightly outward.",execution:"3s negative, chest to floor, explosive up.",cue:"Spread the floor apart with your hands.",breathing:"Inhale down, exhale up.",mistakes:"Elbows at 90° (keep ~45°), sagging back."},
+{name:"Diamond Push-Ups",reps:"10–12",muscles:"Inner chest, triceps",setup:"Hands together, diamond shape. Elbows tight.",execution:"Lower chest to hands, elbows along ribs. Full lockout.",cue:"Crush something between your pecs at the top.",breathing:"Inhale down, exhale up.",mistakes:"Elbows flaring wide, incomplete depth."},
+{name:"Pike Push-Ups (feet elevated)",reps:"8–10",muscles:"Anterior delts, upper chest, triceps",setup:"Feet on chair. Walk hands back to inverted V. Hips high.",execution:"Lower head between hands toward floor. Press back up.",cue:"Press the floor away from you.",breathing:"Inhale down, exhale up.",mistakes:"Not enough hip angle, looking forward."},
+{name:"Band Front + Lateral Raise",reps:"10+10",muscles:"Front & side deltoids",setup:"Stand on band, arms at sides, slight elbow bend.",execution:"10 front raises then 10 lateral raises. No rest between.",cue:"Lead with pinky on lateral raises.",breathing:"Exhale on every raise.",mistakes:"Swinging, shrugging shoulders, going above shoulder height."}]},
+{name:"CIRCUIT 2",subtitle:"SHOULDERS & CORE",rounds:3,restSeconds:45,exercises:[
+{name:"Decline Push-Ups",reps:"10–12",muscles:"Upper chest, front delts",setup:"Feet elevated, hands slightly wider than shoulders.",execution:"2s negative, explosive up. Angle hits upper chest.",cue:"Aim sternum at the floor between hands.",breathing:"Inhale down, exhale up.",mistakes:"Feet too high, sagging hips."},
+{name:"Band Overhead Press",reps:"12–15",muscles:"All deltoid heads, triceps",setup:"Stand on band, palms forward at shoulder height.",execution:"Press overhead to full lockout. Lower slowly. Core braced.",cue:"Push head through the window of your arms.",breathing:"Exhale press, inhale return.",mistakes:"Arching back, pressing forward."},
+{name:"High Plank Knee-to-Opposite-Elbow",reps:"12 / side",muscles:"Obliques, transverse abs",setup:"High plank, hands under shoulders, core locked.",execution:"Right knee to left elbow, slow cross-body crunch. Alternate.",cue:"The intention to reach drives the rotation.",breathing:"Exhale across, inhale return.",mistakes:"Rushing, hips rocking."},
+{name:"Russian Twists",reps:"20 total",muscles:"Obliques, rectus abdominis",setup:"Seated, knees bent, feet off ground, lean back 45°.",execution:"Touch hands to floor each side. Each touch = 1 rep.",cue:"Rotate from ribcage, not just arms.",breathing:"Exhale each rotation.",mistakes:"Only moving arms, feet on ground."}]},
+{name:"FINISHER",subtitle:"CORE BURN",rounds:2,restSeconds:30,exercises:[
+{name:"Plank Knee-to-Elbow (same side)",reps:"10 / side",muscles:"Obliques, hip flexors",setup:"High plank, hands under shoulders.",execution:"Right knee to right elbow outside body. Squeeze. Return.",cue:"Crunch sideways toward elbow.",breathing:"Exhale crunch, inhale return.",mistakes:"Hips rotating open, rushing."},
+{name:"Hollow Body Hold",reps:"30 seconds",muscles:"Deep abs, hip flexors",setup:"On back, arms overhead, legs straight. Lower back to floor.",execution:"Lift arms, shoulders, legs off floor. Hold. Back stays pressed down.",cue:"Be a banana — long, curved, rigid.",breathing:"Short controlled breaths.",mistakes:"Lower back arching off floor."}]}]},
+{id:"B",title:"PULL + BICEPS",focus:"Back · Rear Delts · Biceps · Grip",circuits:[
+{name:"CIRCUIT 1",subtitle:"VERTICAL PULL",rounds:4,restSeconds:60,exercises:[
+{name:"Pull-Ups (shoulder width)",reps:"5–6",muscles:"Lats, teres major, biceps",setup:"Pronated grip, shoulder-width. Full dead hang.",execution:"Chin over bar, squeeze lats 1s. Lower over 3s to dead hang.",cue:"Drive elbows down toward hips.",breathing:"Exhale up, inhale down.",mistakes:"Kipping, not full dead hang."},
+{name:"Chin-Ups (supinated)",reps:"5–7",muscles:"Biceps, lower lats",setup:"Palms facing you, shoulder-width. Dead hang.",execution:"Pull leading with chest. Squeeze biceps at top. 3s negative.",cue:"Curl the bar to your collarbone.",breathing:"Exhale up, inhale down.",mistakes:"Half reps, excessive kipping."},
+{name:"Band Pull-Aparts",reps:"15–20",muscles:"Rear delts, rhomboids, mid traps",setup:"Band at shoulder height, straight arms, palms down.",execution:"Pull apart squeezing shoulder blades. Band to chest. Return.",cue:"Squeeze a finger between your shoulder blades.",breathing:"Exhale apart, inhale return.",mistakes:"Bending elbows, shrugging."}]},
+{name:"CIRCUIT 2",subtitle:"BACK WIDTH & BICEPS",rounds:3,restSeconds:45,exercises:[
+{name:"Wide-Grip Pull-Ups",reps:"4–6",muscles:"Upper lats, teres minor, rear delts",setup:"Wide pronated grip. Dead hang.",execution:"Chest to bar. Wider = harder. Control the negative.",cue:"Pull the bar apart as you go up.",breathing:"Exhale up, inhale down.",mistakes:"Not wide enough, momentum."},
+{name:"Band Bicep Curls",reps:"15–18",muscles:"Biceps, brachialis",setup:"Stand on band, palms up, arms extended.",execution:"Curl to shoulders, squeeze 1s. Lower over 3s.",cue:"Pin elbows to ribs. Forearms only move.",breathing:"Exhale curl, inhale negative.",mistakes:"Swinging, elbows drifting."},
+{name:"Band Bent-Over Row",reps:"12–15",muscles:"Lats, rhomboids, rear delts",setup:"Stand on band, hinge 45°, back flat.",execution:"Row to lower ribs, squeeze shoulder blades 1s. Control return.",cue:"Lead with elbows. Lawnmower motion.",breathing:"Exhale row, inhale return.",mistakes:"Rounding back, jerking."},
+{name:"Isometric Chin-Up Hold",reps:"15–20 sec",muscles:"Biceps, forearms, lats",setup:"Top of chin-up, palms facing you, chin over bar.",execution:"Hold. Squeeze everything. Then lower as slowly as possible.",cue:"Crush the bar. Chest proud.",breathing:"Short breaths. Don't hold breath.",mistakes:"Chin drops quickly, no slow negative."}]},
+{name:"FINISHER",subtitle:"GRIP & REAR DELTS",rounds:2,restSeconds:30,exercises:[
+{name:"Dead Hang",reps:"30–40 sec",muscles:"Forearms, grip, shoulder decompression",setup:"Pronated grip, shoulder-width. Full bodyweight.",execution:"Active hang — shoulders down. Hold for grip endurance.",cue:"Shoulders in back pockets.",breathing:"Slow deep breaths.",mistakes:"Passive hang, holding breath."},
+{name:"Band Face Pull",reps:"15",muscles:"Rear delts, external rotators",setup:"Band over bar at head height. Step back for tension.",execution:"Pull to face, elbows high, split band around head.",cue:"Finish in a double bicep pose.",breathing:"Exhale pull, inhale return.",mistakes:"Pulling to chest, elbows low."}]}]},
+{id:"C",title:"LEGS + FULL BODY",focus:"Quads · Glutes · Core · Integrated",circuits:[
+{name:"CIRCUIT 1",subtitle:"LOWER BODY",rounds:3,restSeconds:60,exercises:[
+{name:"Bulgarian Split Squat",reps:"10 / leg",muscles:"Quads, glutes, hip flexors",setup:"Rear foot on chair. Front foot flat, torso upright.",execution:"Lower to parallel. Drive up through front heel. All reps one side.",cue:"Sit straight down, not forward.",breathing:"Inhale down, exhale up.",mistakes:"Knee caving in, leaning forward."},
+{name:"Squat Pulse (bottom third)",reps:"15",muscles:"Quads (constant tension)",setup:"Feet shoulder-width, toes out. Arms forward.",execution:"Squat to parallel, stay low, pulse 6 inches. Never above halfway.",cue:"Stay in the pain cave.",breathing:"Quick controlled breaths.",mistakes:"Coming up too high, shifting to toes."},
+{name:"Band Good Mornings",reps:"12–15",muscles:"Hamstrings, glutes, lower back",setup:"Band behind neck, stand on it shoulder-width.",execution:"Hip hinge back, torso nearly parallel. Drive hips forward.",cue:"Push butt toward wall behind you.",breathing:"Inhale hinge, exhale stand.",mistakes:"Rounding back, bending knees too much."},
+{name:"Single-Leg Calf Raise",reps:"15 / side",muscles:"Gastrocnemius, soleus",setup:"One foot, other hooked behind. Hold for balance.",execution:"Full tiptoe, squeeze 1s. Lower slowly.",cue:"Push floor away with ball of foot.",breathing:"Exhale up, inhale down.",mistakes:"Bouncing, incomplete range."}]},
+{name:"CIRCUIT 2",subtitle:"INTEGRATED POWER",rounds:3,restSeconds:45,exercises:[
+{name:"Jump Squats",reps:"10",muscles:"Quads, glutes, calves (explosive)",setup:"Feet shoulder-width, toes slightly out.",execution:"Squat to parallel, explode upward. Land soft, immediately descend.",cue:"Quiet landings.",breathing:"Inhale squat, exhale jump.",mistakes:"Landing straight legs, shallow squat."},
+{name:"Push-Up to Pike",reps:"8–10",muscles:"Chest, shoulders, core",setup:"Push-up position, hands shoulder-width.",execution:"Push-up → walk back to pike → pike push-up → walk forward. 1 rep.",cue:"Flow between positions with control.",breathing:"Exhale on each press.",mistakes:"Rushing, losing core tightness."},
+{name:"Pull-Up (mixed grip)",reps:"4–5 / grip",muscles:"Lats, biceps (asymmetric)",setup:"One hand over, one under. Shoulder-width.",execution:"Chin over bar. 4–5 reps, switch grips, 4–5 more.",cue:"Pull evenly — resist twisting.",breathing:"Exhale up, inhale down.",mistakes:"Twisting, not switching."},
+{name:"High Plank Knee-to-Opposite-Elbow",reps:"12 / side",muscles:"Obliques, transverse abs",setup:"High plank, core locked.",execution:"Cross-body crunch, slow. 2s each direction.",cue:"Reach knee to opposite elbow.",breathing:"Exhale across, inhale return.",mistakes:"Rushing, hips rocking."}]},
+{name:"FINISHER",subtitle:"CORE DEFINITION",rounds:2,restSeconds:30,exercises:[
+{name:"Russian Twists",reps:"24 total",muscles:"Obliques, rectus abdominis",setup:"Seated, feet elevated, lean back 45°.",execution:"Rotate to touch floor each side.",cue:"Rotate from ribcage.",breathing:"Exhale each rotation.",mistakes:"Only moving arms."},
+{name:"Plank Knee-to-Elbow (same side)",reps:"10 / side",muscles:"Obliques, hip flexors",setup:"High plank.",execution:"Knee to same-side elbow, outside body. Squeeze. Return.",cue:"Crunch sideways.",breathing:"Exhale crunch, inhale return.",mistakes:"Hips open, rushing."},
+{name:"Dead Bug",reps:"10 / side",muscles:"Deep abs, coordination",setup:"On back, arms up, knees 90°. Lower back pressed down.",execution:"Extend opposite arm and leg, hover above floor. Return. Alternate.",cue:"Lower back glued to floor.",breathing:"Exhale extend, inhale return.",mistakes:"Back arching, too fast."}]}]}
+];
 
-const DAYS=[{id:"A",title:"PUSH + CORE",focus:"Chest · Shoulders · Triceps · Abs",circuits:[{name:"CIRCUIT 1",subtitle:"CHEST & SHOULDERS",rounds:3,restSeconds:60,exercises:[{name:"Wide Push-Ups",reps:"12–15",muscles:"Outer chest, front delts",setup:"Hands 1.5× shoulder width, fingers pointed slightly outward. Body straight from head to heels.",execution:"Lower yourself over 3 seconds until chest nearly touches the floor. Push up explosively. Don't let hips sag or pike up.",cue:"Imagine spreading the floor apart with your hands as you push up.",breathing:"Inhale on the way down, exhale as you push up.",mistakes:"Flaring elbows to 90° (keep them ~45°), sagging lower back, incomplete range of motion."},{name:"Diamond Push-Ups",reps:"10–12",muscles:"Inner chest, triceps",setup:"Hands together under your chest, index fingers and thumbs forming a diamond shape. Elbows close to your body.",execution:"Lower chest to your hands, keeping elbows tracking back along your ribs — not flaring out. Press back up to full lockout.",cue:"Squeeze your chest at the top like you're trying to crush something between your pecs.",breathing:"Inhale down, exhale up.",mistakes:"Elbows flaring wide (defeats the purpose), hands too far forward, not reaching full depth."},{name:"Pike Push-Ups (feet elevated)",reps:"8–10",muscles:"Anterior deltoids, upper chest, triceps",setup:"Feet on a chair or bed. Walk hands back until your body forms an inverted V. Hips high, head between arms.",execution:"Bend elbows and lower the top of your head toward the floor between your hands. Press back up to straight arms.",cue:"Think of pressing the floor away from you, not pushing yourself up.",breathing:"Inhale as head lowers, exhale as you press up.",mistakes:"Not enough hip angle (turns into a decline push-up instead), looking forward instead of down."},{name:"Band Front + Lateral Raise",reps:"10+10",muscles:"Front & side deltoids",setup:"Stand on the center of the band, feet hip-width. Hold ends with arms at your sides, slight bend in elbows.",execution:"10 front raises then immediately 10 lateral raises. No rest between.",cue:"Lead with your pinky finger on the lateral raises — tips the shoulder into better activation.",breathing:"Exhale on every raise, inhale on the return.",mistakes:"Using momentum/swinging, shrugging shoulders up to ears, lifting above shoulder height."}]},{name:"CIRCUIT 2",subtitle:"SHOULDERS & CORE",rounds:3,restSeconds:45,exercises:[{name:"Decline Push-Ups",reps:"10–12",muscles:"Upper chest, front deltoids",setup:"Feet elevated on chair/bed, hands on floor slightly wider than shoulders. Body in a straight line angled downward.",execution:"Lower chest toward the floor with a 2-second negative. Push up powerfully.",cue:"Aim your sternum at the floor between your hands.",breathing:"Inhale down, exhale up.",mistakes:"Feet too high (turns into a pike), sagging hips, bouncing at the bottom."},{name:"Band Overhead Press",reps:"12–15",muscles:"All three deltoid heads, triceps",setup:"Stand on band, feet shoulder-width. Bring band to shoulder height, palms facing forward, elbows at 90°.",execution:"Press straight overhead until arms are fully extended. Lower slowly back to shoulder height. Keep core braced.",cue:"Push your head 'through the window' of your arms at the top.",breathing:"Exhale on the press, inhale on the return.",mistakes:"Arching lower back (brace abs hard), pressing forward instead of straight up, incomplete lockout."},{name:"High Plank Knee-to-Opposite-Elbow",reps:"12 / side",muscles:"Obliques, transverse abs, hip flexors",setup:"High plank position — hands under shoulders, body straight, core locked.",execution:"Bring right knee to left elbow in a slow, controlled cross-body crunch. Return to plank. Alternate sides.",cue:"Try to touch your knee to the opposite elbow — the intention drives the rotation.",breathing:"Exhale as knee drives across, inhale as you return.",mistakes:"Rushing (kills the anti-rotation benefit), hips rocking side to side, shoulders drifting forward."},{name:"Russian Twists",reps:"20 total",muscles:"Obliques, rectus abdominis",setup:"Sit on the floor, knees bent, feet off the ground. Lean back ~45°. Hands together in front of chest.",execution:"Rotate your torso to touch hands to the floor on each side. Each touch = 1 rep.",cue:"Eyes and chest follow your hands — rotate from the ribcage, not just the arms.",breathing:"Exhale on each rotation.",mistakes:"Only moving arms (not rotating torso), feet on the ground (too easy), rounding the back."}]},{name:"FINISHER",subtitle:"CORE BURN",rounds:2,restSeconds:30,exercises:[{name:"Plank Knee-to-Elbow (same side)",reps:"10 / side",muscles:"Obliques, hip flexors, serratus anterior",setup:"High plank. Hands directly under shoulders, feet hip-width.",execution:"Bring right knee to right elbow on the outside of your body. Squeeze oblique at the top. Return slowly.",cue:"Imagine touching your knee to the outside of your elbow — crunch sideways.",breathing:"Exhale on the crunch, inhale on the return.",mistakes:"Letting hips rotate open, rushing through reps, shifting weight to one hand."},{name:"Hollow Body Hold",reps:"30 seconds",muscles:"Deep abs, hip flexors, quads",setup:"Lie on back. Arms overhead, legs straight. Press lower back firmly into the floor.",execution:"Lift arms, shoulders, and legs off the floor. Hold. Lower back MUST stay pressed into the floor.",cue:"Imagine you're a banana — long, curved, rigid. Squeeze everything.",breathing:"Short, controlled breaths. Don't hold your breath.",mistakes:"Lower back arching off floor (#1 mistake — raise legs higher to fix), chin tucked too hard, holding breath."}]}]},{id:"B",title:"PULL + BICEPS",focus:"Back · Rear Delts · Biceps · Grip",circuits:[{name:"CIRCUIT 1",subtitle:"VERTICAL PULL",rounds:4,restSeconds:60,exercises:[{name:"Pull-Ups (shoulder width)",reps:"5–6",muscles:"Lats, teres major, biceps, forearms",setup:"Hang from bar with pronated grip (palms away), hands shoulder-width. Full dead hang.",execution:"Pull until chin clears the bar. Squeeze lats at top for 1 second. Lower over 3 seconds to full dead hang.",cue:"Drive your elbows down toward your hips, not back behind you.",breathing:"Exhale as you pull up, inhale as you lower.",mistakes:"Kipping/swinging, not reaching full dead hang, chin jutting forward."},{name:"Chin-Ups (supinated)",reps:"5–7",muscles:"Biceps, lower lats, brachialis",setup:"Palms facing you, hands shoulder-width or slightly narrower. Full dead hang.",execution:"Pull up leading with your chest. Squeeze biceps hard at the top. Lower with control over 3 seconds.",cue:"Imagine curling the bar down to your collarbone.",breathing:"Exhale up, inhale down.",mistakes:"Half reps (not going to full hang), excessive kipping, leaning back too far."},{name:"Band Pull-Aparts",reps:"15–20",muscles:"Rear deltoids, rhomboids, middle traps",setup:"Hold band at shoulder height with straight arms, hands shoulder-width apart. Palms down.",execution:"Pull the band apart by squeezing shoulder blades together until band touches chest. Return slowly.",cue:"Pretend someone has a finger on your spine between your shoulder blades — squeeze it.",breathing:"Exhale as you pull apart, inhale on return.",mistakes:"Bending elbows (keep arms straight), shrugging shoulders up, too narrow a grip."}]},{name:"CIRCUIT 2",subtitle:"BACK WIDTH & BICEPS",rounds:3,restSeconds:45,exercises:[{name:"Wide-Grip Pull-Ups",reps:"4–6",muscles:"Upper lats, teres minor, rear delts",setup:"Hands well outside shoulder width, pronated grip. Full dead hang.",execution:"Pull up, aiming to bring chest to bar. Wider grip = harder. Lower with control.",cue:"Imagine pulling the bar apart as you pull yourself up.",breathing:"Exhale up, inhale down.",mistakes:"Not going wide enough, shortened range of motion, relying on momentum."},{name:"Band Bicep Curls",reps:"15–18",muscles:"Biceps, brachialis",setup:"Stand on band with feet hip-width. Hold ends with palms up, arms fully extended.",execution:"Curl both hands to shoulders. Squeeze hard at top for 1 second. Lower over 3 seconds.",cue:"Pin your elbows to your ribs. Only your forearms should move.",breathing:"Exhale as you curl up, inhale on the slow negative.",mistakes:"Swinging body for momentum, elbows drifting forward, fast/uncontrolled lowering."},{name:"Band Bent-Over Row",reps:"12–15",muscles:"Lats, rhomboids, rear delts, biceps",setup:"Stand on band, feet hip-width. Hinge forward at hips ~45°, back flat.",execution:"Row band to lower ribs, squeezing shoulder blades together. Hold 1 second. Lower with control.",cue:"Lead with your elbows, not your hands. Imagine starting a lawnmower.",breathing:"Exhale on the row, inhale on the return.",mistakes:"Rounding the back, standing too upright, jerking the band up."},{name:"Isometric Chin-Up Hold",reps:"15–20 sec",muscles:"Biceps, forearms, lats (isometric)",setup:"Pull yourself to top of a chin-up position (palms facing you, chin over bar).",execution:"Hold that top position. Squeeze everything. When you can't hold, lower as slowly as possible.",cue:"Crush the bar with your grip. Keep chest proud and chin above bar.",breathing:"Short controlled breaths. Don't hold your breath.",mistakes:"Chin dropping below bar too quickly, forgetting the slow negative after the hold."}]},{name:"FINISHER",subtitle:"GRIP & REAR DELTS",rounds:2,restSeconds:30,exercises:[{name:"Dead Hang",reps:"30–40 sec",muscles:"Forearms, grip, shoulders (decompression)",setup:"Hang from bar, pronated grip, shoulder-width. Full body weight.",execution:"Active hang — pull shoulders slightly down (away from ears). Hold. Builds climbing grip endurance.",cue:"Shoulders in your back pockets, not up by your ears.",breathing:"Slow, deep breaths. Relax everything except grip and shoulder engagement.",mistakes:"Passive hang (shoulders shrugging up), holding breath, gripping too narrow."},{name:"Band Face Pull",reps:"15",muscles:"Rear delts, external rotators, middle traps",setup:"Loop band over pull-up bar at head height. Grab both ends, step back until tension.",execution:"Pull toward your face, splitting band to either side of your head. Elbows high, squeeze shoulder blades.",cue:"Finish with a double bicep pose — that's the end position.",breathing:"Exhale on the pull, inhale on the return.",mistakes:"Pulling to chest instead of face, elbows dropping low, not enough external rotation."}]}]},{id:"C",title:"LEGS + FULL BODY",focus:"Quads · Glutes · Core · Integrated Strength",circuits:[{name:"CIRCUIT 1",subtitle:"LOWER BODY STRENGTH",rounds:3,restSeconds:60,exercises:[{name:"Bulgarian Split Squat",reps:"10 / leg",muscles:"Quads, glutes, hip flexors (stretch)",setup:"Stand ~2 feet in front of a chair. Place top of one foot on chair behind you. Front foot flat, torso upright.",execution:"Lower until front thigh is parallel to floor. Drive up through front heel explosively. All reps one leg, then switch.",cue:"Imagine sitting straight down into a hole, not lunging forward.",breathing:"Inhale as you lower, exhale as you drive up.",mistakes:"Front knee caving inward, leaning forward too much, back foot bearing too much weight."},{name:"Squat Pulse (bottom third)",reps:"15",muscles:"Quads (constant tension)",setup:"Feet shoulder-width, toes slightly out. Arms in front for balance.",execution:"Squat to parallel and stay there. Pulse up and down ~6 inches. Never come above halfway point.",cue:"Stay in the pain cave. Your quads should be screaming by rep 10.",breathing:"Quick controlled breaths. Don't hold.",mistakes:"Coming up too high (losing tension), shifting to toes, rounding back."},{name:"Band Good Mornings",reps:"12–15",muscles:"Hamstrings, glutes, lower back",setup:"Loop band behind neck and stand on it with both feet, shoulder-width apart.",execution:"Hinge at hips, pushing butt back, until torso nearly parallel to floor. Drive hips forward to return.",cue:"Push your butt toward the wall behind you. Feel the hamstring stretch.",breathing:"Inhale on the hinge down, exhale as you stand up.",mistakes:"Rounding the back, bending knees too much (it's a hip hinge), looking up."},{name:"Single-Leg Calf Raise",reps:"15 / side",muscles:"Gastrocnemius, soleus",setup:"Stand on one foot. Other foot hooked behind ankle. Hold wall or bar for balance.",execution:"Rise to full tiptoe — squeeze calf hard at top for 1 second. Lower slowly, full stretch at bottom.",cue:"Imagine pushing the floor away with the ball of your foot.",breathing:"Exhale on the rise, inhale on the lower.",mistakes:"Bouncing instead of controlled movement, not reaching full range, going too fast."}]},{name:"CIRCUIT 2",subtitle:"INTEGRATED POWER",rounds:3,restSeconds:45,exercises:[{name:"Jump Squats",reps:"10",muscles:"Quads, glutes, calves (explosive)",setup:"Feet shoulder-width, toes slightly out.",execution:"Squat to parallel, then explode upward into max height jump. Land soft with bent knees, immediately descend.",cue:"Quiet landings — if feet are slapping the floor, absorb more through your legs.",breathing:"Inhale during squat, exhale explosively on jump.",mistakes:"Landing with straight legs (injury risk), shallow squat, not using arms."},{name:"Push-Up to Pike",reps:"8–10",muscles:"Chest, shoulders, core (transition)",setup:"Start in push-up position, hands shoulder-width.",execution:"One full push-up. At top, walk hands back to pike. One pike push-up. Walk forward. That's 1 rep.",cue:"Flow between positions — control and shoulder mobility as much as strength.",breathing:"Exhale on each push-up, inhale during transitions.",mistakes:"Rushing transitions, losing core tightness, shallow push-up or pike."},{name:"Pull-Up (mixed grip)",reps:"4–5 / grip",muscles:"Lats, biceps, forearms (asymmetric)",setup:"One hand pronated (over), one supinated (under). Shoulder-width or slightly wider.",execution:"Pull up to chin over bar. 4–5 reps, then switch grips and do 4–5 more.",cue:"Try to pull evenly — the body will want to twist toward the supinated hand.",breathing:"Exhale up, inhale down.",mistakes:"Twisting body toward one side, not switching grips, shortened range."},{name:"High Plank Knee-to-Opposite-Elbow",reps:"12 / side",muscles:"Obliques, transverse abs, hip flexors",setup:"High plank — hands under shoulders, body straight, core locked.",execution:"Right knee to left elbow, slow cross-body crunch. Return. Alternate. 2 seconds each direction.",cue:"Try to touch knee to opposite elbow — the intention drives the rotation.",breathing:"Exhale as knee drives across, inhale as you return.",mistakes:"Rushing, hips rocking side to side, shoulders drifting forward."}]},{name:"FINISHER",subtitle:"CORE DEFINITION",rounds:2,restSeconds:30,exercises:[{name:"Russian Twists",reps:"24 total",muscles:"Obliques, rectus abdominis",setup:"Sit on floor, knees bent, feet off ground. Lean back ~45°. Hands together.",execution:"Rotate torso to touch hands to floor on each side. Each touch = 1 rep. Feet elevated entire time.",cue:"Eyes and chest follow hands — rotate from ribcage, not just arms.",breathing:"Exhale on each rotation.",mistakes:"Only moving arms, feet on ground (too easy), rounding the back."},{name:"Plank Knee-to-Elbow (same side)",reps:"10 / side",muscles:"Obliques, hip flexors, serratus anterior",setup:"High plank. Hands under shoulders, feet hip-width.",execution:"Right knee to right elbow outside your body. Squeeze oblique. Return slowly. All reps one side, then switch.",cue:"Touch knee to outside of elbow — crunch sideways.",breathing:"Exhale on crunch, inhale on return.",mistakes:"Hips rotating open, rushing, shifting weight to one hand."},{name:"Dead Bug",reps:"10 / side",muscles:"Deep transverse abs, hip flexors, coordination",setup:"Lie on back, arms up toward ceiling, knees 90° (tabletop). Lower back pressed into floor.",execution:"Extend right arm overhead and left leg straight out simultaneously, hovering above floor. Return. Alternate.",cue:"Lower back is glued to floor. The moment it peels up, you've gone too far.",breathing:"Exhale as you extend, inhale as you return.",mistakes:"Lower back arching, moving too fast, incomplete extension."}]}]}];
+// ═══════════════════════════════════════════════════════════════════════
+// EXERCISE DATA — GYM (Minimum Bouldering)
+// ═══════════════════════════════════════════════════════════════════════
+var GYM_DAYS=[
+{id:"A",title:"KB/DB PUSH + TRX CORE",focus:"Chest · Shoulders · Triceps · Abs",circuits:[
+{name:"CIRCUIT 1",subtitle:"PRESS & SHOULDERS",rounds:4,restSeconds:60,exercises:[
+{name:"KB Floor Press",reps:"10–12",muscles:"Chest, triceps",setup:"Lie on floor, KB in each hand at chest height. Knees bent, feet flat.",execution:"Press KBs up to lockout. Lower until triceps touch floor. Pause 1s at bottom.",cue:"Squeeze chest hard at the top. Floor removes bounce.",breathing:"Exhale press, inhale lower.",mistakes:"Flaring elbows too wide, not pausing at floor."},
+{name:"DB Arnold Press",reps:"10–12",muscles:"All 3 deltoid heads, triceps",setup:"Seated or standing. DBs at chest, palms facing you.",execution:"Rotate palms outward as you press overhead. Reverse on return. Full lockout.",cue:"Smooth rotation — palms go from facing you to facing forward at the top.",breathing:"Exhale press, inhale return.",mistakes:"Rushing the rotation, arching back."},
+{name:"KB Single-Arm Row",reps:"10 / side",muscles:"Lats, rhomboids, rear delts, biceps",setup:"Hinge forward, one hand on bench/wall. KB in working hand.",execution:"Row KB to hip, squeezing shoulder blade back. 1s hold. Lower controlled.",cue:"Elbow drives past your ribs. Squeeze like starting a lawnmower.",breathing:"Exhale row, inhale lower.",mistakes:"Rotating torso, using momentum."},
+{name:"Ring Push-Ups",reps:"8–12",muscles:"Chest, triceps, stabilizers",setup:"Rings at hip height. Hands on rings, body straight.",execution:"Lower chest between rings. Push back up. Rings demand constant stabilization.",cue:"Squeeze rings together at the top for extra chest activation.",breathing:"Inhale down, exhale up.",mistakes:"Letting rings flare out, sagging hips."}]},
+{name:"CIRCUIT 2",subtitle:"SHOULDERS & CORE",rounds:3,restSeconds:45,exercises:[
+{name:"KB Halo",reps:"8 / direction",muscles:"Shoulders (all heads), core stability",setup:"Hold KB by horns, bottom up, at chest height.",execution:"Circle KB around your head — tight to your skull. 8 clockwise, 8 counter.",cue:"Keep elbows tight and core braced. Small circles.",breathing:"Steady breathing throughout.",mistakes:"Too wide circles, losing core tension."},
+{name:"TRX Y-Raise",reps:"12–15",muscles:"Rear delts, lower traps, rotator cuff",setup:"Face TRX anchor, lean back, arms straight. Feet forward for difficulty.",execution:"Raise arms into Y position overhead. Squeeze shoulder blades. Return controlled.",cue:"Thumbs up, reach for the sky. Feel your lower traps fire.",breathing:"Exhale raise, inhale return.",mistakes:"Bending elbows, shrugging."},
+{name:"TRX Body Saw",reps:"10–12",muscles:"Entire core, shoulders",setup:"Forearm plank with feet in TRX loops.",execution:"Rock body forward and backward. Maintain rigid plank throughout.",cue:"Your body is a steel beam. Move from the shoulders.",breathing:"Exhale on the forward push.",mistakes:"Hips sagging, rocking too far."},
+{name:"KB Windmill",reps:"6 / side",muscles:"Obliques, shoulders, hip mobility",setup:"KB pressed overhead in one hand. Feet wider than shoulders, toes angled.",execution:"Hinge at hip, slide free hand down front leg. Keep KB arm locked. Return.",cue:"Eyes on the KB the entire time. Move slow.",breathing:"Inhale down, exhale up.",mistakes:"Bending the KB arm, losing eye contact with weight."}]},
+{name:"FINISHER",subtitle:"CORE BURN",rounds:2,restSeconds:30,exercises:[
+{name:"TRX Pike",reps:"10–12",muscles:"Lower abs, hip flexors, shoulders",setup:"Push-up position, feet in TRX loops.",execution:"Pike hips up, pulling feet toward hands. Legs stay straight. Return controlled.",cue:"Hips to the ceiling. Feel your lower abs crunch.",breathing:"Exhale pike, inhale return.",mistakes:"Bending knees (that's a knee tuck, not a pike)."},
+{name:"Ring L-Sit Hold",reps:"15–20 sec",muscles:"Abs, hip flexors, triceps",setup:"Support yourself on rings, arms straight.",execution:"Lift legs to horizontal. Hold. If too hard, tuck knees.",cue:"Push rings down hard. Squeeze quads straight.",breathing:"Short breaths. Don't hold.",mistakes:"Leaning back, bent legs without intent."}]}]},
+{id:"B",title:"PULL + CAMPUS + BICEPS",focus:"Back · Grip Power · Biceps · Forearms",circuits:[
+{name:"CIRCUIT 1",subtitle:"HEAVY PULL",rounds:4,restSeconds:75,exercises:[
+{name:"Ring Pull-Ups",reps:"5–7",muscles:"Lats, biceps, grip, stabilizers",setup:"Rings at height. Dead hang, palms neutral (facing each other).",execution:"Pull up, rotating palms forward at top. Squeeze. Lower over 3s.",cue:"Rings let you find your natural pull path — let them rotate.",breathing:"Exhale up, inhale down.",mistakes:"Not going to dead hang, rushing."},
+{name:"KB Gorilla Row",reps:"8–10 / side",muscles:"Lats, rhomboids, core (anti-rotation)",setup:"Two KBs on floor. Wide stance, hinge over. Grab both handles.",execution:"Row one KB while pressing the other into the floor. Alternate.",cue:"Press the non-working KB down HARD — this fires your core.",breathing:"Exhale each row.",mistakes:"Standing too upright, not pressing down with the other hand."},
+{name:"Campus Board Ladders",reps:"3 ascents",muscles:"Finger strength, contact strength, power",setup:"Start on lowest rung, matched hands.",execution:"Move one hand up to next rung, then the other, ascending. Down-climb controlled.",cue:"Engage before you move — dead-point to the next rung.",breathing:"Breathe between moves.",mistakes:"Jumping rungs too early, no warm-up (do this mid-circuit, not first)."}]},
+{name:"CIRCUIT 2",subtitle:"BICEPS & GRIP",rounds:3,restSeconds:45,exercises:[
+{name:"Ring Bicep Curls",reps:"10–12",muscles:"Biceps, brachialis",setup:"Face TRX anchor, lean back, arms straight, palms up.",execution:"Curl hands to temples, keeping elbows high and fixed. Lower controlled.",cue:"Only your forearms move. Elbows are nailed in space.",breathing:"Exhale curl, inhale extend.",mistakes:"Dropping elbows, using body momentum."},
+{name:"KB Hammer Curl",reps:"12 / side",muscles:"Brachioradialis, biceps, forearms",setup:"KB held by handle vertically at side. Elbow at ribcage.",execution:"Curl KB keeping neutral grip (hammer). Squeeze at top. 3s lower.",cue:"The KB wants to swing — resist with your forearm.",breathing:"Exhale curl, inhale lower.",mistakes:"Swinging KB, elbow leaving ribcage."},
+{name:"Dead Hang (3 grips)",reps:"20s each grip",muscles:"Forearms, finger flexors",setup:"Pronated → Supinated → Neutral (on rings). 20s each, no rest between.",execution:"Active hang, shoulders down. Switch grip at each transition.",cue:"Shoulders out of ears for every grip.",breathing:"Deep slow breaths. Relax body.",mistakes:"Passive shoulders, holding breath."},
+{name:"KB Crush Curl",reps:"12–15",muscles:"Biceps, chest (isometric), grip",setup:"Hold KB by pressing both palms into the bell (not the handle).",execution:"Squeeze KB hard between palms. Curl to chest. Lower controlled.",cue:"If you stop squeezing, you drop the KB. Don't stop.",breathing:"Exhale curl, inhale lower.",mistakes:"Holding by the handle (defeats purpose), relaxing squeeze."}]},
+{name:"FINISHER",subtitle:"GRIP ENDURANCE",rounds:2,restSeconds:30,exercises:[
+{name:"KB Bottom-Up Hold Walk",reps:"20 sec / side",muscles:"Grip, forearm stabilizers, shoulders",setup:"Hold KB bottom-up (bell on top) at shoulder height.",execution:"Stand or walk slowly. Keep KB perfectly balanced. Don't let it tip.",cue:"Crush the handle. If it's wobbling, squeeze harder.",breathing:"Steady breathing.",mistakes:"Letting KB rest against forearm, rushing."},
+{name:"Ring Face Pull",reps:"15",muscles:"Rear delts, external rotators, traps",setup:"Face anchor, lean back, arms extended.",execution:"Pull rings to face, elbows high. External rotate at end. Return.",cue:"Finish in double bicep pose.",breathing:"Exhale pull, inhale return.",mistakes:"Pulling to chest, elbows low."}]}]},
+{id:"C",title:"KB LEGS + TRX FULL BODY",focus:"Quads · Glutes · Posterior Chain · Integration",circuits:[
+{name:"CIRCUIT 1",subtitle:"LOWER BODY STRENGTH",rounds:3,restSeconds:60,exercises:[
+{name:"KB Goblet Squat",reps:"12–15",muscles:"Quads, glutes, core",setup:"Hold KB at chest by horns. Feet shoulder-width, toes out.",execution:"Squat deep — elbows inside knees at bottom. Drive up through heels.",cue:"Elbows push knees apart at the bottom. Chest stays proud.",breathing:"Inhale down, exhale up.",mistakes:"Heels lifting, torso collapsing forward."},
+{name:"KB Romanian Deadlift",reps:"10–12",muscles:"Hamstrings, glutes, lower back",setup:"KB in both hands. Slight knee bend. Feet hip-width.",execution:"Hinge at hips, push butt back, KB slides down shins. Drive hips forward.",cue:"KB stays close to legs. Feel hamstrings load on the way down.",breathing:"Inhale hinge, exhale drive up.",mistakes:"Rounding back, bending knees too much (it's a hinge)."},
+{name:"TRX Pistol Squat (assisted)",reps:"6–8 / side",muscles:"Quads, glutes, balance",setup:"Hold TRX handles. One leg forward, standing on other.",execution:"Squat on one leg, use TRX for light assistance. Drive up.",cue:"Sit back like there's a chair behind you. TRX is just a safety net.",breathing:"Inhale down, exhale up.",mistakes:"Pulling too hard on TRX (it's assistance, not a crutch)."},
+{name:"KB Swing",reps:"15",muscles:"Glutes, hamstrings, core (explosive)",setup:"KB on floor ahead. Hinge, grab handle. Feet wider than shoulders.",execution:"Hike KB back between legs, then snap hips forward explosively. Arms follow.",cue:"It's a hip snap, not an arm lift. Lock out HARD at the top.",breathing:"Exhale sharply at the top.",mistakes:"Squatting instead of hinging, lifting with arms."}]},
+{name:"CIRCUIT 2",subtitle:"INTEGRATED POWER",rounds:3,restSeconds:45,exercises:[
+{name:"KB Clean & Press",reps:"6–8 / side",muscles:"Full body — shoulders, legs, core",setup:"KB on floor. Hinge, grab with one hand.",execution:"Clean to rack position (KB resting on forearm at shoulder). Press overhead. Return.",cue:"Clean is a zip, not a swing. Wrist stays straight in rack.",breathing:"Exhale on press.",mistakes:"Banging wrist on clean, pressing before stable rack."},
+{name:"TRX Atomic Push-Up",reps:"8–10",muscles:"Chest, shoulders, core, hip flexors",setup:"Push-up position, feet in TRX loops.",execution:"Push-up → at top, tuck knees to chest → extend legs. That's 1 rep.",cue:"Explosive knee tuck, controlled extend.",breathing:"Exhale push-up, exhale tuck.",mistakes:"Sagging in push-up, lazy knee tuck."},
+{name:"KB Renegade Row",reps:"8 / side",muscles:"Lats, core (anti-rotation), shoulders",setup:"Push-up position on two KBs. Wide stance for stability.",execution:"Row one KB to hip while pressing other into floor. Alternate.",cue:"Hips CANNOT rotate. Squeeze glutes to lock them.",breathing:"Exhale each row.",mistakes:"Hips twisting, too narrow stance."},
+{name:"Ring Dips",reps:"6–8",muscles:"Chest, triceps, shoulders, stabilizers",setup:"Support on rings, arms straight, body vertical.",execution:"Lower until upper arms parallel. Press back up. Slight forward lean for chest.",cue:"Rings in tight to body. Turn them out at the top for stability.",breathing:"Inhale down, exhale up.",mistakes:"Going too deep too early, rings flaring."}]},
+{name:"FINISHER",subtitle:"CORE & CARRY",rounds:2,restSeconds:30,exercises:[
+{name:"KB Turkish Get-Up",reps:"3 / side",muscles:"Full body, shoulder stability, core",setup:"Lie down, KB pressed up in one hand. Opposite arm out.",execution:"Stand up while keeping KB overhead. Reverse to lie back down. Never rush.",cue:"Eyes on KB at all times. Every position is a pause, not a transition.",breathing:"Breathe at each position.",mistakes:"Rushing, losing eye contact with KB, pressing off free hand."},
+{name:"KB Farmer's Walk",reps:"40 sec",muscles:"Grip, traps, core stabilization",setup:"Heavy KB in each hand (or one per side). Stand tall.",execution:"Walk with perfect posture. Shoulders down, core braced.",cue:"Imagine balancing a book on your head.",breathing:"Normal walking breaths.",mistakes:"Leaning to one side, shrugging shoulders."}]}]}
+];
 
-// ─── STATE ──────────────────────────────────────────────────────────────
-var S={screen:'home',dayIndex:0,energyKey:'normal',stepIndex:0,exercises:[],
-completedSteps:new Set(),showDetail:false,sessionStart:null,
-history:[],restInterval:null,restTotal:0,restRemaining:0};
+// ═══════════════════════════════════════════════════════════════════════
+// EXERCISE DATA — FINGERS (Hangboard protocol)
+// ═══════════════════════════════════════════════════════════════════════
+var FINGER_DAYS=[
+{id:"F1",title:"MAX HANGS",focus:"Peak Finger Strength · 20mm Edges",circuits:[
+{name:"WARM-UP",subtitle:"ACTIVATION",rounds:1,restSeconds:30,exercises:[
+{name:"Jug Hang",reps:"3 × 10 sec",muscles:"General grip activation",setup:"Hang from largest jugs on the hangboard. Full bodyweight.",execution:"3 sets of 10 second hangs. Rest 10 seconds between. Wake the tendons up.",cue:"Easy effort — 50% intensity. Just warming the tissue.",breathing:"Normal breathing.",mistakes:"Going too hard too early, skipping this."},
+{name:"4-Finger Open Hand (30mm)",reps:"3 × 7 sec",muscles:"Finger flexors, forearms",setup:"30mm edge or large pocket. Open hand grip (not crimped).",execution:"Hang 7 seconds, rest 15 seconds. 3 sets. Build toward working intensity.",cue:"Fingers wrap over the edge. No thumb over index.",breathing:"Steady breathing.",mistakes:"Crimping when you should be open-hand."},
+{name:"Finger Rolls",reps:"20 / hand",muscles:"Finger flexors, extensor warm-up",setup:"Light fist, extend fingers fully, curl back to fist.",execution:"Slowly roll fingers open and closed. Feel each joint moving.",cue:"Like squeezing water out of a sponge, then letting it fill back up.",breathing:"Normal breathing.",mistakes:"Rushing, clenching too hard."}]},
+{name:"MAX HANGS",subtitle:"20mm HALF-CRIMP",rounds:1,restSeconds:30,exercises:[
+{name:"Max Hang Set 1",reps:"10 sec hang",muscles:"Finger flexors (max recruitment)",setup:"20mm edge. Half-crimp grip. Full bodyweight (add weight if <80% effort).",execution:"Hang for 10 seconds at ~90% effort. If you can do 12s easily, add weight.",cue:"Half-crimp: fingers at 90°, thumb NOT over fingers.",breathing:"Steady breathing. Don't hold breath.",mistakes:"Full crimping (thumb over), going to absolute failure."},
+{name:"Rest 3 minutes",reps:"180 sec rest",muscles:"Full recovery between max efforts",setup:"Shake hands out. Walk around. Stay warm.",execution:"THIS REST IS CRITICAL. Max hangs require full neural recovery.",cue:"If you feel ready at 2 minutes, wait the extra minute anyway.",breathing:"Relax.",mistakes:"Cutting rest short — this kills the training effect."},
+{name:"Max Hang Set 2",reps:"10 sec hang",muscles:"Finger flexors (max recruitment)",setup:"Same 20mm edge, half-crimp.",execution:"Same protocol. If form degrades, stop the session.",cue:"Same quality as Set 1. If it's harder, that's normal.",breathing:"Steady.",mistakes:"Compensating with body swing."},
+{name:"Rest 3 minutes",reps:"180 sec rest",muscles:"Recovery",setup:"Same as before.",execution:"Shake out, stay warm.",cue:"Patience is the training.",breathing:"Relax.",mistakes:"Rushing."},
+{name:"Max Hang Set 3",reps:"10 sec hang",muscles:"Finger flexors",setup:"Same edge, same grip.",execution:"Final max effort. If you can't hold 8 seconds, skip this set.",cue:"Quality over quantity.",breathing:"Steady.",mistakes:"Grinding through bad form."},
+{name:"Rest 3 minutes",reps:"180 sec rest",muscles:"Recovery",setup:"Shake out.",execution:"Rest.",cue:"You're done with max hangs after the next set.",breathing:"Relax.",mistakes:"Rushing."},
+{name:"Max Hang Set 4",reps:"10 sec hang",muscles:"Finger flexors",setup:"Same edge. Last one.",execution:"Give it your best. 4 quality sets is plenty for max hangs.",cue:"Last one. Make it count.",breathing:"Steady.",mistakes:"Going to absolute failure."}]},
+{name:"REPEATERS",subtitle:"ENDURANCE FINISH",rounds:1,restSeconds:30,exercises:[
+{name:"Repeaters (20mm)",reps:"7s on / 3s off × 6",muscles:"Finger endurance, local forearm endurance",setup:"Same 20mm edge. Half-crimp. Bodyweight only.",execution:"Hang 7 seconds, rest 3 seconds. Repeat 6 times = 1 set. Do 3 sets with 2 min rest.",cue:"The last 2 reps should be desperate. If they're easy, add weight next time.",breathing:"Exhale through the burn.",mistakes:"Using a smaller edge (keep it 20mm, volume is the stimulus here)."},
+{name:"Open Hand Repeaters (25mm)",reps:"7s on / 3s off × 6",muscles:"Open hand finger strength",setup:"25mm edge. Open hand (no crimp). 3 sets, 2 min rest.",execution:"Same 7:3 protocol. Open hand forces different tendon loading.",cue:"Fight the urge to crimp when it gets hard.",breathing:"Breathe through it.",mistakes:"Switching to half-crimp when tired."},
+{name:"Finger Extensor Work",reps:"20 / hand",muscles:"Finger extensors (antagonist balance)",setup:"Rubber band around all 5 fingertips (or just open/close against resistance).",execution:"Spread fingers against resistance. Hold 2 seconds open. Close. Repeat.",cue:"This prevents climber's elbow. Don't skip it.",breathing:"Normal.",mistakes:"Skipping this — extensor balance prevents injury."}]}]},
+{id:"F2",title:"DENSITY HANGS",focus:"Endurance · Time Under Tension · All Grips",circuits:[
+{name:"WARM-UP",subtitle:"ACTIVATION",rounds:1,restSeconds:30,exercises:[
+{name:"Jug Hang",reps:"3 × 10 sec",muscles:"General activation",setup:"Largest jugs. Full bodyweight.",execution:"3 × 10s with 10s rest. Easy effort.",cue:"50% intensity.",breathing:"Normal.",mistakes:"Too hard too early."},
+{name:"Shoulder Circles on Bar",reps:"10 / direction",muscles:"Rotator cuff, shoulder mobility",setup:"Hang from bar, slight bend in elbows.",execution:"Small circles with body — forward 10, backward 10.",cue:"Tiny circles. Activate the stabilizers.",breathing:"Normal.",mistakes:"Circles too big, swinging."}]},
+{name:"DENSITY SET 1",subtitle:"HALF-CRIMP LADDER",rounds:1,restSeconds:45,exercises:[
+{name:"30mm Half-Crimp",reps:"20 sec hang",muscles:"Finger flexors (endurance)",setup:"30mm edge, half-crimp. Bodyweight.",execution:"Hang 20 seconds. This is warm-up density.",cue:"Relaxed grip — minimum force needed to stay on.",breathing:"Slow deep breaths.",mistakes:"Death-gripping."},
+{name:"25mm Half-Crimp",reps:"15 sec hang",muscles:"Finger flexors",setup:"Step down to 25mm. Same grip.",execution:"15 seconds. Harder edge, less time.",cue:"Relax everything except your fingers.",breathing:"Steady.",mistakes:"Holding breath."},
+{name:"20mm Half-Crimp",reps:"10 sec hang",muscles:"Finger flexors (peak)",setup:"20mm edge. Your working edge.",execution:"10 seconds. This should be challenging.",cue:"Quality hang — no swinging, no readjusting.",breathing:"Steady.",mistakes:"Readjusting grip mid-hang."},
+{name:"25mm Half-Crimp",reps:"15 sec hang",muscles:"Finger flexors",setup:"Back up to 25mm.",execution:"15 seconds. Recovery ladder.",cue:"Easier edge but you're tired. Focus.",breathing:"Steady.",mistakes:"Relaxing form because edge is bigger."},
+{name:"30mm Half-Crimp",reps:"20 sec hang",muscles:"Finger flexors",setup:"Back to 30mm. Finish the ladder.",execution:"20 seconds to close the ladder.",cue:"Last one of the set. Controlled.",breathing:"Deep breaths.",mistakes:"Dropping off early."}]},
+{name:"DENSITY SET 2",subtitle:"OPEN HAND FOCUS",rounds:1,restSeconds:45,exercises:[
+{name:"30mm Open Hand",reps:"20 sec",muscles:"Open hand finger strength",setup:"30mm, open hand. NO crimping.",execution:"20 seconds. Open hand is harder for most climbers.",cue:"Fingers drape over the edge. Thumb below or beside.",breathing:"Steady.",mistakes:"Reverting to half-crimp."},
+{name:"25mm Open Hand",reps:"12 sec",muscles:"Open hand strength",setup:"25mm, open hand.",execution:"12 seconds. Getting hard now.",cue:"Fight the crimp reflex.",breathing:"Steady.",mistakes:"Crimping."},
+{name:"20mm Open Hand",reps:"8 sec",muscles:"Open hand peak",setup:"20mm, open hand. Very demanding.",execution:"8 seconds. If you can't hold 5s, go back to 25mm.",cue:"If it feels impossible, you're probably crimping unconsciously.",breathing:"Don't hold breath.",mistakes:"Going below 5 seconds — use easier edge instead."},
+{name:"3-Finger Drag (25mm)",reps:"10 sec / hand",muscles:"Index-middle-ring strength",setup:"25mm edge, 3 fingers (no pinky), open hand.",execution:"10 seconds per hand. Key climbing grip.",cue:"This grip is used constantly in climbing. Train it.",breathing:"Steady.",mistakes:"Using 4 fingers."}]},
+{name:"COOLDOWN",subtitle:"ANTAGONIST & STRETCH",rounds:1,restSeconds:20,exercises:[
+{name:"Finger Extensor Work",reps:"20 / hand",muscles:"Finger extensors",setup:"Rubber band or spread against resistance.",execution:"Spread, hold 2s, close. 20 reps.",cue:"Balances the flexor dominance of climbing.",breathing:"Normal.",mistakes:"Skipping this."},
+{name:"Wrist Flexor Stretch",reps:"30 sec / side",muscles:"Forearm flexors",setup:"Arm out, fingers pointing down, pull back with other hand.",execution:"Hold stretch 30 seconds. Don't bounce.",cue:"Feel the stretch in the meaty part of your forearm.",breathing:"Slow deep breaths into the stretch.",mistakes:"Bouncing, going too aggressive."},
+{name:"Prayer Stretch",reps:"30 sec",muscles:"Wrist extensors, forearms",setup:"Palms together, fingers up, push hands down below chest.",execution:"Hold 30 seconds. Wrists should feel a gentle stretch.",cue:"Keep palms fully touching as you lower hands.",breathing:"Relax into it.",mistakes:"Fingers separating, forcing too hard."}]}]}
+];
+
+// ═══════════════════════════════════════════════════════════════════════
+// STATE & HELPERS
+// ═══════════════════════════════════════════════════════════════════════
+var S={screen:'home',mode:'home',dayIndex:0,energyKey:'normal',stepIndex:0,exercises:[],
+  completedSteps:new Set(),showDetail:false,sessionStart:null,
+  history:[],restInterval:null,restTotal:0,restRemaining:0};
+
+function getDays(){return S.mode==='home'?HOME_DAYS:S.mode==='gym'?GYM_DAYS:FINGER_DAYS}
+function getModeColor(){return MODES[S.mode].color}
 
 function buildList(di,ek){
-var day=DAYS[di],p=ENERGY[ek],list=[];
-day.circuits.forEach(function(c,ci){
-var rounds=Math.max(1,c.rounds+p.roundOffset);
-var rest=c.restSeconds+p.restOffset;
-for(var r=0;r<rounds;r++){
-c.exercises.forEach(function(ex,ei){
-list.push({name:ex.name,reps:scaleReps(ex.reps,p.repMult),muscles:ex.muscles,
-setup:ex.setup,execution:ex.execution,cue:ex.cue,breathing:ex.breathing,mistakes:ex.mistakes,
-circuitName:c.name,circuitSubtitle:c.subtitle,round:r+1,totalRounds:rounds,
-restSeconds:rest,isLastInRound:ei===c.exercises.length-1,isLastRound:r===rounds-1});
-});
-}
-});
-return list;
+  var day=getDays()[di],p=ENERGY[ek],list=[];
+  day.circuits.forEach(function(c){
+    var rnds=Math.max(1,c.rounds+p.roundOffset);
+    var rest=c.restSeconds+p.restOffset;
+    for(var r=0;r<rnds;r++){
+      c.exercises.forEach(function(ex,ei){
+        list.push({name:ex.name,reps:scaleReps(ex.reps,p.repMult),muscles:ex.muscles,
+          setup:ex.setup,execution:ex.execution,cue:ex.cue,breathing:ex.breathing,mistakes:ex.mistakes,
+          circuitName:c.name,circuitSubtitle:c.subtitle,round:r+1,totalRounds:rnds,
+          restSeconds:rest,isLastInRound:ei===c.exercises.length-1,isLastRound:r===rnds-1});
+      });
+    }
+  });
+  return list;
 }
 
-function playBeep(f,d,c){try{var x=new(window.AudioContext||window.webkitAudioContext)();for(var i=0;i<c;i++){var o=x.createOscillator(),g=x.createGain();o.connect(g);g.connect(x.destination);o.frequency.value=f;o.type='square';g.gain.value=.15;var s=x.currentTime+i*.3;o.start(s);o.stop(s+d/1000);}}catch(e){}}
-function loadHistory(){try{S.history=JSON.parse(localStorage.getItem('wk-hist-v2')||'[]')}catch(e){S.history=[]}}
-function saveHistory(){try{localStorage.setItem('wk-hist-v2',JSON.stringify(S.history))}catch(e){}}
+function playBeep(f,d,c){try{var x=new(window.AudioContext||window.webkitAudioContext)();for(var i=0;i<c;i++){var o=x.createOscillator(),g=x.createGain();o.connect(g);g.connect(x.destination);o.frequency.value=f;o.type='square';g.gain.value=.15;var s=x.currentTime+i*.3;o.start(s);o.stop(s+d/1000)}}catch(e){}}
+function loadHistory(){try{S.history=JSON.parse(localStorage.getItem('wk-h-v3')||'[]')}catch(e){S.history=[]}}
+function saveHistory(){try{localStorage.setItem('wk-h-v3',JSON.stringify(S.history))}catch(e){}}
 function $(id){return document.getElementById(id)}
 
-// ─── SCREENS ────────────────────────────────────────────────────────────
-function showScreen(n){
-document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
-var el=$(n==='history'?'history-screen':n);
-if(el)el.classList.add('active');
-S.screen=n;window.scrollTo(0,0);
+// ═══════════════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════════════
+function showScreen(n){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});$(n==='history'?'history-screen':n).classList.add('active');S.screen=n;window.scrollTo(0,0)}
+
+function renderModes(){
+  var row=$('mode-row');row.innerHTML='';
+  ['home','gym','fingers'].forEach(function(k){
+    var m=MODES[k],active=S.mode===k;
+    var btn=document.createElement('button');btn.className='mode-btn';
+    btn.style.background=active?m.color+'20':'transparent';
+    btn.style.color=active?m.color:'var(--text-muted)';
+    btn.innerHTML=m.icon+' '+m.label;
+    btn.onclick=function(){S.mode=k;renderHome()};
+    row.appendChild(btn);
+  });
 }
 
 function renderEnergy(){
-var row=$('energy-row');row.innerHTML='';
-['fresh','normal','tired'].forEach(function(k){
-var p=ENERGY[k],active=S.energyKey===k;
-var btn=document.createElement('button');
-btn.className='energy-btn';
-btn.style.background=active?p.color+'12':'var(--surface)';
-btn.style.borderColor=active?p.color:'var(--border)';
-btn.innerHTML='<div class="energy-icon">'+p.icon+'</div><div class="energy-name" style="color:'+(active?p.color:'var(--text-dim)')+'">'+p.label+'</div><div class="energy-desc" style="color:'+(active?'var(--text)':'var(--text-muted)')+'">'+p.desc+'</div>';
-btn.onclick=function(){S.energyKey=k;renderHome()};
-row.appendChild(btn);
-});
+  var row=$('energy-row');row.innerHTML='';
+  ['fresh','normal','tired'].forEach(function(k){
+    var p=ENERGY[k],active=S.energyKey===k;
+    var btn=document.createElement('button');btn.className='energy-btn';
+    btn.style.background=active?p.color+'12':'var(--surface)';
+    btn.style.borderColor=active?p.color:'var(--border)';
+    btn.innerHTML='<div class="energy-icon">'+p.icon+'</div><div class="energy-name" style="color:'+(active?p.color:'var(--text-dim)')+'">'+p.label+'</div><div class="energy-desc" style="color:'+(active?'var(--text)':'var(--text-muted)')+'">'+p.desc+'</div>';
+    btn.onclick=function(){S.energyKey=k;renderHome()};
+    row.appendChild(btn);
+  });
 }
 
 function renderHome(){
-renderEnergy();
-var c=$('day-buttons');c.innerHTML='';
-var ep=ENERGY[S.energyKey];
-DAYS.forEach(function(day,i){
-var total=day.circuits.reduce(function(s,ci){return s+ci.exercises.length*Math.max(1,ci.rounds+ep.roundOffset)},0);
-var btn=document.createElement('button');
-btn.className='day-btn';
-btn.innerHTML='<div class="day-btn-top"><div><div class="day-btn-label"><span class="day-btn-id">'+day.id+'</span><span class="day-btn-title">'+day.title+'</span></div><div class="day-btn-focus">'+day.focus+'</div><div class="day-btn-meta">'+total+' exercises · '+day.circuits.length+' circuits</div></div><div class="day-btn-arrow">›</div></div>';
-btn.onclick=function(){startWorkout(i)};
-c.appendChild(btn);
-});
-$('hist-count').textContent=S.history.length;
-var standalone=window.matchMedia('(display-mode:standalone)').matches||window.navigator.standalone;
-var banner=$('install-banner');
-if(!standalone){banner.classList.add('show');$('install-text').innerHTML=/android/i.test(navigator.userAgent)?'Tap <strong>⋮ menu</strong> → <strong>"Add to Home screen"</strong>':'Tap <strong>Share</strong> → <strong>"Add to Home Screen"</strong>';}
-else banner.classList.remove('show');
-showScreen('home');
+  renderModes();renderEnergy();
+  var mc=getModeColor();
+  $('mode-desc').textContent=MODES[S.mode].desc;
+  $('mode-desc').style.color=mc+'90';
+  var c=$('day-buttons');c.innerHTML='';
+  var days=getDays(),ep=ENERGY[S.energyKey];
+  days.forEach(function(day,i){
+    var total=day.circuits.reduce(function(s,ci){return s+ci.exercises.length*Math.max(1,ci.rounds+ep.roundOffset)},0);
+    var btn=document.createElement('button');btn.className='day-btn';
+    btn.innerHTML='<div class="day-btn-top"><div><div class="day-btn-label"><span class="day-btn-id" style="color:'+mc+'">'+day.id+'</span><span class="day-btn-title">'+day.title+'</span></div><div class="day-btn-focus">'+day.focus+'</div><div class="day-btn-meta">'+total+' exercises · '+day.circuits.length+' blocks</div></div><div class="day-btn-arrow" style="color:'+mc+'60">›</div></div>';
+    btn.onclick=function(){startWorkout(i)};
+    c.appendChild(btn);
+  });
+  $('hist-count').textContent=S.history.length;
+  showScreen('home');
 }
 
 function renderWorkout(){
-var day=DAYS[S.dayIndex],ex=S.exercises[S.stepIndex];if(!ex)return;
-var progress=S.exercises.length>0?Math.round(S.completedSteps.size/S.exercises.length*100):0;
-var ep=ENERGY[S.energyKey];
-$('wk-topbar-center').innerHTML='<span class="wk-day-label">DAY '+day.id+'</span><span class="wk-energy-tag" style="color:'+ep.color+';background:'+ep.color+'15">'+ep.label+'</span>';
-$('wk-step-count').textContent=(S.stepIndex+1)+'/'+S.exercises.length;
-$('wk-progress-bar').style.width=progress+'%';
-$('wk-circuit-info').innerHTML='<span class="wk-circuit-tag">'+ex.circuitName+'</span><span class="wk-circuit-sub">'+ex.circuitSubtitle+'</span><span class="wk-round-tag">ROUND '+ex.round+'/'+ex.totalRounds+'</span>';
-$('wk-name').textContent=ex.name;
-$('wk-muscles').textContent=ex.muscles;
-$('wk-reps').textContent=ex.reps;
-S.showDetail=false;
-var tog=$('wk-detail-toggle');tog.textContent='▸ SHOW FORM GUIDE';tog.classList.remove('open');
-var det=$('wk-detail');det.classList.remove('open');
-var sections=[{l:'SETUP',t:ex.setup,c:'var(--blue)'},{l:'EXECUTION',t:ex.execution,c:'var(--green-bright)'},{l:'CUE',t:ex.cue,c:'var(--amber)'},{l:'BREATHING',t:ex.breathing,c:'var(--text-dim)'},{l:'AVOID',t:ex.mistakes,c:'var(--red)'}];
-det.innerHTML=sections.map(function(s){return '<div class="wk-detail-section"><div class="wk-detail-label" style="color:'+s.c+'">'+s.l+'</div><div class="wk-detail-text">'+s.t+'</div></div>'}).join('');
-showScreen('workout');
+  var day=getDays()[S.dayIndex],ex=S.exercises[S.stepIndex];if(!ex)return;
+  var prog=S.exercises.length>0?Math.round(S.completedSteps.size/S.exercises.length*100):0;
+  var ep=ENERGY[S.energyKey],mc=getModeColor();
+  $('wk-topbar-center').innerHTML='<span style="color:'+mc+';font-size:13px;font-weight:800;letter-spacing:2px">'+day.id+'</span><span style="color:'+ep.color+';font-size:9px;font-weight:700;letter-spacing:1px;background:'+ep.color+'15;padding:2px 6px;border-radius:3px">'+ep.label+'</span><span style="color:'+mc+'80;font-size:9px;font-weight:700;letter-spacing:1px;background:'+mc+'15;padding:2px 6px;border-radius:3px">'+MODES[S.mode].label+'</span>';
+  $('wk-step-count').textContent=(S.stepIndex+1)+'/'+S.exercises.length;
+  $('wk-progress-bar').style.width=prog+'%';
+  $('wk-circuit-info').innerHTML='<span class="wk-circuit-tag" style="background:'+mc+'15;border:1px solid '+mc+'50;color:'+mc+'">'+ex.circuitName+'</span><span class="wk-circuit-sub">'+ex.circuitSubtitle+'</span><span class="wk-round-tag">RND '+ex.round+'/'+ex.totalRounds+'</span>';
+  $('wk-name').textContent=ex.name;
+  $('wk-muscles').textContent=ex.muscles;
+  $('wk-reps').textContent=ex.reps;
+  $('wk-done-btn').style.background=mc;
+  S.showDetail=false;
+  var tog=$('wk-detail-toggle');tog.textContent='▸ SHOW FORM GUIDE';tog.classList.remove('open');
+  var det=$('wk-detail');det.classList.remove('open');
+  var secs=[{l:'SETUP',t:ex.setup,c:'var(--blue)'},{l:'EXECUTION',t:ex.execution,c:mc},{l:'CUE',t:ex.cue,c:'var(--amber)'},{l:'BREATHING',t:ex.breathing,c:'var(--text-dim)'},{l:'AVOID',t:ex.mistakes,c:'var(--red)'}];
+  det.innerHTML=secs.map(function(s){return '<div class="wk-detail-section"><div class="wk-detail-label" style="color:'+s.c+'">'+s.l+'</div><div class="wk-detail-text">'+s.t+'</div></div>'}).join('');
+  showScreen('workout');
 }
 
 function renderHistory(){
-var list=$('hist-list');
-if(!S.history.length){list.innerHTML='<div class="hist-empty">No sessions recorded yet.<br>Complete a workout to see your history here.</div>';showScreen('history');return}
-var grouped={};
-S.history.forEach(function(h){var d=new Date(h.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});if(!grouped[d])grouped[d]=[];grouped[d].push(h)});
-list.innerHTML=Object.entries(grouped).reverse().map(function(pair){var date=pair[0],sessions=pair[1];
-return '<div class="hist-group"><div class="hist-date">'+date.toUpperCase()+'</div>'+sessions.map(function(s){
-var eTag=s.energy&&ENERGY[s.energy]?'<span class="hist-energy-tag" style="color:'+ENERGY[s.energy].color+'">'+ENERGY[s.energy].label+'</span>':'';
-return '<div class="hist-entry"><div><span class="hist-day-id">DAY '+s.day+'</span><span class="hist-day-title">'+s.title+'</span>'+eTag+'</div><div style="text-align:right"><div class="hist-status '+(s.completed?'done':'partial')+'">'+(s.completed?'COMPLETED':s.progress+'%')+'</div><div class="hist-duration">'+s.duration+'</div></div></div>'}).join('')+'</div>'}).join('');
-showScreen('history');
+  var list=$('hist-list');
+  if(!S.history.length){list.innerHTML='<div class="hist-empty">No sessions yet.</div>';showScreen('history');return}
+  var grouped={};
+  S.history.forEach(function(h){var d=new Date(h.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});if(!grouped[d])grouped[d]=[];grouped[d].push(h)});
+  list.innerHTML=Object.entries(grouped).reverse().map(function(p){return '<div class="hist-group"><div class="hist-date">'+p[0].toUpperCase()+'</div>'+p[1].map(function(s){
+    var mc=MODES[s.mode]?MODES[s.mode].color:'#E4A832';
+    var ec=s.energy&&ENERGY[s.energy]?ENERGY[s.energy].color:'#999';
+    return '<div class="hist-entry"><div><span style="color:'+mc+';font-weight:800;font-size:14px;margin-right:6px">'+s.day+'</span><span style="color:var(--text-dim);font-size:10px">'+s.title+'</span><span style="color:'+ec+';font-size:8px;font-weight:700;margin-left:6px;letter-spacing:1px">'+((s.energy&&ENERGY[s.energy])?ENERGY[s.energy].label:'')+'</span><span style="color:'+mc+'80;font-size:8px;font-weight:700;margin-left:4px;letter-spacing:1px">'+((s.mode&&MODES[s.mode])?MODES[s.mode].label:'')+'</span></div><div style="text-align:right"><div style="color:'+(s.completed?'var(--green-bright)':'var(--red)')+';font-size:11px;font-weight:700">'+(s.completed?'DONE':s.progress+'%')+'</div><div style="color:var(--text-muted);font-size:9px;margin-top:2px">'+s.duration+'</div></div></div>'}).join('')+'</div>'}).join('');
+  showScreen('history');
 }
 
 function renderComplete(){
-var day=DAYS[S.dayIndex],ep=ENERGY[S.energyKey];
-var dur=S.sessionStart?Math.round((Date.now()-S.sessionStart)/60000):0;
-$('complete-sub').textContent='DAY '+day.id+' — '+day.title;
-$('complete-energy').textContent=ep.icon+' '+ep.label+' MODE';
-$('complete-energy').style.color=ep.color;
-$('complete-dur').textContent=dur+' minutes';
-showScreen('complete');
+  var day=getDays()[S.dayIndex],ep=ENERGY[S.energyKey],mc=getModeColor();
+  var dur=S.sessionStart?Math.round((Date.now()-S.sessionStart)/60000):0;
+  $('complete-title').style.color=mc;
+  $('complete-sub').textContent=day.id+' — '+day.title;
+  $('complete-energy').textContent=ep.icon+' '+ep.label+' · '+MODES[S.mode].label;
+  $('complete-energy').style.color=ep.color;
+  $('complete-dur').textContent=dur+' minutes';
+  $('complete-btn').style.background=mc;$('complete-btn').style.color='var(--bg)';
+  showScreen('complete');
 }
 
-// ─── REST TIMER ─────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// REST TIMER
+// ═══════════════════════════════════════════════════════════════════════
 function startRest(sec){
-S.restTotal=sec;S.restRemaining=sec;
-$('rest-overlay').classList.add('active');$('rest-overlay').classList.remove('flash');
-updateRest();
-S.restInterval=setInterval(function(){
-S.restRemaining--;
-if(S.restRemaining<=3&&S.restRemaining>0)playBeep(660,100,1);
-if(S.restRemaining<=0){clearInterval(S.restInterval);playBeep(1047,150,3);$('rest-overlay').classList.add('flash');setTimeout(endRest,1200)}
-updateRest();
-},1000);
+  S.restTotal=sec;S.restRemaining=sec;var mc=getModeColor();
+  var ov=$('rest-overlay');ov.classList.add('active');ov.classList.remove('flash');
+  $('rest-number').style.color=mc;$('rest-number').style.textShadow='0 0 30px '+mc+'40';
+  updateRest();
+  S.restInterval=setInterval(function(){
+    S.restRemaining--;
+    if(S.restRemaining<=3&&S.restRemaining>0)playBeep(660,100,1);
+    if(S.restRemaining<=0){clearInterval(S.restInterval);playBeep(1047,150,3);ov.classList.add('flash');setTimeout(endRest,1200)}
+    updateRest();
+  },1000);
 }
 function updateRest(){
-var n=$('rest-number');n.textContent=Math.max(0,S.restRemaining);
-n.classList.toggle('urgent',S.restRemaining<=3);
-var pct=(S.restTotal-S.restRemaining)/S.restTotal*100;
-var bar=$('rest-bar');bar.style.width=pct+'%';
-bar.style.background=S.restRemaining<=3?'var(--red)':'var(--amber)';
+  var n=$('rest-number'),mc=getModeColor();n.textContent=Math.max(0,S.restRemaining);
+  n.classList.toggle('urgent',S.restRemaining<=3);
+  var pct=(S.restTotal-S.restRemaining)/S.restTotal*100;
+  var bar=$('rest-bar');bar.style.width=pct+'%';
+  bar.style.background=S.restRemaining<=3?'var(--red)':mc;
 }
 function endRest(){clearInterval(S.restInterval);$('rest-overlay').classList.remove('active','flash');S.stepIndex++;renderWorkout()}
 
-// ─── ACTIONS ────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════════════════════════════════════
 function startWorkout(di){
-S.dayIndex=di;S.exercises=buildList(di,S.energyKey);S.stepIndex=0;
-S.completedSteps=new Set();S.showDetail=false;S.sessionStart=Date.now();
-renderWorkout();
+  S.dayIndex=di;S.exercises=buildList(di,S.energyKey);S.stepIndex=0;
+  S.completedSteps=new Set();S.showDetail=false;S.sessionStart=Date.now();
+  renderWorkout();if('wakeLock' in navigator)navigator.wakeLock.request('screen').catch(function(){});
 }
 function markDone(){
-S.completedSteps.add(S.stepIndex);var ex=S.exercises[S.stepIndex];
-if(S.stepIndex+1>=S.exercises.length){
-var dur=Math.round((Date.now()-S.sessionStart)/60000);
-S.history.push({date:new Date().toISOString(),day:DAYS[S.dayIndex].id,title:DAYS[S.dayIndex].title,completed:true,progress:100,duration:dur+' min',energy:S.energyKey});
-saveHistory();renderComplete();return;
-}
-if(ex.isLastInRound)startRest(ex.restSeconds);
-else{S.stepIndex++;renderWorkout()}
+  S.completedSteps.add(S.stepIndex);var ex=S.exercises[S.stepIndex];
+  if(S.stepIndex+1>=S.exercises.length){
+    var dur=Math.round((Date.now()-S.sessionStart)/60000);var day=getDays()[S.dayIndex];
+    S.history.push({date:new Date().toISOString(),day:day.id,title:day.title,completed:true,progress:100,duration:dur+' min',energy:S.energyKey,mode:S.mode});
+    saveHistory();renderComplete();return;
+  }
+  if(ex.isLastInRound)startRest(ex.restSeconds);
+  else{S.stepIndex++;renderWorkout()}
 }
 function skipEx(){if(S.stepIndex+1<S.exercises.length){S.stepIndex++;renderWorkout()}}
 function endSession(){
-if(S.completedSteps.size>0){
-var dur=Math.round((Date.now()-S.sessionStart)/60000);
-var prog=Math.round(S.completedSteps.size/S.exercises.length*100);
-S.history.push({date:new Date().toISOString(),day:DAYS[S.dayIndex].id,title:DAYS[S.dayIndex].title,completed:false,progress:prog,duration:dur+' min',energy:S.energyKey});
-saveHistory();
-}
-renderHome();
+  if(S.completedSteps.size>0){
+    var dur=Math.round((Date.now()-S.sessionStart)/60000);var day=getDays()[S.dayIndex];
+    var prog=Math.round(S.completedSteps.size/S.exercises.length*100);
+    S.history.push({date:new Date().toISOString(),day:day.id,title:day.title,completed:false,progress:prog,duration:dur+' min',energy:S.energyKey,mode:S.mode});
+    saveHistory();
+  }
+  renderHome();
 }
 
-// ─── SWIPE ──────────────────────────────────────────────────────────────
+// SWIPE
 var touchX=0;
 document.addEventListener('touchstart',function(e){touchX=e.touches[0].clientX},{passive:true});
 document.addEventListener('touchend',function(e){
-if(S.screen!=='workout')return;
-var d=e.changedTouches[0].clientX-touchX;
-if(Math.abs(d)>60){
-if(d<0&&S.stepIndex+1<S.exercises.length){S.stepIndex++;renderWorkout()}
-else if(d>0&&S.stepIndex>0){S.stepIndex--;renderWorkout()}
-}
+  if(S.screen!=='workout')return;var d=e.changedTouches[0].clientX-touchX;
+  if(Math.abs(d)>60){if(d<0&&S.stepIndex+1<S.exercises.length){S.stepIndex++;renderWorkout()}else if(d>0&&S.stepIndex>0){S.stepIndex--;renderWorkout()}}
 });
 
-// ─── EVENTS ─────────────────────────────────────────────────────────────
+// EVENTS
 $('history-btn').onclick=renderHistory;
 $('hist-back-btn').onclick=renderHome;
 $('wk-end-btn').onclick=endSession;
@@ -387,27 +513,17 @@ $('wk-done-btn').onclick=markDone;
 $('wk-skip-btn').onclick=skipEx;
 $('rest-skip-btn').onclick=endRest;
 $('complete-btn').onclick=renderHome;
-$('clear-btn').onclick=function(){if(confirm('Clear all session history?')){S.history=[];saveHistory();renderHome()}};
+$('clear-btn').onclick=function(){if(confirm('Clear all history?')){S.history=[];saveHistory();renderHome()}};
 $('wk-detail-toggle').onclick=function(){
-S.showDetail=!S.showDetail;
-var t=$('wk-detail-toggle'),d=$('wk-detail');
-t.textContent=S.showDetail?'▾ HIDE FORM GUIDE':'▸ SHOW FORM GUIDE';
-t.classList.toggle('open',S.showDetail);d.classList.toggle('open',S.showDetail);
+  S.showDetail=!S.showDetail;var t=$('wk-detail-toggle'),d=$('wk-detail');
+  t.textContent=S.showDetail?'▾ HIDE FORM GUIDE':'▸ SHOW FORM GUIDE';
+  t.classList.toggle('open',S.showDetail);d.classList.toggle('open',S.showDetail);
 };
 
-// ─── WAKE LOCK ──────────────────────────────────────────────────────────
-var wl=null;
-async function reqWake(){try{if('wakeLock' in navigator)wl=await navigator.wakeLock.request('screen')}catch(e){}}
-document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&S.screen==='workout')reqWake()});
+// SERVICE WORKER
+if('serviceWorker' in navigator){var sw="var C='ct-v3';self.addEventListener('install',function(e){e.waitUntil(caches.open(C).then(function(c){return c.addAll(['/'])}).then(function(){return self.skipWaiting()}))});self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(x){return x!==C}).map(function(x){return caches.delete(x)}))}).then(function(){return self.clients.claim()}))});self.addEventListener('fetch',function(e){e.respondWith(caches.match(e.request).then(function(r){return r||fetch(e.request).then(function(res){if(res.status===200){var c=res.clone();caches.open(C).then(function(cache){cache.put(e.request,c)})}return res}).catch(function(){return caches.match('/')})}))});";navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(function(){})}
 
-// ─── SERVICE WORKER ─────────────────────────────────────────────────────
-if('serviceWorker' in navigator){
-var sw="var C='circuit-v2';self.addEventListener('install',function(e){e.waitUntil(caches.open(C).then(function(c){return c.addAll(['/'])}).then(function(){return self.skipWaiting()}))});self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(x){return x!==C}).map(function(x){return caches.delete(x)}))}).then(function(){return self.clients.claim()}))});self.addEventListener('fetch',function(e){e.respondWith(caches.match(e.request).then(function(r){return r||fetch(e.request).then(function(res){if(res.status===200){var c=res.clone();caches.open(C).then(function(cache){cache.put(e.request,c)})}return res}).catch(function(){return caches.match('/')})}))});";
-var blob=new Blob([sw],{type:'application/javascript'});
-navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(function(){});
-}
-
-// ─── INIT ───────────────────────────────────────────────────────────────
+// INIT
 loadHistory();renderHome();
 </script>
 
