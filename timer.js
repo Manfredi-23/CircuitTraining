@@ -1,154 +1,84 @@
-// =============================================================================
-// timer.js — Rest timer with audio beeps and visual flash
-// =============================================================================
-
 'use strict';
 
 const Timer = (() => {
-
-  let _countdown = null;
-  let _onTick = null;
-  let _onDone = null;
-  let _remaining = 0;
+  let _countdown = null, _onTick = null, _onDone = null, _remaining = 0;
   let _audioCtx = null;
 
-  // -------------------------------------------------------------------------
-  // Audio context (lazy init on first user gesture)
-  // -------------------------------------------------------------------------
   function _getAudioCtx() {
     if (!_audioCtx) {
-      try {
-        _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      } catch(e) {
-        console.warn('7Bit: AudioContext not available');
-      }
+      try { _audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
     }
     return _audioCtx;
   }
 
-  // -------------------------------------------------------------------------
-  // _beep: generate a short beep tone
-  // freq: Hz, duration: ms, volume: 0-1
-  // -------------------------------------------------------------------------
   function _beep(freq, duration, volume) {
-    const ctx = _getAudioCtx();
-    if (!ctx) return;
-
-    const oscillator = ctx.createOscillator();
-    const gainNode = ctx.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(ctx.destination);
-
-    oscillator.type = 'square';
-    oscillator.frequency.setValueAtTime(freq, ctx.currentTime);
-
-    gainNode.gain.setValueAtTime(volume, ctx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration / 1000);
-
-    oscillator.start(ctx.currentTime);
-    oscillator.stop(ctx.currentTime + duration / 1000);
+    const ctx = _getAudioCtx(); if (!ctx) return;
+    const osc  = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(volume, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration/1000);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + duration/1000);
   }
 
-  // -------------------------------------------------------------------------
-  // _warningBeeps: 3 short beeps for warning phase
-  // -------------------------------------------------------------------------
   function _warningBeeps() {
-    _beep(880, 100, 0.3);
-    setTimeout(() => _beep(880, 100, 0.3), 150);
-    setTimeout(() => _beep(880, 100, 0.3), 300);
+    _beep(880, 80, 0.25);
+    setTimeout(() => _beep(880, 80, 0.25), 130);
+    setTimeout(() => _beep(1100, 120, 0.3), 280);
   }
 
-  // -------------------------------------------------------------------------
-  // _doneBeep: longer lower tone for timer complete
-  // -------------------------------------------------------------------------
   function _doneBeep() {
-    _beep(440, 400, 0.5);
-    setTimeout(() => _beep(660, 600, 0.4), 450);
+    _beep(523, 150, 0.4);
+    setTimeout(() => _beep(659, 150, 0.4), 160);
+    setTimeout(() => _beep(784, 300, 0.5), 320);
   }
 
-  // -------------------------------------------------------------------------
-  // _flashScreen: brief visual flash on rest timer screen
-  // -------------------------------------------------------------------------
   function _flashScreen() {
     const flash = document.getElementById('timer-flash');
     if (!flash) return;
     flash.classList.add('flash-active');
-    setTimeout(() => flash.classList.remove('flash-active'), CONFIG.ui.restFlashDuration);
+    setTimeout(() => flash.classList.remove('flash-active'), 300);
   }
 
-  // -------------------------------------------------------------------------
-  // start: begin countdown
-  // seconds: integer, onTick(remaining), onDone()
-  // -------------------------------------------------------------------------
   function start(seconds, onTick, onDone) {
-    stop(); // clear any existing
-    _remaining = seconds;
-    _onTick = onTick;
-    _onDone = onDone;
-
+    stop();
+    _remaining = seconds; _onTick = onTick; _onDone = onDone;
     if (_onTick) _onTick(_remaining);
 
     _countdown = setInterval(() => {
       _remaining -= 1;
 
+      // Warning pulse animation on ring
       if (_remaining === CONFIG.ui.restWarningAt) {
-        _warningBeeps();
-        _flashScreen();
+        _warningBeeps(); _flashScreen();
+        const ring = document.getElementById('rest-ring-fill');
+        if (ring) ring.closest('svg') && ring.closest('svg').classList.add('rest-warning-ring');
       }
 
       if (_onTick) _onTick(_remaining);
 
       if (_remaining <= 0) {
-        stop();
-        _doneBeep();
-        _flashScreen();
+        stop(); _doneBeep(); _flashScreen();
         if (_onDone) _onDone();
       }
     }, 1000);
   }
 
-  // -------------------------------------------------------------------------
-  // stop: clear the countdown interval
-  // -------------------------------------------------------------------------
   function stop() {
-    if (_countdown) {
-      clearInterval(_countdown);
-      _countdown = null;
-    }
+    if (_countdown) { clearInterval(_countdown); _countdown = null; }
   }
 
-  // -------------------------------------------------------------------------
-  // skip: stop timer and immediately call done
-  // -------------------------------------------------------------------------
-  function skip() {
-    stop();
-    if (_onDone) _onDone();
-  }
+  function skip() { stop(); if (_onDone) _onDone(); }
+  function getRemaining() { return _remaining; }
+  function initAudio() { _getAudioCtx(); }
 
-  // -------------------------------------------------------------------------
-  // getRemaining: current seconds remaining
-  // -------------------------------------------------------------------------
-  function getRemaining() {
-    return _remaining;
-  }
-
-  // -------------------------------------------------------------------------
-  // initAudio: call on first user tap to warm up AudioContext
-  // -------------------------------------------------------------------------
-  function initAudio() {
-    _getAudioCtx();
-  }
-
-  // -------------------------------------------------------------------------
-  // formatTime: seconds → "M:SS"
-  // -------------------------------------------------------------------------
   function formatTime(seconds) {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
+    const m = Math.floor(Math.max(0,seconds) / 60);
+    const s = Math.max(0,seconds) % 60;
     return `${m}:${s.toString().padStart(2, '0')}`;
   }
 
   return { start, stop, skip, getRemaining, initAudio, formatTime };
-
 })();
