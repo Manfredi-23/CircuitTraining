@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#E4E2DD">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="7Bit">
+  <meta name="description" content="7Bit — adaptive circuit training for climbers">
+  <title>7Bit</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/home-pushups.png">
+  <link rel="apple-touch-icon" href="assets/home-pushups.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Rest timer flash overlay -->
+<div id="timer-flash" class="timer-flash" aria-hidden="true"></div>
+
+<!-- ==========================================================================
+     HOME SCREEN
+     ========================================================================== -->
+<div data-screen="home" id="home-screen">
+
+  <div class="app-logo-wrap">
+    <img src="assets/logo.svg" alt="7Bit" class="app-logo"
+         onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='block'">
+    <span id="logo-fallback" class="logo-text" style="display:none">7BIT</span>
+    <span class="humor-line" id="humor-line">&nbsp;</span>
+  </div>
+
+  <nav class="mode-tabs" role="tablist" aria-label="Training mode">
+    <button class="mode-tab tab-active" data-mode="HOME" role="tab" aria-selected="true">HOME</button>
+    <button class="mode-tab" data-mode="CAVE" role="tab" aria-selected="false">CAVE</button>
+    <button class="mode-tab" data-mode="HANG" role="tab" aria-selected="false">HANG</button>
+  </nav>
+
+  <div id="derank-banner" class="derank-banner" hidden aria-live="polite">
+    <span class="derank-text" id="derank-text"></span>
+    <button class="derank-dismiss" id="derank-dismiss" aria-label="Dismiss notification">X</button>
+  </div>
+
+  <div class="circuit-card" id="circuit-card"
+       role="button" tabindex="0"
+       aria-label="Start workout — tap to begin, swipe to change circuit">
+
+    <span class="card-num" id="card-num" aria-hidden="true">01</span>
+
+    <div class="card-title-block">
+      <span class="card-title" id="card-title">PUSH + CORE</span>
+      <div class="card-title-divider">
+        <span class="card-subtitle" id="card-subtitle">chest - shoulders - core</span>
+      </div>
+    </div>
+
+    <div class="card-illustration-wrap">
+      <img class="card-illustration" id="card-illustration"
+           src="assets/home-pushups.png" alt="Exercise illustration">
+    </div>
+
+    <div class="energy-tabs" role="tablist" aria-label="Energy level">
+      <button class="energy-tab" data-energy="FRESH" role="tab" aria-selected="false">FRESH</button>
+      <button class="energy-tab tab-active" data-energy="NORMAL" role="tab" aria-selected="true">NORMAL</button>
+      <button class="energy-tab" data-energy="TIRED" role="tab" aria-selected="false">TIRED</button>
+    </div>
+
+    <div class="card-info-bar">
+      <span class="card-duration" id="card-duration">35 min.</span>
+      <div class="circuit-dots" id="circuit-dots" aria-label="Circuit position">
+        <span class="dot dot-filled"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+    </div>
+
+  </div><!-- /circuit-card -->
+
+  <button class="action-btn accent" id="btn-stats">
+    <span>STATS</span>
+    <span class="action-btn-arrow">&rarr;</span>
+  </button>
+
+  <button class="action-btn" id="btn-settings">
+    <span>Settings</span>
+    <span class="action-btn-arrow">&rarr;</span>
+  </button>
+
+</div><!-- /home-screen -->
+
+
+<!-- ==========================================================================
+     WORKOUT SCREEN
+     ========================================================================== -->
+<div data-screen="workout" id="workout-screen" hidden>
+
+  <div class="workout-header">
+    <button class="workout-exit-btn" id="btn-exit" aria-label="Exit workout">EXIT</button>
+    <span class="workout-mode-label" id="workout-mode-label">HOME / 01</span>
+    <span class="workout-energy-badge" id="workout-energy-badge">NORMAL</span>
+    <span class="workout-step" id="workout-step">1 / 6</span>
+  </div>
+
+  <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Workout progress">
+    <div class="progress-fill" id="workout-progress-fill"></div>
+  </div>
+
+  <div class="workout-scroll">
+
+    <span class="workout-round-tag" id="workout-round">Round 1 / 3</span>
+
+    <h2 class="workout-ex-name" id="workout-ex-name" aria-live="polite">—</h2>
+
+    <div class="muscle-tags" id="workout-muscles"></div>
+
+    <div class="workout-reps-display" id="workout-reps" aria-live="polite">—</div>
+    <span class="workout-note" id="workout-note" hidden></span>
+
+    <div class="variation-swap" id="workout-swap" hidden>
+      <button class="btn-swap-variation" id="btn-swap-variation">SWAP</button>
+      <span class="swap-or-label">or:</span>
+      <span class="workout-base-name" id="workout-base-name"></span>
+    </div>
+
+    <div id="form-guide-section" hidden>
+      <div class="form-guide-toggle" id="form-guide-toggle"
+           role="button" tabindex="0" aria-expanded="false" aria-controls="form-guide-content">
+        <button class="btn-form-toggle" id="btn-form-toggle" tabindex="-1">FORM +</button>
+      </div>
+      <div class="form-guide-content" id="form-guide-content" hidden></div>
+    </div>
+
+  </div><!-- /workout-scroll -->
+
+  <div class="workout-actions">
+    <button class="btn-skip" id="btn-skip">SKIP</button>
+    <button class="btn-done" id="btn-done">DONE</button>
+  </div>
+
+</div><!-- /workout-screen -->
+
+
+<!-- ==========================================================================
+     REST SCREEN
+     ========================================================================== -->
+<div data-screen="rest" id="rest-screen" hidden>
+  <span class="rest-label">REST</span>
+  <span class="rest-time" id="rest-time" aria-live="polite" aria-atomic="true">1:00</span>
+  <button class="btn-rest-skip" id="btn-rest-skip">SKIP REST</button>
+</div>
+
+
+<!-- ==========================================================================
+     COMPLETE SCREEN
+     ========================================================================== -->
+<div data-screen="complete" id="complete-screen" hidden>
+
+  <div class="complete-spacer"></div>
+
+  <div class="complete-top">
+    <span class="complete-check" aria-hidden="true">[OK]</span>
+    <h2 class="complete-title">SESSION DONE.</h2>
+  </div>
+
+  <div class="complete-meta">
+    <div class="complete-meta-row">
+      <span class="complete-meta-label">Duration</span>
+      <span class="complete-meta-val" id="complete-duration">—</span>
+    </div>
+    <div class="complete-meta-row">
+      <span class="complete-meta-label">Session</span>
+      <span class="complete-meta-val" id="complete-mode">—</span>
+    </div>
+    <div class="complete-meta-row">
+      <span class="complete-meta-label">Energy</span>
+      <span class="complete-meta-val" id="complete-energy">—</span>
+    </div>
+  </div>
+
+  <div class="levelup-list" id="levelup-list"></div>
+
+  <div class="complete-spacer"></div>
+
+  <button class="btn-complete-done" id="btn-complete-done">DONE</button>
+
+</div><!-- /complete-screen -->
+
+
+<!-- ==========================================================================
+     STATS SCREEN
+     ========================================================================== -->
+<div data-screen="stats" id="stats-screen" hidden>
+
+  <div class="stats-header">
+    <span class="stats-title">STATS</span>
+    <span class="stats-subtitle">Numbers and consequences</span>
+    <button class="btn-stats-back" id="btn-stats-back" aria-label="Back">&larr;</button>
+  </div>
+
+  <div class="stats-scroll">
+
+    <button class="btn-exercises" id="btn-exercises">
+      <span>EXERCISES</span>
+      <span>&rarr;</span>
+    </button>
+
+    <!-- Overall level card -->
+    <div class="stats-overall">
+      <span class="stats-overall-num" id="stats-overall-num" aria-hidden="true">01</span>
+      <p class="stats-interpretation" id="stats-interpretation">Still here.</p>
+      <div class="stats-last-row" id="stats-last-row" hidden>
+        Last: <span class="stats-last-mode" id="stats-last"></span>
+      </div>
+    </div>
+
+    <!-- Muscle list -->
+    <div class="stats-section">
+      <p class="stats-section-title">MUSCLE GROUPS</p>
+      <div class="sort-tabs" role="tablist" aria-label="Sort muscle groups">
+        <button class="sort-tab" data-sort="strongest" role="tab">strongest</button>
+        <button class="sort-tab" data-sort="weakest" role="tab">weakest</button>
+        <button class="sort-tab tab-active" data-sort="recent" role="tab" aria-selected="true">recent</button>
+      </div>
+      <div class="muscle-list" id="muscle-list" role="list"></div>
+    </div>
+
+    <!-- Trend graph -->
+    <div class="stats-section overview-section">
+      <p class="stats-section-title">OVERVIEW</p>
+      <div class="time-tabs" role="tablist" aria-label="Time range">
+        <button class="time-tab tab-active" data-time="7days"  role="tab" aria-selected="true">7days</button>
+        <button class="time-tab" data-time="30days" role="tab">30days</button>
+        <button class="time-tab" data-time="90days" role="tab">90days</button>
+        <button class="time-tab" data-time="total"  role="tab">total</button>
+      </div>
+      <div class="chart-wrap">
+        <canvas class="trend-canvas" id="trend-canvas"></canvas>
+      </div>
+    </div>
+
+  </div><!-- /stats-scroll -->
+
+</div><!-- /stats-screen -->
+
+
+<!-- Scripts — load order: config > data > engine > ui > timer > stats > app -->
+<script src="js/config.js"></script>
+<script src="js/data-home.js"></script>
+<script src="js/data-cave.js"></script>
+<script src="js/data-hang.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/timer.js"></script>
+<script src="js/stats.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
