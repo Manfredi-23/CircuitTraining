@@ -1,69 +1,49 @@
-// =============================================================================
-// sw.js — Service Worker for 7Bit PWA
-// Cache-first for assets, network-first for data
-// =============================================================================
-
-const CACHE_NAME = '7bit-v1';
+const CACHE_NAME = '7bit-v2';
 
 const STATIC_ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './css/style.css',
-  './js/config.js',
-  './js/data-home.js',
-  './js/data-cave.js',
-  './js/data-hang.js',
-  './js/engine.js',
-  './js/ui.js',
-  './js/timer.js',
-  './js/stats.js',
-  './js/app.js',
-  './assets/home-pushups.png',
-  './assets/home-pullups.png',
-  './assets/home-squats.png',
-  './assets/cave-kettlebell.png',
-  './assets/cave-dumbbell.png',
-  './assets/cave-barbell.png',
-  './assets/fingers-maxhangs.png',
-  './assets/fingers-hangboard.png',
-  'https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400;500;600;700&display=swap'
+  './style.css',
+  './config.js',
+  './data-home.js',
+  './data-cave.js',
+  './data-hang.js',
+  './engine.js',
+  './ui.js',
+  './timer.js',
+  './stats.js',
+  './app.js',
+  './home-pushups.png',
+  './home-pullups.png',
+  './home-squats.png',
+  './cave-kettlebell.png',
+  './cave-dumbbell.png',
+  './cave-barbell.png',
+  './fingers-maxhangs.png',
+  './fingers-hangboard.png',
+  './logo.svg'
 ];
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS).catch(err => {
-        console.warn('7Bit SW: some assets failed to cache', err);
-      });
-    })
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(c => c.addAll(STATIC_ASSETS).catch(() => {}))
   );
   self.skipWaiting();
 });
 
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
-      );
-    })
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    )
   );
   self.clients.claim();
 });
 
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      return cached || fetch(event.request).then((response) => {
-        if (response && response.status === 200 && response.type === 'basic') {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-        }
-        return response;
-      });
-    }).catch(() => {
-      return caches.match('./index.html');
-    })
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.match(e.request).then(cached => cached || fetch(e.request))
+      .catch(() => caches.match('./index.html'))
   );
 });

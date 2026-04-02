@@ -17,7 +17,7 @@ const DATA_HOME = [
     title: 'PUSH + CORE',
     subtitle: 'chest - shoulders - core',
     muscles: ['chest','shoulders','core'],
-    illustration: 'assets/home-pushups.png',
+    illustration: 'home-pushups.png',
     duration: 35,
     rounds: 3,
     exercises: [
@@ -176,7 +176,7 @@ const DATA_HOME = [
     title: 'PULL + BICEPS',
     subtitle: 'back - biceps - grip',
     muscles: ['back','biceps','grip'],
-    illustration: 'assets/home-pullups.png',
+    illustration: 'home-pullups.png',
     duration: 35,
     rounds: 3,
     exercises: [
@@ -315,7 +315,7 @@ const DATA_HOME = [
     title: 'LEGS + BODY',
     subtitle: 'legs - glutes - core',
     muscles: ['legs','glutes','core'],
-    illustration: 'assets/home-squats.png',
+    illustration: 'home-squats.png',
     duration: 35,
     rounds: 3,
     exercises: [

@@ -17,7 +17,7 @@ const DATA_CAVE = [
     title: 'PUSH + CORE',
     subtitle: 'chest - shoulders - triceps',
     muscles: ['chest','shoulders','triceps','core'],
-    illustration: 'assets/cave-kettlebell.png',
+    illustration: 'cave-kettlebell.png',
     duration: 45,
     rounds: 3,
     exercises: [
@@ -157,7 +157,7 @@ const DATA_CAVE = [
     title: 'PULL + BICEPS',
     subtitle: 'back - biceps - grip',
     muscles: ['back','biceps','grip'],
-    illustration: 'assets/cave-dumbbell.png',
+    illustration: 'cave-dumbbell.png',
     duration: 45,
     rounds: 3,
     exercises: [
@@ -296,7 +296,7 @@ const DATA_CAVE = [
     title: 'LEGS + BODY',
     subtitle: 'legs - glutes - posterior chain',
     muscles: ['legs','glutes','back'],
-    illustration: 'assets/cave-barbell.png',
+    illustration: 'cave-barbell.png',
     duration: 45,
     rounds: 3,
     exercises: [
