@@ -21,3 +21,8 @@ npm-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# capacitor iOS build artifacts
+ios/App/App/public/
+ios/App/Pods/
+ios/DerivedData/
