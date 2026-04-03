@@ -81,18 +81,18 @@ export default function HomeScreen() {
         </div>
       )}
 
-      {/* Circuit card */}
-      <div
-        {...bind()}
-        key={cardKey}
-        className={`${styles.card} ${styles.cardSlide}`}
-        onClick={handleCardClick}
-        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handleCardClick(); }}
-        role="button"
-        tabIndex={0}
-        aria-label={`Start ${circuit.title} workout`}
-      >
-        <span className={styles.cardNum}>{circuit.circuitNum}</span>
+      {/* Circuit card — keyed wrapper forces remount for slide animation */}
+      <div key={cardKey} className={styles.cardSlide}>
+        <div
+          {...bind()}
+          className={styles.card}
+          onClick={handleCardClick}
+          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handleCardClick(); }}
+          role="button"
+          tabIndex={0}
+          aria-label={`Start ${circuit.title} workout`}
+        >
+          <span className={styles.cardNum}>{circuit.circuitNum}</span>
 
         <div className={styles.titleBlock}>
           <div className={styles.cardTitle}>{circuit.title}</div>
@@ -134,6 +134,7 @@ export default function HomeScreen() {
               <div key={i} className={`${styles.dot}${i < filledDots ? ` ${styles.dotFilled}` : ''}`} />
             ))}
           </div>
+        </div>
         </div>
       </div>
 
