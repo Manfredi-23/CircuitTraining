@@ -1,10 +1,11 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { useStore } from '@/store/store';
 import { getOverallLevel, getStatInterpretation } from '@/core/engine';
 import { getSortedMuscles, getLastSession, getOverallTrendData, getMuscleTrendData, timeFilterToDays } from '@/core/stats';
+import { useSwipe } from '@/hooks/use-swipe';
 import type { SortMode, TimeFilter, MuscleGroup } from '@/core/types';
 import styles from './StatsScreen.module.css';
 
@@ -53,11 +54,14 @@ export default function StatsScreen() {
     return result;
   }, [progress, days, activeChartMuscles]);
 
+  const goBack = useCallback(() => setScreen('home'), [setScreen]);
+  const { bind } = useSwipe({ onSwipeRight: goBack, onSwipeLeft: () => {} });
+
   return (
-    <div className={`screen screen-enter ${styles.screen}`}>
+    <div {...bind()} className={`screen screen-enter ${styles.screen}`}>
       {/* Header */}
       <div className={styles.header}>
-        <button className={styles.btnBack} onClick={() => setScreen('home')}>&larr;</button>
+        <button className={styles.btnBack} onClick={goBack}>&larr;</button>
         <span className={styles.title}>STATS</span>
         <span className={styles.subtitle}>Numbers and consequences</span>
       </div>
