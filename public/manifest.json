@@ -1,0 +1,14 @@
+{
+  "name": "7Bit Circuit Training",
+  "short_name": "7Bit",
+  "description": "Adaptive circuit training for climbers",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#E4E2DD",
+  "theme_color": "#E4E2DD",
+  "icons": [
+    { "src": "/images/home-pushups.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/images/home-pushups.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
