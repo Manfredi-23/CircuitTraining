@@ -1,0 +1,68 @@
+.screen { padding-top: 24px; gap: 14px; }
+
+.header { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.exitBtn { font-weight: 700; font-size: 12px; letter-spacing: 0.08em; color: var(--ink); padding: 8px; margin: -8px -4px -8px -8px; }
+.modeLabel { font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink); flex: 1; text-align: center; }
+.energyBadge { font-weight: 600; font-size: 11px; letter-spacing: 0.06em; color: var(--ink); border: 1.5px solid var(--ink); padding: 3px 8px; border-radius: 4px; }
+.step { font-size: 12px; color: var(--ink-dim); }
+
+.progressBar { width: 100%; height: 3px; background: var(--ink-faint); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+.progressFill { height: 100%; background: var(--ink); border-radius: 2px; transition: width 400ms cubic-bezier(0.22,1,0.36,1); }
+
+.scroll {
+  flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  display: flex; flex-direction: column; gap: 14px; min-height: 0; padding-bottom: 8px;
+}
+
+.roundTag { font-weight: 600; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-dim); flex-shrink: 0; }
+
+.exName { font-weight: 700; font-size: 30px; line-height: 1.05; text-transform: uppercase; color: var(--ink); letter-spacing: -0.02em; }
+.exNameEnter { animation: exNameEnter 260ms cubic-bezier(0.22,1,0.36,1) both; }
+@keyframes exNameEnter {
+  from { opacity:0; transform:translateX(-10px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+
+.muscleTags { display: flex; flex-wrap: wrap; gap: 6px; }
+.muscleTag { font-size: 11px; font-weight: 500; color: var(--ink); border: 1.5px solid var(--ink); padding: 3px 9px; border-radius: 4px; }
+
+.repsDisplay { font-weight: 700; font-size: 72px; line-height: 1; letter-spacing: -0.05em; color: var(--ink); }
+.repsPop { animation: repsPop 300ms cubic-bezier(0.34,1.56,0.64,1) both; }
+@keyframes repsPop {
+  from { opacity:0; transform:scale(0.7); }
+  to   { opacity:1; transform:scale(1); }
+}
+.note { font-size: 12px; color: var(--ink-dim); font-style: italic; }
+
+.variationSwap { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
+.btnSwap { font-size: 12px; font-weight: 700; color: var(--accent); letter-spacing: 0.06em; text-transform: uppercase; padding: 5px 10px; border: 1.5px solid var(--accent); border-radius: 4px; transition: background 100ms ease; }
+.btnSwap:active { background: rgba(230,77,25,0.08); }
+.swapOr { font-size: 12px; color: var(--ink-dim); }
+.baseName { font-size: 12px; color: rgba(24,22,16,0.6); }
+
+.formToggle { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-top: 1px solid var(--ink-faint); cursor: pointer; }
+.btnFormToggle { font-weight: 600; font-size: 12px; letter-spacing: 0.08em; color: var(--ink-dim); text-transform: uppercase; pointer-events: none; transition: color 150ms ease; }
+.formToggle:hover .btnFormToggle { color: var(--ink); }
+
+.formContent { display: flex; flex-direction: column; gap: 14px; padding-bottom: 12px; animation: formExpand 200ms ease both; }
+@keyframes formExpand { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+.formSection { display: flex; flex-direction: column; gap: 5px; }
+.formLabel { font-weight: 700; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.formText { font-weight: 400; font-size: 13px; line-height: 1.55; color: var(--ink); }
+
+.actions { display: flex; gap: 12px; flex-shrink: 0; padding-bottom: env(safe-area-inset-bottom, 0px); }
+.btnSkip {
+  flex: 1; padding: 20px 16px; font-weight: 700; font-size: 15px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  border: 2px solid var(--ink); border-radius: var(--rad-lg); color: var(--ink); background: none;
+  transition: transform 80ms ease, background 80ms ease;
+}
+.btnSkip:active { transform: scale(0.97); background: rgba(24,22,16,0.05); }
+.btnDone {
+  flex: 2; padding: 20px 16px; font-weight: 700; font-size: 15px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  border: 2px solid var(--ink); border-radius: var(--rad-lg);
+  background: var(--ink); color: #E4E2DD;
+  transition: transform 80ms ease, background 80ms ease;
+}
+.btnDone:active { transform: scale(0.97); background: #2d2b22; }

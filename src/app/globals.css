@@ -1,0 +1,88 @@
+/* =============================================================================
+   globals.css — 7Bit Circuit Training
+   Light parchment · Kode Mono · #181610 + #E64D19
+   ============================================================================= */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --bg:         radial-gradient(433.05% 99.29% at 50% 0.71%, #E4E2DD 0%, #B2AD9F 100%);
+  --ink:        #181610;
+  --ink-ghost:  rgba(24,22,16,0.22);
+  --ink-dim:    rgba(24,22,16,0.5);
+  --ink-faint:  rgba(24,22,16,0.1);
+  --accent:     #E64D19;
+  --accent-dim: rgba(230,77,25,0.16);
+  --font:       'Kode Mono', monospace;
+  --rad-lg:     12px;
+  --rad-sm:     6px;
+}
+
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  background-attachment: fixed;
+  color: var(--ink);
+  min-height: 100vh; min-height: 100dvh;
+  overscroll-behavior: none;
+  overflow-x: hidden;
+}
+
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; touch-action: manipulation; }
+img { display: block; max-width: 100%; }
+[hidden] { display: none !important; }
+
+/* Shared screen container */
+.screen {
+  display: flex; flex-direction: column;
+  min-height: 100vh; min-height: 100dvh;
+  width: 100%; max-width: 390px; margin: 0 auto;
+  padding: 48px 24px 32px;
+  gap: 20px;
+}
+
+.screen-enter {
+  animation: screenFadeUp 280ms cubic-bezier(0.22,1,0.36,1) both;
+}
+
+/* Shared keyframes */
+@keyframes screenFadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* Timer flash overlay */
+.timer-flash { position: fixed; inset: 0; background: rgba(230,77,25,0.2); pointer-events: none; opacity: 0; z-index: 200; transition: opacity 60ms; }
+.timer-flash.flash-active { opacity: 1; transition: none; }
+
+/* Settings overlay */
+.overlay-panel {
+  position: fixed; inset: 0; background: rgba(228,226,221,0.97);
+  z-index: 50; display: flex; flex-direction: column;
+  padding: 52px 24px 32px; gap: 20px;
+  font-family: var(--font);
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 250ms ease, transform 250ms cubic-bezier(0.22,1,0.36,1);
+  max-width: 390px; margin: 0 auto;
+}
+.overlay-panel.overlay-enter { opacity: 1; transform: translateY(0); }
+.overlay-header { display: flex; justify-content: space-between; align-items: center; }
+.overlay-close { font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; padding: 8px; margin: -8px; color: var(--ink); }
+.overlay-body { font-size: 13px; color: var(--ink-dim); line-height: 1.6; }
+.overlay-btn {
+  padding: 16px 24px; border: 2px solid var(--ink); border-radius: var(--rad-lg);
+  font-family: inherit; font-weight: 700; font-size: 14px; letter-spacing: 0.06em;
+  text-transform: uppercase; cursor: pointer; background: none; color: var(--ink);
+  transition: transform 80ms ease;
+}
+.overlay-btn:active { transform: scale(0.98); }
+.overlay-footer { font-size: 11px; color: var(--ink-dim); margin-top: auto; opacity: 0.5; }
+
+@media (min-height: 800px) { .screen { padding-top: 56px; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

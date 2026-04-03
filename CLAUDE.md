@@ -4,51 +4,76 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**7Bit Circuit Training** — a Progressive Web App (PWA) for circuit training with XP-based muscle group progression. Built for a single user (climber, 3 days/week, home + gym). Pure vanilla JavaScript, no build tools, no dependencies, no framework. Zero emojis in all code and UI copy.
+**7Bit Circuit Training** — a PWA for circuit training with XP-based muscle group progression. Built for a climber (3 days/week, home + gym). Zero emojis in all code and UI copy.
 
-**Live:** https://manfredi-23.github.io/CircuitTraining/
 **Repo:** github.com/manfredi-23/CircuitTraining
 
-## Development
+## Tech Stack
 
-No build step. To run locally, serve the directory with any HTTP server:
+Next.js 16 (App Router) + TypeScript + React 19. State: Zustand with persist middleware. Charts: Recharts. Gestures: @use-gesture/react. Font: Kode Mono via next/font/google. CSS Modules + global CSS custom properties.
+
+Legacy vanilla JS version preserved in `legacy/` folder for reference.
+
+## Commands
 
 ```bash
-python3 -m http.server 8000
+npm run dev      # Dev server at localhost:3000
+npm run build    # Production build
+npm run start    # Serve production build
 ```
 
-Then open `http://localhost:8000`. No test framework — test manually in browser. Use hard refresh (Cmd+Shift+R) to bypass Service Worker cache during development.
-
-## Deployment
-
-Static files hosted on GitHub Pages. Push to `main` to deploy. No CI/CD pipeline. The Service Worker (`sw.js`) caches all assets for full offline support. After changing files, the SW updates on next page load — users may need two reloads to see changes (SW lifecycle: install → activate → serve).
+No test framework yet — test manually in browser.
 
 ## Architecture
 
-### Script Load Order (matters — no modules/bundler)
+### Directory Structure
 
-`config.js` → `data-home.js` → `data-cave.js` → `data-hang.js` → `engine.js` → `ui.js` → `timer.js` → `stats.js` → `app.js`
+```
+src/
+  core/          # Pure TypeScript, zero React imports (shared with future iOS app)
+    types.ts     # All types and interfaces
+    config.ts    # Central CONFIG object
+    engine.ts    # Training logic: buildList, scaleReps, applyXP, checkDecay, etc.
+    stats.ts     # Trend scoring, chart data generation, muscle list sorting
+    data-home.ts, data-cave.ts, data-hang.ts  # Exercise libraries
+    data-index.ts  # getModeData(mode) helper
+  storage/       # Async storage abstraction (swap localStorage for Supabase later)
+    storage.interface.ts  # IStorageAdapter interface
+    local-storage.adapter.ts
+    index.ts     # Factory: getStorageAdapter() / setStorageAdapter()
+  store/         # Zustand store
+    store.ts     # Combined store with persist middleware
+    slices/      # app-slice, workout-slice, progress-slice, stats-slice
+  hooks/         # React hooks
+    use-timer.ts   # Web Audio beeps + setInterval countdown
+    use-swipe.ts   # @use-gesture/react wrapper
+    use-hydration.ts  # SSR guard for Zustand persist
+    use-audio-init.ts # One-time AudioContext init (iOS)
+    audio-context.ts  # Module-scoped AudioContext singleton
+  components/
+    screens/     # One component + CSS module per screen
+      HomeScreen, WorkoutScreen, RestScreen, CompleteScreen, StatsScreen
+    shared/      # SettingsOverlay, TimerFlash
+  app/
+    layout.tsx   # Root layout: Kode Mono font, metadata, viewport
+    page.tsx     # Screen router based on Zustand screen state
+    globals.css  # CSS custom properties, base resets, shared keyframes
+```
 
-All loaded via `<script>` tags in `index.html`. Scripts depend on globals from earlier scripts.
+### Key Design Decisions
 
-### Module Responsibilities
+- **Core logic is framework-agnostic**: `src/core/` has zero React imports. Engine functions are pure — they take progress/config and return new state. This enables sharing with the future Capacitor/iOS app.
+- **Storage abstraction**: All methods are async (Promise-based). Currently backed by localStorage. To add Supabase later, implement `IStorageAdapter` and call `setStorageAdapter()`.
+- **Single-page app**: No Next.js routes. All screens render in `page.tsx` based on `useStore(s => s.screen)`. Screen switching is managed by Zustand state.
+- **Zustand persist**: Only `progress` and `sessionLog` are persisted (via `partialize`). UI state is transient.
 
-- **config.js** — Central `CONFIG` object: modes, energy levels, 12 muscle groups, XP thresholds, storage keys, humor line pools, UI constants
-- **engine.js** — Training logic: `buildList()`, `scaleReps()`, level/XP calculations, variation selection by muscle level, decay system (-2 XP per 7-day inactivity window)
-- **ui.js** — All `render*()` functions: screen transitions (home → workout → rest → complete → stats), exercise cards, stat lists
-- **stats.js** — Trend scoring (0–100 daily score per muscle group), behavior analysis (completion/energy/frequency modifiers), chart data generation with smoothing
-- **timer.js** — Rest countdown with Web Audio API beeps and screen flash effects
-- **app.js** — Main orchestrator: global state object `S`, event binding, swipe handling, localStorage persistence, init
-- **data-home.js / data-cave.js / data-hang.js** — Exercise libraries for three modes (HOME=bodyweight at home, CAVE=gym equipment, HANG=hangboard)
-- **sw.js** — Service Worker for offline caching
+### State Model (Zustand Store)
 
-### State Model
-
-Single global `S` object in `app.js` holds all runtime state. Persisted to localStorage under keys:
-- `7bit_state` — Current app state
-- `7bit_progress` — Per-muscle-group XP, levels, history (12 groups)
-- `7bit_sessions` — Session log with timestamps, modes, durations
-- `7bit_settings` — User preferences
+Four slices in a single store:
+- **AppSlice**: mode, circuitIndex, energy, screen, humorLine
+- **WorkoutSlice**: circuit, exerciseList, stepIndex, round, currentExercise, swapActive, formGuideOpen
+- **ProgressSlice**: progress (per-muscle XP/history), sessionLog, pendingDecayEvents, sessionLevelUps
+- **StatsSlice**: statsSort, statsTimeFilter, activeChartMuscles, highlightMuscle
 
 ### Three Modes
 
@@ -60,67 +85,32 @@ Single global `S` object in `app.js` holds all runtime state. Persisted to local
 
 ### Progression System
 
-7 levels per muscle group (12 groups: chest, back, shoulders, triceps, biceps, core, obliques, legs, glutes, forearms, grip, fingers). XP thresholds: 0 → 6 → 16 → 30 → 50 → 80 → 120.
+7 levels per muscle group (12 groups). XP thresholds: 0 / 6 / 16 / 30 / 50 / 80 / 120.
 
-**Scaling formula:**
 ```
-final_reps = base_reps × energy_mult × muscle_level_mult
+final_reps = base_reps * energy_mult * muscle_level_mult
 final_rest = base_rest + energy_offset + muscle_level_offset (uses lowest group in circuit)
-variation  = highest where min_level ≤ group_level
+variation  = highest where min_level <= group_level
 ```
 
-**Energy states:** FRESH (×1.2 reps, +0s rest), NORMAL (×1.0, +10s), TIRED (×0.75, +20s, -1 round)
-
-**Decay:** -2 XP all groups per 7-day inactivity window (checked every 10 days). Skip penalty: -1 XP. Can drop levels and lose variation unlocks.
-
-**Variation unlocks:** L1=base exercises, L4=swap to harder variant, L5=new exercise added, L6=advanced variant.
-
-## Exercise Data Format
-
-```javascript
-{
-  id: 'wide-pushup',
-  name: 'Wide Push-Ups',
-  muscles: ['chest', 'shoulders'],
-  baseReps: 12,
-  baseRest: 60,          // seconds
-  unit: 'reps',          // or 'sec' for holds
-  variations: [
-    { minLevel: 1, name: 'Wide Push-Ups' },
-    { minLevel: 4, name: 'Archer Push-Ups' },
-    { minLevel: 6, name: 'Ring Archer Push-Ups' }
-  ],
-  form: {
-    setup: "...",
-    execution: "...",
-    cue: "...",
-    breathing: "...",
-    mistakes: "..."
-  }
-}
-```
-
-Circuits wrap exercises: `{ id, circuitNum, title, subtitle, muscles[], illustration, duration, rounds, exercises[] }`.
+Energy: FRESH (x1.2 reps, +0s rest), NORMAL (x1.0, +10s), TIRED (x0.75, +20s, -1 round).
+Decay: -2 XP all groups per 7-day inactivity window (checked at 10+ days). Skip: -1 XP.
+Variation unlocks: L1=base, L4=harder variant, L5=new exercise, L6=advanced variant.
 
 ## Styling
 
-Single font: **Kode Mono** (Google Fonts, weights 400–700). Mobile-first layout, max-width 390px.
+Kode Mono monospace font. Mobile-first, max-width 390px. CSS Modules per component, global custom properties in `globals.css`.
 
-**Color tokens:**
-- Background: `radial-gradient(433% 99% at 50% 0.71%, #E4E2DD 0%, #B2AD9F 100%)` (warm parchment)
-- Primary ink: `#181610` (near-black, used for text, borders, icons)
-- Accent: `#E64D19` (burnt orange — humor lines, stats border, decline indicators)
-- Ghost: `rgba(24, 22, 16, 0.22)` (circuit number watermark)
+**Color tokens:** `--ink` (#181610), `--accent` (#E64D19), `--bg` (parchment gradient), `--ink-ghost`/`--ink-dim`/`--ink-faint` for opacity variants.
 
-**Key design rules:** No glassmorphism. No dark theme. No per-mode accent colors. Cards are outlined (2px solid #181610), not filled. Tab indicators use bottom-border style (6px active, 2px inactive). Illustrations are pixel-art isometric PNGs in monochrome (#181610 + #808080).
+**Design rules:** No glassmorphism. No dark theme. Cards outlined (2px solid), not filled. Tab indicators use bottom-border style (6px active, 2px inactive).
 
-## Stats System
+## Planned Future Work
 
-Stats page has three sections:
-1. **Overall level** — average of all 12 muscle group levels + dry/ironic interpretation line
-2. **Muscle group list** — sortable (strongest/weakest/recent), each row shows name + level + trend arrow (↑/↓/—)
-3. **Trend graph** — line chart with time filters (7D/30D/90D/ALL), multi-select muscle groups, daily 0–100 score per group based on level + XP progress + behavior modifiers + decay + smoothing
+- **Supabase**: Auth + Postgres DB for multi-user. Swap storage adapter, add API routes.
+- **Vercel deployment**: Connect repo, configure build.
+- **iOS app**: Capacitor wrapper around the web app.
 
 ## Handoff Document
 
-`7bit-handoff-v9.md` contains the complete spec: design system, variation trees for all muscle groups, screen layouts, copy system (humor line pools), and stats specification. Consult it for detailed requirements.
+`7bit-handoff-v9.md` contains the complete spec: design system, variation trees, screen layouts, copy system, stats specification.

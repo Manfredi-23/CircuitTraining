@@ -1,0 +1,117 @@
+/* Logo */
+.logoWrap { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; }
+.logo { width: 120px; height: auto; }
+.humorLine {
+  font-weight: 500; font-size: 12px; color: var(--accent);
+  text-align: center; min-height: 15px;
+  animation: fadeIn 600ms ease 300ms both;
+}
+
+/* Mode tabs */
+.modeTabs { display: flex; width: 100%; flex-shrink: 0; }
+.modeTab {
+  flex: 1; display: flex; justify-content: center; align-items: center;
+  padding: 8px 4px; font-weight: 600; font-size: 16px;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink);
+  border-bottom: 2px solid var(--ink);
+  border-top: none; border-left: none; border-right: none;
+  transition: border-bottom-width 150ms ease;
+  background: none;
+}
+.modeTabActive { border-bottom-width: 6px; }
+
+/* Derank banner */
+.derankBanner {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 16px; border: 2px solid var(--accent); border-radius: 8px;
+  background: rgba(230,77,25,0.04); flex-shrink: 0;
+  animation: slideDown 300ms cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+.derankText { font-weight: 500; font-size: 12px; color: var(--accent); flex: 1; line-height: 1.4; }
+.derankDismiss { font-size: 14px; font-weight: 700; color: var(--accent); padding: 4px 8px; margin: -4px -8px; }
+
+/* Circuit card */
+.card {
+  position: relative; width: 100%; height: 342px;
+  border: 2px solid var(--ink); border-radius: var(--rad-lg);
+  overflow: hidden;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 24px; gap: 8px;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+  flex-shrink: 0; touch-action: pan-y;
+  transition: transform 80ms ease, box-shadow 80ms ease;
+}
+.card:active { transform: scale(0.985); box-shadow: 0 2px 16px rgba(24,22,16,0.12); }
+
+.cardSlide { animation: cardSlide 220ms cubic-bezier(0.22,1,0.36,1) both; }
+@keyframes cardSlide {
+  0%   { opacity:0.4; transform:translateX(18px) scale(0.97); }
+  100% { opacity:1;   transform:translateX(0)    scale(1); }
+}
+
+.cardNum {
+  position: absolute; right: 14px; top: -2px;
+  font-weight: 600; font-size: 98px; line-height: 1.28;
+  letter-spacing: -0.05em; color: var(--ink-ghost);
+  pointer-events: none; z-index: 0; user-select: none;
+}
+
+.titleBlock { position: relative; z-index: 1; display: flex; flex-direction: column; flex-shrink: 0; }
+.cardTitle { font-weight: 700; font-size: 16px; line-height: 20px; text-transform: uppercase; color: var(--ink); margin-bottom: -4px; }
+.titleDivider { display: flex; align-items: center; padding: 4px 0; border-bottom: 2px solid var(--ink); width: 100%; }
+.cardSubtitle { font-weight: 400; font-size: 12px; line-height: 15px; color: var(--ink); flex: 1; }
+
+.illustrationWrap {
+  position: relative; z-index: 1; flex: 1;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 0; pointer-events: none;
+}
+.illustration { max-width: 200px; max-height: 200px; width: auto; height: auto; object-fit: contain; }
+.illusPop { animation: illusPop 350ms cubic-bezier(0.34,1.56,0.64,1) both; }
+@keyframes illusPop {
+  0%   { opacity:0; transform:scale(0.82) translateY(6px); }
+  100% { opacity:1; transform:scale(1)    translateY(0); }
+}
+
+/* Energy tabs */
+.energyTabs { position: relative; z-index: 1; display: flex; width: 100%; flex-shrink: 0; }
+.energyTab {
+  flex: 1; display: flex; justify-content: center; align-items: center;
+  padding: 8px 4px; font-weight: 600; font-size: 16px;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink);
+  border-bottom: 2px solid var(--ink);
+  border-top: none; border-left: none; border-right: none; background: none;
+  transition: border-bottom-width 150ms ease;
+}
+.energyTabActive { border-bottom-width: 6px; }
+
+/* Info bar */
+.infoBar {
+  position: relative; z-index: 1;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 12px; border: 2px solid var(--ink); border-radius: var(--rad-sm); flex-shrink: 0;
+}
+.duration { font-weight: 700; font-size: 12px; color: var(--ink); }
+
+.dots { display: flex; align-items: center; gap: 6px; }
+.dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  border: 1px solid var(--ink); flex-shrink: 0;
+  transition: background 250ms ease, transform 250ms cubic-bezier(0.34,1.56,0.64,1);
+}
+.dotFilled { background: var(--ink); transform: scale(1.1); }
+
+/* Action buttons */
+.actionBtn {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 24px; width: 100%; height: 68px;
+  border: 2px solid var(--ink); border-radius: var(--rad-lg);
+  font-weight: 700; font-size: 16px; color: var(--ink);
+  background: none; cursor: pointer; flex-shrink: 0; letter-spacing: 0.02em;
+  transition: transform 80ms ease, background 100ms ease;
+}
+.actionBtn:active { transform: scale(0.98); background: rgba(24,22,16,0.04); }
+.actionBtnAccent { border-color: var(--accent); color: var(--accent); }
+.actionBtnArrow { font-size: 18px; transition: transform 200ms ease; }
+.actionBtn:hover .actionBtnArrow { transform: translateX(4px); }
