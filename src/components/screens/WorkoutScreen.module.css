@@ -1,4 +1,4 @@
-.screen { padding-top: 24px; gap: 14px; }
+.screen { padding-top: calc(24px + env(safe-area-inset-top, 0px)); gap: 14px; }
 
 .header { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .exitBtn { font-weight: 700; font-size: 12px; letter-spacing: 0.08em; color: var(--ink); padding: 8px; margin: -8px -4px -8px -8px; }

@@ -1,4 +1,4 @@
-.screen { padding-top: 24px; gap: 16px; }
+.screen { padding-top: calc(24px + env(safe-area-inset-top, 0px)); gap: 16px; }
 
 .header { display: flex; align-items: center; flex-shrink: 0; }
 .title { font-weight: 700; font-size: 16px; color: var(--accent); letter-spacing: 0.04em; }
