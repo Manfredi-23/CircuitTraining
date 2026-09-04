@@ -23,7 +23,7 @@ export const DATA_HANG: Circuit[] = [
     illustration: 'maxhangs.svg',
     duration: 35,
     recoveryHours: 48,
-    note: 'Eight hard hangs is the whole session. Adding volume here costs recovery and buys nothing.',
+    note: 'Eight hard hangs is the whole session. Adding volume here costs recovery and buys nothing. Do not run this at all while fingers or wrists are symptomatic: DENSITY is the session for that.',
     exercises: [
       {
         id: 'hang-warmup-pulse',
@@ -74,12 +74,13 @@ export const DATA_HANG: Circuit[] = [
           'When all five sets are clean at 10s with no form breakdown on the last set, '
           + 'add 1-2kg next session. If set 5 fails short, hold the load until it does not.',
         protocolId: 'max-hang',
+        note: 'Twenty millimetres, always. Smaller edges concentrate load over a shorter contact area and are not a testing tool for fingers that are complaining. Any sharpness, tenderness or joint ache: stop the session and do DENSITY instead.',
         variations: [
-          { minLevel: 1, name: 'Half-Crimp 20mm — Assisted', load: 'Pulley assistance to reach a hard 10s' },
-          { minLevel: 3, name: 'Half-Crimp 20mm — Bodyweight', load: 'Bodyweight, 10s hard' },
-          { minLevel: 4, name: 'Half-Crimp 20mm — Weighted', load: '20mm + added weight' },
-          { minLevel: 6, name: 'Half-Crimp 20mm — Heavy', load: '20mm, 130%+ bodyweight' },
-          { minLevel: 7, name: 'Half-Crimp 15mm', load: '15mm edge. Only once 20mm is well past 140%.' },
+          { minLevel: 1, name: 'Half-Crimp 20mm — Build', load: 'Feet assisted. 10s at RPE 7: comfortably hard, never maximal. Live here 6-8 weeks.' },
+          { minLevel: 3, name: 'Half-Crimp 20mm — Bodyweight', load: 'Bodyweight or light assist, 10s at RPE 8' },
+          { minLevel: 4, name: 'Half-Crimp 20mm — Weighted', load: '20mm + weight, 85-90% of tested 10s max' },
+          { minLevel: 6, name: 'Half-Crimp 20mm — Heavy', load: '20mm at 140%+ bodyweight (+25kg at 62kg)' },
+          { minLevel: 7, name: 'Half-Crimp 15mm', load: '15mm. Only past 150% on 20mm, and only after a quiet season.' },
         ],
         form: {
           setup: 'Fingers on the 20mm edge, second knuckles bent to about 90 degrees, first knuckles extended, thumb off. Arms slightly bent, shoulders pulled down and back, ribs down, glutes on.',

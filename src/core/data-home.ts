@@ -280,12 +280,12 @@ export const DATA_HOME: Circuit[] = [
   {
     id: 'home-03', circuitNum: '03',
     title: 'ARMOUR', subtitle: 'antagonist - legs - mobility',
-    focus: 'Pay the bills climbing never pays: pressing, cuff, elbows, legs, hips.',
+    focus: 'Wrists, hips, shoulders. The session that fixes what climbing broke.',
     capacities: ['press', 'shoulder', 'legs', 'mobility'],
     illustration: 'pushups.svg',
     duration: 45,
     recoveryHours: 12,
-    note: 'The least glamorous session and the one that keeps you climbing at 40. Do not skip it.',
+    note: 'Currently the highest-priority session in the programme: wrists are symptomatic and hip mobility is the stated weakness on slabs. Twice a week, minimum.',
     exercises: [
       HOME_WARMUP,
       {
@@ -386,21 +386,28 @@ export const DATA_HOME: Circuit[] = [
         },
       },
       {
-        id: 'home-wrist-armour-03',
-        name: 'Wrist Extensor + Pronator',
+        id: 'home-wrist-block',
+        name: 'Wrist Conditioning',
         capacities: ['shoulder'],
         block: 'PREHAB', intensity: 'EASY',
-        sets: 3, work: 15, unit: 'reps', restSec: 45,
-        load: { kind: 'band', text: 'Band or a light household weight' },
-        progression: 'Reps to 20, then marginally heavier, always with a slow lowering phase.',
+        sets: 3, work: 12, unit: 'reps', restSec: 45,
+        load: { kind: 'added-kg', text: 'Light: a 1-2kg weight, a full bottle, or a band' },
+        progression:
+          'Add reps to 15, then add a very small amount of weight. Slow throughout, '
+          + '3 seconds on every lowering phase. This block gets heavier more slowly '
+          + 'than anything else in the programme.',
         protocolId: 'prehab',
         perSide: true,
+        note:
+          'Four movements, 12 reps each: wrist extension palm-down, wrist flexion '
+          + 'palm-up, radial and ulnar deviation, then slow pronation and supination '
+          + 'holding the weight by one end. Never into pain.',
         form: {
-          setup: 'Forearm on the thigh, wrist over the knee.',
-          execution: 'Fifteen wrist extensions palm-down with a 3s lower, then fifteen slow pronations.',
-          cue: 'The most evidence-supported prevention for climber elbow, and it takes four minutes.',
-          breathing: 'Relaxed.',
-          mistakes: 'Dropping it as soon as the elbow feels fine.',
+          setup: 'Forearm supported on a thigh or table with the wrist just past the edge. Light weight or band in hand.',
+          execution: 'Twelve controlled reps of each of the four movements, with a three-second lowering phase. Then repeat on the other side. Stop a movement immediately if it produces sharp or pinching pain rather than muscular effort.',
+          cue: 'Climbing loads the wrist in one narrow band of positions under heavy crimp and mantle load, and trains nothing else. Steep crimping in particular is hard on the wrist. This block covers every direction the wrist can go, at a load it can actually adapt to.',
+          breathing: 'Relaxed throughout. This should never feel like a lift.',
+          mistakes: 'Going heavy. Rushing the lowering phase. Working into pain in the belief that it is strengthening something. Dropping the block as soon as the symptoms quieten down, which is the point at which it is working.',
         },
       },
       {

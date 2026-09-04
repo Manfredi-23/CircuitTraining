@@ -1,6 +1,7 @@
 # 7BIT — Training Programme Optimisation
 
 **Handover v10 — September 2026**
+*Revised after the athlete questionnaire: sections 2, 6, 7 and 7a.*
 Supersedes the training content in `7bit-handoff-v9.md`. The v9 design system,
 copy system and screen layouts still stand; everything in this document is about
 *what the app prescribes*, not how it looks.
@@ -28,28 +29,90 @@ v9 design is good.
 
 ## 2. The athlete
 
+Assessed by questionnaire, September 2026. No physical testing — every number
+below is self-reported and the ones that matter are flagged as unverified.
+
 | | |
 |---|---|
 | Age / height / weight | 35 / 172cm / 62kg (BMI 21.0) |
-| Redpoint | 7a+ sport, granite and gneiss |
-| Sessions available | 3 per week, plus climbing |
-| Home | Mat, pull-up bar, medium band (no anchor) |
-| Gym (Minimum Bouldering Zurich) | Hangboard, rings, TRX, campus board, KB 12kg, DB, bands + anchors, boulders |
-| Goal | Improve, hard. Not aesthetics. |
+| Climbing for | 4 years |
+| Sport redpoint | 7a in 5-15 tries, best 7b |
+| Sport onsight | 6b |
+| Boulder (Font) | 7a in 5-15 tries, best 7b, flash 6b+ |
+| Strict pull-ups | 8 |
+| One-arm dead hang | 30-45s |
+| Weighted pull-ups | Never done |
+| Hangboard / gym training history | **None** |
+| Sessions per week | **3, all of them climbing** — 2 boulder gym, 1 outdoor lead |
+| Fails on | A single hard move, fingers open. Also backs off mentally. |
+| Pump recovery | Slow — needs long rests |
+| Strong on | Crimps, overhangs |
+| Weak on | Slabs, technical climbing |
+| Hip mobility | Poor |
+| Shoulders | Acceptable |
+| **Current symptoms** | **Fingers and wrists both "worrying me"** |
+| Goal | Get stronger, more comfortable, better shape. No target route or date. |
 
 At BMI 21 there is no weight lever to pull, and pulling one would be a mistake.
 Every gram of progress has to come from force production, tension, capacity and
-skill. That framing drives everything below.
+skill.
 
-### Note on stale data
+### The finger number does not fit
 
-The v9 handoff records 60kg / 173cm, 6b-7b, and "4-7 strict pull-ups". Two of
-those three numbers have since changed. **Treat the pull-up figure as unverified**
-— it is the single most load-bearing assumption in the analysis below, and the
-first thing the new ASSESS session measures. If your real weighted pull-up is
-already near 165% bodyweight, the priority order in section 7 changes.
+The reported figure was **60-61kg, one arm, 10mm edge**. At 62kg bodyweight that
+is 97% of bodyweight through one arm on a 10mm edge.
 
----
+For scale: Lattice's one-arm dataset is measured on a **20mm** edge, and tops out
+around 91% of bodyweight at V11. A 10mm edge produces substantially *lower*
+numbers than 20mm for the same fingers. So as stated, the figure sits beyond
+V11 on a harder edge — while the same athlete does 8 strict pull-ups, has never
+trained fingers systematically, and boulders Font 7a. Those things cannot all be
+true.
+
+The likely explanations, in order:
+
+1. **It was a two-arm measurement.** 61kg across both arms on 10mm is about 98%
+   of bodyweight, which fits a Font 7a boulderer well and is entirely plausible.
+2. **The setup allowed leverage.** A block pull with feet planted and an anchor
+   near the floor lets the legs and trunk contribute, inflating the reading
+   against a true hang.
+3. Different units, or a different edge than remembered.
+
+**Either way the number cannot set training loads**, because it was not measured
+on the 20mm reference edge and nothing on another edge converts cleanly. The
+programme therefore starts at level 1 and the load comes from a proper 20mm
+test later.
+
+### Two answers that reshaped the programme
+
+**"Fingers and wrists are worrying me."** This is the most important line in the
+questionnaire and it overrides the generic prescription. A loading programme
+should not be started on a structure that is already complaining without knowing
+what is complaining. Concretely, until things are quiet:
+
+- No maximal hangs. The MAX HANGS session carries a note saying so.
+- No 10mm or smaller edges, for testing or training. 20mm is the floor.
+- No campus board — already gated, and the gate stays shut.
+- DENSITY hangs become the primary finger tool. Ten minutes at 40% is precisely
+  the low-load, high-frequency loading that irritable tendon responds to, and
+  it is the safest on-ramp available.
+- Wrist conditioning is promoted from one afterthought exercise to a proper
+  four-direction block.
+
+**Get a diagnosis.** Wrist pain in a crimp-and-steep-ground specialist has
+several common causes that want different handling, and none of them are
+distinguishable from a questionnaire. See a physio who treats climbers. The
+programme below is built to be safe while you find out, not to substitute for
+finding out.
+
+**"3 sessions per week — 2 boulder gym, 1 outdoor lead."** The v10 programme was
+written assuming three *spare* slots alongside climbing. There are none. All
+three are already climbing. Adding three structured sessions would put a
+symptomatic pair of hands on six loaded days a week.
+
+So the structure inverts: the strength work rides along with the climbing
+sessions rather than being added to them. Section 6 has the revised week, and a
+new 20-minute CAVE 05 ADD-ON exists specifically for this.
 
 ## 3. Diagnosis: what was wrong with v9
 
@@ -332,6 +395,7 @@ a hard climbing or gym day without competing for tendon recovery.
 | 02 | **POWER** | contact, crimp, pull, tension | Warm-up / limit bouldering 6-7 attempts @180s / campus **or** recruitment pulls / explosive pull-ups / ring toe-hooks / TRX Y-T-W |
 | 03 | **CAPACITY** | forearm, pull, press, legs | Warm-up / repeaters 6x(7:3 x6) @150s / pull-up strength endurance / KB overhead press / split squat / wrist armour |
 | 04 | **ASSESS** | everything | The test battery. Every 6-8 weeks, on a rest day, fresh. |
+| 05 | **ADD-ON** | pull, tension, shoulder | 20 min bolted onto the end of a boulder session. Weighted pull-ups / front lever / cuff. No finger loading. |
 
 ### HANG — 12-45 min, hangboard
 
@@ -359,57 +423,86 @@ is close to zero, and the upside is real.
 
 ## 6. The week
 
-The three training sessions have to fit around climbing without stealing from
-it. A workable default:
+Three climbing sessions are already spoken for. Nothing here adds a fourth
+training day; it bolts short blocks onto what you already do.
 
 ```
-MON   HOME 03 ARMOUR              45 min   (or rest)
-TUE   Climb (bouldering)
-WED   CAVE 01 MAX                 60 min   fingers + heavy pull, fresh
-THU   Rest / HOME 03 ARMOUR
-FRI   Climb, or CAVE 02 POWER
-SAT   Outdoors / CAVE 03 CAPACITY 60 min
+MON   HOME 03 ARMOUR             45 min   wrists, hips, shoulders, legs
+TUE   Boulder gym  + CAVE 05 ADD-ON  20 min   pull-ups, front lever, cuff
+WED   Rest
+THU   Boulder gym  + CAVE 05 ADD-ON  20 min
+FRI   HOME 03 ARMOUR (or HOME 01 TENSION)
+SAT   Outdoor lead
 SUN   Rest
 
-DAILY  HANG 03 DENSITY  10 min, once or twice, at least 6h apart
+DAILY HANG 03 DENSITY   10 min, once or twice, at least 6h apart
 ```
+
+That is three climbing sessions, two short home sessions, two 20-minute gym
+add-ons, and a daily ten-minute finger block. Total added load: about 110
+minutes a week, none of it maximal.
 
 Rules that matter more than the exact days:
 
-1. **48 hours minimum between maximal finger sessions.** CAVE 01, CAVE 02 and
-   HANG 01 all count. The app will tell you.
-2. **Fingers first, always.** Maximal finger work goes at the front of a session
-   or on its own day. Never after climbing.
-3. **Density hangs do not count as a finger day.** That is the point of them.
-4. **Three weeks loading, one week light.** In the light week, halve the sets on
-   PRIMARY blocks and keep everything else. The decay grace period is set to 21
-   days precisely so this costs you nothing.
-5. **Climbing is the priority.** These sessions support climbing; they do not
-   replace it. If a session would wreck tomorrow's climbing day, pick ARMOUR.
+1. **Density hangs are the finger programme for now.** Not max hangs. They do
+   not count as a finger day and can run every day, including climbing days.
+2. **The add-on comes after bouldering, never before.** Bouldering is the finger
+   and power session; the add-on is pulling and tension only, deliberately.
+3. **ARMOUR is the priority session**, not the leftovers one. Wrists are
+   symptomatic and hips are the stated weakness on slabs. Twice a week, minimum.
+4. **48 hours minimum between maximal finger sessions** — once you get to them.
+   Right now nothing in the week qualifies, which is intentional.
+5. **Three weeks loading, one week light.** Halve the PRIMARY sets in the light
+   week. The decay grace period is 21 days so this costs nothing.
+6. **One boulder session a week should be spent on what you are bad at.** See
+   section 7a. This is free grade and it costs no recovery.
 
----
+### Re-entry to maximal finger work
+
+Do not test or max hang until **all** of these are true:
+
+- Fingers and wrists have been symptom-free for at least four weeks.
+- You have been doing density hangs consistently for six to eight weeks.
+- You have a diagnosis, or a physio has cleared you.
+
+Then run CAVE 04 ASSESS on a rest day and let the numbers set the loads.
 
 ## 7. Benchmarks: where to aim
 
-All figures at 62kg bodyweight. Two-arm hang scores are total load (bodyweight
-plus added) divided by bodyweight.
+All figures at 62kg. Two-arm hang scores are total load (bodyweight plus added)
+divided by bodyweight, on a **20mm** flat edge.
 
-### Fingers — 20mm flat edge, half-crimp, 10s
+### Read the finger table off your BOULDER grade, not your route grade
 
-| Standard | % BW | Total | Added |
+Lattice's finger-strength dataset is built against boulder grades. Your boulder
+grades are Font, and **Font 7a is V6** — not V4, which is what you get if you
+read a Font grade as though it were a French sport grade. That mistake
+understates the target by two full grades, and it is the mistake the first
+version of this document made.
+
+| Reading | V-grade | Standard | Added at 62kg |
 |---|---|---|---|
-| V4 (~7a) | 128% | 79.4kg | **+17.4kg** |
-| V5 (~7a+) | 134% | 83.1kg | **+21.1kg** |
-| V6 (~7b/7c) | 140% | 86.8kg | **+24.8kg** |
-| V7 | 146% | 90.5kg | **+28.5kg** |
+| Sport redpoint 7a | V4 | 128% | +17kg |
+| **Boulder Font 7a (your working grade)** | **V6** | **140%** | **+25kg** |
+| Boulder Font 7b (your best) | V8 | 152% | +32kg |
 
-Lattice's two-arm dataset runs from 128% at V4 up in roughly 6-point steps per
-V-grade. Their data is published against boulder grades, so the sport-grade
-column is an approximation for a route-focused climber and is deliberately
-conservative. **Your near-term target is +21kg; the number that would put you on
-7b/7c terrain is +25kg.**
+### What the number actually tells you
 
-### Pulling — weighted pull-up 1RM
+This is a **diagnostic, not a target.** The table says what a V6 climber
+typically hangs. You already boulder V6. So:
+
+- **If you test near 140% (+25kg)**, your fingers are on par with your grade,
+  and the thing holding you back is somewhere else — most likely technique,
+  tactics, head, and forearm capacity.
+- **If you test well below**, your fingers are behind your climbing and finger
+  strength is the lever. Given you have never trained them, this is quite
+  likely.
+- **If you test well above**, you are climbing below your physical potential and
+  the answer is almost entirely technical.
+
+You cannot know which until you test on 20mm — and per section 2, not yet.
+
+### Pulling — weighted pull-up
 
 | Standard | % BW | Added |
 |---|---|---|
@@ -417,35 +510,62 @@ conservative. **Your near-term target is +21kg; the number that would put you on
 | Solid | 140% | +25kg |
 | **Lattice male standard** | **165%** | **+40kg** |
 
-Lattice's analysis of over 700 weighted pull-up assessments found that below
-roughly 160-165% of bodyweight, pulling strength is usually a genuine limiter,
-and above it returns diminish sharply — from V9 to V12, four full grades, the
-average barely moves.
+Eight strict pull-ups puts your estimated 1RM around 125-130% of bodyweight, or
+roughly +16 to +19kg. That is meaningfully below the ~165% threshold where
+Lattice's data shows pulling strength stops limiting climbers.
 
-**This is probably your biggest single lever, and it is the one thing v9's data
-does not let us confirm.** If the "4-7 strict pull-ups" figure still holds, your
-estimated 1RM is around 115% of bodyweight — roughly 50 percentage points below
-the threshold where pull strength stops limiting you. That is a large, cheap,
-trainable gap, and it is why weighted pull-ups appear as PRIMARY work in two
-separate sessions.
-
-Test it in week one before you commit to that priority.
+**This is your best risk-adjusted lever right now.** You have never done a
+weighted pull-up, which means the gains are large, fast, and — crucially —
+available in tissue that is *not* currently complaining. While the fingers get
+eight quiet weeks of density work, the pulling number can move a long way.
 
 ### Everything else
 
-| Test | Developing | Solid | Strong |
-|---|---|---|---|
-| Strict pull-ups | 8 | 15 | 20 |
-| 90-degree lock-off, one arm | 5s | 10s | 15s |
-| Critical force (% of max) | 55% | 63% | 70% |
-| Front lever | tuck | one-leg | straddle |
-| Foot raise height | 65cm | 74cm | 85cm |
+| Test | Developing | Solid | Strong | You |
+|---|---|---|---|---|
+| Strict pull-ups | 8 | 15 | 20 | **8** |
+| One-arm dead hang | 10s | 30s | 45s+ | **30-45s** — strong |
+| 90-degree lock-off, one arm | 5s | 10s | 15s | untested |
+| Critical force (% of max) | 55% | 63% | 70% | untested, probably low |
+| Front lever | tuck | one-leg | straddle | **untrained** |
+| Foot raise height | 65cm | 74cm | 85cm | **poor** |
 
-Run the full battery in CAVE 04 every 6-8 weeks, on a rest day, fully warm.
-Change nothing between tests except your training — same edge, same grip, same
-shoulder position, ideally the same time of day.
+The one-arm hang at 30-45 seconds against only 8 strict pull-ups is an
+interesting split: your grip endurance and shoulder integrity are better than
+your pulling strength. That is a good problem — it means adding load to
+pull-ups is unlikely to be limited by your hands giving out first.
 
----
+## 7a. The thing an app cannot train
+
+Three of your answers point the same direction and it would be dishonest to
+bury it in the training tables:
+
+- Onsight 6b against a 7a redpoint — a four-step gap.
+- "I suck at slabs, and technical climbs."
+- You back off mentally before you fall.
+
+A gap that size, plus a whole style of climbing you avoid, plus falling
+hesitancy, is not a strength problem. Someone who redpoints 7a has the physical
+capacity to onsight well above 6b. The gap is movement repertoire, footwork,
+reading, commitment and falling practice.
+
+**No amount of hangboarding closes it.** Realistically it is worth more grades
+to you over the next year than anything in `src/core/`, and it costs almost no
+recovery, which means it competes with nothing.
+
+What that looks like in practice, and why it is not in the app:
+
+- Spend one boulder session in four on slabs and vertical technical problems.
+  Badly, in public, on purpose.
+- Take practice falls until they are boring. This is a trainable skill with a
+  known method, not a personality trait.
+- Onsight-mileage days: volume at 6a-6b+, many routes, reading from the ground.
+- Consider a few sessions with a coach who watches you climb. Four years in,
+  with self-taught technique and a stated aversion to a whole angle, an outside
+  eye is worth more per hour than any protocol here.
+
+The app tracks `mobility` because it is loadable and measurable. It does not
+track technique, because a rest-timer app has no business pretending to.
 
 ## 8. Recovery and nutrition, briefly
 
@@ -568,14 +688,15 @@ src/core/
   protocols.ts    NEW        14 named protocols with exact parameters, rationale
                              and source. Referenced by id from the exercise data.
   benchmarks.ts   NEW        8 testable standards with published reference
-                             values, the athlete profile, and helpers converting
-                             % bodyweight to kilos at 62kg.
+                             values, the athlete profile and its standing
+                             constraints, Font and French grade maps, and
+                             helpers converting % bodyweight to kilos at 62kg.
   engine.ts       REWRITTEN  scaleWork / scaleSets / scaleRest / resolveLoadText
                              / applyIntensityCap / buildList with gate resolution
                              / estimateDuration / getReadiness / getLimiter.
                              Capacity-specific decay. Skip and quit cost nothing.
   data-home.ts    REWRITTEN  3 sessions: TENSION, PULL, ARMOUR.
-  data-cave.ts    REWRITTEN  4 sessions: MAX, POWER, CAPACITY, ASSESS.
+  data-cave.ts    REWRITTEN  5 sessions: MAX, POWER, CAPACITY, ASSESS, ADD-ON.
   data-hang.ts    REWRITTEN  3 sessions: MAX HANGS, CAPACITY, DENSITY.
   stats.ts        UPDATED    Capacity terminology.
 
@@ -609,19 +730,20 @@ Vitest around `src/core/` is the obvious next step and is listed below.
 
 ## 12. Open questions for you
 
-1. **What is your actual weighted pull-up max?** Section 7 leans on an estimate
-   from a stale note. Run CAVE 04 in week one.
-2. **What can you hang on a 20mm edge right now?** Everything in the finger
-   programme is expressed as a percentage of that number, and the app cannot
-   prescribe a real load until you record it.
-3. **Do you want the density hangs?** They need a small edge at home (~CHF 50).
-   Without one, HANG 03 is gym-only and loses most of its value.
-4. **Is 7a+ a redpoint or an onsight?** It changes the endurance emphasis
-   materially. This document assumes redpoint.
-5. **Any current niggles?** Fingers, elbows, shoulders. The gates and prehab are
-   generic right now; a known issue would change the prescription.
-
----
+1. **What is actually wrong with the wrists and fingers?** Get it looked at. It
+   is the one thing blocking the whole finger programme, and it is not
+   answerable from here.
+2. **Was that 60-61kg one arm or two?** See section 2. If two-arm, it is a
+   plausible 10mm number and worth keeping as a baseline for that edge. If
+   genuinely one-arm, the setup needs checking.
+3. **Sleep, work, stress** — you skipped question 14's back half. At 35 with a
+   new loading programme and symptomatic tissue, recovery capacity is not a
+   footnote.
+4. **How long have you been at 7a?** Six months of plateau and three years of
+   plateau are different problems.
+5. **Do you want the portable edge?** Around CHF 50, and it is what makes the
+   daily density block possible. Without it the highest-value part of this
+   programme only happens on gym days.
 
 ## 13. Next: the iPhone app
 

@@ -17,21 +17,60 @@ export interface AthleteProfile {
   bodyweightKg: number;
   heightCm: number;
   age: number;
-  /** Current best redpoint, French sport grade. */
+  /** Grade redpointed reliably in 5-15 tries, French sport. */
   redpoint: string;
-  /** Current best boulder grade, V scale. */
+  /** Hardest sport grade ever done. */
+  redpointBest: string;
+  /** Onsight / flash level, sport. */
+  onsight: string;
+  /** Grade sent reliably in 5-15 tries, Font. */
   boulder: string;
-  /** Sessions per week available for structured training. */
-  sessionsPerWeek: number;
+  /** Hardest boulder ever done, Font. */
+  boulderBest: string;
+  /** Flash level, Font. */
+  boulderFlash: string;
+  years: number;
+  /**
+   * Climbing sessions per week. These are NOT spare slots: all three are
+   * already committed to climbing, so structured work has to ride along with
+   * them rather than being added on top.
+   */
+  climbingSessionsPerWeek: number;
+  /** Prior experience with structured hangboarding or gym strength work. */
+  structuredTraining: 'none' | 'some' | 'experienced';
+  /**
+   * Standing constraints that override the generic prescription. Anything
+   * listed here is a reason to hold intensity down, not a detail.
+   */
+  flags: string[];
 }
 
 export const ATHLETE: AthleteProfile = {
   bodyweightKg: 62,
   heightCm: 172,
   age: 35,
-  redpoint: '7a+',
-  boulder: 'V5',
-  sessionsPerWeek: 3,
+  redpoint: '7a',
+  redpointBest: '7b',
+  onsight: '6b',
+  boulder: '7a',
+  boulderBest: '7b',
+  boulderFlash: '6b+',
+  years: 4,
+  climbingSessionsPerWeek: 3,
+  structuredTraining: 'none',
+  flags: [
+    'Fingers and wrists are currently symptomatic. No maximal finger loading '
+    + 'until they have been quiet for several weeks. Get a diagnosis.',
+    'No history of structured hangboarding or strength training. Start at '
+    + 'level 1 regardless of climbing grade — climbing grade says nothing about '
+    + 'connective tissue tolerance for a loading protocol.',
+    'Falls off single hard moves, not from pump, but needs long rests to '
+    + 'recover between attempts: recruitment ceiling plus low forearm capacity.',
+    'Onsight 6b against a 7a redpoint is a four-step gap. The largest available '
+    + 'grade gain is technical and tactical, not physical.',
+    'Hip mobility poor. Directly implicated in the stated weakness on slabs and '
+    + 'technical climbing.',
+  ],
 };
 
 /**
@@ -51,6 +90,41 @@ export const GRADE_MAP: Record<string, string> = {
   '7c+': 'V7',
   '8a':  'V8',
 };
+
+/**
+ * Font to V-scale, for reading the benchmark tables off a boulder grade.
+ *
+ * This matters: European boulder grades are Font, and Font 7a is V6, not V6-ish
+ * or V4. Reading a Font grade as if it were a French sport grade understates
+ * the finger-strength target by two full grades.
+ */
+export const FONT_GRADE_MAP: Record<string, string> = {
+  '6a':  'V3',
+  '6a+': 'V3',
+  '6b':  'V4',
+  '6b+': 'V4',
+  '6c':  'V5',
+  '6c+': 'V5',
+  '7a':  'V6',
+  '7a+': 'V7',
+  '7b':  'V8',
+  '7b+': 'V8',
+  '7c':  'V9',
+  '7c+': 'V10',
+};
+
+/**
+ * Edge size is not a free parameter. Every published benchmark in this file is
+ * on a 20mm flat edge, and scores on other edges do not convert cleanly — a
+ * 10mm score reads far lower than a 20mm one for the same fingers, and the
+ * ratio varies between people. A number measured on any other edge is a number
+ * about that edge, and cannot be compared to the tables below.
+ *
+ * 10mm and smaller also concentrates load over a much shorter contact area,
+ * which is exactly the loading pattern implicated in pulley and finger joint
+ * complaints. It is not a testing edge for someone whose fingers are talking.
+ */
+export const REFERENCE_EDGE_MM = 20;
 
 export const BENCHMARKS: Benchmark[] = [
   {
@@ -218,13 +292,11 @@ export function standardToAddedKg(percentBodyweight: number, bodyweightKg = ATHL
   return Math.round((standardToKg(percentBodyweight, bodyweightKg) - bodyweightKg) * 10) / 10;
 }
 
-/** The standard for the athlete's current grade, and the next one up. */
-export function targetsForGrade(
+function standardsAtVGrade(
   benchmarkId: string,
-  redpoint = ATHLETE.redpoint,
+  vGrade: string | undefined,
 ): { current: number | null; next: number | null } {
   const bench = getBenchmark(benchmarkId);
-  const vGrade = GRADE_MAP[redpoint];
   if (!bench || !vGrade) return { current: null, next: null };
 
   const idx = bench.standards.findIndex(s => s.label === vGrade);
@@ -234,6 +306,28 @@ export function targetsForGrade(
     current: bench.standards[idx].value,
     next: bench.standards[idx + 1]?.value ?? null,
   };
+}
+
+/** The standard for a sport redpoint grade, and the next one up. */
+export function targetsForGrade(
+  benchmarkId: string,
+  redpoint = ATHLETE.redpoint,
+): { current: number | null; next: number | null } {
+  return standardsAtVGrade(benchmarkId, GRADE_MAP[redpoint]);
+}
+
+/**
+ * The standard for a Font boulder grade.
+ *
+ * For finger strength this is the reading that matters. Lattice's dataset is
+ * built on boulder grades, and a climber who boulders Font 7a is being asked
+ * for V6 finger strength whatever their route grade says.
+ */
+export function targetsForBoulderGrade(
+  benchmarkId: string,
+  boulder = ATHLETE.boulder,
+): { current: number | null; next: number | null } {
+  return standardsAtVGrade(benchmarkId, FONT_GRADE_MAP[boulder]);
 }
 
 /** Whether a recorded result clears a gate threshold. */
