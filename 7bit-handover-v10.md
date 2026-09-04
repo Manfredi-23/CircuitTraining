@@ -57,31 +57,47 @@ At BMI 21 there is no weight lever to pull, and pulling one would be a mistake.
 Every gram of progress has to come from force production, tension, capacity and
 skill.
 
-### The finger number does not fit
+### Finger strength is a strength, not a limiter
 
-The reported figure was **60-61kg, one arm, 10mm edge**. At 62kg bodyweight that
-is 97% of bodyweight through one arm on a 10mm edge.
+Reported: **60-61kg, one arm, 10mm block pull**, at 62kg bodyweight. Roughly 97%
+of bodyweight through one arm.
 
-For scale: Lattice's one-arm dataset is measured on a **20mm** edge, and tops out
-around 91% of bodyweight at V11. A 10mm edge produces substantially *lower*
-numbers than 20mm for the same fingers. So as stated, the figure sits beyond
-V11 on a harder edge — while the same athlete does 8 strict pull-ups, has never
-trained fingers systematically, and boulders Font 7a. Those things cannot all be
-true.
+An earlier draft of this document called that implausible. It was wrong, on two
+counts:
 
-The likely explanations, in order:
+1. **Edge conversion.** A 10mm score being far below a 20mm one holds for
+   *hangs*, where the wrist angle is fixed and the body swings. On a **block
+   pull** you set the wrist freely and nothing swings, and the gap between edges
+   is much smaller. The literature says only that 20mm and 10mm recruit
+   differently and do not transfer cleanly — not that 10mm reads dramatically
+   lower.
+2. **The pull-up argument.** Eight strict pull-ups was treated as evidence
+   against strong fingers. Finger strength and pulling strength dissociate
+   freely in climbers. A crimp-and-steep specialist with strong fingers and
+   modest pulling is a completely ordinary phenotype, and it is exactly what the
+   rest of the questionnaire describes: master of crimps and overhangs, weak on
+   slabs, Font 7b boulder best, 30-45s one-arm dead hang.
 
-1. **It was a two-arm measurement.** 61kg across both arms on 10mm is about 98%
-   of bodyweight, which fits a Font 7a boulderer well and is entirely plausible.
-2. **The setup allowed leverage.** A block pull with feet planted and an anchor
-   near the floor lets the legs and trunk contribute, inflating the reading
-   against a true hang.
-3. Different units, or a different edge than remembered.
+The number is now tracked as its own benchmark (`fs-1arm-10mm`) rather than
+converted or discarded. Retest it on the same edge and setup to measure change;
+run the 20mm test separately when you want to compare against published tables.
 
-**Either way the number cannot set training loads**, because it was not measured
-on the 20mm reference edge and nothing on another edge converts cleanly. The
-programme therefore starts at level 1 and the load comes from a proper 20mm
-test later.
+**What follows from strong fingers is the important part.** It inverts the
+priority stack. If peak finger force is already ahead of the grade, then:
+
+- Training more max finger strength has low return and high risk, especially
+  on symptomatic tissue. It becomes maintenance, not a project.
+- The strong hands still open on a single hard move — so something else is
+  failing first. With an untrained front lever and 8 strict pull-ups against
+  that grip, the likely mechanism is a collapsing body position: the hips drop,
+  tension is lost, the load on the hand spikes past even a strong grip, and it
+  opens. **The hand is the symptom; the trunk is the cause.**
+- That same mechanism is a plausible explanation for the symptoms. Strong
+  fingers plus steep crimping plus a weak trunk means the hands chronically
+  absorb load the body should be carrying.
+- High peak force with slow pump recovery is the classic **strong-but-no-engine**
+  boulderer profile. Forearm *capacity*, not peak strength, is the finger
+  quality worth training.
 
 ### Two answers that reshaped the programme
 
@@ -382,7 +398,8 @@ split reskinned three times.
 |---|---|---|---|
 | 01 | **TENSION** | tension, pull | Front lever progression 5x10s / hanging leg raise 4x8 / hollow + arch 3x30s / Pallof press / Copenhagen plank / band external rotation |
 | 02 | **PULL** | pull, shoulder, forearm | Weighted pull-ups 5x4 @150s / lock-off ladder / inverted row / dead hang / wrist armour |
-| 03 | **ARMOUR** | press, shoulder, legs, mobility | Pike press 4x8 / push-ups / Bulgarian split squat / single-leg RDL / cuff circuit / wrist armour / hip flow |
+| 03 | **ARMOUR** | press, shoulder, legs, mobility | Pike press 4x8 / push-ups / Bulgarian split squat / single-leg RDL / cuff circuit / wrist block / hip flow |
+| 04 | **WRISTS** | shoulder | 10 min, daily. Four-direction wrist conditioning plus quadruped wrist rocks. Runs on climbing days too. |
 
 None of these load the fingers maximally, so any of them can sit 24 hours after
 a hard climbing or gym day without competing for tendon recovery.
@@ -424,46 +441,55 @@ is close to zero, and the upside is real.
 ## 6. The week
 
 Three climbing sessions are already spoken for. Nothing here adds a fourth
-training day; it bolts short blocks onto what you already do.
+climbing day; it bolts short blocks onto what you already do.
+
+The ordering below follows the corrected diagnosis: **tension and pulling first,
+forearm capacity second, max finger strength last.**
 
 ```
-MON   HOME 03 ARMOUR             45 min   wrists, hips, shoulders, legs
-TUE   Boulder gym  + CAVE 05 ADD-ON  20 min   pull-ups, front lever, cuff
-WED   Rest
-THU   Boulder gym  + CAVE 05 ADD-ON  20 min
-FRI   HOME 03 ARMOUR (or HOME 01 TENSION)
+MON   HOME 01 TENSION            45 min   front lever, leg raises, Pallof, Copenhagen
+TUE   Boulder gym + CAVE 05 ADD-ON  20 min   weighted pull-ups, front lever, cuff
+WED   HOME 03 ARMOUR             45 min   hips, shoulders, legs, pressing
+THU   Boulder gym + CAVE 05 ADD-ON  20 min
+FRI   Rest
 SAT   Outdoor lead
 SUN   Rest
 
-DAILY HANG 03 DENSITY   10 min, once or twice, at least 6h apart
+DAILY HOME 04 WRISTS      10 min   every day, including climbing days
+DAILY HANG 03 DENSITY     10 min   once or twice, at least 6h apart
 ```
 
-That is three climbing sessions, two short home sessions, two 20-minute gym
-add-ons, and a daily ten-minute finger block. Total added load: about 110
-minutes a week, none of it maximal.
+Two climbing days, one outdoor day, two home sessions, two 20-minute add-ons,
+and two ten-minute daily blocks. Total added load: about two hours a week, none
+of it maximal.
+
+Once wrists and fingers are quiet, swap one gym day in two for **HANG 02
+CAPACITY** — repeaters and the critical force block. That is the finger session
+that matters for you, not MAX HANGS.
 
 Rules that matter more than the exact days:
 
-1. **Density hangs are the finger programme for now.** Not max hangs. They do
-   not count as a finger day and can run every day, including climbing days.
+1. **Do not train max finger strength right now.** It is already ahead of your
+   grade, the tissue is symptomatic, and the return is the worst in the
+   programme. DENSITY maintains it at a load that helps rather than hurts.
 2. **The add-on comes after bouldering, never before.** Bouldering is the finger
    and power session; the add-on is pulling and tension only, deliberately.
-3. **ARMOUR is the priority session**, not the leftovers one. Wrists are
-   symptomatic and hips are the stated weakness on slabs. Twice a week, minimum.
-4. **48 hours minimum between maximal finger sessions** — once you get to them.
-   Right now nothing in the week qualifies, which is intentional.
+3. **The wrist block is daily and non-negotiable.** Ten minutes. Frequency is
+   the active ingredient in loading irritable tissue, not load.
+4. **TENSION is the priority physical session.** It is the one that stops your
+   fingers paying for your trunk.
 5. **Three weeks loading, one week light.** Halve the PRIMARY sets in the light
-   week. The decay grace period is 21 days so this costs nothing.
-6. **One boulder session a week should be spent on what you are bad at.** See
-   section 7a. This is free grade and it costs no recovery.
+   week. The decay grace is 21 days so this costs nothing.
+6. **One boulder session in four on slabs and vertical.** See section 7a. Free
+   grade, no recovery cost.
 
 ### Re-entry to maximal finger work
 
-Do not test or max hang until **all** of these are true:
+Not a priority, but when you want it back:
 
-- Fingers and wrists have been symptom-free for at least four weeks.
-- You have been doing density hangs consistently for six to eight weeks.
-- You have a diagnosis, or a physio has cleared you.
+- Fingers and wrists symptom-free for at least four weeks.
+- Six to eight weeks of consistent density hangs behind you.
+- A diagnosis, or a physio has cleared you.
 
 Then run CAVE 04 ASSESS on a rest day and let the numbers set the loads.
 
@@ -488,7 +514,8 @@ version of this document made.
 
 ### What the number actually tells you
 
-This is a **diagnostic, not a target.** The table says what a V6 climber
+This is a **diagnostic, not a target** — and on your own account you are likely
+at or above it already, which is the answer, not a gap. The table says what a V6 climber
 typically hangs. You already boulder V6. So:
 
 - **If you test near 140% (+25kg)**, your fingers are on par with your grade,
@@ -523,10 +550,10 @@ eight quiet weeks of density work, the pulling number can move a long way.
 
 | Test | Developing | Solid | Strong | You |
 |---|---|---|---|---|
-| Strict pull-ups | 8 | 15 | 20 | **8** |
+| Strict pull-ups | 8 | 15 | 20 | **8** — the weak link |
 | One-arm dead hang | 10s | 30s | 45s+ | **30-45s** — strong |
 | 90-degree lock-off, one arm | 5s | 10s | 15s | untested |
-| Critical force (% of max) | 55% | 63% | 70% | untested, probably low |
+| Critical force (% of max) | 55% | 63% | 70% | untested, **likely low** |
 | Front lever | tuck | one-leg | straddle | **untrained** |
 | Foot raise height | 65cm | 74cm | 85cm | **poor** |
 
@@ -695,7 +722,7 @@ src/core/
                              / applyIntensityCap / buildList with gate resolution
                              / estimateDuration / getReadiness / getLimiter.
                              Capacity-specific decay. Skip and quit cost nothing.
-  data-home.ts    REWRITTEN  3 sessions: TENSION, PULL, ARMOUR.
+  data-home.ts    REWRITTEN  4 sessions: TENSION, PULL, ARMOUR, WRISTS.
   data-cave.ts    REWRITTEN  5 sessions: MAX, POWER, CAPACITY, ASSESS, ADD-ON.
   data-hang.ts    REWRITTEN  3 sessions: MAX HANGS, CAPACITY, DENSITY.
   stats.ts        UPDATED    Capacity terminology.

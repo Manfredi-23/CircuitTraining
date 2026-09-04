@@ -36,12 +36,12 @@ export const DATA_HOME: Circuit[] = [
   {
     id: 'home-01', circuitNum: '01',
     title: 'TENSION', subtitle: 'body tension - trunk',
-    focus: 'Hold a line from hands to feet on steep ground.',
+    focus: 'The missing link: hold a line from hands to feet so the fingers stop paying for it.',
     capacities: ['tension', 'pull'],
     illustration: 'pullups.svg',
     duration: 45,
     recoveryHours: 24,
-    note: 'Every hold ends when the lower back arches, not when the timer does.',
+    note: 'Highest-priority physical session. Strong fingers that still open on a hard move are usually reporting a collapsed body position, not a weak grip. Every hold ends when the lower back arches, not when the timer does.',
     exercises: [
       HOME_WARMUP,
       {
@@ -426,6 +426,67 @@ export const DATA_HOME: Circuit[] = [
           cue: 'Combined abduction and external rotation is what makes high steps, drop knees and bridging available. Contract gently into end range so the range becomes usable rather than just passive.',
           breathing: 'Long exhales into each position.',
           mistakes: 'Bouncing. Holding your breath. Treating it as optional because nothing feels tight while warm.',
+        },
+      },
+    ],
+  },
+  {
+    id: 'home-04', circuitNum: '04',
+    title: 'WRISTS', subtitle: 'daily - 10 min',
+    focus: 'Ten minutes for the joint that is currently complaining.',
+    capacities: ['shoulder'],
+    illustration: 'squats.svg',
+    duration: 10,
+    recoveryHours: 0,
+    note:
+      'Low load by design, so it runs every day including climbing days. Symptomatic '
+      + 'tissue responds to frequent light loading, not to occasional heavy loading. '
+      + 'This is not a substitute for a diagnosis.',
+    exercises: [
+      {
+        id: 'wrists-daily-block',
+        name: 'Wrist Conditioning',
+        capacities: ['shoulder'],
+        block: 'PRIMARY', intensity: 'EASY',
+        sets: 3, work: 12, unit: 'reps', restSec: 40,
+        load: { kind: 'added-kg', text: 'Very light: 1-2kg, a full bottle, or a band' },
+        fixed: true,
+        progression:
+          'Frequency first, load a distant second. Daily for four weeks before you '
+          + 'even think about adding weight, then add the smallest increment you have.',
+        protocolId: 'prehab',
+        perSide: true,
+        note:
+          'Four movements, 12 reps each: wrist extension palm-down, wrist flexion '
+          + 'palm-up, radial and ulnar deviation, then slow pronation and supination '
+          + 'holding the weight by one end. Three seconds on every lowering phase.',
+        form: {
+          setup: 'Forearm supported on a thigh or table, wrist just past the edge, light weight or band in hand.',
+          execution: 'Twelve controlled reps of each movement, three seconds on the lowering phase, then swap sides. Stop any movement that produces sharp or pinching pain rather than muscular effort.',
+          cue: 'Climbing loads the wrist heavily in one narrow band of positions and trains nothing else, and hard crimping on steep ground is the worst offender. This covers every direction the wrist can go, at a load it can actually adapt to.',
+          breathing: 'Relaxed. This should never feel like a lift.',
+          mistakes: 'Going heavy because it feels too easy. Working into pain in the belief that it is strengthening something. Stopping the day the symptoms quieten, which is the day it started working.',
+        },
+      },
+      {
+        id: 'wrists-loaded-extension',
+        name: 'Quadruped Wrist Rocks',
+        capacities: ['shoulder'],
+        block: 'PRIMARY', intensity: 'EASY',
+        sets: 2, work: 10, unit: 'reps', restSec: 40,
+        load: { kind: 'bodyweight', text: 'Partial bodyweight through the hands' },
+        fixed: true,
+        progression:
+          'Start on the floor on all fours with almost no weight forward. Progress by '
+          + 'shifting weight further over the hands, never by adding reps.',
+        protocolId: 'prehab',
+        note: 'Palms down, then palms reversed with fingers pointing back. Rock gently forward and back.',
+        form: {
+          setup: 'On all fours, hands under shoulders, palms flat. Second set with fingers rotated to point back toward the knees.',
+          execution: 'Rock the shoulders slowly forward over the hands and back again, loading the wrist through extension. Stay well inside comfortable range.',
+          cue: 'This is the position that hurts on mantles and hard crimping. Training it lightly and often is how it stops hurting.',
+          breathing: 'Slow and even.',
+          mistakes: 'Rocking too far too soon. Bouncing. Doing it once a week instead of daily.',
         },
       },
     ],

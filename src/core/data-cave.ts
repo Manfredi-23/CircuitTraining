@@ -317,7 +317,7 @@ export const DATA_CAVE: Circuit[] = [
   {
     id: 'cave-03', circuitNum: '03',
     title: 'CAPACITY', subtitle: 'repeaters - endurance - armour',
-    focus: 'Sustain force for longer, and pay the antagonist and leg bills.',
+    focus: 'Build the engine: sustain force for longer, and pay the antagonist and leg bills.',
     capacities: ['forearm', 'pull', 'press', 'legs', 'shoulder'],
     illustration: 'hangboard.svg',
     duration: 58,

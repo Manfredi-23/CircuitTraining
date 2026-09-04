@@ -18,12 +18,12 @@ export const DATA_HANG: Circuit[] = [
   {
     id: 'hang-01', circuitNum: '01',
     title: 'MAX HANGS', subtitle: 'half-crimp - open hand',
-    focus: 'Raise peak finger force. Eight working hangs, nothing else.',
+    focus: 'Maintain peak finger force. Eight working hangs, nothing else.',
     capacities: ['crimp', 'openhand'],
     illustration: 'maxhangs.svg',
     duration: 35,
     recoveryHours: 48,
-    note: 'Eight hard hangs is the whole session. Adding volume here costs recovery and buys nothing. Do not run this at all while fingers or wrists are symptomatic: DENSITY is the session for that.',
+    note: 'Lowest-priority session in the programme for this athlete: peak finger force is already ahead of grade, so this maintains rather than builds. Do not run it at all while fingers or wrists are symptomatic. Eight hard hangs is the whole session either way.',
     exercises: [
       {
         id: 'hang-warmup-pulse',
@@ -118,12 +118,12 @@ export const DATA_HANG: Circuit[] = [
   {
     id: 'hang-02', circuitNum: '02',
     title: 'CAPACITY', subtitle: 'repeaters - critical force',
-    focus: 'The route climber session: sustain force and recover between moves.',
+    focus: 'Priority finger session: sustain force and recover between moves.',
     capacities: ['forearm', 'crimp'],
     illustration: 'hangboard.svg',
     duration: 45,
     recoveryHours: 24,
-    note: 'Load is 55-65% of your max hang. At L5 the critical force block is added — if time is short, drop to four sets of repeaters rather than skipping it.',
+    note: 'Strong peak force with slow pump recovery means capacity, not max strength, is the finger quality worth training. This is the session that fixes that. Load is 55-65% of your max hang. At L5 the critical force block is added — if time is short, drop to four sets of repeaters rather than skipping it.',
     exercises: [
       {
         id: 'hang02-warmup-pulse',

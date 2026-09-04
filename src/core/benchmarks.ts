@@ -59,17 +59,28 @@ export const ATHLETE: AthleteProfile = {
   climbingSessionsPerWeek: 3,
   structuredTraining: 'none',
   flags: [
-    'Fingers and wrists are currently symptomatic. No maximal finger loading '
-    + 'until they have been quiet for several weeks. Get a diagnosis.',
-    'No history of structured hangboarding or strength training. Start at '
-    + 'level 1 regardless of climbing grade — climbing grade says nothing about '
-    + 'connective tissue tolerance for a loading protocol.',
-    'Falls off single hard moves, not from pump, but needs long rests to '
-    + 'recover between attempts: recruitment ceiling plus low forearm capacity.',
+    'Fingers are a STRENGTH, not a limiter. Reported one-arm 10mm block pull of '
+    + '60-61kg at 62kg bodyweight, consistent with a crimp-and-steep specialist '
+    + 'bouldering Font 7b. Do not spend the programme chasing max finger strength.',
+    'Fingers and wrists are currently symptomatic. Combined with the above, this '
+    + 'reads as chronic overload rather than insufficient capacity: strong hands '
+    + 'absorbing load that a weak trunk is not carrying.',
+    'Pulling is comparatively weak. 8 strict pull-ups, never weighted, against '
+    + 'genuinely strong fingers. Estimated 125-130% bodyweight versus a 165% '
+    + 'standard. Large newbie gains available in tissue that is not complaining.',
+    'Body tension untrained. No front lever experience at all. This is the most '
+    + 'likely reason strong fingers still open on a single hard move: the hand is '
+    + 'the symptom, the collapsing position is the cause.',
+    'Slow pump recovery against high peak force: the classic strong-but-no-engine '
+    + 'boulderer profile. Forearm capacity, not max strength, is the finger '
+    + 'quality worth training.',
     'Onsight 6b against a 7a redpoint is a four-step gap. The largest available '
     + 'grade gain is technical and tactical, not physical.',
     'Hip mobility poor. Directly implicated in the stated weakness on slabs and '
     + 'technical climbing.',
+    'No history of structured hangboarding or strength training. Start every '
+    + 'protocol at level 1 regardless of climbing grade: climbing grade says '
+    + 'nothing about tolerance for a loading protocol.',
   ],
 };
 
@@ -170,6 +181,27 @@ export const BENCHMARKS: Benchmark[] = [
       { label: 'V11', value: 91 },
     ],
     source: 'Lattice Training one-arm finger strength dataset.',
+  },
+  {
+    id: 'fs-1arm-10mm',
+    name: 'One-arm block pull, 10mm',
+    capacity: 'crimp',
+    unit: '% bodyweight pulled through one arm',
+    protocol:
+      'Fully warm. 10mm block or edge, half-crimp, one arm, 7-10s pull on a force '
+      + 'gauge or against a fixed anchor. Score = peak force / bodyweight x 100.',
+    standards: [
+      { label: 'Reference: current', value: 97 },
+    ],
+    source:
+      'Self-reported, September 2026: 60-61kg at 62kg bodyweight. No published '
+      + 'dataset exists for this edge and protocol combination.',
+    note:
+      'This is tracked as its own benchmark rather than converted. Edge size is '
+      + 'not a scaling factor: 10mm and 20mm recruit differently and the ratio '
+      + 'varies between people, so a 10mm score cannot be read against the 20mm '
+      + 'tables in either direction. Retest on the same edge, same setup, to '
+      + 'measure change; use the 20mm test to compare against published standards.',
   },
   {
     id: 'weighted-pullup',
