@@ -115,3 +115,21 @@
 .actionBtnAccent { border-color: var(--accent); color: var(--accent); }
 .actionBtnArrow { font-size: 18px; transition: transform 200ms ease; }
 .actionBtn:hover .actionBtnArrow { transform: translateX(4px); }
+
+/* --- v10: readiness banner + session focus line --- */
+
+.readinessBanner {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.readinessRest {
+  border-color: var(--accent);
+  color: var(--accent);
+}

@@ -4,9 +4,10 @@ import { useMemo, useCallback } from 'react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { useStore } from '@/store/store';
 import { getOverallLevel, getStatInterpretation } from '@/core/engine';
-import { getSortedMuscles, getLastSession, getOverallTrendData, getMuscleTrendData, timeFilterToDays } from '@/core/stats';
+import { getSortedCapacities, getLastSession, getOverallTrendData, getCapacityTrendData, timeFilterToDays } from '@/core/stats';
+import { CONFIG } from '@/core/config';
 import { useSwipe } from '@/hooks/use-swipe';
-import type { SortMode, TimeFilter, MuscleGroup } from '@/core/types';
+import type { SortMode, TimeFilter, Capacity } from '@/core/types';
 import styles from './StatsScreen.module.css';
 
 const SORT_OPTIONS: { key: SortMode; label: string }[] = [
@@ -35,7 +36,7 @@ export default function StatsScreen() {
   const overallLevel = getOverallLevel(progress);
   const interpretation = useMemo(() => getStatInterpretation(progress, sessionLog), [progress, sessionLog]);
   const lastSession = getLastSession(sessionLog);
-  const muscles = getSortedMuscles(progress, statsSort);
+  const capacities = getSortedCapacities(progress, statsSort);
   const days = timeFilterToDays(statsTimeFilter);
 
   // Build chart data
@@ -45,7 +46,7 @@ export default function StatsScreen() {
       const point: Record<string, string | number> = { date: pt.date, overall: pt.score };
       for (const m of activeChartMuscles) {
         if (m !== 'overall') {
-          const mData = getMuscleTrendData(progress[m as MuscleGroup], days);
+          const mData = getCapacityTrendData(progress[m as Capacity], days);
           point[m] = mData[i]?.score ?? 0;
         }
       }
@@ -80,7 +81,7 @@ export default function StatsScreen() {
 
         {/* Muscle groups */}
         <div className={styles.section}>
-          <div className={styles.sectionTitle}>MUSCLE GROUPS</div>
+          <div className={styles.sectionTitle}>CAPACITIES</div>
 
           <div className={styles.sortTabs} role="tablist">
             {SORT_OPTIONS.map(s => (
@@ -97,18 +98,18 @@ export default function StatsScreen() {
           </div>
 
           <div className={styles.muscleList}>
-            {muscles.map((m, i) => (
+            {capacities.map((m, i) => (
               <div
-                key={m.muscle}
+                key={m.capacity}
                 className={styles.muscleRow}
                 style={{ animationDelay: `${i * 30}ms` }}
                 onClick={() => {
-                  toggleChartMuscle(m.muscle);
-                  setHighlightMuscle(highlightMuscle === m.muscle ? null : m.muscle);
+                  toggleChartMuscle(m.capacity);
+                  setHighlightMuscle(highlightMuscle === m.capacity ? null : m.capacity);
                 }}
               >
                 {m.trend === 'down' && <div className={styles.declineBar} />}
-                <span className={styles.muscleName}>{m.muscle}</span>
+                <span className={styles.muscleName}>{CONFIG.capacityLabels[m.capacity]}</span>
                 <span className={styles.muscleLevel}>Lvl{String(m.level).padStart(2, '0')}</span>
                 <span className={styles.muscleTrend}>{TREND_SYMBOLS[m.trend]}</span>
               </div>

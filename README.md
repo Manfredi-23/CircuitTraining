@@ -1,6 +1,13 @@
 # 7Bit Circuit Training
 
-Adaptive circuit training app for climbers. XP-based progression across 12 muscle groups, form guides, rest timers, session tracking.
+Adaptive training app for climbers. Ten climbing-performance capacities, load-based
+progression, sourced protocols, testable benchmarks, form guides, rest timers and
+session tracking.
+
+Built for one athlete: 35, 62kg, 7a+, three sessions a week, home and gym.
+
+**Training model:** see [`7bit-handover-v10.md`](7bit-handover-v10.md).
+**Design system:** see [`7bit-handoff-v9.md`](7bit-handoff-v9.md).
 
 ## Requirements
 
@@ -58,6 +65,7 @@ The `main` branch auto-deploys to Vercel on push. Preview deploys are created fo
 ```
 src/
   core/        Pure TypeScript business logic (no React, shared with iOS)
+               types, config, engine, protocols, benchmarks, session data
   storage/     Storage abstraction (localStorage now, Supabase later)
   store/       Zustand state management
   hooks/       React hooks (timer, swipe, audio)

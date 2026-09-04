@@ -32,70 +32,101 @@ No test framework yet — test manually in browser.
 src/
   core/          # Pure TypeScript, zero React imports (shared with future iOS app)
     types.ts     # All types and interfaces
-    config.ts    # Central CONFIG object
-    engine.ts    # Training logic: buildList, scaleReps, applyXP, checkDecay, etc.
-    stats.ts     # Trend scoring, chart data generation, muscle list sorting
-    data-home.ts, data-cave.ts, data-hang.ts  # Exercise libraries
+    config.ts    # Central CONFIG object: levels, energy, decay, recovery
+    engine.ts    # Training logic: buildList, scaleWork/Sets/Rest, gates, readiness
+    protocols.ts # Named training protocols with parameters, rationale and sources
+    benchmarks.ts# Testable standards, athlete profile, %BW to kg conversions
+    stats.ts     # Trend scoring, chart data, capacity list sorting
+    data-home.ts, data-cave.ts, data-hang.ts  # Session libraries
     data-index.ts  # getModeData(mode) helper
   storage/       # Async storage abstraction (swap localStorage for Supabase later)
-    storage.interface.ts  # IStorageAdapter interface
-    local-storage.adapter.ts
-    index.ts     # Factory: getStorageAdapter() / setStorageAdapter()
-  store/         # Zustand store
-    store.ts     # Combined store with persist middleware
-    slices/      # app-slice, workout-slice, progress-slice, stats-slice
-  hooks/         # React hooks
-    use-timer.ts   # Web Audio beeps + setInterval countdown
-    use-swipe.ts   # @use-gesture/react wrapper
-    use-hydration.ts  # SSR guard for Zustand persist
-    use-audio-init.ts # One-time AudioContext init (iOS)
-    audio-context.ts  # Module-scoped AudioContext singleton
+  store/         # Zustand store (app / workout / progress / stats slices)
+  hooks/         # use-timer, use-swipe, use-hydration, use-audio-init
   components/
-    screens/     # One component + CSS module per screen
-      HomeScreen, WorkoutScreen, RestScreen, CompleteScreen, StatsScreen
+    screens/     # HomeScreen, WorkoutScreen, RestScreen, CompleteScreen, StatsScreen
     shared/      # SettingsOverlay, TimerFlash
-  app/
-    layout.tsx   # Root layout: Kode Mono font, metadata, viewport
-    page.tsx     # Screen router based on Zustand screen state
-    globals.css  # CSS custom properties, base resets, shared keyframes
+  app/           # layout.tsx, page.tsx (screen router), globals.css
 ```
 
 ### Key Design Decisions
 
-- **Core logic is framework-agnostic**: `src/core/` has zero React imports. Engine functions are pure — they take progress/config and return new state. This enables sharing with the future Capacitor/iOS app.
-- **Storage abstraction**: All methods are async (Promise-based). Currently backed by localStorage. To add Supabase later, implement `IStorageAdapter` and call `setStorageAdapter()`.
-- **Single-page app**: No Next.js routes. All screens render in `page.tsx` based on `useStore(s => s.screen)`. Screen switching is managed by Zustand state.
-- **Zustand persist**: Only `progress` and `sessionLog` are persisted (via `partialize`). UI state is transient.
+- **Core logic is framework-agnostic**: `src/core/` has zero React imports. Engine
+  functions are pure. This enables sharing with the future Capacitor/iOS app.
+- **Storage abstraction**: All methods are async. Implement `IStorageAdapter` and
+  call `setStorageAdapter()` to move to Supabase.
+- **Single-page app**: No Next.js routes. All screens render in `page.tsx` based on
+  `useStore(s => s.screen)`.
+- **Zustand persist**: Only `progress`, `sessionLog` and `benchmarkResults` are
+  persisted (via `partialize`). UI state is transient.
 
-### State Model (Zustand Store)
+## Training Model (v10)
 
-Four slices in a single store:
-- **AppSlice**: mode, circuitIndex, energy, screen, humorLine
-- **WorkoutSlice**: circuit, exerciseList, stepIndex, round, currentExercise, swapActive, formGuideOpen
-- **ProgressSlice**: progress (per-muscle XP/history), sessionLog, pendingDecayEvents, sessionLevelUps
-- **StatsSlice**: statsSort, statsTimeFilter, activeChartMuscles, highlightMuscle
+The training content was rewritten in September 2026. See `7bit-handover-v10.md`
+for the full rationale and evidence base. The short version:
 
-### Three Modes
+### Capacities, not muscle groups
 
-| Mode | Equipment | Circuits |
-|------|-----------|----------|
-| HOME | Mat, pull-up bar, medium band (no anchor) | 01 Push+Core, 02 Pull+Biceps, 03 Legs+Body |
-| CAVE | KB 12kg, DB, rings, TRX, campus board, hangboard, bands+anchors | 01 Push+Core, 02 Pull+Biceps, 03 Legs+Body |
-| HANG | Hangboard (gym), 20mm half-crimp | 01 Max Hangs, 02 Density Hangs |
+Ten climbing-performance axes replace the twelve bodybuilding muscle groups:
+`crimp`, `openhand`, `forearm`, `pull`, `contact`, `tension`, `press`,
+`shoulder`, `legs`, `mobility`. Chest and biceps are not tracked axes — the
+movements that train them exist as joint-health maintenance under `press` and
+`shoulder`.
 
-### Progression System
+### Progression moves load, never reps
 
-7 levels per muscle group (12 groups). XP thresholds: 0 / 6 / 16 / 30 / 50 / 80 / 120.
+Levels raise a load target and unlock harder variations. They do **not** inflate
+reps, and they never shorten rest on PRIMARY, SECONDARY or TEST blocks — rest on
+maximal work is set by physiology, not by experience. Only `ACCESSORY`, `PREHAB`
+and `MOBILITY` blocks compress with level.
 
-```
-final_reps = base_reps * energy_mult * muscle_level_mult
-final_rest = base_rest + energy_offset + muscle_level_offset (uses lowest group in circuit)
-variation  = highest where min_level <= group_level
-```
+Every exercise carries an explicit `progression` string shown on the card.
 
-Energy: FRESH (x1.2 reps, +0s rest), NORMAL (x1.0, +10s), TIRED (x0.75, +20s, -1 round).
-Decay: -2 XP all groups per 7-day inactivity window (checked at 10+ days). Skip: -1 XP.
-Variation unlocks: L1=base, L4=harder variant, L5=new exercise, L6=advanced variant.
+### Sets, not rounds
+
+Sessions run consecutive sets of one exercise, then move on. There is no circuit
+loop. `Circuit.exercises` is a flat ordered list; each exercise carries its own
+`sets`, `work`, `restSec` and `load`.
+
+### Blocks
+
+`WARMUP` | `PRIMARY` | `SECONDARY` | `ACCESSORY` | `PREHAB` | `MOBILITY` | `TEST`.
+Order is by neurological cost: fingers and CNS when fresh, conditioning last.
+
+### Energy
+
+FRESH adds a set to working blocks. NORMAL is the session as written. TIRED
+removes a set, multiplies rest by 1.25, drops ACCESSORY blocks, and **caps
+intensity at HARD** — a tired athlete downgrades rather than grinds.
+
+### Safety
+
+- `fixed: true` marks protocols taken exactly as written (warm-ups, density
+  hangs, repeaters). No level or energy scaling.
+- `gate` blocks dangerous exercises behind a **tested benchmark**, not XP. The
+  campus board needs a recorded 130% bodyweight 20mm hang; until then it is
+  substituted with recruitment pulls.
+- `getReadiness()` enforces 48h between maximal finger sessions.
+- Skipping and quitting cost **zero** XP. Punishing a skip in an app that
+  prescribes maximal finger loading pushes the athlete to train through a
+  warning sign.
+
+### Sessions
+
+| Mode | Sessions |
+|------|----------|
+| HOME | 01 TENSION, 02 PULL, 03 ARMOUR |
+| CAVE | 01 MAX, 02 POWER, 03 CAPACITY, 04 ASSESS |
+| HANG | 01 MAX HANGS, 02 CAPACITY, 03 DENSITY |
+
+### Adding or changing an exercise
+
+1. Every exercise needs `block`, `intensity`, `sets`, `work`, `unit`, `restSec`,
+   `load` and `progression`.
+2. Link a `protocolId` from `protocols.ts` — the workout card shows its rationale
+   and source under the form guide's WHY section.
+3. Rest values are protocol values. Do not tune them for session length; cut an
+   exercise instead.
+4. Anything with real injury risk gets a `gate`, not a `minLevel`.
 
 ## Styling
 
@@ -111,6 +142,11 @@ Kode Mono monospace font. Mobile-first, max-width 390px. CSS Modules per compone
 - **Vercel deployment**: Connect repo, configure build.
 - **iOS app**: Capacitor wrapper around the web app.
 
-## Handoff Document
+## Handoff Documents
 
-`7bit-handoff-v9.md` contains the complete spec: design system, variation trees, screen layouts, copy system, stats specification.
+- **`7bit-handover-v10.md`** — current. The training model: diagnosis of what was
+  wrong with v9's programme, the new capacity/block/load model, all ten sessions,
+  benchmarks and targets, the evidence base, and the Mac terminal commands.
+- **`7bit-handoff-v9.md`** — design system, screen layouts, copy system, stats
+  specification. Still current for everything visual. **Its training content
+  (sections 8, 9 and the mode/circuit tables) is superseded by v10.**
