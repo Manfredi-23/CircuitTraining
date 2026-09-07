@@ -63,6 +63,8 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       exerciseTimerActive: false,
       screen: 'workout',
     });
+
+    get().primeLoad(exerciseList[0] || null);
   },
 
   exerciseDone: () => {
@@ -75,7 +77,9 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       return;
     }
 
-    // Last set of the exercise — award XP once, for the whole exercise.
+    // Last set of the exercise — award XP once, and record what was actually
+    // on the belt. Both happen once per exercise, at the same moment.
+    get().commitLoad(currentExercise);
     const newProgress = Engine.applyXP(progress, currentExercise, 'done');
 
     const sessionLevelUps = [...get().sessionLevelUps];
@@ -106,6 +110,8 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       formGuideOpen: false,
       screen: 'rest',
     });
+
+    get().primeLoad(exerciseList[nextStep]);
   },
 
   /**
@@ -135,6 +141,8 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       formGuideOpen: false,
       screen: 'workout',
     });
+
+    get().primeLoad(exerciseList[nextStep]);
   },
 
   exitWorkout: () => {
@@ -149,6 +157,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       setIndex: 1,
       currentExercise: null,
       sessionStartTime: null,
+      pendingLoad: null,
       screen: 'home',
     });
   },

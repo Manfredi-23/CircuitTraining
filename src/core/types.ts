@@ -400,3 +400,37 @@ export interface CapacityListItem {
 
 /** @deprecated Alias kept for existing call sites. */
 export type MuscleListItem = CapacityListItem;
+
+// ---- Load log ----------------------------------------------------------------
+//
+// The model has always had a place for load; until now the interface had no way
+// to put a number in it. Progression on this programme *is* load — kilos on the
+// belt, millimetres of edge, percent of tested max — so what was actually
+// lifted has to be recorded, not just what was prescribed.
+
+/**
+ * The numeric axis an exercise is logged on, derived from its LoadSpec. Null
+ * for exercises where load is not the progression axis (pure bodyweight work,
+ * where the variation ladder does the progressing).
+ */
+export interface LoadAxis {
+  unit: 'kg' | 'mm' | '%' | 'RPE';
+  /** One tap of the stepper. Matched to how the equipment actually increments. */
+  step: number;
+  min: number;
+  max: number;
+  /** Shown before the number, e.g. '+' for added weight, '-' for assistance. */
+  prefix: string;
+  /** Short header for the control, e.g. 'ADDED' or 'EDGE'. */
+  label: string;
+}
+
+/** One recorded load: what was on the belt, on the date it was on the belt. */
+export interface LoadLogEntry {
+  exerciseId: string;
+  exerciseName: string;
+  /** ISO date, day resolution — one entry per exercise per session. */
+  date: string;
+  value: number;
+  unit: LoadAxis['unit'];
+}

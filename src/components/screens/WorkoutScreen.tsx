@@ -4,6 +4,7 @@ import { useStore } from '@/store/store';
 import { getCapacityLevel } from '@/core/engine';
 import { getProtocol } from '@/core/protocols';
 import { CONFIG } from '@/core/config';
+import LoadLogger from '@/components/shared/LoadLogger';
 import type { FormGuide } from '@/core/types';
 import styles from './WorkoutScreen.module.css';
 
@@ -73,6 +74,10 @@ export default function WorkoutScreen() {
 
         {/* Load prescription — where progression actually lives */}
         <div className={styles.loadLine}>{currentExercise.loadText}</div>
+
+        {/* What is actually on the belt today, against what it was last time.
+            Recorded when the final set is marked DONE. */}
+        <LoadLogger exercise={currentExercise} />
 
         {currentExercise.note && <div className={styles.note}>{currentExercise.note}</div>}
 

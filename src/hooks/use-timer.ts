@@ -1,6 +1,8 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { CONFIG } from '@/core/config';
 import { getAudioContext } from './audio-context';
+import { useWakeLock } from './use-wake-lock';
+import { hapticWarning, hapticDone } from '@/native/native';
 
 function beep(freq: number, duration: number, volume: number): void {
   try {
@@ -46,6 +48,15 @@ interface UseTimerReturn {
   flashActive: boolean;
 }
 
+/**
+ * Rest timer.
+ *
+ * Counts against a wall-clock deadline rather than by decrementing a counter
+ * once per tick. iOS throttles and then suspends timers as soon as the app is
+ * backgrounded or the screen locks, so a decrementing timer silently loses the
+ * time you were away; reading the clock means the countdown is still correct
+ * when you come back. The screen is also held awake while it runs.
+ */
 export function useTimer(onDone?: () => void): UseTimerReturn {
   const [remaining, setRemaining] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
@@ -53,19 +64,28 @@ export function useTimer(onDone?: () => void): UseTimerReturn {
   const [flashActive, setFlashActive] = useState(false);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const deadlineRef = useRef(0);
+  /** Guards the one-shot cues, which must not re-fire on a resumed tick. */
+  const warnedRef = useRef(false);
+  const finishedRef = useRef(false);
+
   const onDoneRef = useRef(onDone);
   onDoneRef.current = onDone;
 
-  const totalRef = useRef(0);
+  useWakeLock(isRunning);
 
-  const stop = useCallback(() => {
+  const clear = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
+  }, []);
+
+  const stop = useCallback(() => {
+    clear();
     setIsRunning(false);
     setIsWarning(false);
-  }, []);
+  }, [clear]);
 
   const flash = useCallback(() => {
     setFlashActive(true);
@@ -73,52 +93,52 @@ export function useTimer(onDone?: () => void): UseTimerReturn {
   }, []);
 
   const start = useCallback((seconds: number) => {
-    stop();
-    totalRef.current = seconds;
+    clear();
+    deadlineRef.current = Date.now() + seconds * 1000;
+    warnedRef.current = false;
+    finishedRef.current = false;
     setRemaining(seconds);
     setIsRunning(true);
     setIsWarning(false);
 
-    intervalRef.current = setInterval(() => {
-      setRemaining(prev => {
-        const next = prev - 1;
+    const tick = () => {
+      const left = Math.max(0, Math.ceil((deadlineRef.current - Date.now()) / 1000));
+      setRemaining(left);
 
-        if (next === CONFIG.ui.restWarningAt) {
-          setIsWarning(true);
-          warningBeeps();
-          flash();
-        }
+      if (!warnedRef.current && left <= CONFIG.ui.restWarningAt && left > 0) {
+        warnedRef.current = true;
+        setIsWarning(true);
+        warningBeeps();
+        void hapticWarning();
+        flash();
+      }
 
-        if (next <= 0) {
-          if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-            intervalRef.current = null;
-          }
-          setIsRunning(false);
-          setIsWarning(false);
-          doneBeep();
-          flash();
-          onDoneRef.current?.();
-          return 0;
-        }
+      if (left <= 0 && !finishedRef.current) {
+        finishedRef.current = true;
+        clear();
+        setIsRunning(false);
+        setIsWarning(false);
+        doneBeep();
+        void hapticDone();
+        flash();
+        onDoneRef.current?.();
+      }
+    };
 
-        return next;
-      });
-    }, 1000);
-  }, [stop, flash]);
+    // Sub-second ticking keeps the displayed number honest against the clock
+    // without the countdown ever appearing to skip.
+    intervalRef.current = setInterval(tick, 250);
+  }, [clear, flash]);
 
   const skip = useCallback(() => {
+    finishedRef.current = true;
     stop();
     setRemaining(0);
     onDoneRef.current?.();
   }, [stop]);
 
   // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, []);
+  useEffect(() => clear, [clear]);
 
   return { start, stop, skip, remaining, isRunning, isWarning, flashActive };
 }

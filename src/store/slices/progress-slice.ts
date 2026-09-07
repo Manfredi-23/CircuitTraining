@@ -47,5 +47,7 @@ export const createProgressSlice: StateCreator<Store, [], [], ProgressSlice> = (
     pendingDecayEvents: [],
     sessionLevelUps: [],
     benchmarkResults: [],
+    loadLog: [],
+    pendingLoad: null,
   }),
 });
