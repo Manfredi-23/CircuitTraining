@@ -195,7 +195,11 @@ keeps all three in sync. Do not hand-edit the PNGs.
 
 ## Handoff Documents
 
-- **`7bit-handover-v10.md`** — current. The training model: diagnosis of what was
+- **`7bit-handover-v11.md`** — current for the app shell. The iOS setup
+  (orientation, appearance, plugins, the status bar trap), the wall-clock timer
+  fix, load logging, and asset generation. Defers to v10 for all training
+  content.
+- **`7bit-handover-v10.md`** — current for the programme. The training model: diagnosis of what was
   wrong with v9's programme, the new capacity/block/load model, all ten sessions,
   benchmarks and targets, the evidence base, and the Mac terminal commands.
 - **`7bit-handoff-v9.md`** — design system, screen layouts, copy system, stats
