@@ -8,18 +8,13 @@ import styles from './RestScreen.module.css';
 const CIRCUMFERENCE = 2 * Math.PI * 54; // 339.3
 
 export default function RestScreen() {
-  const { currentExercise, exerciseList, stepIndex, round, setScreen, completeSession } = useStore();
+  const { currentExercise, setScreen } = useStore();
   const startedRef = useRef(false);
 
-  const timer = useTimer(() => {
-    // On done: check if session is complete
-    const { _nextAction } = useStore.getState();
-    if (_nextAction === 'complete') {
-      completeSession();
-    } else {
-      setScreen('workout');
-    }
-  });
+  // Rest always returns to the workout screen. Completion is decided by the
+  // workout slice when the last set of the last exercise is done, so there is
+  // never a rest period hanging off the end of a session.
+  const timer = useTimer(() => setScreen('workout'));
 
   // Start timer on mount
   useEffect(() => {

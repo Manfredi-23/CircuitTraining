@@ -1,60 +1,79 @@
 // =============================================================================
-// check-morning-budget.ts — guards the MORN promise: every morning circuit
-// must finish inside 15 minutes at ANY muscle level and ANY energy setting.
+// check-morning-budget.ts — guards the two promises MORN makes.
 // Run with: npm run check:morning
 //
-// Work time is estimated pessimistically (3s per rep, plus a fixed setup cost
-// for anything needing the band or the pull edge repositioned, plus double
-// time for per-side exercises). Rest comes from the real engine.
+//   1. Every morning circuit finishes inside 15 minutes, at every capacity
+//      level and every energy setting.
+//   2. No exercise disappears when the athlete picks TIRED. That is the
+//      setting a non-morning person reaches for most, and the energy model
+//      drops whole blocks — ACCESSORY in particular. MORN is built from
+//      WARMUP, PREHAB and MOBILITY for exactly this reason, and this check
+//      is what stops that quietly regressing.
+//
+// Duration comes from the engine's own estimateDuration, which is the same
+// function that prints the minutes on the circuit card, so this verifies the
+// number the athlete actually reads.
 // =============================================================================
 
 import { CONFIG } from '@/core/config';
-import { buildList } from '@/core/engine';
+import { buildList, estimateDuration } from '@/core/engine';
 import { getModeData } from '@/core/data-index';
-import type { EnergyKey, Progress, MuscleGroup } from '@/core/types';
+import type { EnergyKey, Progress } from '@/core/types';
 
-const SEC_PER_REP = 3;
-const SETUP: Record<string, number> = {
-  'morn-nohang': 20, 'morn-nohang-easy': 20,
-  'morn-pressout': 12, 'morn-chop': 12, 'morn-pullapart': 8,
-  'morn-side-plank': 8, 'morn-side-plank-hold': 8,
-  'morn-supine-twist': 6, 'morn-band-deadbug': 8, 'morn-leg-lowers': 8,
-  'morn-glute-bridge-march': 6, 'morn-hip-9090': 6,
-};
-const PER_SIDE = new Set(['morn-side-plank', 'morn-pressout', 'morn-chop',
-                          'morn-side-plank-hold', 'morn-nohang', 'morn-nohang-easy']);
+const BUDGET_MINUTES = 15;
+const ENERGIES: EnergyKey[] = ['TIRED', 'NORMAL', 'FRESH'];
 
 function progressAt(level: number): Progress {
-  const xp = CONFIG.levels.find(l => l.level === level)!.cumul;
-  const p: Progress = {};
-  for (const m of CONFIG.muscleGroups as MuscleGroup[]) {
-    p[m] = { xp, lastTrained: new Date().toISOString(), history: [] };
+  const xp = CONFIG.levels.find(l => l.level === level)?.cumul ?? 0;
+  const progress: Progress = {};
+  for (const capacity of CONFIG.capacities) {
+    progress[capacity] = { xp, lastTrained: new Date().toISOString(), history: [] };
   }
-  return p;
+  return progress;
 }
 
-let worst = 0, worstLabel = '';
+let failures = 0;
+let worstMinutes = 0;
+let worstLabel = '';
+
 for (const circuit of getModeData('MORN')) {
-  console.log(`\n=== ${circuit.circuitNum} ${circuit.title}  (card says ${circuit.duration} min) ===`);
-  for (const level of [1, 4, 7]) {
-    for (const energy of ['TIRED', 'NORMAL', 'FRESH'] as EnergyKey[]) {
+  console.log(`\n=== ${circuit.circuitNum} ${circuit.title} ===`);
+
+  const exerciseCounts = new Map<EnergyKey, number>();
+
+  for (const level of CONFIG.levels.map(l => l.level)) {
+    const row: string[] = [];
+    for (const energy of ENERGIES) {
       const list = buildList(circuit, energy, progressAt(level));
-      let work = 0, rest = 0;
-      for (const ex of list) {
-        const sides = PER_SIDE.has(ex.id) ? 2 : 1;
-        const unitTime = ex.unit === 'sec' ? ex.scaledReps : ex.scaledReps * SEC_PER_REP;
-        work += unitTime * sides + (SETUP[ex.id] ?? 4);
-        rest += ex.scaledRest;
+      const minutes = estimateDuration(list);
+
+      if (level === 1) exerciseCounts.set(energy, list.length);
+
+      if (minutes > worstMinutes) {
+        worstMinutes = minutes;
+        worstLabel = `${circuit.circuitNum} L${level} ${energy}`;
       }
-      const rounds = list[0]?.rounds ?? 1;
-      const total = (work + rest) * rounds;
-      const label = `${circuit.circuitNum} L${level} ${energy}`;
-      if (total > worst) { worst = total; worstLabel = label; }
-      const flag = total > 900 ? '  <-- OVER 15 MIN' : '';
-      console.log(`  L${level} ${energy.padEnd(6)} n=${list.length} rest=${list[0]?.scaledRest}s ` +
-                  `work=${Math.round(work)}s rest=${Math.round(rest)}s  TOTAL ${(total/60).toFixed(1)} min${flag}`);
+      if (minutes > BUDGET_MINUTES) {
+        failures++;
+        row.push(`${energy} ${minutes}min OVER`);
+      } else {
+        row.push(`${energy} ${minutes}min (${list.length} ex)`);
+      }
     }
+    console.log(`  L${level}  ${row.join('   ')}`);
+  }
+
+  // Promise 2: TIRED must not empty the session out.
+  const full = exerciseCounts.get('NORMAL') ?? 0;
+  const tired = exerciseCounts.get('TIRED') ?? 0;
+  if (tired < full) {
+    failures++;
+    console.log(`  FAIL: TIRED drops ${full - tired} exercise(s). Check for ACCESSORY blocks.`);
+  } else {
+    console.log(`  TIRED keeps all ${full} exercises.`);
   }
 }
-console.log(`\nWorst case: ${worstLabel} at ${(worst/60).toFixed(1)} min (budget 15.0)`);
-console.log(worst <= 900 ? 'PASS' : 'FAIL');
+
+console.log(`\nWorst case: ${worstLabel} at ${worstMinutes} min (budget ${BUDGET_MINUTES}).`);
+console.log(failures === 0 ? 'PASS' : `FAIL (${failures} problem(s))`);
+process.exit(failures === 0 ? 0 : 1);

@@ -1,6 +1,13 @@
 # 7Bit Circuit Training
 
-Adaptive circuit training app for climbers. XP-based progression across 12 muscle groups, form guides, rest timers, session tracking.
+Adaptive training app for climbers. Ten climbing-performance capacities, load-based
+progression, sourced protocols, testable benchmarks, form guides, rest timers and
+session tracking.
+
+Built for one athlete: 35, 62kg, 7a+, three sessions a week, home and gym.
+
+**Training model:** see [`7bit-handover-v10.md`](7bit-handover-v10.md).
+**Design system:** see [`7bit-handoff-v9.md`](7bit-handoff-v9.md).
 
 ## Requirements
 
@@ -23,13 +30,44 @@ Opens the web app at `http://localhost:3000`.
 ```bash
 npm install                # Install all dependencies (Next.js, React, Capacitor, etc.)
 npm run build              # Compile the app into static files (out/ folder)
-npx cap sync ios           # Copy the static files into the iOS Xcode project
+npx cap sync ios           # Copy static files in, resolve the native plugins
 npx cap open ios           # Open the Xcode project
 ```
 
 In Xcode:
 1. Select a simulator (e.g. **iPhone 16**) from the device dropdown
 2. Press **Cmd+R** to build and run
+
+The first build resolves three Swift packages (status bar, splash screen,
+haptics) from `ios/App/CapApp-SPM/Package.swift`. That takes a minute once; it
+is cached afterwards.
+
+### Native configuration
+
+| | |
+|---|---|
+| Bundle ID | `com.sevenbit.circuittraining` |
+| Display name | 7Bit |
+| Orientation | Portrait only |
+| Devices | iPhone only |
+| Deployment target | iOS 15 |
+| Appearance | Light, locked — the app has no dark theme |
+
+Native behaviour lives in `src/native/native.ts`: status bar styling, splash
+dismissal and haptics, each behind a platform check so the same build still
+runs in a browser. Screen wake during rest timers uses the Screen Wake Lock
+API (`src/hooks/use-wake-lock.ts`) rather than a plugin, so it works in the
+PWA too.
+
+### Regenerating the icon and splash
+
+Both are drawn from `public/images/logo.svg`, so the home screen icon and the
+in-app logo can never drift apart:
+
+```bash
+pip3 install pillow
+python3 tools/generate-ios-assets.py
+```
 
 ### After code changes
 
@@ -58,6 +96,7 @@ The `main` branch auto-deploys to Vercel on push. Preview deploys are created fo
 ```
 src/
   core/        Pure TypeScript business logic (no React, shared with iOS)
+               types, config, engine, protocols, benchmarks, session data
   storage/     Storage abstraction (localStorage now, Supabase later)
   store/       Zustand state management
   hooks/       React hooks (timer, swipe, audio)
@@ -70,4 +109,4 @@ public/        Static assets (images, manifest.json)
 
 ## Tech Stack
 
-Next.js 16 (App Router) · TypeScript · React 19 · Zustand · Recharts · @use-gesture/react · Capacitor (iOS)
+Next.js 16 (App Router) · TypeScript · React 19 · Zustand · Recharts · @use-gesture/react · Capacitor 8 (iOS)

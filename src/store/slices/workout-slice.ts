@@ -1,14 +1,23 @@
 import type { StateCreator } from 'zustand';
 import type { Store } from '../store';
-import type { Circuit, ScaledExercise, MuscleGroup, LevelUp } from '@/core/types';
+import type { Circuit, ScaledExercise, Capacity, LevelUp } from '@/core/types';
 import { getModeData } from '@/core/data-index';
 import * as Engine from '@/core/engine';
 
+/**
+ * Sessions run as sets within an exercise, not rounds of a circuit.
+ *
+ * The old flow did one rep of everything and then looped three times, which is
+ * a conditioning format. Strength work needs consecutive sets of the same
+ * movement with full rest between them, so the athlete stays in one position
+ * and one load while the quality is there.
+ */
 export interface WorkoutSlice {
   circuit: Circuit | null;
   exerciseList: ScaledExercise[];
   stepIndex: number;
-  round: number;
+  /** 1-based set counter within the current exercise. */
+  setIndex: number;
   currentExercise: ScaledExercise | null;
   sessionStartTime: number | null;
   swapActive: boolean;
@@ -29,7 +38,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   circuit: null,
   exerciseList: [],
   stepIndex: 0,
-  round: 1,
+  setIndex: 1,
   currentExercise: null,
   sessionStartTime: null,
   swapActive: false,
@@ -37,128 +46,118 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   exerciseTimerActive: false,
 
   startWorkout: () => {
-    const { mode, circuitIndex, energy, progress } = get();
+    const { mode, circuitIndex, energy, progress, benchmarkResults } = get();
     const circuits = getModeData(mode);
     const circuit = circuits[circuitIndex];
-    const exerciseList = Engine.buildList(circuit, energy, progress);
-    const currentExercise = exerciseList[0] || null;
+    const exerciseList = Engine.buildList(circuit, energy, progress, benchmarkResults);
 
     set({
       circuit,
       exerciseList,
       stepIndex: 0,
-      round: 1,
-      currentExercise,
+      setIndex: 1,
+      currentExercise: exerciseList[0] || null,
       sessionStartTime: Date.now(),
       swapActive: false,
       formGuideOpen: false,
       exerciseTimerActive: false,
       screen: 'workout',
     });
+
+    get().primeLoad(exerciseList[0] || null);
   },
 
   exerciseDone: () => {
-    const { exerciseList, stepIndex, round, currentExercise, progress } = get();
+    const { exerciseList, stepIndex, setIndex, currentExercise, progress } = get();
     if (!currentExercise) return;
 
-    // Apply XP
+    // More sets of this exercise still to do: rest, then repeat.
+    if (setIndex < currentExercise.scaledSets) {
+      set({ setIndex: setIndex + 1, formGuideOpen: false, screen: 'rest' });
+      return;
+    }
+
+    // Last set of the exercise — award XP once, and record what was actually
+    // on the belt. Both happen once per exercise, at the same moment.
+    get().commitLoad(currentExercise);
     const newProgress = Engine.applyXP(progress, currentExercise, 'done');
 
-    // Check for level ups
     const sessionLevelUps = [...get().sessionLevelUps];
-    for (const m of currentExercise.muscles) {
-      const prevLevel = Engine.getMuscleLevel(progress, m);
-      const newLevel = Engine.getMuscleLevel(newProgress, m);
+    for (const c of currentExercise.capacities) {
+      const prevLevel = Engine.getCapacityLevel(progress, c);
+      const newLevel = Engine.getCapacityLevel(newProgress, c);
       if (newLevel > prevLevel) {
         const levelData = Engine.getLevelData(Engine.getXPForLevel(newLevel));
-        sessionLevelUps.push({ muscle: m, level: newLevel, unlocks: levelData.unlocks });
+        sessionLevelUps.push({ capacity: c, level: newLevel, unlocks: levelData.unlocks });
       }
     }
 
     const nextStep = stepIndex + 1;
-    const rounds = currentExercise.rounds;
 
     if (nextStep >= exerciseList.length) {
-      // End of round
-      if (round < rounds) {
-        // Next round
-        set({
-          progress: newProgress,
-          sessionLevelUps,
-          stepIndex: 0,
-          round: round + 1,
-          currentExercise: exerciseList[0],
-          swapActive: false,
-          formGuideOpen: false,
-          screen: 'rest',
-        });
-      } else {
-        // Session complete
-        set({ progress: newProgress, sessionLevelUps, screen: 'rest' });
-        // After rest, go to complete
-        set({ _nextAction: 'complete' as const });
-      }
-    } else {
-      set({
-        progress: newProgress,
-        sessionLevelUps,
-        stepIndex: nextStep,
-        currentExercise: exerciseList[nextStep],
-        swapActive: false,
-        formGuideOpen: false,
-        screen: 'rest',
-      });
+      set({ progress: newProgress, sessionLevelUps });
+      get().completeSession();
+      return;
     }
+
+    set({
+      progress: newProgress,
+      sessionLevelUps,
+      stepIndex: nextStep,
+      setIndex: 1,
+      currentExercise: exerciseList[nextStep],
+      swapActive: false,
+      formGuideOpen: false,
+      screen: 'rest',
+    });
+
+    get().primeLoad(exerciseList[nextStep]);
   },
 
+  /**
+   * Skipping moves on without earning XP and without any penalty. The whole
+   * exercise is skipped, remaining sets included — a half-done max-hang set is
+   * worse than none.
+   */
   exerciseSkip: () => {
-    const { exerciseList, stepIndex, round, currentExercise, progress } = get();
+    const { exerciseList, stepIndex, currentExercise, progress } = get();
     if (!currentExercise) return;
 
     const newProgress = Engine.applyXP(progress, currentExercise, 'skip');
     const nextStep = stepIndex + 1;
-    const rounds = currentExercise.rounds;
 
     if (nextStep >= exerciseList.length) {
-      if (round < rounds) {
-        set({
-          progress: newProgress,
-          stepIndex: 0,
-          round: round + 1,
-          currentExercise: exerciseList[0],
-          swapActive: false,
-          formGuideOpen: false,
-          screen: 'workout',
-        });
-      } else {
-        get().completeSession();
-        set({ progress: newProgress });
-      }
-    } else {
-      set({
-        progress: newProgress,
-        stepIndex: nextStep,
-        currentExercise: exerciseList[nextStep],
-        swapActive: false,
-        formGuideOpen: false,
-        screen: 'workout',
-      });
+      set({ progress: newProgress });
+      get().completeSession();
+      return;
     }
+
+    set({
+      progress: newProgress,
+      stepIndex: nextStep,
+      setIndex: 1,
+      currentExercise: exerciseList[nextStep],
+      swapActive: false,
+      formGuideOpen: false,
+      screen: 'workout',
+    });
+
+    get().primeLoad(exerciseList[nextStep]);
   },
 
   exitWorkout: () => {
     const { exerciseList, stepIndex, progress } = get();
-    const remaining = exerciseList.slice(stepIndex);
-    const newProgress = Engine.applyQuitPenalty(progress, remaining);
+    const newProgress = Engine.applyQuitPenalty(progress, exerciseList.slice(stepIndex));
 
     set({
       progress: newProgress,
       circuit: null,
       exerciseList: [],
       stepIndex: 0,
-      round: 1,
+      setIndex: 1,
       currentExercise: null,
       sessionStartTime: null,
+      pendingLoad: null,
       screen: 'home',
     });
   },
@@ -168,18 +167,26 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
     if (!currentExercise?.variations || currentExercise.variations.length < 2) return;
 
     if (swapActive) {
-      // Revert to best variation
       const best = Engine.getBestVariation(currentExercise, progress);
       set({
         swapActive: false,
-        currentExercise: { ...currentExercise, displayName: best?.name || currentExercise.name, activeVariation: best },
+        currentExercise: {
+          ...currentExercise,
+          displayName: best?.name || currentExercise.name,
+          activeVariation: best,
+          loadText: best?.load || currentExercise.load.text,
+        },
       });
     } else {
-      // Swap to base variation
       const base = currentExercise.variations[0];
       set({
         swapActive: true,
-        currentExercise: { ...currentExercise, displayName: base.name, activeVariation: base },
+        currentExercise: {
+          ...currentExercise,
+          displayName: base.name,
+          activeVariation: base,
+          loadText: base.load || currentExercise.load.text,
+        },
       });
     }
   },
@@ -194,15 +201,11 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
 
     const duration = sessionStartTime ? Math.round((Date.now() - sessionStartTime) / 60000) : 0;
 
-    // Collect all trained muscles
-    const trainedMuscles = new Set<MuscleGroup>();
-    exerciseList.forEach(ex => ex.muscles.forEach(m => trainedMuscles.add(m)));
-    const trainedArr = Array.from(trainedMuscles);
+    const trained = new Set<Capacity>();
+    exerciseList.forEach(ex => ex.capacities.forEach(c => trained.add(c)));
 
-    // Record history
-    const newProgress = Engine.recordHistory(progress, trainedArr);
+    const newProgress = Engine.recordHistory(progress, Array.from(trained));
 
-    // Add to session log
     const sessionLog = [...get().sessionLog, {
       date: new Date().toISOString(),
       mode,
@@ -212,10 +215,8 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       duration,
     }];
 
-    set({
-      progress: newProgress,
-      sessionLog,
-      screen: 'complete',
-    });
+    set({ progress: newProgress, sessionLog, screen: 'complete' });
   },
 });
+
+export type { LevelUp };

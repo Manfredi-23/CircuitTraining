@@ -1,6 +1,7 @@
 'use client';
 
 import { useStore } from '@/store/store';
+import { CONFIG } from '@/core/config';
 import styles from './CompleteScreen.module.css';
 
 export default function CompleteScreen() {
@@ -44,11 +45,11 @@ export default function CompleteScreen() {
         <div className={styles.levelupList}>
           {sessionLevelUps.map((lu, i) => (
             <div
-              key={`${lu.muscle}-${lu.level}`}
+              key={`${lu.capacity}-${lu.level}`}
               className={styles.levelupItem}
               style={{ animationDelay: `${i * 120}ms` }}
             >
-              {lu.muscle.charAt(0).toUpperCase() + lu.muscle.slice(1)} &gt; L{lu.level}! {lu.unlocks}
+              {CONFIG.capacityLabels[lu.capacity].toUpperCase()} &gt; L{lu.level}! {lu.unlocks}
             </div>
           ))}
         </div>

@@ -1,17 +1,17 @@
 import type { StateCreator } from 'zustand';
 import type { Store } from '../store';
-import type { SortMode, TimeFilter, MuscleGroup } from '@/core/types';
+import type { SortMode, TimeFilter, Capacity } from '@/core/types';
 
 export interface StatsSlice {
   statsSort: SortMode;
   statsTimeFilter: TimeFilter;
-  activeChartMuscles: (MuscleGroup | 'overall')[];
-  highlightMuscle: MuscleGroup | null;
+  activeChartMuscles: (Capacity | 'overall')[];
+  highlightMuscle: Capacity | null;
 
   setStatsSort: (sort: SortMode) => void;
   setStatsTimeFilter: (filter: TimeFilter) => void;
-  toggleChartMuscle: (muscle: MuscleGroup | 'overall') => void;
-  setHighlightMuscle: (muscle: MuscleGroup | null) => void;
+  toggleChartMuscle: (muscle: Capacity | 'overall') => void;
+  setHighlightMuscle: (muscle: Capacity | null) => void;
 }
 
 export const createStatsSlice: StateCreator<Store, [], [], StatsSlice> = (set) => ({
