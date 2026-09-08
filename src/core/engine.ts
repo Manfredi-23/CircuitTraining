@@ -101,7 +101,8 @@ export function buildList(circuit: Circuit, energyKey: EnergyKey, progress: Prog
     .map(ex => {
       const variation = getBestVariation(ex, progress);
       const scaledReps = scaleReps(ex.baseReps, energyKey, circuitMinLevel);
-      const scaledRest = scaleRest(ex.baseRest, energyKey, circuitMinLevel);
+      const rest = scaleRest(ex.baseRest, energyKey, circuitMinLevel);
+      const scaledRest = circuit.restCap ? Math.min(circuit.restCap, rest) : rest;
       const rounds = Math.max(1, circuit.rounds + energyCfg.roundOffset);
 
       return {

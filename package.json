@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "check:morning": "npx --yes tsx scripts/check-morning-budget.ts"
   },
   "dependencies": {
     "@capacitor/cli": "^8.3.0",

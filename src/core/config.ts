@@ -6,7 +6,7 @@ import type { Config } from './types';
 
 export const CONFIG: Config = {
 
-  modes: ['HOME', 'CAVE', 'HANG'],
+  modes: ['HOME', 'CAVE', 'HANG', 'MORN'],
 
   energy: {
     FRESH:  { label: 'FRESH',  repMult: 1.2,  restOffset: 0,  roundOffset: 0  },
@@ -65,6 +65,16 @@ export const CONFIG: Config = {
     'Half-crimp, full commitment.',
     'Your forearms will write a memoir.',
     'Edge lord training protocol.',
+    'Awake is a strong word.',
+    'Coffee comes after. That is the deal.',
+    'Fifteen minutes. Then you may resume being unconscious.',
+    'The floor is already there. Just lie on it.',
+    'Abs are built at an hour you resent.',
+    'Consciousness optional. Movement mandatory.',
+    'Snooze button: 0. Obliques: 1.',
+    'Nobody is a morning person. Some are just already on the mat.',
+    'Your alarm won. Get it over with.',
+    'Small edge. Small routine. Large opinions.',
   ],
 
   statLines: {

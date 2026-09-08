@@ -20,9 +20,12 @@ Legacy vanilla JS version preserved in `legacy/` folder for reference.
 npm run dev      # Dev server at localhost:3000
 npm run build    # Production build
 npm run start    # Serve production build
+
+npm run check:morning   # Assert every MORN circuit fits inside 15 minutes
 ```
 
-No test framework yet — test manually in browser.
+No test framework yet — test manually in browser. The one automated check is
+`check:morning`, which guards the hard time budget on the morning circuits.
 
 ## Architecture
 
@@ -35,7 +38,7 @@ src/
     config.ts    # Central CONFIG object
     engine.ts    # Training logic: buildList, scaleReps, applyXP, checkDecay, etc.
     stats.ts     # Trend scoring, chart data generation, muscle list sorting
-    data-home.ts, data-cave.ts, data-hang.ts  # Exercise libraries
+    data-home.ts, data-cave.ts, data-hang.ts, data-morning.ts  # Exercise libraries
     data-index.ts  # getModeData(mode) helper
   storage/       # Async storage abstraction (swap localStorage for Supabase later)
     storage.interface.ts  # IStorageAdapter interface
@@ -75,13 +78,24 @@ Four slices in a single store:
 - **ProgressSlice**: progress (per-muscle XP/history), sessionLog, pendingDecayEvents, sessionLevelUps
 - **StatsSlice**: statsSort, statsTimeFilter, activeChartMuscles, highlightMuscle
 
-### Three Modes
+### Four Modes
 
 | Mode | Equipment | Circuits |
 |------|-----------|----------|
 | HOME | Mat, pull-up bar, medium band (no anchor) | 01 Push+Core, 02 Pull+Biceps, 03 Legs+Body |
 | CAVE | KB 12kg, DB, rings, TRX, campus board, hangboard, bands+anchors | 01 Push+Core, 02 Pull+Biceps, 03 Legs+Body |
 | HANG | Hangboard (gym), 20mm half-crimp | 01 Max Hangs, 02 Density Hangs |
+| MORN | Yoga mat, medium band, small pull edge on a sling | 01 Abs+Obliques, 02 Slow Start |
+
+MORN is the wake-up routine and is time-boxed rather than volume-driven. Both
+circuits are `rounds: 1` and carry `restCap: 20`, which clamps scaled rest so
+the session cannot outgrow its slot as muscle levels rise. Worst case (L7,
+FRESH) is 13.4 minutes against a 15-minute promise — `npm run check:morning`
+re-verifies that across every level and energy combination.
+
+The pull edge exercises are deliberately submaximal and placed late in each
+circuit: finger tendons are cold on waking, and a maximal morning load is how
+climbers acquire pulley injuries. Max hangs stay in HANG mode.
 
 ### Progression System
 
@@ -90,6 +104,7 @@ Four slices in a single store:
 ```
 final_reps = base_reps * energy_mult * muscle_level_mult
 final_rest = base_rest + energy_offset + muscle_level_offset (uses lowest group in circuit)
+             then clamped to circuit.restCap when the circuit sets one
 variation  = highest where min_level <= group_level
 ```
 

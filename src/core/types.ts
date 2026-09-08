@@ -2,7 +2,7 @@
 // types.ts — All TypeScript types for the 7Bit app
 // =============================================================================
 
-export type Mode = 'HOME' | 'CAVE' | 'HANG';
+export type Mode = 'HOME' | 'CAVE' | 'HANG' | 'MORN';
 export type EnergyKey = 'FRESH' | 'NORMAL' | 'TIRED';
 export type ScreenName = 'home' | 'workout' | 'rest' | 'complete' | 'stats';
 export type SortMode = 'strongest' | 'weakest' | 'recent';
@@ -125,6 +125,9 @@ export interface Circuit {
   illustration: string;
   duration: number;
   rounds: number;
+  /** Hard ceiling (seconds) on scaled rest for every exercise in this circuit.
+   *  Used by time-boxed circuits (MORN) so the session cannot outgrow its slot. */
+  restCap?: number;
   note?: string;
   exercises: Exercise[];
 }
