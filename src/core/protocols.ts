@@ -309,6 +309,34 @@ export const PROTOCOLS: Record<string, Protocol> = {
       + 'everything.',
     source: 'Lattice Training assessment methodology.',
   },
+
+  // ---------------------------------------------------------------------------
+  // Daily minimum dose
+  // ---------------------------------------------------------------------------
+
+  'daily-trunk': {
+    id: 'daily-trunk',
+    name: 'Daily Minimum-Dose Trunk',
+    quality: 'Trunk stiffness, anti-rotation and anti-extension endurance',
+    work: '10-25s holds, or 10-16 controlled reps',
+    rest: '15-25s. Short on purpose: no set here goes near failure, so there is '
+      + 'nothing to recover from between them.',
+    sets: '1-2',
+    intensity: 'Easy to moderate. Nothing in this protocol is a working max.',
+    frequency: 'Daily, climbing days included',
+    rationale:
+      'This is the frequency counterpart to the twice-weekly tension work, not a '
+      + 'replacement for it. Trunk endurance responds to short, submaximal, '
+      + 'frequently repeated bouts, and because no set approaches failure the '
+      + 'session carries no recovery cost and needs no long rests. The side bridge '
+      + 'and bird dog here are two thirds of the standard core-endurance battery, '
+      + 'chosen because they load the trunk without loading the spine in flexion. '
+      + 'Hard progressions belong in the twice-weekly session; what this one buys '
+      + 'is the habit and the accumulated hours.',
+    source:
+      'McGill, core endurance training and the side bridge / bird dog standards; '
+      + 'Saeterbakken et al. (2018) for the twice-weekly loading this supplements.',
+  },
 };
 
 export function getProtocol(id: string | undefined): Protocol | null {

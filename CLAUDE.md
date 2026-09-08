@@ -20,9 +20,12 @@ Legacy vanilla JS version preserved in `legacy/` folder for reference.
 npm run dev      # Dev server at localhost:3000
 npm run build    # Production build
 npm run start    # Serve production build
+
+npm run check:morning   # Assert the MORN sessions still fit their 15-minute budget
 ```
 
-No test framework yet — test manually in browser.
+No test framework yet — test manually in browser. The one automated check is
+`check:morning`, which guards the two promises MORN makes.
 
 ## Architecture
 
@@ -38,7 +41,7 @@ src/
     benchmarks.ts# Testable standards, athlete profile, %BW to kg conversions
     stats.ts     # Trend scoring, chart data, capacity list sorting
     load.ts      # Load axes, load history, stepper formatting
-    data-home.ts, data-cave.ts, data-hang.ts  # Session libraries
+    data-home.ts, data-cave.ts, data-hang.ts, data-morning.ts  # Session libraries
     data-index.ts  # getModeData(mode) helper
   storage/       # Async storage abstraction (swap localStorage for Supabase later)
   store/         # Zustand store (app / workout / progress / stats / load slices)
@@ -130,6 +133,22 @@ intensity at HARD** — a tired athlete downgrades rather than grinds.
 | HOME | 01 TENSION, 02 PULL, 03 ARMOUR |
 | CAVE | 01 MAX, 02 POWER, 03 CAPACITY, 04 ASSESS |
 | HANG | 01 MAX HANGS, 02 CAPACITY, 03 DENSITY |
+| MORN | 01 ABS + OBLIQUES, 02 SLOW START |
+
+MORN is the wake-up routine: yoga mat, medium band with no anchor, small pull
+edge on a sling, done before anything else competes for it. Three constraints
+shape it, and `npm run check:morning` is what stops them regressing:
+
+- **`recoveryHours: 0`** on both sessions. Nothing loads a tendon hard enough to
+  cost the next session, so readiness never blocks it and it stacks on a
+  climbing day.
+- **No ACCESSORY block.** TIRED drops that block entirely, and TIRED is exactly
+  what a non-morning person reaches for. MORN is built from WARMUP, PREHAB and
+  MOBILITY, none of which are dropped and none of which gain sets when FRESH —
+  so the session has a hard time ceiling. Worst case is 11 minutes.
+- **Fingers last and light.** One submaximal primer set of edge work, placed
+  after the trunk work has warmed the tissue. Pulleys are stiffest on waking.
+  The real finger dose is HANG 03.
 
 ### Adding or changing an exercise
 
