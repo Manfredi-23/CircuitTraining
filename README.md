@@ -11,7 +11,7 @@ Built for one athlete: 35, 62kg, 7a+, three sessions a week, home and gym.
 
 ## Requirements
 
-- **Node.js** v18+
+- **Node.js** v22+ (`@capacitor/cli` requires >=22, Next 16 requires >=20.9)
 - **Xcode** (for iOS development — macOS only)
 
 ## Quick Start
