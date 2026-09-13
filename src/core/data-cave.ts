@@ -525,23 +525,25 @@ export const DATA_CAVE: Circuit[] = [
   },
   {
     id: 'cave-05', circuitNum: '05',
-    title: 'ADD-ON', subtitle: 'after bouldering - 20 min',
-    focus: 'Bolt strength onto a climbing session instead of finding a fourth day.',
-    capacities: ['pull', 'tension', 'shoulder'],
-    illustration: 'barbell.svg',
-    duration: 22,
+    title: 'ADD-ON', subtitle: 'after bouldering - antagonists',
+    focus: 'Pay the bills climbing does not: press, legs, rotation. One heavy pull, then the opposite.',
+    capacities: ['press', 'legs', 'tension', 'pull'],
+    illustration: 'dumbbell.svg',
+    duration: 26,
     recoveryHours: 12,
     note:
-      'Designed to run straight after a boulder session, while you are already warm. '
-      + 'No finger loading: the bouldering was the finger session. If you are too '
-      + 'cooked to pull hard, do the cuff work and go home.',
+      'Runs straight after a boulder session, while you are already warm. No finger '
+      + 'loading: the bouldering was the finger session. You have just spent two hours '
+      + 'pulling, so this deliberately is not more of that - one heavy pull, then the '
+      + 'patterns climbing never trains. If you are too cooked, the squat and the cuff '
+      + 'work are the two worth doing anyway.',
     exercises: [
       {
         id: 'addon-weighted-pullup',
         name: 'Weighted Pull-Ups',
         capacities: ['pull'],
         block: 'PRIMARY', intensity: 'HARD',
-        sets: 4, work: 4, unit: 'reps', restSec: 150,
+        sets: 3, work: 4, unit: 'reps', restSec: 150,
         load: { kind: 'added-kg', text: 'RPE 8 — two reps in reserve. You are pre-fatigued, so go lighter than you think.' },
         progression:
           'Bodyweight sets of 4 first. Once four sets of four are easy, start adding '
@@ -563,26 +565,77 @@ export const DATA_CAVE: Circuit[] = [
         },
       },
       {
-        id: 'addon-front-lever',
-        name: 'Front Lever Progression',
-        capacities: ['tension'],
-        block: 'SECONDARY', intensity: 'HARD',
-        sets: 3, work: 10, unit: 'sec', restSec: 90,
-        load: { kind: 'bodyweight', text: 'Hardest progression held with a flat lower back' },
-        progression: 'Three clean sets of 12s, then move up a progression and reset to 8s.',
-        protocolId: 'tension-iso',
+        id: 'addon-pushup',
+        name: 'Push-Ups / Ring Dips',
+        capacities: ['press', 'shoulder'],
+        block: 'SECONDARY', intensity: 'MODERATE',
+        sets: 3, work: 10, unit: 'reps', restSec: 90,
+        load: { kind: 'bodyweight', text: 'Bodyweight. Add a pack or a belt once three sets of twelve are easy.' },
+        progression:
+          'Reps to 12 across all three sets, then move up the variation ladder before '
+          + 'you add any weight. Range before load on a pressing pattern you have barely trained.',
+        protocolId: 'strength-endurance',
         variations: [
-          { minLevel: 1, name: 'Tuck Front Lever' },
-          { minLevel: 3, name: 'Advanced Tuck Front Lever' },
-          { minLevel: 5, name: 'One-Leg Front Lever' },
-          { minLevel: 6, name: 'Straddle Front Lever' },
+          { minLevel: 1, name: 'Push-Ups' },
+          { minLevel: 2, name: 'Ring Push-Ups' },
+          { minLevel: 4, name: 'Ring Dips' },
+          { minLevel: 6, name: 'Weighted Ring Dips', load: 'Belt or pack, RPE 8' },
         ],
         form: {
-          setup: 'Hang from a bar or rings, arms straight, shoulders depressed.',
-          execution: 'Pull to horizontal in your progression and hold with the lower back flat, ribs down, glutes on.',
-          cue: 'Start at tuck. You have never trained this, so the first four weeks are learning to make the position, not holding it longer.',
-          breathing: 'Short controlled breaths.',
-          mistakes: 'Arching the lower back to make it easier. Bent arms. Jumping a progression early.',
+          setup: 'Push-ups: hands under the shoulders, body one straight line from heels to crown. Rings: set just above floor height, shoulders packed down. Dips: rings at hip height, arms locked, ribs down.',
+          execution: 'Lower with the elbows tracking back at about 45 degrees from the ribs, chest to the floor or to the rings, then press to full lockout. On rings, finish each rep by turning the rings out until the palms face forward.',
+          cue: 'Climbing is two hours of pulling and zero pressing, and the shoulder pays for that imbalance long before the fingers do. This is the single most useful thing in the session even though it feels like the least climbing-specific.',
+          breathing: 'Inhale down, exhale on the press.',
+          mistakes: 'Hips sagging. Elbows flaring to 90 degrees. On dips, dropping below the point where the shoulder stays packed - a deep dip loads the front of the shoulder hard and is not worth the extra range. Chasing the harder ring variation before the easier one is clean.',
+        },
+      },
+      {
+        id: 'addon-goblet-squat',
+        name: 'Goblet Squat',
+        capacities: ['legs'],
+        block: 'SECONDARY', intensity: 'MODERATE',
+        sets: 2, work: 10, unit: 'reps', restSec: 90,
+        load: { kind: 'added-kg', value: 12, text: 'KB 12kg at the chest. Bodyweight until the depth is honest.' },
+        progression:
+          'Full depth with a flat back for two sets of twelve first. Then a 3s pause in '
+          + 'the hole, then the heaviest bell in the gym. Legs recover fast - this is the '
+          + 'one place in the programme you can be impatient.',
+        protocolId: 'strength-endurance',
+        variations: [
+          { minLevel: 1, name: 'Bodyweight Squat' },
+          { minLevel: 2, name: 'Goblet Squat' },
+          { minLevel: 4, name: 'Goblet Squat — 3s Pause' },
+          { minLevel: 6, name: 'Goblet Squat — Heavy' },
+        ],
+        form: {
+          setup: 'Feet shoulder-width, toes turned slightly out. Bell held at the chest by the horns, elbows inside the knees.',
+          execution: 'Sit down between the hips until the hip crease passes the knee, chest tall, heels planted. Drive up through the whole foot. The bell at the chest is what lets you stay upright.',
+          cue: 'Climbers get strong at pulling and at one-legged rockovers and stay weak at loaded knee flexion. Two sets is a maintenance dose that costs you nothing on the wall tomorrow.',
+          breathing: 'Big breath in at the top, brace, exhale on the way up.',
+          mistakes: 'Cutting depth to move weight. Heels lifting - park them on a 2cm plate if the ankles are stiff. Knees collapsing inward. Rounding the lower back at the bottom.',
+        },
+      },
+      {
+        id: 'addon-russian-twist',
+        name: 'Russian Twist',
+        capacities: ['tension'],
+        block: 'ACCESSORY', intensity: 'EASY',
+        sets: 2, work: 16, unit: 'reps', restSec: 60,
+        load: { kind: 'added-kg', text: 'Bodyweight, then the 12kg bell once the rotation is clean' },
+        progression: 'Feet down until 16 controlled reps are easy, then feet up, then hold the bell.',
+        protocolId: 'tension-iso',
+        note: 'Left plus right is 2 reps',
+        variations: [
+          { minLevel: 1, name: 'Russian Twist — Feet Down' },
+          { minLevel: 4, name: 'Russian Twist — Feet Up' },
+          { minLevel: 6, name: 'KB Russian Twist' },
+        ],
+        form: {
+          setup: 'Sit on the mat, torso leaning back to about 45 degrees, knees bent. Feet on the floor to start, lifted once that is controlled. Chest tall, lower back long rather than rounded.',
+          execution: 'Rotate the ribcage to one side until the hands pass outside the hip, then to the other. Slow enough that the turn comes from the trunk and the arms are just along for the ride.',
+          cue: 'The rest of the programme trains the trunk to resist rotation - front lever, Pallof, bird dog. This is the one place it produces rotation, which is what a drop-knee and a big cross-through actually ask for.',
+          breathing: 'Exhale on each turn, short and sharp.',
+          mistakes: 'Swinging the arms while the ribcage stays still, which trains nothing. Rounding the lower back and grinding the reps out fast - this should look controlled. Going heavy before the movement is clean.',
         },
       },
       {
