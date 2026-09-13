@@ -295,6 +295,12 @@ export function getReadiness(circuit: Circuit, progress: Progress): Readiness {
     return { level: 'ready', hoursSinceLoad: null, message: 'Low load by design. Repeat as often as you like.' };
   }
 
+  // Neither do add-ons, which exist to be bolted onto a session you have just
+  // finished. Gating those on hours elapsed contradicts the whole point of them.
+  if (circuit.stacksOnSession) {
+    return { level: 'ready', hoursSinceLoad: null, message: 'Built to run straight after another session.' };
+  }
+
   const loadsFingersHard =
     circuit.recoveryHours >= CONFIG.recovery.fingerMaxHours
     && circuit.capacities.some(c => FINGER_CAPACITIES.includes(c));
@@ -312,9 +318,12 @@ export function getReadiness(circuit: Circuit, progress: Progress): Readiness {
 
   const mostRecent = Math.max(...lastTimes);
   const hours = (Date.now() - mostRecent) / (1000 * 60 * 60);
+  // What this session itself demands, not one flat number for every session.
+  // A 12h session was previously gated for 24h, so ARMOUR and the ADD-ON both
+  // reported a debt they had already paid.
   const required = loadsFingersHard
     ? CONFIG.recovery.fingerMaxHours
-    : CONFIG.recovery.hardSessionHours;
+    : circuit.recoveryHours;
 
   if (hours >= required) {
     return { level: 'ready', hoursSinceLoad: Math.floor(hours), message: 'Recovered. Go.' };
@@ -329,7 +338,7 @@ export function getReadiness(circuit: Circuit, progress: Progress): Readiness {
   return {
     level: 'rest',
     hoursSinceLoad: Math.floor(hours),
-    message: `${Math.floor(hours)}h since the last hard session. This needs ${required}h. Do DENSITY or ARMOUR instead.`,
+    message: `${Math.floor(hours)}h since the last hard session. This needs ${required}h. Do a daily session instead.`,
   };
 }
 
