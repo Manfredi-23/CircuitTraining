@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { CONFIG } from '@/core/config';
 import { getAudioContext } from './audio-context';
 import { useWakeLock } from './use-wake-lock';
-import { hapticWarning, hapticDone } from '@/native/native';
+import { hapticWarning, hapticDone, scheduleRestAlert, cancelRestAlert } from '@/native/native';
 
 function beep(freq: number, duration: number, volume: number): void {
   try {
@@ -39,7 +39,7 @@ export function formatTime(seconds: number): string {
 }
 
 interface UseTimerReturn {
-  start: (seconds: number) => void;
+  start: (seconds: number, alertBody?: string) => void;
   stop: () => void;
   skip: () => void;
   remaining: number;
@@ -56,6 +56,10 @@ interface UseTimerReturn {
  * backgrounded or the screen locks, so a decrementing timer silently loses the
  * time you were away; reading the clock means the countdown is still correct
  * when you come back. The screen is also held awake while it runs.
+ *
+ * Passing `alertBody` to start() also schedules an OS-level local notification
+ * for the deadline, so rest ending reaches you in another app or on the lock
+ * screen. It is cancelled again the moment it would be redundant.
  */
 export function useTimer(onDone?: () => void): UseTimerReturn {
   const [remaining, setRemaining] = useState(0);
@@ -68,6 +72,7 @@ export function useTimer(onDone?: () => void): UseTimerReturn {
   /** Guards the one-shot cues, which must not re-fire on a resumed tick. */
   const warnedRef = useRef(false);
   const finishedRef = useRef(false);
+  const alertCancelledRef = useRef(false);
 
   const onDoneRef = useRef(onDone);
   onDoneRef.current = onDone;
@@ -83,6 +88,7 @@ export function useTimer(onDone?: () => void): UseTimerReturn {
 
   const stop = useCallback(() => {
     clear();
+    void cancelRestAlert();
     setIsRunning(false);
     setIsWarning(false);
   }, [clear]);
@@ -92,11 +98,16 @@ export function useTimer(onDone?: () => void): UseTimerReturn {
     setTimeout(() => setFlashActive(false), CONFIG.ui.restFlashDuration);
   }, []);
 
-  const start = useCallback((seconds: number) => {
+  const start = useCallback((seconds: number, alertBody?: string) => {
     clear();
     deadlineRef.current = Date.now() + seconds * 1000;
     warnedRef.current = false;
     finishedRef.current = false;
+    alertCancelledRef.current = false;
+
+    // Scheduled up front rather than on backgrounding: iOS gives no reliable
+    // window to run JS on the way out, so the alert has to already exist.
+    if (alertBody) void scheduleRestAlert(new Date(deadlineRef.current), alertBody);
     setRemaining(seconds);
     setIsRunning(true);
     setIsWarning(false);
@@ -104,6 +115,14 @@ export function useTimer(onDone?: () => void): UseTimerReturn {
     const tick = () => {
       const left = Math.max(0, Math.ceil((deadlineRef.current - Date.now()) / 1000));
       setRemaining(left);
+
+      // Watching the countdown already? Then the banner would be noise. Drop it
+      // with a margin, because cancelling at zero races the OS delivering it.
+      if (!alertCancelledRef.current && left <= 2
+          && typeof document !== 'undefined' && document.visibilityState === 'visible') {
+        alertCancelledRef.current = true;
+        void cancelRestAlert();
+      }
 
       if (!warnedRef.current && left <= CONFIG.ui.restWarningAt && left > 0) {
         warnedRef.current = true;
@@ -132,13 +151,18 @@ export function useTimer(onDone?: () => void): UseTimerReturn {
 
   const skip = useCallback(() => {
     finishedRef.current = true;
+    alertCancelledRef.current = true;
     stop();
     setRemaining(0);
     onDoneRef.current?.();
   }, [stop]);
 
-  // Cleanup on unmount
-  useEffect(() => clear, [clear]);
+  // Cleanup on unmount. Leaving the rest screen at all — skipping, quitting the
+  // session — must take the pending alert with it.
+  useEffect(() => () => {
+    clear();
+    void cancelRestAlert();
+  }, [clear]);
 
   return { start, stop, skip, remaining, isRunning, isWarning, flashActive };
 }

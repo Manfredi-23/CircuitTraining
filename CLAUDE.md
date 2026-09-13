@@ -74,6 +74,15 @@ tools/           # generate-ios-assets.py — icon and splash from logo.svg
   rather than decrementing per tick. iOS suspends timers when the app
   backgrounds or the screen locks, and a decrementing counter silently loses
   that time.
+- **Rest alerts are local, not push**: the deadline is known on the device, so
+  there is nothing for a server to tell us — no APNs, no certificates, no
+  network. `use-timer` schedules a local notification with the OS when rest
+  starts and cancels it when it would be redundant. It is the only way the end
+  of rest reaches you while the webview is suspended, because the Web Audio
+  beep and the haptic both need the app to be running. There is no web
+  equivalent: without a service worker and Push API the browser PWA cannot
+  fire anything while backgrounded, so on web this is a no-op like the rest of
+  `src/native/`.
 
 ## Training Model (v10)
 
@@ -190,9 +199,10 @@ repeating a session the same day overwrites rather than stacking.
 Capacitor 8 with Swift Package Manager. Portrait-only, iPhone-only, light
 appearance locked, bundle ID `com.sevenbit.circuittraining`.
 
-Three first-party plugins: `@capacitor/status-bar`, `@capacitor/splash-screen`,
-`@capacitor/haptics`. Adding or removing one means re-running `npx cap sync ios`
-so `ios/App/CapApp-SPM/Package.swift` is rewritten.
+Four first-party plugins: `@capacitor/status-bar`, `@capacitor/splash-screen`,
+`@capacitor/haptics`, `@capacitor/local-notifications`. Adding or removing one
+means re-running `npx cap sync ios` so `ios/App/CapApp-SPM/Package.swift` is
+rewritten.
 
 `UIViewControllerBasedStatusBarAppearance` must stay `true` in Info.plist —
 the status bar plugin sets the style through the view controller, and setting

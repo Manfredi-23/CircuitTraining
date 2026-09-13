@@ -8,7 +8,7 @@ import styles from './RestScreen.module.css';
 const CIRCUMFERENCE = 2 * Math.PI * 54; // 339.3
 
 export default function RestScreen() {
-  const { currentExercise, setScreen } = useStore();
+  const { currentExercise, setIndex, setScreen } = useStore();
   const startedRef = useRef(false);
 
   // Rest always returns to the workout screen. Completion is decided by the
@@ -16,11 +16,15 @@ export default function RestScreen() {
   // never a rest period hanging off the end of a session.
   const timer = useTimer(() => setScreen('workout'));
 
-  // Start timer on mount
+  // Start timer on mount. The alert body names what is waiting, so the lock
+  // screen alone is enough to get you back on the mat. During rest the store
+  // already points at the next piece of work: the same exercise on its next
+  // set, or the next exercise on set 1.
   useEffect(() => {
     if (!startedRef.current && currentExercise) {
       startedRef.current = true;
-      timer.start(currentExercise.scaledRest);
+      const next = `${currentExercise.displayName} — set ${setIndex}/${currentExercise.scaledSets}`;
+      timer.start(currentExercise.scaledRest, next);
     }
     return () => { startedRef.current = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
