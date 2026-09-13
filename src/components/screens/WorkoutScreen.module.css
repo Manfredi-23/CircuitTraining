@@ -66,3 +66,49 @@
   transition: transform 80ms ease, background 80ms ease;
 }
 .btnDone:active { transform: scale(0.97); background: #2d2b22; }
+
+/* --- v10: load prescription, progression rule, per-side marker --- */
+
+.loadLine {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  text-align: center;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.perSide {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--ink-dim);
+}
+
+.progressionBox {
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+}
+
+.progressionLabel {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--ink-dim);
+  margin-bottom: 4px;
+}
+
+.progressionText {
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.formSource {
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--ink-dim);
+  margin: 6px 0 0;
+}

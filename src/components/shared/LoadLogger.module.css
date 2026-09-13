@@ -1,0 +1,53 @@
+/* Outlined card, matching the design rule: 2px border, no fill. */
+.box {
+  border: 2px solid var(--ink);
+  border-radius: var(--rad-lg);
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+
+.label {
+  font-weight: 700; font-size: 11px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink);
+}
+
+.last {
+  font-weight: 500; font-size: 11px; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--ink-dim); text-align: right;
+}
+
+.stepper { display: flex; align-items: center; gap: 12px; }
+
+.stepBtn {
+  flex-shrink: 0;
+  width: 52px; height: 52px;
+  font-weight: 700; font-size: 22px; line-height: 1;
+  border: 2px solid var(--ink); border-radius: var(--rad-sm);
+  color: var(--ink); background: none;
+  transition: transform 80ms ease, background 80ms ease, opacity 80ms ease;
+}
+.stepBtn:active { transform: scale(0.94); background: rgba(24,22,16,0.05); }
+.stepBtn:disabled { opacity: 0.25; }
+
+.valueWrap {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  min-width: 0;
+}
+
+.value {
+  font-weight: 700; font-size: 26px; line-height: 1.1;
+  letter-spacing: -0.01em; color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.deltaUp, .deltaDown {
+  font-weight: 500; font-size: 10px; letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.deltaUp   { color: var(--accent); }
+.deltaDown { color: var(--ink-dim); }

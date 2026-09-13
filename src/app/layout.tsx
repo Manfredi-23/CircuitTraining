@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={kodeMono.variable}>
       <head>
-        <link rel="apple-touch-icon" href="/images/home-pushups.png" />
+        <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
       </head>
       <body style={{ fontFamily: 'var(--font-kode), monospace' }}>
         {children}

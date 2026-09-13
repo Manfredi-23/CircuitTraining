@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { useStore } from '@/store/store';
 import { getModeData } from '@/core/data-index';
-import { getMuscleLevel } from '@/core/engine';
+import { getCapacityLevel, getReadiness, buildList, estimateDuration } from '@/core/engine';
 import { CONFIG } from '@/core/config';
 import { useSwipe } from '@/hooks/use-swipe';
 import SettingsOverlay from '@/components/shared/SettingsOverlay';
@@ -14,7 +14,7 @@ import styles from './HomeScreen.module.css';
 export default function HomeScreen() {
   const {
     mode, circuitIndex, energy, humorLine,
-    pendingDecayEvents, progress,
+    pendingDecayEvents, progress, benchmarkResults,
     setMode, changeCircuit, setEnergy, setScreen,
     startWorkout, dismissDecay,
   } = useStore();
@@ -39,14 +39,24 @@ export default function HomeScreen() {
     if (!swipeInProgress.current) startWorkout();
   };
 
-  // Calculate dots: map min muscle level to filled count
-  const minLevel = circuit.muscles.reduce((min, m) => Math.min(min, getMuscleLevel(progress, m)), 7);
+  // Dots map the weakest capacity this session trains to a filled count.
+  const minLevel = circuit.capacities.reduce(
+    (min, c) => Math.min(min, getCapacityLevel(progress, c)),
+    CONFIG.levels.length,
+  );
   const filledDots = minLevel <= 2 ? 1 : minLevel <= 4 ? 2 : 3;
+
+  // Recovery state for this session's key capacities. Fingers need 48h.
+  const readiness = getReadiness(circuit, progress);
+
+  // Duration is computed from the session as it will actually be prescribed at
+  // this level and energy, rather than read off a hardcoded number.
+  const duration = estimateDuration(buildList(circuit, energy, progress, benchmarkResults));
 
   // Derank message
   const derankMsg = pendingDecayEvents.length > 0
     ? CONFIG.derankMessages[Math.floor(Math.random() * CONFIG.derankMessages.length)]
-        .replace('{muscle}', pendingDecayEvents[0].muscle)
+        .replace('{capacity}', CONFIG.capacityLabels[pendingDecayEvents[0].capacity])
         .replace('{level}', String(pendingDecayEvents[0].level))
     : null;
 
@@ -81,6 +91,13 @@ export default function HomeScreen() {
         </div>
       )}
 
+      {/* Recovery warning — the app should not reward training fingers too soon */}
+      {readiness.level !== 'ready' && (
+        <div className={`${styles.readinessBanner} ${readiness.level === 'rest' ? styles.readinessRest : ''}`}>
+          {readiness.message}
+        </div>
+      )}
+
       {/* Circuit card — keyed wrapper forces remount for slide animation */}
       <div key={cardKey} className={styles.cardSlide}>
         <div
@@ -101,6 +118,9 @@ export default function HomeScreen() {
           </div>
         </div>
 
+        {/* circuit.focus is intentionally not rendered here: the v9 card is a
+            fixed 342x342 and a third text line collides with the illustration.
+            It belongs on a session-detail view in the iOS rebuild. */}
         <div className={styles.illustrationWrap}>
           <Image
             src={`/images/${circuit.illustration}`}
@@ -128,7 +148,7 @@ export default function HomeScreen() {
 
         {/* Info bar */}
         <div className={styles.infoBar} onClick={e => e.stopPropagation()}>
-          <span className={styles.duration}>{circuit.duration} min.</span>
+          <span className={styles.duration}>{duration} min.</span>
           <div className={styles.dots}>
             {[0, 1, 2].map(i => (
               <div key={i} className={`${styles.dot}${i < filledDots ? ` ${styles.dotFilled}` : ''}`} />
