@@ -89,3 +89,75 @@ export async function hapticTap(): Promise<void> {
     await Haptics.impact({ style: ImpactStyle.Light });
   } catch { /* no haptic engine */ }
 }
+
+// ---- Local notifications ----------------------------------------------------
+// The rest timer already survives being backgrounded, because it counts against
+// a wall-clock deadline rather than ticking down. What it could not do was tell
+// you rest was over while you were in another app: iOS suspends the webview, so
+// the beep and the haptic never fire. A local notification is scheduled with the
+// OS instead, so it lands even if the app is suspended or killed outright.
+//
+// Local, not push: the deadline is known on the device, so there is nothing for
+// a server to tell us. No APNs, no certificates, no network required.
+
+/** One rest timer exists at a time, so one id is reused and overwritten. */
+const REST_NOTIFICATION_ID = 1;
+
+/** null until asked, then the answer, so the OS dialog is raised at most once. */
+let notificationsAllowed: boolean | null = null;
+
+async function ensureNotificationPermission(): Promise<boolean> {
+  if (!isNative()) return false;
+  if (notificationsAllowed !== null) return notificationsAllowed;
+
+  try {
+    const { LocalNotifications } = await import('@capacitor/local-notifications');
+    let status = await LocalNotifications.checkPermissions();
+    if (status.display === 'prompt' || status.display === 'prompt-with-rationale') {
+      status = await LocalNotifications.requestPermissions();
+    }
+    notificationsAllowed = status.display === 'granted';
+  } catch {
+    notificationsAllowed = false;
+  }
+  return notificationsAllowed;
+}
+
+/**
+ * Schedule the "rest is over" alert for an exact moment.
+ *
+ * `body` names what is coming next, so the lock screen is enough to get you off
+ * the phone and back on the mat without opening the app.
+ */
+export async function scheduleRestAlert(at: Date, body: string): Promise<void> {
+  if (!isNative()) return;
+  if (!(await ensureNotificationPermission())) return;
+
+  try {
+    const { LocalNotifications } = await import('@capacitor/local-notifications');
+    await LocalNotifications.schedule({
+      notifications: [{
+        id: REST_NOTIFICATION_ID,
+        title: 'Rest over',
+        body,
+        schedule: { at, allowWhileIdle: true },
+        sound: undefined, // iOS default alert tone; the app owns its own beeps.
+      }],
+    });
+  } catch { /* scheduling unavailable — the in-app beep still covers it */ }
+}
+
+/**
+ * Drop any pending rest alert.
+ *
+ * Called when rest is skipped, when the screen unmounts, and — importantly —
+ * a couple of seconds before the deadline whenever the app is actually on
+ * screen, so you never get a banner for a timer you are already watching.
+ */
+export async function cancelRestAlert(): Promise<void> {
+  if (!isNative()) return;
+  try {
+    const { LocalNotifications } = await import('@capacitor/local-notifications');
+    await LocalNotifications.cancel({ notifications: [{ id: REST_NOTIFICATION_ID }] });
+  } catch { /* nothing scheduled */ }
+}
