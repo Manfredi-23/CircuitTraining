@@ -17,7 +17,7 @@ import type { Config } from './types';
 
 export const CONFIG: Config = {
 
-  modes: ['HOME', 'CAVE', 'HANG'],
+  modes: ['HOME', 'CAVE', 'HANG', 'MORN'],
 
   // ---------------------------------------------------------------------------
   // Energy
@@ -157,6 +157,15 @@ export const CONFIG: Config = {
     'Load goes up. Reps stay put.',
     'The pulley remembers everything.',
     'Strong fingers. Modest ego.',
+    'Awake is a strong word.',
+    'Coffee comes after. That is the deal.',
+    'Fifteen minutes. Then you may resume being unconscious.',
+    'The floor is already there. Just lie on it.',
+    'Consciousness optional. Movement mandatory.',
+    'Snooze button: 0. Body tension: 1.',
+    'Nobody is a morning person. Some are just already on the mat.',
+    'Your alarm won. Get it over with.',
+    'Small edge. Small routine. Large opinions.',
   ],
 
   statLines: {
