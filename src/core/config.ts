@@ -121,7 +121,6 @@ export const CONFIG: Config = {
   recovery: {
     // Finger flexor tendons and pulleys need 48-72h between maximal sessions.
     fingerMaxHours: 48,
-    hardSessionHours: 24,
     mesocycleWeeks: 3,
     deloadGraceDays: 10,
   },

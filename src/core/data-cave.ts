@@ -531,6 +531,7 @@ export const DATA_CAVE: Circuit[] = [
     illustration: 'dumbbell.svg',
     duration: 26,
     recoveryHours: 12,
+    stacksOnSession: true,
     note:
       'Runs straight after a boulder session, while you are already warm. No finger '
       + 'loading: the bouldering was the finger session. You have just spent two hours '

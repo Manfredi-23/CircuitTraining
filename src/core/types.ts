@@ -172,8 +172,6 @@ export interface StatLines {
 export interface RecoveryConfig {
   /** Minimum hours between two maximal finger sessions. */
   fingerMaxHours: number;
-  /** Minimum hours between two high-intensity sessions of any kind. */
-  hardSessionHours: number;
   /** Weeks of loading before a planned deload. */
   mesocycleWeeks: number;
   /** Grace applied during a deload so planned rest is never punished. */
@@ -316,6 +314,13 @@ export interface Circuit {
   duration: number;
   /** Hours of recovery this session demands before the next hard one. */
   recoveryHours: number;
+  /**
+   * This session is designed to run straight after another one, so it never
+   * reports a recovery debt. Distinct from `recoveryHours: 0`, which means the
+   * load is low enough to repeat daily: an add-on can be genuinely demanding
+   * and still be intended to stack.
+   */
+  stacksOnSession?: boolean;
   note?: string;
   exercises: Exercise[];
   /**
