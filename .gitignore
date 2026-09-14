@@ -26,3 +26,8 @@ next-env.d.ts
 ios/App/App/public/
 ios/App/Pods/
 ios/DerivedData/
+
+# form guide build cache: regenerated from src/core by tools/form-guide/build.py.
+# Never committed, so the repo cannot carry a stale copy of the programme.
+tools/form-guide/.exercises.json
+tools/form-guide/__pycache__/

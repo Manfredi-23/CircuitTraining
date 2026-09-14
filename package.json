@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "check:morning": "npx --yes tsx scripts/check-morning-budget.ts"
+    "check:morning": "npx --yes tsx scripts/check-morning-budget.ts",
+    "guide:build": "python3 tools/form-guide/build.py"
   },
   "dependencies": {
     "@capacitor/cli": "^8.3.0",

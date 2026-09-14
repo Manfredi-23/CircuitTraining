@@ -22,10 +22,14 @@ npm run build    # Production build
 npm run start    # Serve production build
 
 npm run check:morning   # Assert the MORN sessions still fit their 15-minute budget
+npm run guide:build     # Regenerate the printed form guide PDF from src/core
 ```
 
 No test framework yet — test manually in browser. The one automated check is
 `check:morning`, which guards the two promises MORN makes.
+
+`guide:build` needs Python with `reportlab` and `pillow` (`pip install reportlab
+pillow`). It shells out to `npx tsx` for the programme data.
 
 ## Architecture
 
@@ -52,7 +56,10 @@ src/
     shared/      # SettingsOverlay, TimerFlash, LoadLogger
   app/           # layout.tsx, page.tsx (screen router), globals.css
 ios/             # Xcode project (Capacitor 8, SPM)
-tools/           # generate-ios-assets.py — icon and splash from logo.svg
+tools/
+  generate-ios-assets.py   # icon and splash from logo.svg
+  form-guide/              # the printed exercise reference, see below
+docs/            # generated output: the form guide PDF and its image prompts
 ```
 
 ### Key Design Decisions
@@ -201,6 +208,50 @@ that key to false makes `setStyle` a silent no-op.
 Icon and splash are generated from `public/images/logo.svg` by
 `tools/generate-ios-assets.py`, so editing the logo and re-running the script
 keeps all three in sync. Do not hand-edit the PNGs.
+
+## Printed Form Guide
+
+`npm run guide:build` writes `docs/7bit-form-guide.pdf`: one entry per distinct
+movement, with numbered setup and execution, position checkpoints, expanded
+mistake lists, the protocol and its source, the variation ladder, line art where
+it exists, and a full image-generation prompt. It also writes
+`docs/form-guide-image-prompts.txt`, the same prompts as plain text, because
+copying out of a PDF mangles line breaks.
+
+```
+tools/form-guide/
+  build.py            # the generator. Two passes: the first collects page
+                      # numbers, the second prints the index with them.
+  style.py            # HOUSE_STYLE and NEGATIVE, shared by every prompt, plus
+                      # the E() and prompt() helpers the parts are written against
+  parts_home.py       # long-form content, keyed by canonical movement slug
+  parts_cave.py       # includes every finger protocol; HANG reuses these
+  parts_morn.py
+  content.py          # merges the parts and holds EXERCISE_MAP
+  dump-exercises.ts   # exports src/core as JSON so nothing is retyped
+  assets/illus/       # CC BY-SA 4.0 line art, stored as trimmed alpha masks
+  assets/fonts/       # Kode Mono, SIL OFL
+```
+
+Three things to know before changing it:
+
+- **Content is keyed by movement, not by exercise id.** The same movement
+  appears under several ids (`home-weighted-pullup`, `cave-weighted-pullup`,
+  `addon-weighted-pullup`) with different prescriptions. It is written once and
+  its APPEARS IN line lists every session. `EXERCISE_MAP` binds ids to slugs and
+  **the build fails if any id is unmapped**, so adding an exercise to
+  `src/core/data-*.ts` without writing its form guide breaks the build rather
+  than shipping a blank page. That is deliberate.
+- **Prescriptions are never retyped.** Sets, work, rest, load, progression,
+  gates, protocols and sources all come from `src/core` at build time. Only the
+  long-form steps and the prompts live in `parts_*.py`.
+- **The line art is ShareAlike.** The figures are from the Workout Guide library
+  (CC BY-SA 4.0), itself derived from Everkinetic. The licence page at the back
+  of the PDF carries the credit, and it has to stay there if the guide is ever
+  shared. No stock artwork exists at any licence for the climbing-specific
+  movements — max hangs, repeaters, density hangs, no-hangs, recruitment pulls,
+  campus ladders, critical force, the front lever ladder — so those entries say
+  so on the page and are generated from their prompt.
 
 ## Planned Future Work
 

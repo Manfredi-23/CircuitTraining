@@ -1,0 +1,240 @@
+{
+  "band-pull-apart": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Band Pull-Apart",
+    "origin": null,
+    "origin_url": null
+  },
+  "banded-dead-bug": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Banded Dead Bug",
+    "origin": null,
+    "origin_url": null
+  },
+  "banded-pallof-press": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Banded Pallof Press",
+    "origin": null,
+    "origin_url": null
+  },
+  "banded-woodchop": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Banded Woodchop",
+    "origin": null,
+    "origin_url": null
+  },
+  "bird-dog": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Bird Dog",
+    "origin": null,
+    "origin_url": null
+  },
+  "bulgarian-split-squat": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Bulgarian Split Squat",
+    "origin": null,
+    "origin_url": null
+  },
+  "butterfly-stretch": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Butterfly Stretch",
+    "origin": null,
+    "origin_url": null
+  },
+  "cat-cow-stretch": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Cat-Cow Stretch",
+    "origin": null,
+    "origin_url": null
+  },
+  "copenhagen-plank": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Copenhagen Plank",
+    "origin": null,
+    "origin_url": null
+  },
+  "dead-hang": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Dead Hang",
+    "origin": null,
+    "origin_url": null
+  },
+  "dip": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Dip",
+    "origin": "Everkinetic",
+    "origin_url": "https://github.com/everkinetic/data/blob/main/dist/svg/0172-tension.svg"
+  },
+  "glute-bridge-march": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Glute Bridge March",
+    "origin": null,
+    "origin_url": null
+  },
+  "goblet-squat": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Goblet Squat",
+    "origin": null,
+    "origin_url": null
+  },
+  "half-kneeling-pallof-press": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Half-Kneeling Pallof Press",
+    "origin": null,
+    "origin_url": null
+  },
+  "hanging-leg-raise": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Hanging Leg Raise",
+    "origin": null,
+    "origin_url": null
+  },
+  "hollow-body-hold": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Hollow Body Hold",
+    "origin": null,
+    "origin_url": null
+  },
+  "inverted-row": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Inverted Row",
+    "origin": "Everkinetic",
+    "origin_url": "https://github.com/everkinetic/data/blob/main/dist/svg/0086-tension.svg"
+  },
+  "lying-leg-raise": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Lying Leg Raise",
+    "origin": null,
+    "origin_url": null
+  },
+  "pike-push-up": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Pike Push-up",
+    "origin": null,
+    "origin_url": null
+  },
+  "prone-t-raise": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Prone T Raise",
+    "origin": null,
+    "origin_url": null
+  },
+  "prone-y-raise": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Prone Y Raise",
+    "origin": null,
+    "origin_url": null
+  },
+  "pull-up": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Pull-up",
+    "origin": "Everkinetic",
+    "origin_url": "https://github.com/everkinetic/data/blob/main/dist/svg/0087-tension.svg"
+  },
+  "push-up": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Push-up",
+    "origin": "Everkinetic",
+    "origin_url": "https://github.com/everkinetic/data/blob/main/dist/svg/0077-tension.svg"
+  },
+  "russian-twist": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Russian Twist",
+    "origin": null,
+    "origin_url": null
+  },
+  "scapular-pull-up": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Scapular Pull-up",
+    "origin": null,
+    "origin_url": null
+  },
+  "side-plank": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Side Plank",
+    "origin": "Everkinetic",
+    "origin_url": "https://github.com/everkinetic/data/blob/main/dist/svg/0113-tension.svg"
+  },
+  "side-plank-hip-dip": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Side Plank Hip Dip",
+    "origin": null,
+    "origin_url": null
+  },
+  "single-leg-romanian-deadlift": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Single-Leg Romanian Deadlift",
+    "origin": null,
+    "origin_url": null
+  },
+  "standing-dumbbell-press": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Standing Dumbbell Press",
+    "origin": null,
+    "origin_url": null
+  },
+  "torso-twist-stretch": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Torso Twists",
+    "origin": null,
+    "origin_url": null
+  },
+  "weighted-pull-up": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Weighted Pull-up",
+    "origin": null,
+    "origin_url": null
+  },
+  "worlds-greatest-stretch": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "World's Greatest Stretch",
+    "origin": null,
+    "origin_url": null
+  },
+  "wrist-curl": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Wrist Curl",
+    "origin": null,
+    "origin_url": null
+  },
+  "wrist-extension": {
+    "creator": "Bryl Lim",
+    "license": "CC BY-SA 4.0",
+    "name": "Wrist Extension",
+    "origin": null,
+    "origin_url": null
+  }
+}
