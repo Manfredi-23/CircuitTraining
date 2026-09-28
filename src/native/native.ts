@@ -103,8 +103,24 @@ export async function hapticTap(): Promise<void> {
 /** One rest timer exists at a time, so one id is reused and overwritten. */
 const REST_NOTIFICATION_ID = 1;
 
+/**
+ * The chime the app plays when rest ends in the foreground, as a file iOS can
+ * play from a notification. It lives at the root of public/ because the plugin
+ * only looks one level deep in the bundled web assets. Without a sound name the
+ * plugin sets no sound at all, and the alert arrives silent.
+ */
+const REST_ALERT_SOUND = 'rest-over.wav';
+
 /** null until asked, then the answer, so the OS dialog is raised at most once. */
 let notificationsAllowed: boolean | null = null;
+
+/**
+ * Bumped on every schedule and every cancel. Scheduling awaits the permission
+ * dialog on first use, and a cancel can land while it waits (rest skipped, or
+ * the session quit). Without this, the late schedule would win and a stray
+ * "rest over" would fire in the middle of the next set.
+ */
+let alertGeneration = 0;
 
 async function ensureNotificationPermission(): Promise<boolean> {
   if (!isNative()) return false;
@@ -128,10 +144,16 @@ async function ensureNotificationPermission(): Promise<boolean> {
  *
  * `body` names what is coming next, so the lock screen is enough to get you off
  * the phone and back on the mat without opening the app.
+ *
+ * Time Sensitive lets it through Focus modes. That needs the Time Sensitive
+ * Notifications capability on the App target; without it iOS quietly delivers
+ * the alert at the normal level, so the request is harmless either way.
  */
 export async function scheduleRestAlert(at: Date, body: string): Promise<void> {
   if (!isNative()) return;
+  const generation = ++alertGeneration;
   if (!(await ensureNotificationPermission())) return;
+  if (generation !== alertGeneration) return;
 
   try {
     const { LocalNotifications } = await import('@capacitor/local-notifications');
@@ -141,9 +163,15 @@ export async function scheduleRestAlert(at: Date, body: string): Promise<void> {
         title: 'Rest over',
         body,
         schedule: { at, allowWhileIdle: true },
-        sound: undefined, // iOS default alert tone; the app owns its own beeps.
+        sound: REST_ALERT_SOUND,
+        interruptionLevel: 'timeSensitive',
       }],
     });
+    // A cancel that arrived while the schedule call was in flight ran before
+    // there was anything to cancel. Take the alert back out.
+    if (generation !== alertGeneration) {
+      await LocalNotifications.cancel({ notifications: [{ id: REST_NOTIFICATION_ID }] });
+    }
   } catch { /* scheduling unavailable — the in-app beep still covers it */ }
 }
 
@@ -156,8 +184,62 @@ export async function scheduleRestAlert(at: Date, body: string): Promise<void> {
  */
 export async function cancelRestAlert(): Promise<void> {
   if (!isNative()) return;
+  alertGeneration++;
   try {
     const { LocalNotifications } = await import('@capacitor/local-notifications');
     await LocalNotifications.cancel({ notifications: [{ id: REST_NOTIFICATION_ID }] });
   } catch { /* nothing scheduled */ }
+}
+
+// ---- Live Activity ----------------------------------------------------------
+// A ticking rest countdown on the lock screen and in the Dynamic Island, so the
+// time left is visible from any other app without switching back. The alert
+// above says when rest is over; this shows how long is left.
+//
+// ActivityKit has no Capacitor plugin, so this talks to a small one in the app
+// itself: ios/App/App/RestActivityPlugin.swift, registered by
+// MainViewController. The countdown is drawn by the RestTimerWidget extension,
+// which iOS runs on its own. The clock counts down there with no updates from
+// the app, which is what lets it keep going while the webview is suspended.
+//
+// Every failure is swallowed: before the widget extension is added in Xcode, on
+// iOS below 16.2, or with Live Activities switched off in Settings, the call
+// resolves and the notification still does the job.
+
+interface RestActivityPlugin {
+  start(options: { endsAt: number; title: string; next: string }): Promise<{ started: boolean }>;
+  end(): Promise<void>;
+}
+
+let restActivityPlugin: RestActivityPlugin | null = null;
+
+async function getRestActivity(): Promise<RestActivityPlugin> {
+  if (!restActivityPlugin) {
+    const { registerPlugin } = await import('@capacitor/core');
+    restActivityPlugin = registerPlugin<RestActivityPlugin>('RestActivity');
+  }
+  return restActivityPlugin;
+}
+
+/** Same race as the alert: an end must win over a start still in flight. */
+let activityGeneration = 0;
+
+/** Show the rest countdown on the lock screen, ending at `endsAt`. */
+export async function startRestActivity(endsAt: Date, next: string): Promise<void> {
+  if (!isNative()) return;
+  const generation = ++activityGeneration;
+  try {
+    const plugin = await getRestActivity();
+    await plugin.start({ endsAt: endsAt.getTime(), title: 'Rest', next });
+    if (generation !== activityGeneration) await plugin.end();
+  } catch { /* no extension, old iOS, or Live Activities off */ }
+}
+
+/** Remove the countdown. Safe to call when none is showing. */
+export async function endRestActivity(): Promise<void> {
+  if (!isNative()) return;
+  activityGeneration++;
+  try {
+    await (await getRestActivity()).end();
+  } catch { /* nothing to end */ }
 }

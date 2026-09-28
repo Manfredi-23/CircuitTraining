@@ -337,6 +337,70 @@ export const PROTOCOLS: Record<string, Protocol> = {
       'McGill, core endurance training and the side bridge / bird dog standards; '
       + 'Saeterbakken et al. (2018) for the twice-weekly loading this supplements.',
   },
+
+  'submax-practice': {
+    id: 'submax-practice',
+    name: 'Submaximal Strength Practice',
+    quality: 'Strength in the exact position, without fatigue',
+    work: 'A load you could move for twice the reps written',
+    rest: '45s. No set is near failure.',
+    sets: '2, one more when fresh, one fewer when tired',
+    intensity: 'RPE 6-7. Stop every set with at least three good reps left.',
+    frequency: '3 mornings per week',
+    rationale:
+      'Frequent, submaximal practice of one pattern builds strength with almost no '
+      + 'recovery cost, because the stimulus is mostly neural rather than fatiguing. '
+      + 'At equal weekly volume, training a pattern more often builds more strength '
+      + 'than training it once. Holding at the end of each rep turns a row into a '
+      + 'lock-off: the isometric, position-specific strength climbing pulls on most.',
+    source:
+      'Schoenfeld et al., training frequency and strength, Sports Med (2016); '
+      + 'climbing-specific lock-off assessment literature.',
+  },
+
+  'kb-swing': {
+    id: 'kb-swing',
+    name: 'Kettlebell Swing',
+    quality: 'Hip extension power',
+    work: '10 swings, about 20s',
+    rest: '45s',
+    sets: '2, one more when fresh, one fewer when tired',
+    intensity: 'Every rep crisp. Stop the set when the snap slows, not when you are tired.',
+    frequency: '2-3x per week',
+    rationale:
+      'Six weeks of 12-minute kettlebell swing sessions with a 16kg bell raised '
+      + 'vertical jump and half-squat 1RM as much as jump squat training did, with no '
+      + 'landing at all, which makes it the quiet way to train leg power at home. '
+      + 'Swings are explosive, so they are programmed for quality: short sets, full '
+      + 'recovery of the snap between them.',
+    source:
+      'Lake and Lauder, kettlebell swing training improves maximal and explosive '
+      + 'strength, J Strength Cond Res (2012).',
+  },
+
+  'hypertrophy': {
+    id: 'hypertrophy',
+    name: 'Muscle Size',
+    quality: 'Muscle cross-section on chest and shoulders',
+    work: '8-12 reps close to failure',
+    rest: '20-45s on small muscles, 45-90s on presses',
+    sets: '2 per session, as part of 10 or more hard sets per week',
+    intensity: 'RPE 7-8: the last rep slow, one or two left in reserve',
+    frequency: '2-3x per week per muscle',
+    rationale:
+      'Muscle growth scales with the number of hard sets per week, roughly '
+      + 'linearly up to around ten and beyond. A morning session supplies part of '
+      + 'that, not all of it. The pressing and the side of the shoulder are chosen '
+      + 'because they add size where it shows for little bodyweight, which matters '
+      + 'for a climber carrying it up the wall. Visible definition is set by body '
+      + 'fat, not by this protocol.',
+    source:
+      'Schoenfeld, Ogborn and Krieger, dose-response of weekly training volume and '
+      + 'hypertrophy, J Sports Sci (2017); Larsen et al., dumbbell versus cable '
+      + 'lateral raises for side delt hypertrophy (2024); Kikuchi and Nakazato, '
+      + 'push-up versus bench press hypertrophy (2017); Calatayud et al., band '
+      + 'push-up versus bench press strength (2015).',
+  },
 };
 
 export function getProtocol(id: string | undefined): Protocol | null {

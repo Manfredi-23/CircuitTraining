@@ -49,5 +49,7 @@
 	<true/>
 	<key>UIUserInterfaceStyle</key>
 	<string>Light</string>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
 </dict>
 </plist>

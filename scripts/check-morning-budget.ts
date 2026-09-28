@@ -2,8 +2,9 @@
 // check-morning-budget.ts — guards the two promises MORN makes.
 // Run with: npm run check:morning
 //
-//   1. Every morning circuit finishes inside 15 minutes, at every capacity
-//      level and every energy setting.
+//   1. Every morning circuit finishes inside its budget, at every capacity
+//      level and every energy setting: 15 minutes for the daily sessions, 20
+//      for 03 FEET ON and 04 BAND ONLY, which run three mornings a week.
 //   2. No exercise disappears when the athlete picks TIRED. That is the
 //      setting a non-morning person reaches for most, and the energy model
 //      drops whole blocks — ACCESSORY in particular. MORN is built from
@@ -20,7 +21,8 @@ import { buildList, estimateDuration } from '@/core/engine';
 import { getModeData } from '@/core/data-index';
 import type { EnergyKey, Progress } from '@/core/types';
 
-const BUDGET_MINUTES = 15;
+const DEFAULT_BUDGET_MINUTES = 15;
+const BUDGET_MINUTES: Record<string, number> = { 'morn-03': 20, 'morn-04': 20 };
 const ENERGIES: EnergyKey[] = ['TIRED', 'NORMAL', 'FRESH'];
 
 function progressAt(level: number): Progress {
@@ -37,7 +39,8 @@ let worstMinutes = 0;
 let worstLabel = '';
 
 for (const circuit of getModeData('MORN')) {
-  console.log(`\n=== ${circuit.circuitNum} ${circuit.title} ===`);
+  const budget = BUDGET_MINUTES[circuit.id] ?? DEFAULT_BUDGET_MINUTES;
+  console.log(`\n=== ${circuit.circuitNum} ${circuit.title} (budget ${budget} min) ===`);
 
   const exerciseCounts = new Map<EnergyKey, number>();
 
@@ -51,9 +54,9 @@ for (const circuit of getModeData('MORN')) {
 
       if (minutes > worstMinutes) {
         worstMinutes = minutes;
-        worstLabel = `${circuit.circuitNum} L${level} ${energy}`;
+        worstLabel = `${circuit.circuitNum} L${level} ${energy} (budget ${budget})`;
       }
-      if (minutes > BUDGET_MINUTES) {
+      if (minutes > budget) {
         failures++;
         row.push(`${energy} ${minutes}min OVER`);
       } else {
@@ -74,6 +77,6 @@ for (const circuit of getModeData('MORN')) {
   }
 }
 
-console.log(`\nWorst case: ${worstLabel} at ${worstMinutes} min (budget ${BUDGET_MINUTES}).`);
+console.log(`\nLongest session: ${worstLabel} at ${worstMinutes} min.`);
 console.log(failures === 0 ? 'PASS' : `FAIL (${failures} problem(s))`);
 process.exit(failures === 0 ? 0 : 1);

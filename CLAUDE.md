@@ -19,9 +19,9 @@ Legacy vanilla JS version preserved in `legacy/` folder for reference.
 ```bash
 npm run dev      # Dev server at localhost:3000
 npm run build    # Production build
-npm run start    # Serve production build
+npx serve out    # Serve the production build (static export: `npm run start` does not work)
 
-npm run check:morning   # Assert the MORN sessions still fit their 15-minute budget
+npm run check:morning   # Assert the MORN sessions still fit their time budgets
 ```
 
 No test framework yet — test manually in browser. The one automated check is
@@ -89,7 +89,18 @@ tools/           # generate-ios-assets.py — icon and splash from logo.svg
   beep and the haptic both need the app to be running. There is no web
   equivalent: without a service worker and Push API the browser PWA cannot
   fire anything while backgrounded, so on web this is a no-op like the rest of
-  `src/native/`.
+  `src/native/`. Two traps, both fixed: the plugin sets **no sound** unless given
+  a sound name, so the alert names `public/rest-over.wav` (the in-app chime,
+  kept at the root of `public/` because the plugin only searches one level
+  deep); and scheduling awaits the permission dialog on first use, so a
+  generation counter makes a cancel win over a schedule still in flight. Alerts
+  are Time Sensitive so they get through Focus modes.
+- **The rest countdown is a Live Activity**: alongside the alert, `use-timer`
+  starts a lock-screen and Dynamic Island countdown and ends it with the rest
+  screen. The app sends only the deadline; `Text(timerInterval:)` ticks in the
+  widget extension and `staleDate` flips it to GO, so it stays right while the
+  app is suspended. Every call resolves quietly when the extension is missing,
+  so the web build and older iOS keep working.
 
 ## Training Model (v10)
 
@@ -152,25 +163,40 @@ intensity at HARD** — a tired athlete downgrades rather than grinds.
 
 | Mode | Sessions |
 |------|----------|
-| HOME | 01 TENSION, 02 PULL, 03 ARMOUR |
-| CAVE | 01 MAX, 02 POWER, 03 CAPACITY, 04 ASSESS |
+| HOME | 01 TENSION, 02 PULL, 03 ARMOUR, 04 WRISTS |
+| CAVE | 01 MAX, 02 POWER, 03 CAPACITY, 04 ASSESS, 05 ADD-ON |
 | HANG | 01 MAX HANGS, 02 CAPACITY, 03 DENSITY |
-| MORN | 01 ABS + OBLIQUES, 02 SLOW START |
+| MORN | 01 ABS + OBLIQUES, 02 SLOW START, 03 FEET ON, 04 BAND ONLY |
 
 MORN is the wake-up routine: yoga mat, medium band with no anchor, small pull
-edge on a sling, done before anything else competes for it. Three constraints
-shape it, and `npm run check:morning` is what stops them regressing:
+edge on a sling, done before anything else competes for it. 03 FEET ON swaps
+the edge for one 16kg kettlebell; 04 BAND ONLY is the same session with the
+band doing the kettlebell's job. No MORN session uses a pull-up bar or asks
+the athlete to jump: it runs early, in a flat with neighbours. Three constraints shape it, and
+`npm run check:morning` is what stops them regressing:
 
-- **`recoveryHours: 0`** on both sessions. Nothing loads a tendon hard enough to
+- **`recoveryHours: 0`** on every session. Nothing loads a tendon hard enough to
   cost the next session, so readiness never blocks it and it stacks on a
   climbing day.
 - **No ACCESSORY block.** TIRED drops that block entirely, and TIRED is exactly
   what a non-morning person reaches for. MORN is built from WARMUP, PREHAB and
   MOBILITY, none of which are dropped and none of which gain sets when FRESH —
-  so the session has a hard time ceiling. Worst case is 11 minutes.
+  so the session has a hard time ceiling. 01 and 02 stay inside 15 minutes
+  (worst case 11). 03 FEET ON and 04 BAND ONLY have a 20-minute budget and
+  are the sessions that use SECONDARY: 03's swing, row and floor press and
+  04's split squat, row and push-up gain a set on FRESH and lose one on TIRED,
+  without ever being dropped. SECONDARY takes no level set bonus, so the
+  ceiling holds — 03 runs TIRED 11, NORMAL 16, FRESH 20 at every level with no
+  margin left, 04 about a minute less. Adding volume there will break the budget; the check
+  will say so.
 - **Fingers last and light.** One submaximal primer set of edge work, placed
   after the trunk work has warmed the tissue. Pulleys are stiffest on waking.
   The real finger dose is HANG 03.
+- **Practice, not max.** Nothing in 03 or 04 is above MODERATE. The heavy pulling
+  stays in HOME 02 and CAVE 01.
+- **No lumbar flexion until last.** Discs are most swollen in the first hour
+  after waking. 03 and 04 keep the lower back neutral until the Russian twist,
+  which closes the session, done tall and slow.
 
 ### Adding or changing an exercise
 
@@ -217,6 +243,23 @@ Four first-party plugins: `@capacitor/status-bar`, `@capacitor/splash-screen`,
 means re-running `npx cap sync ios` so `ios/App/CapApp-SPM/Package.swift` is
 rewritten.
 
+One local plugin, `RestActivity` (`ios/App/App/RestActivityPlugin.swift`),
+starts and ends the rest Live Activity; no npm package covers ActivityKit.
+Local plugins are not auto-discovered, so `MainViewController` registers it in
+`capacitorDidLoad()`, and `Main.storyboard` points at `MainViewController`
+instead of `CAPBridgeViewController`. `NSSupportsLiveActivities` is `true` in
+Info.plist.
+
+The countdown UI is the `RestTimerWidget` Widget Extension target. Its sources
+live in `ios/LiveActivity/` and are copied into the target once it has been
+created in Xcode (see the README there). `RestActivityAttributes` is defined in
+both targets and the two must stay identical — ActivityKit matches them by type
+name and encoded shape. The extension needs a minimum deployment of iOS 16.2.
+
+The App target should carry the **Time Sensitive Notifications** capability so
+rest alerts break through Focus. Without it the alert is still delivered, at
+the normal level.
+
 `UIViewControllerBasedStatusBarAppearance` must stay `true` in Info.plist —
 the status bar plugin sets the style through the view controller, and setting
 that key to false makes `setStyle` a silent no-op.
@@ -242,7 +285,9 @@ keeps all three in sync. Do not hand-edit the PNGs.
   fix, load logging, and asset generation. Defers to v10 for all training
   content.
 - **`7bit-handover-v10.md`** — current for the programme. The training model: diagnosis of what was
-  wrong with v9's programme, the new capacity/block/load model, all ten sessions,
+  wrong with v9's programme, the new capacity/block/load model, the original ten
+  sessions (HOME 04, CAVE 05 and all of MORN came later and are documented in
+  their data files and the Sessions section above),
   benchmarks and targets, the evidence base, and the Mac terminal commands.
 - **`7bit-handoff-v9.md`** — design system, screen layouts, copy system, stats
   specification. Still current for everything visual. **Its training content
