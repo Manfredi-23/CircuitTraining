@@ -2,7 +2,10 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { CONFIG } from '@/core/config';
 import { getAudioContext } from './audio-context';
 import { useWakeLock } from './use-wake-lock';
-import { hapticWarning, hapticDone, scheduleRestAlert, cancelRestAlert } from '@/native/native';
+import {
+  hapticWarning, hapticDone, scheduleRestAlert, cancelRestAlert,
+  startRestActivity, endRestActivity,
+} from '@/native/native';
 
 function beep(freq: number, duration: number, volume: number): void {
   try {
@@ -59,7 +62,9 @@ interface UseTimerReturn {
  *
  * Passing `alertBody` to start() also schedules an OS-level local notification
  * for the deadline, so rest ending reaches you in another app or on the lock
- * screen. It is cancelled again the moment it would be redundant.
+ * screen, and starts a Live Activity counting down to it. The alert is
+ * cancelled the moment it would be redundant; the countdown ends with the rest
+ * screen.
  */
 export function useTimer(onDone?: () => void): UseTimerReturn {
   const [remaining, setRemaining] = useState(0);
@@ -89,6 +94,7 @@ export function useTimer(onDone?: () => void): UseTimerReturn {
   const stop = useCallback(() => {
     clear();
     void cancelRestAlert();
+    void endRestActivity();
     setIsRunning(false);
     setIsWarning(false);
   }, [clear]);
@@ -107,7 +113,10 @@ export function useTimer(onDone?: () => void): UseTimerReturn {
 
     // Scheduled up front rather than on backgrounding: iOS gives no reliable
     // window to run JS on the way out, so the alert has to already exist.
-    if (alertBody) void scheduleRestAlert(new Date(deadlineRef.current), alertBody);
+    if (alertBody) {
+      void scheduleRestAlert(new Date(deadlineRef.current), alertBody);
+      void startRestActivity(new Date(deadlineRef.current), alertBody);
+    }
     setRemaining(seconds);
     setIsRunning(true);
     setIsWarning(false);
@@ -158,10 +167,12 @@ export function useTimer(onDone?: () => void): UseTimerReturn {
   }, [stop]);
 
   // Cleanup on unmount. Leaving the rest screen at all — skipping, quitting the
-  // session — must take the pending alert with it.
+  // session, or rest simply ending — must take the pending alert and the
+  // lock-screen countdown with it.
   useEffect(() => () => {
     clear();
     void cancelRestAlert();
+    void endRestActivity();
   }, [clear]);
 
   return { start, stop, skip, remaining, isRunning, isWarning, flashActive };

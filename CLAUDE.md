@@ -89,7 +89,18 @@ tools/           # generate-ios-assets.py — icon and splash from logo.svg
   beep and the haptic both need the app to be running. There is no web
   equivalent: without a service worker and Push API the browser PWA cannot
   fire anything while backgrounded, so on web this is a no-op like the rest of
-  `src/native/`.
+  `src/native/`. Two traps, both fixed: the plugin sets **no sound** unless given
+  a sound name, so the alert names `public/rest-over.wav` (the in-app chime,
+  kept at the root of `public/` because the plugin only searches one level
+  deep); and scheduling awaits the permission dialog on first use, so a
+  generation counter makes a cancel win over a schedule still in flight. Alerts
+  are Time Sensitive so they get through Focus modes.
+- **The rest countdown is a Live Activity**: alongside the alert, `use-timer`
+  starts a lock-screen and Dynamic Island countdown and ends it with the rest
+  screen. The app sends only the deadline; `Text(timerInterval:)` ticks in the
+  widget extension and `staleDate` flips it to GO, so it stays right while the
+  app is suspended. Every call resolves quietly when the extension is missing,
+  so the web build and older iOS keep working.
 
 ## Training Model (v10)
 
@@ -231,6 +242,23 @@ Four first-party plugins: `@capacitor/status-bar`, `@capacitor/splash-screen`,
 `@capacitor/haptics`, `@capacitor/local-notifications`. Adding or removing one
 means re-running `npx cap sync ios` so `ios/App/CapApp-SPM/Package.swift` is
 rewritten.
+
+One local plugin, `RestActivity` (`ios/App/App/RestActivityPlugin.swift`),
+starts and ends the rest Live Activity; no npm package covers ActivityKit.
+Local plugins are not auto-discovered, so `MainViewController` registers it in
+`capacitorDidLoad()`, and `Main.storyboard` points at `MainViewController`
+instead of `CAPBridgeViewController`. `NSSupportsLiveActivities` is `true` in
+Info.plist.
+
+The countdown UI is the `RestTimerWidget` Widget Extension target. Its sources
+live in `ios/LiveActivity/` and are copied into the target once it has been
+created in Xcode (see the README there). `RestActivityAttributes` is defined in
+both targets and the two must stay identical — ActivityKit matches them by type
+name and encoded shape. The extension needs a minimum deployment of iOS 16.2.
+
+The App target should carry the **Time Sensitive Notifications** capability so
+rest alerts break through Focus. Without it the alert is still delivered, at
+the normal level.
 
 `UIViewControllerBasedStatusBarAppearance` must stay `true` in Info.plist —
 the status bar plugin sets the style through the view controller, and setting
