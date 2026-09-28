@@ -397,7 +397,9 @@ export const PROTOCOLS: Record<string, Protocol> = {
     source:
       'Schoenfeld, Ogborn and Krieger, dose-response of weekly training volume and '
       + 'hypertrophy, J Sports Sci (2017); Larsen et al., dumbbell versus cable '
-      + 'lateral raises for side delt hypertrophy (2024).',
+      + 'lateral raises for side delt hypertrophy (2024); Kikuchi and Nakazato, '
+      + 'push-up versus bench press hypertrophy (2017); Calatayud et al., band '
+      + 'push-up versus bench press strength (2015).',
   },
 };
 

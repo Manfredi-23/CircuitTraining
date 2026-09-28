@@ -4,7 +4,7 @@
 //
 //   1. Every morning circuit finishes inside its budget, at every capacity
 //      level and every energy setting: 15 minutes for the daily sessions, 20
-//      for 03 FEET ON, which runs three mornings a week.
+//      for 03 FEET ON and 04 BAND ONLY, which run three mornings a week.
 //   2. No exercise disappears when the athlete picks TIRED. That is the
 //      setting a non-morning person reaches for most, and the energy model
 //      drops whole blocks — ACCESSORY in particular. MORN is built from
@@ -22,7 +22,7 @@ import { getModeData } from '@/core/data-index';
 import type { EnergyKey, Progress } from '@/core/types';
 
 const DEFAULT_BUDGET_MINUTES = 15;
-const BUDGET_MINUTES: Record<string, number> = { 'morn-03': 20 };
+const BUDGET_MINUTES: Record<string, number> = { 'morn-03': 20, 'morn-04': 20 };
 const ENERGIES: EnergyKey[] = ['TIRED', 'NORMAL', 'FRESH'];
 
 function progressAt(level: number): Progress {

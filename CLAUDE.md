@@ -19,7 +19,7 @@ Legacy vanilla JS version preserved in `legacy/` folder for reference.
 ```bash
 npm run dev      # Dev server at localhost:3000
 npm run build    # Production build
-npm run start    # Serve production build
+npx serve out    # Serve the production build (static export: `npm run start` does not work)
 
 npm run check:morning   # Assert the MORN sessions still fit their time budgets
 ```
@@ -130,14 +130,15 @@ intensity at HARD** — a tired athlete downgrades rather than grinds.
 
 | Mode | Sessions |
 |------|----------|
-| HOME | 01 TENSION, 02 PULL, 03 ARMOUR |
-| CAVE | 01 MAX, 02 POWER, 03 CAPACITY, 04 ASSESS |
+| HOME | 01 TENSION, 02 PULL, 03 ARMOUR, 04 WRISTS |
+| CAVE | 01 MAX, 02 POWER, 03 CAPACITY, 04 ASSESS, 05 ADD-ON |
 | HANG | 01 MAX HANGS, 02 CAPACITY, 03 DENSITY |
-| MORN | 01 ABS + OBLIQUES, 02 SLOW START, 03 FEET ON |
+| MORN | 01 ABS + OBLIQUES, 02 SLOW START, 03 FEET ON, 04 BAND ONLY |
 
 MORN is the wake-up routine: yoga mat, medium band with no anchor, small pull
 edge on a sling, done before anything else competes for it. 03 FEET ON swaps
-the edge for one 16kg kettlebell. No MORN session uses a pull-up bar or asks
+the edge for one 16kg kettlebell; 04 BAND ONLY is the same session with the
+band doing the kettlebell's job. No MORN session uses a pull-up bar or asks
 the athlete to jump: it runs early, in a flat with neighbours. Three constraints shape it, and
 `npm run check:morning` is what stops them regressing:
 
@@ -148,20 +149,21 @@ the athlete to jump: it runs early, in a flat with neighbours. Three constraints
   what a non-morning person reaches for. MORN is built from WARMUP, PREHAB and
   MOBILITY, none of which are dropped and none of which gain sets when FRESH —
   so the session has a hard time ceiling. 01 and 02 stay inside 15 minutes
-  (worst case 11). 03 FEET ON has a 20-minute budget and is the one session
-  that uses SECONDARY: its swing, row and floor press gain a set on FRESH and
-  lose one on TIRED, without ever being dropped. SECONDARY takes no level set
-  bonus, so the ceiling holds — TIRED 11, NORMAL 16, FRESH 20 at every level,
-  with no margin left. Adding volume there will break the budget; the check
+  (worst case 11). 03 FEET ON and 04 BAND ONLY have a 20-minute budget and
+  are the sessions that use SECONDARY: 03's swing, row and floor press and
+  04's split squat, row and push-up gain a set on FRESH and lose one on TIRED,
+  without ever being dropped. SECONDARY takes no level set bonus, so the
+  ceiling holds — 03 runs TIRED 11, NORMAL 16, FRESH 20 at every level with no
+  margin left, 04 about a minute less. Adding volume there will break the budget; the check
   will say so.
 - **Fingers last and light.** One submaximal primer set of edge work, placed
   after the trunk work has warmed the tissue. Pulleys are stiffest on waking.
   The real finger dose is HANG 03.
-- **Practice, not max.** Nothing in 03 is above MODERATE. The heavy pulling
+- **Practice, not max.** Nothing in 03 or 04 is above MODERATE. The heavy pulling
   stays in HOME 02 and CAVE 01.
 - **No lumbar flexion until last.** Discs are most swollen in the first hour
-  after waking. 03 keeps the lower back neutral until the Russian twist, which
-  closes the session, done tall and slow.
+  after waking. 03 and 04 keep the lower back neutral until the Russian twist,
+  which closes the session, done tall and slow.
 
 ### Adding or changing an exercise
 
@@ -232,7 +234,9 @@ keeps all three in sync. Do not hand-edit the PNGs.
   fix, load logging, and asset generation. Defers to v10 for all training
   content.
 - **`7bit-handover-v10.md`** — current for the programme. The training model: diagnosis of what was
-  wrong with v9's programme, the new capacity/block/load model, all ten sessions,
+  wrong with v9's programme, the new capacity/block/load model, the original ten
+  sessions (HOME 04, CAVE 05 and all of MORN came later and are documented in
+  their data files and the Sessions section above),
   benchmarks and targets, the evidence base, and the Mac terminal commands.
 - **`7bit-handoff-v9.md`** — design system, screen layouts, copy system, stats
   specification. Still current for everything visual. **Its training content
