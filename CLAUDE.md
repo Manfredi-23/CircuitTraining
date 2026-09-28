@@ -64,7 +64,14 @@ tools/           # generate-ios-assets.py — icon and splash from logo.svg
 - **Single-page app**: No Next.js routes. All screens render in `page.tsx` based on
   `useStore(s => s.screen)`.
 - **Zustand persist**: Only `progress`, `sessionLog`, `benchmarkResults` and
-  `loadLog` are persisted (via `partialize`). UI state is transient.
+  `loadLog` are persisted (via `partialize`). UI state is transient. The blob
+  carries `version: 2`, but legacy cleanup runs from `merge`, not `migrate`:
+  persist only calls `migrate` when the stored blob has a **numeric** version,
+  and no install written before versioning existed has one, so v9 and early-v10
+  data alike would skip it. `merge` runs on every hydration and is the only
+  hook legacy data reaches. Pre-capacity blobs are detected by content — a key
+  that is not a v10 capacity — rather than by version number, so progress
+  earned since the v10 merge is never mistaken for v9 data and wiped.
 - **Native code is optional**: everything in `src/native/` is behind a dynamic
   import and a platform check, so the same bundle runs as a browser PWA and
   `next build` can still prerender it in Node. Prefer a web standard over a
@@ -121,7 +128,13 @@ intensity at HARD** — a tired athlete downgrades rather than grinds.
 - `gate` blocks dangerous exercises behind a **tested benchmark**, not XP. The
   campus board needs a recorded 130% bodyweight 20mm hang; until then it is
   substituted with recruitment pulls.
-- `getReadiness()` enforces 48h between maximal finger sessions.
+- `getReadiness()` enforces 48h between maximal finger sessions, and otherwise
+  gates on the circuit's own `recoveryHours` rather than one flat number, so a
+  12h session is available again after 12h.
+- `stacksOnSession: true` marks a session built to run straight after another
+  one, which never reports a recovery debt. Distinct from `recoveryHours: 0`,
+  which means the load is low enough to repeat daily: CAVE 05 ADD-ON is
+  genuinely demanding and still intended to stack.
 - Skipping and quitting cost **zero** XP. Punishing a skip in an app that
   prescribes maximal finger loading pushes the athlete to train through a
   warning sign.
