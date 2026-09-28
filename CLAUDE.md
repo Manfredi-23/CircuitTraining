@@ -136,8 +136,9 @@ intensity at HARD** — a tired athlete downgrades rather than grinds.
 | MORN | 01 ABS + OBLIQUES, 02 SLOW START, 03 FEET ON |
 
 MORN is the wake-up routine: yoga mat, medium band with no anchor, small pull
-edge on a sling, done before anything else competes for it. 03 FEET ON also
-uses the pull-up bar and a towel. Three constraints shape it, and
+edge on a sling, done before anything else competes for it. 03 FEET ON swaps
+the edge for one 16kg kettlebell. No MORN session uses a pull-up bar or asks
+the athlete to jump: it runs early, in a flat with neighbours. Three constraints shape it, and
 `npm run check:morning` is what stops them regressing:
 
 - **`recoveryHours: 0`** on every session. Nothing loads a tendon hard enough to
@@ -148,17 +149,19 @@ uses the pull-up bar and a towel. Three constraints shape it, and
   MOBILITY, none of which are dropped and none of which gain sets when FRESH —
   so the session has a hard time ceiling. 01 and 02 stay inside 15 minutes
   (worst case 11). 03 FEET ON has a 20-minute budget and is the one session
-  that uses SECONDARY: its lock-off, hanging raise and Cossack squat gain a set
-  on FRESH and lose one on TIRED, without ever being dropped. SECONDARY takes
-  no level set bonus, so the ceiling holds — TIRED 10-11, NORMAL 15-16, FRESH
-  19-20. Adding a SECONDARY exercise there will break the budget; the check
+  that uses SECONDARY: its swing, row and floor press gain a set on FRESH and
+  lose one on TIRED, without ever being dropped. SECONDARY takes no level set
+  bonus, so the ceiling holds — TIRED 11, NORMAL 16, FRESH 20 at every level,
+  with no margin left. Adding volume there will break the budget; the check
   will say so.
 - **Fingers last and light.** One submaximal primer set of edge work, placed
   after the trunk work has warmed the tissue. Pulleys are stiffest on waking.
   The real finger dose is HANG 03.
-- **Practice, not max.** 03's one-arm pulling (scapular pulls, towel-assisted
-  lock-offs) is submaximal practice under the `submax-practice` protocol,
-  MODERATE at most. The heavy pulling stays in HOME 02 and CAVE 01.
+- **Practice, not max.** Nothing in 03 is above MODERATE. The heavy pulling
+  stays in HOME 02 and CAVE 01.
+- **No lumbar flexion until last.** Discs are most swollen in the first hour
+  after waking. 03 keeps the lower back neutral until the Russian twist, which
+  closes the session, done tall and slow.
 
 ### Adding or changing an exercise
 

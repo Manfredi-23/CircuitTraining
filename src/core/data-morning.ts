@@ -8,11 +8,13 @@
 //   01 ABS + OBLIQUES — trunk under load. Anti-extension, anti-rotation, hip
 //                       flexion, finishing with the deep abdominal wall.
 //   02 SLOW START     — the bad-morning version. Mobility first, trunk second.
-//   03 FEET ON        — staying on the wall. One-arm pull practice, hanging
-//                       compression, turned-out hips and ankle bend. Also
-//                       needs the pull-up bar and a towel. 16 minutes as
-//                       written, and the only MORN session where FRESH and
-//                       TIRED visibly change the length (see below).
+//   03 FEET ON        — staying on the wall, plus size where it shows. Hip
+//                       drive, loaded hip and ankle range, a lock-off row,
+//                       pressing, and trunk work that keeps the feet on. Swaps
+//                       the edge for one 16kg kettlebell. No bar and no
+//                       jumping: both feet stay on the floor for every rep.
+//                       16 minutes as written, and the only MORN session where
+//                       FRESH and TIRED visibly change the length (see below).
 //
 // 01 and 02 fit in 15 minutes and repeat daily. 03 has a 20-minute ceiling
 // and is meant for three mornings a week.
@@ -29,15 +31,17 @@
 //   Fingers last       Pulleys are stiffest on waking. The edge work is
 //                      submaximal, placed after the trunk work has raised
 //                      tissue temperature, and never near a max.
-//   SECONDARY in 03    The lock-off, hanging raise and Cossack squat are
-//                      SECONDARY, not ACCESSORY, so TIRED removes a set rather
-//                      than the exercise and FRESH adds one. SECONDARY never
-//                      takes level set bonuses, so the 20-minute ceiling holds:
-//                      TIRED 10-11, NORMAL 15-16, FRESH 19-20. The scapular
-//                      pull and push-up are PREHAB so FRESH does not push the
-//                      session past 20. Nothing is above MODERATE: this is
-//                      practice, not a max, which is what keeps recoveryHours
-//                      at 0.
+//   SECONDARY in 03    The swing, row and floor press are SECONDARY, not
+//                      ACCESSORY, so TIRED removes a set rather than the
+//                      exercise and FRESH adds one. SECONDARY never takes level
+//                      set bonuses, so the 20-minute ceiling holds: TIRED 11,
+//                      NORMAL 16, FRESH 20. Everything else is PREHAB or
+//                      MOBILITY so FRESH does not push the session past 20.
+//                      Nothing is above MODERATE, which keeps recoveryHours at 0.
+//   Flexion last       Discs are most swollen, and least tolerant of bending
+//                      forward, in the first hour after waking. 03 keeps the
+//                      lower back neutral until the Russian twist, which is
+//                      last, done tall and slow.
 // =============================================================================
 
 import type { Circuit } from './types';
@@ -491,221 +495,218 @@ export const DATA_MORNING: Circuit[] = [
   {
     id: 'morn-03', circuitNum: '03',
     title: 'FEET ON', subtitle: '3x week - 16 min',
-    focus: 'Stay on the wall: pull with the feet, reach the high step, own the lock-off.',
-    capacities: ['pull', 'tension', 'legs', 'mobility'],
-    illustration: 'pullups.svg',
+    focus: 'Hips that drive, a trunk that keeps the feet on, and shoulders that fill a shirt.',
+    capacities: ['legs', 'tension', 'pull', 'press', 'mobility'],
+    illustration: 'kettlebell.svg',
     duration: 16,
     recoveryHours: 0,
     note:
-      'Needs the pull-up bar and a towel as well as the mat. Three mornings a week, on '
-      + 'days you are not climbing or doing HOME 02 - the one-arm work here is '
-      + 'practice, and the heavy version is there. Every set stops well short of '
-      + 'failure. If a set turns into a grind, it was the wrong variation.',
+      'Mat, band and one 16kg kettlebell. No bar, no jumping: both feet stay on the '
+      + 'floor for every rep, so nothing thumps through to the neighbours. Three '
+      + 'mornings a week. The order matters: nothing bends the lower back forward '
+      + 'until the last exercise, because discs are at their most swollen and '
+      + 'least tolerant of that in the first hour after waking.',
     exercises: [
       {
-        id: 'morn-hip-wake',
-        name: 'Hip + Shoulder Wake-Up',
+        id: 'morn-kb-wake',
+        name: 'Halo + Hip Wake-Up',
         capacities: ['mobility', 'shoulder'],
         block: 'WARMUP', intensity: 'EASY',
         sets: 1, work: 90, unit: 'sec', restSec: 15,
-        load: { kind: 'bodyweight', text: 'No load' },
+        load: { kind: 'bodyweight', text: 'Kettlebell held by the horns, light work only' },
         fixed: true,
         progression: 'Never progressed.',
         protocolId: 'warmup',
-        note: 'Five cat-cows, five world\'s greatest stretches a side, 10 arm circles, 15s dead hang.',
+        note: 'Five cat-cows, five world\'s greatest stretches a side, five halos each way.',
         form: {
-          setup: 'Mat under the bar. Towel over your shoulder for later.',
-          execution: 'Five slow cat-cows on all fours. Step into a long lunge, elbow to the inside of the front foot, then rotate that arm to the ceiling: five a side. Ten big arm circles each way. Finish with a relaxed 15-second dead hang to let the shoulders open.',
-          cue: 'You are about to hang on one arm. Ninety seconds of this is what makes that reasonable at 7am.',
+          setup: 'Mat down, kettlebell beside it. Start on all fours.',
+          execution: 'Five slow cat-cows. Step into a long lunge, elbow to the inside of the front foot, then rotate that arm to the ceiling: five a side. Stand, hold the bell upside down by the horns at the chest and circle it slowly around the head, close to the skull, five each direction, ribs down.',
+          cue: 'Ninety seconds to get the hips and shoulders moving before anything is loaded. The halo opens the shoulders that climbing and sleep both close up.',
           breathing: 'Nasal and unhurried.',
-          mistakes: 'Skipping it because the session is short. Hanging stiff-shouldered instead of letting the bar stretch you.',
+          mistakes: 'Rushing it because it is short. Arching the back to get the halo round instead of moving at the shoulders.',
         },
       },
       {
-        id: 'morn-frog-rock',
-        name: 'Frog Rock',
-        capacities: ['mobility'],
+        id: 'morn-goblet-pry',
+        name: 'Goblet Squat Pry',
+        capacities: ['mobility', 'legs'],
         block: 'MOBILITY', intensity: 'TECHNIQUE',
-        sets: 1, work: 10, unit: 'reps', restSec: 15,
-        load: { kind: 'bodyweight', text: 'Bodyweight into the hips, no forcing' },
-        progression: 'Widen the knees a centimetre at a time. Then add the knee lift-offs at end range.',
-        protocolId: 'active-flexibility',
-        note: 'Slow rocks, 2s at the back of each one',
-        variations: [
-          { minLevel: 1, name: 'Frog Rock' },
-          { minLevel: 4, name: 'Frog Rock + Knee Lift-Offs' },
-        ],
-        form: {
-          setup: 'On forearms and knees. Knees wide, shins parallel, ankles in line with the knees and feet turned out. Spine long, not sagging.',
-          execution: 'Rock the hips back toward the heels until the inner thighs stretch, pause two seconds, rock forward. Ten reps. For the lift-off version, at the back of the last three rocks lift one knee a centimetre off the mat for two seconds, then the other.',
-          cue: 'This is the drop-knee and the frog position on a steep wall. Turned-out hips are what put your belly against the wall, and a belly on the wall is weight on your feet instead of your fingers.',
-          breathing: 'Exhale as you rock back into the stretch.',
-          mistakes: 'Feet drifting in behind the knees. Rounding the lower back to fake depth. Bouncing. Forcing past a pinch in the front of the hip.',
-        },
-      },
-      {
-        id: 'morn-ankle-rock',
-        name: 'Knee-to-Wall Ankle Rock',
-        capacities: ['mobility'],
-        block: 'MOBILITY', intensity: 'TECHNIQUE',
-        sets: 1, work: 10, unit: 'reps', restSec: 15,
-        load: { kind: 'bodyweight', text: 'Bodyweight, heel stays down' },
-        progression: 'Move the toes back from the wall one centimetre whenever all 10 touch. Then do it in a deep squat.',
+        sets: 1, work: 45, unit: 'sec', restSec: 15,
+        load: { kind: 'bodyweight', text: '16kg at the chest - it is a counterweight, not a load' },
+        progression: 'Heels flat the whole time before anything else. Then add the Cossack shifts.',
         protocolId: 'mobility',
-        perSide: true,
+        note: 'Sit in the bottom and move. Heels down.',
         variations: [
-          { minLevel: 1, name: 'Knee-to-Wall Ankle Rock' },
-          { minLevel: 4, name: 'Deep Squat Ankle Rock' },
+          { minLevel: 1, name: 'Goblet Squat Pry' },
+          { minLevel: 4, name: 'Goblet Squat Pry + Cossack Shift' },
         ],
         form: {
-          setup: 'Half-kneeling facing a wall, front foot a hand-width from it. Note where the toes are: that distance is your score, and it should grow over the weeks.',
-          execution: 'Drive the front knee forward over the little toes to touch the wall, heel pinned to the floor, then back. Ten, then the other side. In the deep squat version, sit in a heels-down squat and shift the weight over one foot at a time, knee travelling past the toes.',
-          cue: 'Ankle bend is what lets you stand on a slab smear and weight a foothold below you without the heel popping. Stiff ankles turn every foot into a toe-tip.',
-          breathing: 'Normal.',
-          mistakes: 'Heel lifting, which ends the rep. Knee caving inward instead of tracking the little toes. Going fast.',
+          setup: 'Feet a bit wider than the hips, toes turned out. Bell held by the horns against the chest. Squat all the way down.',
+          execution: 'Sit in the bottom with the heels flat. Use the elbows to press the knees out and hold. Then shift your weight over one foot so that knee travels forward past the toes, heel still down, and back to the other side. The Cossack version slides further, until the other leg straightens and its toes point up.',
+          cue: 'This covers both things you asked about. Knees out under load opens the turned-out hip that gets your belly against the wall. Knee past the toes with the heel flat is ankle bend, which is what lets you stand on a smear or weight a foothold under you. Holding the bell in front is what lets you sit deeper than you can without it.',
+          breathing: 'Long exhales in the bottom. Each one should let you sink a little.',
+          mistakes: 'Heels lifting. Rounding the lower back to fake depth - sit a little higher instead. Knees caving in. Standing up early because it is uncomfortable.',
         },
       },
       {
-        id: 'morn-oa-scap',
-        name: 'One-Arm Scapular Pull',
-        capacities: ['pull', 'shoulder'],
-        block: 'PREHAB', intensity: 'MODERATE',
-        sets: 2, work: 4, unit: 'reps', restSec: 45,
-        load: { kind: 'bodyweight', text: 'Straight arm. Toes on a chair take whatever the shoulder cannot' },
-        progression: 'Less weight through the toes until there is none, then a 2s hold at the top of each rep.',
-        protocolId: 'submax-practice',
-        perSide: true,
-        note: 'Per arm. Straight elbow - the shoulder blade does the whole movement.',
+        id: 'morn-kb-swing',
+        name: 'Kettlebell Swing',
+        capacities: ['legs', 'tension'],
+        block: 'SECONDARY', intensity: 'MODERATE',
+        sets: 2, work: 10, unit: 'reps', restSec: 45,
+        load: { kind: 'bodyweight', text: '16kg. Chest height, crisp, feet planted' },
+        progression: 'A harder snap at the top before more reps. Then one-arm swings.',
+        protocolId: 'kb-swing',
+        note: 'Feet never leave the floor. Park the bell between the feet, do not drop it.',
         variations: [
-          { minLevel: 1, name: 'One-Arm Scapular Pull - Feet Assisted' },
-          { minLevel: 4, name: 'One-Arm Scapular Pull' },
-          { minLevel: 6, name: 'One-Arm Scapular Pull, 2s Hold' },
+          { minLevel: 1, name: 'Two-Hand Kettlebell Swing' },
+          { minLevel: 4, name: 'Two-Hand Swing, Hard Stop' },
+          { minLevel: 6, name: 'One-Arm Kettlebell Swing' },
         ],
         form: {
-          setup: 'Hang from the bar with one hand, arm straight, the other hand free or lightly on the thigh. For the assisted version, a chair in front with the toes resting on it. Let the shoulder rise toward the ear first.',
-          execution: 'Without bending the elbow, pull the shoulder blade down and back so the body rises a few centimetres. Hold a beat, lower over two to three seconds to the long, open hang. Four, swap arms.',
-          cue: 'Lattice lists this as the first exercise on the road to a one-arm pull-up, and the one that makes the rest safe. Every one-arm pull starts here: shoulder packed before the elbow moves. It is also exactly what holds a wide lock-off together.',
-          breathing: 'Exhale as the shoulder pulls down.',
-          mistakes: 'Bending the elbow to cheat height. Twisting the body round to face the arm. Dropping into the bottom instead of lowering. Hanging from a shrugged shoulder between reps.',
+          setup: 'Feet a little wider than the hips, bell a foot in front of you. Hinge, grip it by the horns, tip it back toward you. Shoulders packed, back flat.',
+          execution: 'Hike the bell back high between the thighs, then drive the hips forward hard so the bell floats to chest height. Stand tall at the top: glutes squeezed, knees straight, abs braced. Let it fall and hinge again at the last moment. After the last rep, hike it back once more and park it on the floor.',
+          cue: 'This is a hip snap, not an arm raise or a squat. The arms are ropes. That snap is the same drive that pushes you off a high foot and puts your weight onto it rather than onto your fingers. Six weeks of 16kg swings improved jump height and squat strength as much as jump squats did, without leaving the floor.',
+          breathing: 'Short sharp exhale at the top of every rep, inhale on the way down.',
+          mistakes: 'Squatting instead of hinging. Lifting with the arms. Leaning back at the top. Rounding the back at the bottom. Letting the bell drag you forward. Dropping it on the floor at the end.',
         },
       },
       {
-        id: 'morn-oa-lockoff',
-        name: 'Towel-Assisted One-Arm Lock-Off',
+        id: 'morn-kb-row',
+        name: 'Kettlebell Row + Lock-Off',
         capacities: ['pull'],
         block: 'SECONDARY', intensity: 'MODERATE',
-        sets: 2, work: 8, unit: 'sec', restSec: 45,
-        load: { kind: 'bodyweight', text: 'The lower your hand on the towel, the less it helps' },
-        progression: 'Move the towel hand lower, then to two fingers, then hold three angles: top, 90 degrees, 120 degrees.',
-        protocolId: 'submax-practice',
-        perSide: true,
-        note: 'Per arm. Towel over the bar, other hand on it. Hold where it feels about 7/10.',
-        variations: [
-          { minLevel: 1, name: 'Towel-Assisted Lock-Off, 90 Degrees' },
-          { minLevel: 3, name: 'Towel-Assisted Lock-Off, Low Hand' },
-          { minLevel: 5, name: 'Finger-Assisted Lock-Off, 3 Angles' },
-          { minLevel: 7, name: 'One-Arm Lock-Off, 90 Degrees' },
-        ],
-        form: {
-          setup: 'Drape the towel over the bar next to your working hand. Working hand on the bar, palm away or neutral. Other hand grips the towel: at chin height gives the most help, at chest height or lower much less.',
-          execution: 'Pull up with both, then hold with the elbow at 90 degrees, driving the working elbow down to the ribs. The towel hand takes only what you need to hold for eight seconds at about seven out of ten. Lower under control. Swap arms. At the three-angle level, hold three seconds at the top, at 90 and at 120 degrees on the way down.',
-          cue: 'Climbing pulls are mostly isometric and position-specific: one arm locked while the other hand goes to the next hold. That is this. It is also the static half of a one-arm pull-up, and the half most people fail.',
-          breathing: 'Short breaths through the hold. Never a held breath.',
-          mistakes: 'Pulling so hard on the towel that the working arm does nothing. Letting the shoulder shrug up. Rotating the body open. Holding until the elbow aches - stop at 7/10, and stop entirely for any sharp elbow pain.',
-        },
-      },
-      {
-        id: 'morn-hanging-oblique',
-        name: 'Hanging Oblique Knee Raise',
-        capacities: ['tension'],
-        block: 'SECONDARY', intensity: 'MODERATE',
-        sets: 2, work: 8, unit: 'reps', restSec: 45,
-        load: { kind: 'bodyweight', text: 'Bodyweight. No swing' },
-        progression: 'Slow the lowering to three seconds, then straighten the legs into windshield wipers.',
-        protocolId: 'submax-practice',
-        note: 'Alternating - knees to the left elbow, then the right, is 2 reps',
-        variations: [
-          { minLevel: 1, name: 'Hanging Oblique Knee Raise' },
-          { minLevel: 4, name: 'Hanging Oblique Knee Raise, 3s Lower' },
-          { minLevel: 6, name: 'Hanging Windshield Wiper - Bent Knee' },
-        ],
-        form: {
-          setup: 'Dead hang, shoulders packed down, legs together. Brace the ribs down before the first rep so the swing never starts.',
-          execution: 'Curl the pelvis up and bring both knees toward one elbow, tilting the pelvis as you go. Lower under control to a still hang, then the other side. The windshield wiper holds the knees at chest height and sweeps them side to side.',
-          cue: 'Feet cutting loose is a compression failure: the hips and lower abs cannot keep pulling the toes into the wall. Hanging from your hands and pulling your knees up is the nearest thing at home. The twist brings in the obliques, which are what hold a heel or toe hook on at an angle.',
-          breathing: 'Exhale hard as the knees rise, inhale as they lower.',
-          mistakes: 'Swinging to get the legs up. Lifting the knees with the hip flexors alone while the pelvis stays flat. Dropping the legs. Letting the shoulders shrug to the ears.',
-        },
-      },
-      {
-        id: 'morn-cossack',
-        name: 'Cossack Squat',
-        capacities: ['legs', 'mobility'],
-        block: 'SECONDARY', intensity: 'MODERATE',
         sets: 2, work: 5, unit: 'reps', restSec: 45,
-        load: { kind: 'bodyweight', text: 'Bodyweight. Hand on a chair or the wall if the depth is not there yet' },
-        progression: 'Go deeper before you let go of support. Then pause three seconds at the bottom.',
+        load: { kind: 'bodyweight', text: '16kg. Hold every rep at the top' },
+        progression: 'Lengthen the hold at the top, then slow the lowering. The weight stays; the time under tension goes up.',
         protocolId: 'submax-practice',
         perSide: true,
+        note: 'Per arm. Free hand on a chair or the front thigh.',
         variations: [
-          { minLevel: 1, name: 'Cossack Squat - Hand Supported' },
-          { minLevel: 4, name: 'Cossack Squat' },
-          { minLevel: 6, name: 'Cossack Squat, 3s Pause' },
+          { minLevel: 1, name: 'Kettlebell Row, 2s Hold' },
+          { minLevel: 4, name: 'Kettlebell Row, 3s Lock-Off' },
+          { minLevel: 6, name: 'Kettlebell Row, 5s Lock-Off + 3s Lower' },
         ],
         form: {
-          setup: 'Feet very wide, toes slightly out. Hand on a chair beside you for the supported version.',
-          execution: 'Sit down over one leg, heel flat, knee tracking the toes, while the other leg straightens with the toes pointing up. Go as deep as you control, then drive back up through the whole bent foot. Five on one side, then five on the other.',
-          cue: 'This is a rock-over and a wide bridge in one movement: pushing up out of a deep, turned-out hip with the heel down. Most climbers pull with the arms because the legs cannot push from that position. Here they learn to.',
-          breathing: 'Inhale down, exhale up.',
-          mistakes: 'Heel lifting at the bottom. Knee collapsing inward. Folding the chest onto the thigh. Bouncing out of the bottom instead of pushing.',
+          setup: 'Staggered stance, the opposite foot forward, hinged until the torso is close to flat. Free hand on a chair seat or the front thigh. Bell hanging under the shoulder, arm long.',
+          execution: 'Pull the elbow back toward the hip, not up to the ear, until the bell touches the ribs. Hold it there with the shoulder blade pulled back and down. Lower all the way until the shoulder stretches forward. All reps on one arm, then the other.',
+          cue: 'Without a bar this is the pulling. The hold at the top is a lock-off: one elbow pinned to the ribs while the rest of you stays still, which is what a lock-off does on the wall. The long stretch at the bottom trains the lat through its full length.',
+          breathing: 'Exhale on the pull, breathe through the hold.',
+          mistakes: 'Twisting the torso open to heave the bell up. Shrugging. Short range at the bottom. Rounding the back under the hinge.',
         },
       },
       {
-        id: 'morn-pushup',
-        name: 'Push-Up',
+        id: 'morn-kb-floorpress',
+        name: 'Kettlebell Floor Press',
         capacities: ['press'],
-        block: 'PREHAB', intensity: 'MODERATE',
+        block: 'SECONDARY', intensity: 'MODERATE',
         sets: 2, work: 8, unit: 'reps', restSec: 45,
-        load: { kind: 'bodyweight', text: 'Bodyweight. Stop with three good reps left' },
-        progression: 'Slow the lowering first, then archer push-ups, then lean forward into pseudo-planche.',
-        protocolId: 'submax-practice',
-        note: 'Chest, shoulders and serratus - and the antagonist that keeps the one-arm work balanced.',
+        load: { kind: 'bodyweight', text: '16kg. Stop two reps before the last one you could do' },
+        progression: 'Slow the lowering to three seconds, then pause with the elbow on the floor.',
+        protocolId: 'hypertrophy',
+        perSide: true,
+        note: 'Per arm. Upper arm touches the floor, no bounce.',
         variations: [
-          { minLevel: 1, name: 'Push-Up' },
-          { minLevel: 3, name: 'Push-Up, 3s Lower' },
-          { minLevel: 5, name: 'Archer Push-Up' },
-          { minLevel: 7, name: 'Pseudo-Planche Push-Up' },
+          { minLevel: 1, name: 'Kettlebell Floor Press' },
+          { minLevel: 4, name: 'Kettlebell Floor Press, 3s Lower' },
+          { minLevel: 6, name: 'Kettlebell Floor Press, 2s Pause' },
         ],
         form: {
-          setup: 'Hands just outside the shoulders, body straight from heels to crown, glutes and abs lightly on. Archer: hands very wide, one arm stays straight. Pseudo-planche: hands turned out by the hips, shoulders leaning well past the hands.',
-          execution: 'Lower the chest to a fist from the floor with the elbows at about 45 degrees, press back to lockout and push the floor away at the top. Archer push-ups lower toward one hand while the other arm stays long, alternating.',
-          cue: 'Hours of pulling round the shoulders forward. Pressing keeps them centred, which matters more with one-arm work in the week. The archer and pseudo-planche versions load the front of the shoulder hard for very little extra bodyweight, which is the good kind of size for a climber.',
-          breathing: 'Inhale down, exhale up.',
-          mistakes: 'Elbows flared to 90 degrees. Hips sagging. Half reps. Grinding to failure, which is not what this session is for.',
+          setup: 'On your back, knees bent, feet flat. Roll to the side to pick the bell up with both hands and roll back with it at your chest. Bell resting on the back of the forearm, wrist straight. Free arm out on the floor.',
+          execution: 'Press straight up over the shoulder until the arm is locked. Lower until the back of the upper arm rests on the floor, elbow about 45 degrees from the body, then press again. Roll to the side to put the bell down.',
+          cue: 'The chest work. The floor stops each rep before the shoulder reaches the stretched position that climbers\' shoulders cope with worst, so it is the safe way to load pecs and triceps hard. One arm at a time also makes the trunk resist being pulled over.',
+          breathing: 'Inhale down, exhale as you press.',
+          mistakes: 'Bent wrist, with the bell hanging back. Bouncing the elbow off the floor. Flaring the elbow straight out to the side. Letting the hips twist toward the bell.',
         },
       },
       {
-        id: 'morn-highstep',
-        name: 'High-Step Lift-Off',
-        capacities: ['mobility', 'legs'],
-        block: 'MOBILITY', intensity: 'EASY',
-        sets: 1, work: 5, unit: 'reps', restSec: 15,
-        load: { kind: 'bodyweight', text: 'No load. Only the hip lifts the foot' },
-        progression: 'Raise the target mark, then add the rock-over onto a chair.',
-        protocolId: 'active-flexibility',
-        perSide: true,
-        note: 'Per leg. 3s hold at the top of each rep.',
+        id: 'morn-band-lateral',
+        name: 'Band Lateral Raise',
+        capacities: ['shoulder'],
+        block: 'PREHAB', intensity: 'MODERATE',
+        sets: 2, work: 12, unit: 'reps', restSec: 20,
+        load: { kind: 'band', text: 'Stand on the middle of the band, one end in each hand' },
+        progression: 'Two-second hold at the top, then one arm at a time leaning away from a doorframe.',
+        protocolId: 'hypertrophy',
         variations: [
-          { minLevel: 1, name: 'High-Step Lift-Off' },
-          { minLevel: 4, name: 'High-Step Lift-Off, Above Hip' },
-          { minLevel: 6, name: 'High-Step Lift-Off + Rock-Over' },
+          { minLevel: 1, name: 'Band Lateral Raise' },
+          { minLevel: 4, name: 'Band Lateral Raise, 2s Hold' },
+          { minLevel: 6, name: 'Single-Arm Lean-Away Band Lateral Raise' },
         ],
         form: {
-          setup: 'Face a wall, hands flat on it at shoulder height, feet a forearm away. Pick a mark on the wall around knee height, higher as you improve.',
-          execution: 'Turn the knee out and lift the foot up and out to the side, as if placing it on a high foothold, until the toe touches the mark. Hold three seconds with no hands pulling it there, lower slowly. Five per leg. The rock-over version steps that foot onto a chair and shifts the hips over it until you stand up on it.',
-          cue: 'Passive flexibility is how high a foot goes when you pull it. Active flexibility is how high it goes on the wall, where nothing pulls it. That gap is why feet land short of holds. Finishing standing on one leg is also the last thing the session asks of you: you are up.',
-          breathing: 'Exhale as the foot lifts, breathe through the hold.',
-          mistakes: 'Leaning the torso away to cheat height. Letting the knee turn in. Swinging the leg up. Dropping the foot instead of lowering it.',
+          setup: 'Stand on the middle of the band, feet hip-width. One end in each hand at your sides, a slight bend in the elbows, slight forward lean.',
+          execution: 'Raise both arms out to the sides until the hands are at shoulder height, leading with the elbows. Pause, lower slowly against the band.',
+          cue: 'The side of the shoulder is what makes the shoulders look wider, and it barely gets trained by climbing or pressing. It is also light: this adds width for almost no weight, which matters when every kilo has to go up the wall. A band loads it like a cable machine does, and cables and dumbbells built the side delt equally well in a controlled trial.',
+          breathing: 'Exhale on the raise.',
+          mistakes: 'Shrugging the shoulders up to the ears. Swinging the body. Raising above shoulder height. Letting the band snap the arms down.',
+        },
+      },
+      {
+        id: 'morn-mountain-climber',
+        name: 'Slow Cross-Body Mountain Climber',
+        capacities: ['tension'],
+        block: 'PREHAB', intensity: 'MODERATE',
+        sets: 1, work: 16, unit: 'reps', restSec: 20,
+        load: { kind: 'bodyweight', text: 'Bodyweight. Slow, silent, hips level' },
+        progression: 'Hold each knee at the opposite elbow for two seconds, then slide the feet on a towel on a hard floor.',
+        protocolId: 'daily-trunk',
+        note: 'Alternating - left plus right is 2 reps. Place each foot back down, never bounce.',
+        variations: [
+          { minLevel: 1, name: 'Slow Cross-Body Mountain Climber' },
+          { minLevel: 4, name: 'Cross-Body Mountain Climber, 2s Hold' },
+          { minLevel: 6, name: 'Towel-Slide Cross-Body Mountain Climber' },
+        ],
+        form: {
+          setup: 'High plank: hands under the shoulders, body straight from heels to head, glutes on. For the towel version, go off the mat onto a hard floor with a small towel under each foot.',
+          execution: 'Draw one knee under the body toward the opposite elbow, pause, and place the foot back down quietly. Other side. Hips stay at plank height and stay level the whole set. On towels, slide the foot in and out instead of stepping.',
+          cue: 'Slow, this is not cardio. It is the feet-on move: hips and lower abs pulling a knee up and in while the arms hold a plank, which is what keeps a toe on a steep foothold while you reach. Crossing the body brings in the obliques. Slow is also silent.',
+          breathing: 'Exhale as the knee comes in, inhale as it goes back.',
+          mistakes: 'Going fast, which turns it into a bouncing cardio drill. Hips rising into a pike. Hips sagging. Shoulders drifting behind the hands.',
+        },
+      },
+      {
+        id: 'morn-rkc-plank',
+        name: 'RKC Plank',
+        capacities: ['tension'],
+        block: 'PREHAB', intensity: 'MODERATE',
+        sets: 2, work: 20, unit: 'sec', restSec: 20,
+        load: { kind: 'bodyweight', text: 'Maximum tension, short hold' },
+        progression: 'Walk the elbows further forward, then add kettlebell pull-throughs.',
+        protocolId: 'daily-trunk',
+        variations: [
+          { minLevel: 1, name: 'RKC Plank' },
+          { minLevel: 4, name: 'RKC Plank - Long Lever' },
+          { minLevel: 6, name: 'Plank + Kettlebell Pull-Through' },
+        ],
+        form: {
+          setup: 'Forearm plank with the elbows under the eyes rather than the shoulders and the hands clasped. For the long lever, elbows a few centimetres further forward. For pull-throughs, a high plank with the bell beside one hand.',
+          execution: 'Squeeze the glutes hard and tuck the pelvis under. Then pull the elbows toward the toes and the toes toward the elbows without actually moving them. Hold 20 seconds of all-out tension. For pull-throughs, reach under with the far hand and drag the bell to the other side without the hips turning, then alternate.',
+          cue: 'Twenty seconds of this is harder than two minutes of an ordinary plank. Tucking the pelvis and pulling elbows to toes roughly doubles how hard the abs and obliques work, measured with electrodes. Body tension is exactly this: squeezing everything between hands and feet at once.',
+          breathing: 'Short, forceful breaths behind a braced trunk. Do not hold your breath.',
+          mistakes: 'A relaxed plank held for longer. Hips high. Lower back sagging. Letting the glutes switch off halfway.',
+        },
+      },
+      {
+        id: 'morn-russian-twist',
+        name: 'Kettlebell Russian Twist',
+        capacities: ['tension'],
+        block: 'PREHAB', intensity: 'MODERATE',
+        sets: 1, work: 16, unit: 'reps', restSec: 20,
+        load: { kind: 'bodyweight', text: '16kg held at the chest by the horns, or no weight to start' },
+        progression: 'Feet down before feet up. Slower before heavier - pause one second at each side.',
+        protocolId: 'daily-trunk',
+        note: 'Last on purpose: the spine has had 15 minutes to wake up. Left plus right is 2 reps.',
+        variations: [
+          { minLevel: 1, name: 'Russian Twist - Feet Down' },
+          { minLevel: 4, name: 'Russian Twist - Feet Up' },
+          { minLevel: 6, name: 'Russian Twist - Feet Up, 1s Pause' },
+        ],
+        form: {
+          setup: 'Sit with knees bent and heels on the floor. Lean back to about 45 degrees with the chest up and the lower back straight, not rounded into a C. Bell at the chest, held by the horns. Feet-up version: lift the heels a few centimetres.',
+          execution: 'Turn the ribcage and the bell together to one side until the bell is beside the hip, then to the other. Move slowly. The rotation comes from the ribs and the middle of the back, while the pelvis stays still.',
+          cue: 'Tall and slow is the version that works. The injury risk in a Russian twist comes from a rounded lower back twisting fast, which is flexion plus rotation: the combination discs handle worst, and worst of all first thing in the morning. A straight back and a slow turn also make the obliques work harder than a fast swing does, because speed lets momentum do the work.',
+          breathing: 'Exhale as you turn to each side.',
+          mistakes: 'Rounding the lower back. Swinging the bell with the arms while the chest faces forward. Going fast. Tapping the floor by bending sideways instead of turning. Doing this first thing after waking.',
         },
       },
     ],

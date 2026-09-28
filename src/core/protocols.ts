@@ -341,48 +341,63 @@ export const PROTOCOLS: Record<string, Protocol> = {
   'submax-practice': {
     id: 'submax-practice',
     name: 'Submaximal Strength Practice',
-    quality: 'Skill of recruiting hard, in the exact position, without fatigue',
-    work: 'Roughly half to two-thirds of what you could do fresh',
-    rest: '45-60s. No set is near failure, and alternating sides doubles as rest.',
+    quality: 'Strength in the exact position, without fatigue',
+    work: 'A load you could move for twice the reps written',
+    rest: '45s. No set is near failure.',
     sets: '2, one more when fresh, one fewer when tired',
     intensity: 'RPE 6-7. Stop every set with at least three good reps left.',
-    frequency: '3-4 mornings per week, not the morning of a heavy pull day',
+    frequency: '3 mornings per week',
     rationale:
-      'Frequent, submaximal practice of one pattern improves strength with almost '
-      + 'no recovery cost, because the stimulus is neural rather than fatiguing. '
-      + 'Meta-analysis shows that at equal volume, training a pattern more often '
-      + 'per week builds more strength than training it once. It is the only way '
-      + 'to put one-arm pulling into a 6am session safely: the positions Lattice '
-      + 'lists as the road to a one-arm pull-up (one-arm scapular pulls, assisted '
-      + 'one-arm lock-offs) are practised here, and the maximal version stays in '
-      + 'HOME 02 and CAVE 01 where the body is warm.',
+      'Frequent, submaximal practice of one pattern builds strength with almost no '
+      + 'recovery cost, because the stimulus is mostly neural rather than fatiguing. '
+      + 'At equal weekly volume, training a pattern more often builds more strength '
+      + 'than training it once. Holding at the end of each rep turns a row into a '
+      + 'lock-off: the isometric, position-specific strength climbing pulls on most.',
     source:
       'Schoenfeld et al., training frequency and strength, Sports Med (2016); '
-      + 'Lattice Training one-arm pull-up progression list; Tsatsouline, greasing '
-      + 'the groove (coaching method, not a controlled trial).',
+      + 'climbing-specific lock-off assessment literature.',
   },
 
-  'active-flexibility': {
-    id: 'active-flexibility',
-    name: 'Active Flexibility',
-    quality: 'Strength at end range: getting a foot high and keeping it there',
-    work: 'Loaded rocks into end range, then lift-offs and holds using only muscle',
-    rest: '15s',
-    sets: '1',
-    intensity: 'Working, never painful. The end-range holds should cramp a little.',
-    frequency: 'Daily is fine',
+  'kb-swing': {
+    id: 'kb-swing',
+    name: 'Kettlebell Swing',
+    quality: 'Hip extension power',
+    work: '10 swings, about 20s',
+    rest: '45s',
+    sets: '2, one more when fresh, one fewer when tired',
+    intensity: 'Every rep crisp. Stop the set when the snap slows, not when you are tired.',
+    frequency: '2-3x per week',
     rationale:
-      'Passive range is what a stretch shows; active range is what you can reach '
-      + 'on the wall with no hand to pull the leg there. The gap between the two '
-      + 'is why a foot that could reach a hold slides off it. Elite climbers '
-      + 'outperform intermediates on climbing-specific hip flexion and '
-      + 'abduction-with-external-rotation tests, and Lattice builds its flexibility '
-      + 'work on lengthening first, then training lift strength through the new '
-      + 'range so it can be used.',
+      'Six weeks of 12-minute kettlebell swing sessions with a 16kg bell raised '
+      + 'vertical jump and half-squat 1RM as much as jump squat training did, with no '
+      + 'landing at all, which makes it the quiet way to train leg power at home. '
+      + 'Swings are explosive, so they are programmed for quality: short sets, full '
+      + 'recovery of the snap between them.',
     source:
-      'Draper et al., flexibility assessment in rock climbing (foot raise and '
-      + 'lateral foot reach tests); Lattice Training flexibility series (pike, '
-      + 'pancake, front split).',
+      'Lake and Lauder, kettlebell swing training improves maximal and explosive '
+      + 'strength, J Strength Cond Res (2012).',
+  },
+
+  'hypertrophy': {
+    id: 'hypertrophy',
+    name: 'Muscle Size',
+    quality: 'Muscle cross-section on chest and shoulders',
+    work: '8-12 reps close to failure',
+    rest: '20-45s on small muscles, 45-90s on presses',
+    sets: '2 per session, as part of 10 or more hard sets per week',
+    intensity: 'RPE 7-8: the last rep slow, one or two left in reserve',
+    frequency: '2-3x per week per muscle',
+    rationale:
+      'Muscle growth scales with the number of hard sets per week, roughly '
+      + 'linearly up to around ten and beyond. A morning session supplies part of '
+      + 'that, not all of it. The pressing and the side of the shoulder are chosen '
+      + 'because they add size where it shows for little bodyweight, which matters '
+      + 'for a climber carrying it up the wall. Visible definition is set by body '
+      + 'fat, not by this protocol.',
+    source:
+      'Schoenfeld, Ogborn and Krieger, dose-response of weekly training volume and '
+      + 'hypertrophy, J Sports Sci (2017); Larsen et al., dumbbell versus cable '
+      + 'lateral raises for side delt hypertrophy (2024).',
   },
 };
 
