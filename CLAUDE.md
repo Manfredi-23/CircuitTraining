@@ -21,7 +21,7 @@ npm run dev      # Dev server at localhost:3000
 npm run build    # Production build
 npm run start    # Serve production build
 
-npm run check:morning   # Assert the MORN sessions still fit their 15-minute budget
+npm run check:morning   # Assert the MORN sessions still fit their time budgets
 ```
 
 No test framework yet — test manually in browser. The one automated check is
@@ -133,22 +133,32 @@ intensity at HARD** — a tired athlete downgrades rather than grinds.
 | HOME | 01 TENSION, 02 PULL, 03 ARMOUR |
 | CAVE | 01 MAX, 02 POWER, 03 CAPACITY, 04 ASSESS |
 | HANG | 01 MAX HANGS, 02 CAPACITY, 03 DENSITY |
-| MORN | 01 ABS + OBLIQUES, 02 SLOW START |
+| MORN | 01 ABS + OBLIQUES, 02 SLOW START, 03 FEET ON |
 
 MORN is the wake-up routine: yoga mat, medium band with no anchor, small pull
-edge on a sling, done before anything else competes for it. Three constraints
-shape it, and `npm run check:morning` is what stops them regressing:
+edge on a sling, done before anything else competes for it. 03 FEET ON also
+uses the pull-up bar and a towel. Three constraints shape it, and
+`npm run check:morning` is what stops them regressing:
 
-- **`recoveryHours: 0`** on both sessions. Nothing loads a tendon hard enough to
+- **`recoveryHours: 0`** on every session. Nothing loads a tendon hard enough to
   cost the next session, so readiness never blocks it and it stacks on a
   climbing day.
 - **No ACCESSORY block.** TIRED drops that block entirely, and TIRED is exactly
   what a non-morning person reaches for. MORN is built from WARMUP, PREHAB and
   MOBILITY, none of which are dropped and none of which gain sets when FRESH —
-  so the session has a hard time ceiling. Worst case is 11 minutes.
+  so the session has a hard time ceiling. 01 and 02 stay inside 15 minutes
+  (worst case 11). 03 FEET ON has a 20-minute budget and is the one session
+  that uses SECONDARY: its lock-off, hanging raise and Cossack squat gain a set
+  on FRESH and lose one on TIRED, without ever being dropped. SECONDARY takes
+  no level set bonus, so the ceiling holds — TIRED 10-11, NORMAL 15-16, FRESH
+  19-20. Adding a SECONDARY exercise there will break the budget; the check
+  will say so.
 - **Fingers last and light.** One submaximal primer set of edge work, placed
   after the trunk work has warmed the tissue. Pulleys are stiffest on waking.
   The real finger dose is HANG 03.
+- **Practice, not max.** 03's one-arm pulling (scapular pulls, towel-assisted
+  lock-offs) is submaximal practice under the `submax-practice` protocol,
+  MODERATE at most. The heavy pulling stays in HOME 02 and CAVE 01.
 
 ### Adding or changing an exercise
 

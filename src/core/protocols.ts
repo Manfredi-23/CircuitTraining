@@ -337,6 +337,53 @@ export const PROTOCOLS: Record<string, Protocol> = {
       'McGill, core endurance training and the side bridge / bird dog standards; '
       + 'Saeterbakken et al. (2018) for the twice-weekly loading this supplements.',
   },
+
+  'submax-practice': {
+    id: 'submax-practice',
+    name: 'Submaximal Strength Practice',
+    quality: 'Skill of recruiting hard, in the exact position, without fatigue',
+    work: 'Roughly half to two-thirds of what you could do fresh',
+    rest: '45-60s. No set is near failure, and alternating sides doubles as rest.',
+    sets: '2, one more when fresh, one fewer when tired',
+    intensity: 'RPE 6-7. Stop every set with at least three good reps left.',
+    frequency: '3-4 mornings per week, not the morning of a heavy pull day',
+    rationale:
+      'Frequent, submaximal practice of one pattern improves strength with almost '
+      + 'no recovery cost, because the stimulus is neural rather than fatiguing. '
+      + 'Meta-analysis shows that at equal volume, training a pattern more often '
+      + 'per week builds more strength than training it once. It is the only way '
+      + 'to put one-arm pulling into a 6am session safely: the positions Lattice '
+      + 'lists as the road to a one-arm pull-up (one-arm scapular pulls, assisted '
+      + 'one-arm lock-offs) are practised here, and the maximal version stays in '
+      + 'HOME 02 and CAVE 01 where the body is warm.',
+    source:
+      'Schoenfeld et al., training frequency and strength, Sports Med (2016); '
+      + 'Lattice Training one-arm pull-up progression list; Tsatsouline, greasing '
+      + 'the groove (coaching method, not a controlled trial).',
+  },
+
+  'active-flexibility': {
+    id: 'active-flexibility',
+    name: 'Active Flexibility',
+    quality: 'Strength at end range: getting a foot high and keeping it there',
+    work: 'Loaded rocks into end range, then lift-offs and holds using only muscle',
+    rest: '15s',
+    sets: '1',
+    intensity: 'Working, never painful. The end-range holds should cramp a little.',
+    frequency: 'Daily is fine',
+    rationale:
+      'Passive range is what a stretch shows; active range is what you can reach '
+      + 'on the wall with no hand to pull the leg there. The gap between the two '
+      + 'is why a foot that could reach a hold slides off it. Elite climbers '
+      + 'outperform intermediates on climbing-specific hip flexion and '
+      + 'abduction-with-external-rotation tests, and Lattice builds its flexibility '
+      + 'work on lengthening first, then training lift strength through the new '
+      + 'range so it can be used.',
+    source:
+      'Draper et al., flexibility assessment in rock climbing (foot raise and '
+      + 'lateral foot reach tests); Lattice Training flexibility series (pike, '
+      + 'pancake, front split).',
+  },
 };
 
 export function getProtocol(id: string | undefined): Protocol | null {
