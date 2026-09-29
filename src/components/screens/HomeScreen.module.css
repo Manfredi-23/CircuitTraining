@@ -67,6 +67,8 @@
   display: flex; align-items: center; justify-content: center;
   min-height: 0; pointer-events: none;
 }
+/* Keeps the <img> a direct flex child of the wrap, as before the reduced-motion swap. */
+.illustrationPicture { display: contents; }
 .illustration { max-width: 200px; max-height: 200px; width: auto; height: auto; object-fit: contain; }
 .illusPop { animation: illusPop 350ms cubic-bezier(0.34,1.56,0.64,1) both; }
 @keyframes illusPop {
