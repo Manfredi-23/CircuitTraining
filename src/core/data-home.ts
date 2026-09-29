@@ -11,6 +11,7 @@
 // =============================================================================
 
 import type { Circuit } from './types';
+import { oneArmPath, assistedOneArm, oneArmShrug } from './data-oap';
 
 const HOME_WARMUP = {
   id: 'home-warmup',
@@ -172,7 +173,7 @@ export const DATA_HOME: Circuit[] = [
     focus: 'The measured limiter: get the weighted pull-up toward 165% bodyweight.',
     capacities: ['pull', 'shoulder', 'forearm'],
     illustration: 'barbell.svg',
-    duration: 42,
+    duration: 53,
     recoveryHours: 24,
     note: 'Heavy and low rep. If you are getting a pump, the load is too light and the reps too many.',
     exercises: [
@@ -193,7 +194,6 @@ export const DATA_HOME: Circuit[] = [
           { minLevel: 2, name: 'Pull-Ups — 4s Eccentric' },
           { minLevel: 4, name: 'Weighted Pull-Ups' },
           { minLevel: 6, name: 'Weighted Pull-Ups — Heavy' },
-          { minLevel: 7, name: 'One-Arm Pull-Up Progression' },
         ],
         form: {
           setup: 'Dead hang, pronated grip just outside shoulder width. Loaded pack or a belt.',
@@ -203,6 +203,9 @@ export const DATA_HOME: Circuit[] = [
           mistakes: 'Kipping. Half reps. Picking a weight that turns a strength set into an endurance set.',
         },
       },
+      // One-arm pull-up path. Band-assisted at home; see data-oap.ts.
+      oneArmShrug('home02-oap-shrug'),
+      assistedOneArm('home02-oap-assisted', 'home02-oap-path', 'band'),
       {
         id: 'home-lockoff',
         name: 'Lock-Off Ladder',
@@ -276,6 +279,7 @@ export const DATA_HOME: Circuit[] = [
         },
       },
     ],
+    substitutes: [oneArmPath('home02-oap-path')],
   },
   {
     id: 'home-03', circuitNum: '03',

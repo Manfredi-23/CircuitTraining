@@ -3,6 +3,7 @@ import type { Store } from '../store';
 import type { Circuit, ScaledExercise, Capacity, LevelUp } from '@/core/types';
 import { getModeData } from '@/core/data-index';
 import * as Engine from '@/core/engine';
+import { benchmarkValueFromEntry } from '@/core/benchmarks';
 
 /**
  * Sessions run as sets within an exercise, not rounds of a circuit.
@@ -79,6 +80,15 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
 
     // Last set of the exercise — award XP once, and record what was actually
     // on the belt. Both happen once per exercise, at the same moment.
+    // A test also saves its result as a benchmark: this is what opens gates.
+    const { pendingLoad } = get();
+    if (currentExercise.records && pendingLoad !== null) {
+      get().recordBenchmark({
+        benchmarkId: currentExercise.records.benchmarkId,
+        value: benchmarkValueFromEntry(currentExercise.records, pendingLoad),
+        date: new Date().toISOString(),
+      });
+    }
     get().commitLoad(currentExercise);
     const newProgress = Engine.applyXP(progress, currentExercise, 'done');
 

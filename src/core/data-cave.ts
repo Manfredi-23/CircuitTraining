@@ -1,13 +1,17 @@
 // =============================================================================
 // data-cave.ts — CAVE mode: full gym sessions
-// Equipment: hangboard, rings, TRX, campus board, KB 12kg, DB, bands + anchors,
-//            bouldering wall.
+// Equipment: hangboard, rings, TRX, campus board, kettlebells, dumbbells and
+//            plates, pull-up bars, weighted pull-up harness, a pulley under the
+//            hangboard, bands + anchors, bouldering wall with slab and steep.
 //
-// Four sessions:
-//   01 MAX      — fingers and heavy pulling, both when fresh.
+// Six sessions:
+//   01 MAX      — fingers, heavy pulling and the one-arm path, all fresh.
 //   02 POWER    — limit bouldering and contact strength.
 //   03 CAPACITY — repeaters, strength endurance, antagonists, legs.
-//   04 ASSESS   — the test battery. Every 6-8 weeks, on a rest day.
+//   04 ASSESS   — the test battery. Every 6-8 weeks, on a rest day. Results
+//                 are saved as benchmarks and open the safety gates.
+//   05 ADD-ON   — after bouldering: heavy pull, one-arm path, antagonists, core.
+//   06 FEET     — after bouldering: footwork, balance, slab, feet-on tension.
 //
 // Order inside every session is fixed by neurological cost: the fingers and the
 // nervous system get the session while they are fresh, and the conditioning
@@ -15,6 +19,7 @@
 // =============================================================================
 
 import type { Circuit } from './types';
+import { oneArmPath, assistedOneArm, oneArmNegative, oneArmShrug } from './data-oap';
 
 const WARMUP_PULSE = {
   id: 'cave-warmup-pulse',
@@ -62,7 +67,7 @@ export const DATA_CAVE: Circuit[] = [
     focus: 'Raise the ceiling: peak finger force and maximal pulling, both fresh.',
     capacities: ['crimp', 'pull', 'tension'],
     illustration: 'maxhangs.svg',
-    duration: 58,
+    duration: 65,
     recoveryHours: 48,
     note: 'Every set here is meant to be hard and well rested. If you are rushing, cut an exercise, not the rest.',
     exercises: [
@@ -109,7 +114,6 @@ export const DATA_CAVE: Circuit[] = [
           { minLevel: 2, name: 'Pull-Ups — Slow Eccentric', load: 'Bodyweight, 4s lower' },
           { minLevel: 4, name: 'Weighted Pull-Ups', load: 'Belt or pack, RPE 8-9' },
           { minLevel: 6, name: 'Weighted Pull-Ups — Heavy', load: '+20% bodyweight or more' },
-          { minLevel: 7, name: 'One-Arm Pull-Up Progression', load: 'Band-assisted or offset' },
         ],
         form: {
           setup: 'Full dead hang, pronated grip just outside shoulder width. Weight on a belt hanging between the legs, or a loaded pack.',
@@ -119,6 +123,11 @@ export const DATA_CAVE: Circuit[] = [
           mistakes: 'Kipping. Stopping short of a dead hang. Choosing a load that turns four reps into a grinding set of eight.',
         },
       },
+      // One-arm pull-up path, fresh. Gated rungs appear as the tested weighted
+      // pull-up clears them; see data-oap.ts.
+      oneArmShrug('cave01-oap-shrug'),
+      assistedOneArm('cave01-oap-assisted', 'cave01-oap-path', 'pulley'),
+      oneArmNegative('cave01-oap-negative'),
       {
         id: 'cave-lockoff',
         name: 'Lock-Off Ladder',
@@ -181,6 +190,7 @@ export const DATA_CAVE: Circuit[] = [
         },
       },
     ],
+    substitutes: [oneArmPath('cave01-oap-path')],
   },
   {
     id: 'cave-02', circuitNum: '02',
@@ -429,7 +439,10 @@ export const DATA_CAVE: Circuit[] = [
     illustration: 'dumbbell.svg',
     duration: 45,
     recoveryHours: 48,
-    note: 'Run this every 6-8 weeks on a rest day, fully warm and fresh. Write everything down.',
+    note:
+      'Run this every 6-8 weeks on a rest day, fully warm and fresh. Enter each result on '
+      + 'the stepper before the last DONE: it is saved as a benchmark, and benchmarks are '
+      + 'what open the campus board and the one-arm gates.',
     exercises: [
       WARMUP_PULSE,
       { ...WARMUP_FINGERS, sets: 4 },
@@ -443,6 +456,11 @@ export const DATA_CAVE: Circuit[] = [
         progression: 'Record (bodyweight + added) / bodyweight x 100. At 62kg: 128% = +17kg, 134% = +21kg, 140% = +25kg.',
         protocolId: 'assessment',
         note: 'Work up in 3-5kg jumps. Stop at the first failed 10s and record the last success.',
+        records: {
+          benchmarkId: 'fs-2arm-20mm',
+          axis: { unit: 'kg', step: 1, min: 0, max: 80, prefix: '+', label: 'BEST 10S, ADDED' },
+          convert: 'added-kg-to-pct-bw',
+        },
         form: {
           setup: 'Identical setup every test: same edge, same grip, same shoulder position, same time of day if possible.',
           execution: 'Ten seconds. Successive attempts with three minutes between. Record the heaviest clean 10s.',
@@ -461,6 +479,11 @@ export const DATA_CAVE: Circuit[] = [
         progression: 'Estimated 1RM = 5RM load x 1.15. Record as % bodyweight. Lattice male standard is 165%.',
         protocolId: 'assessment',
         note: 'A 5RM is safer and almost as informative as a true single.',
+        records: {
+          benchmarkId: 'weighted-pullup',
+          axis: { unit: 'kg', step: 1, min: 0, max: 80, prefix: '+', label: 'BEST 5RM, ADDED' },
+          convert: 'five-rm-to-pct-bw',
+        },
         form: {
           setup: 'Dead hang start, weight on a belt.',
           execution: 'Five strict reps, chin over bar, full extension each rep. Add weight and repeat until five is no longer clean.',
@@ -476,9 +499,14 @@ export const DATA_CAVE: Circuit[] = [
         block: 'TEST', intensity: 'MAX',
         sets: 1, work: 30, unit: 'sec', restSec: 120,
         load: { kind: 'bodyweight', text: 'One arm, other hand lightly on the wrist' },
-        progression: 'Record seconds per side. Solid is 10s, strong is 15s.',
+        progression: 'Enter the WEAKER side: that is the one that limits you. Solid is 10s, strong is 15s.',
         protocolId: 'assessment',
         perSide: true,
+        records: {
+          benchmarkId: 'lockoff-90',
+          axis: { unit: 's', step: 1, min: 0, max: 60, prefix: '', label: 'WEAKER SIDE' },
+          convert: 'identity',
+        },
         form: {
           setup: 'Pull to 90 degrees of elbow flexion on one arm, free hand resting on the wrist.',
           execution: 'Hold until the elbow angle opens past 90. Time both sides and note the difference.',
@@ -494,8 +522,13 @@ export const DATA_CAVE: Circuit[] = [
         block: 'TEST', intensity: 'MAX',
         sets: 1, work: 30, unit: 'sec', restSec: 120,
         load: { kind: 'bodyweight', text: 'Hardest progression with a flat lower back' },
-        progression: 'Record progression and seconds: tuck, advanced tuck, one-leg, straddle, full.',
+        progression: 'Enter the hardest progression held a clean 10s: 1 tuck, 2 advanced tuck, 3 one-leg, 4 straddle, 5 full. 0 if none yet.',
         protocolId: 'assessment',
+        records: {
+          benchmarkId: 'front-lever',
+          axis: { unit: 'LVL', step: 1, min: 0, max: 5, prefix: '', label: 'PROGRESSION HELD 10S' },
+          convert: 'identity',
+        },
         form: {
           setup: 'Straight arms on a bar.',
           execution: 'Hold your hardest clean progression to failure of position, not failure of grip.',
@@ -511,8 +544,13 @@ export const DATA_CAVE: Circuit[] = [
         block: 'TEST', intensity: 'MODERATE',
         sets: 1, work: 120, unit: 'sec', restSec: 30,
         load: { kind: 'bodyweight', text: 'No load' },
-        progression: 'Record heel height in cm per side, and pubic-bone-to-floor distance in a straddle. Average foot raise is about 74cm.',
+        progression: 'Enter the WEAKER side foot raise in cm. Note the straddle separately. Average foot raise is about 74cm.',
         protocolId: 'assessment',
+        records: {
+          benchmarkId: 'hip-footraise',
+          axis: { unit: 'cm', step: 1, min: 30, max: 130, prefix: '', label: 'FOOT RAISE, WEAKER' },
+          convert: 'identity',
+        },
         form: {
           setup: 'Stand next to a wall with a tape measure. Then sit into a maximal straddle with legs straight and feet flat.',
           execution: 'Raise one foot as high as possible with the hip flexed, abducted and externally rotated, knee bent. Measure floor to heel. Both sides. Then measure the straddle.',
@@ -525,32 +563,36 @@ export const DATA_CAVE: Circuit[] = [
   },
   {
     id: 'cave-05', circuitNum: '05',
-    title: 'ADD-ON', subtitle: 'after bouldering - antagonists',
-    focus: 'Pay the bills climbing does not: press, legs, rotation. One heavy pull, then the opposite.',
-    capacities: ['press', 'legs', 'tension', 'pull'],
+    title: 'ADD-ON', subtitle: 'after bouldering - pull - core',
+    focus: 'One heavy pull, the one-arm path, the antagonists, then the trunk that keeps the feet on.',
+    capacities: ['pull', 'press', 'legs', 'tension'],
     illustration: 'dumbbell.svg',
-    duration: 26,
+    duration: 45,
     recoveryHours: 12,
     stacksOnSession: true,
     note:
       'Runs straight after a boulder session, while you are already warm. No finger '
-      + 'loading: the bouldering was the finger session. You have just spent two hours '
-      + 'pulling, so this deliberately is not more of that - one heavy pull, then the '
-      + 'patterns climbing never trains. If you are too cooked, the squat and the cuff '
-      + 'work are the two worth doing anyway.',
+      + 'loading: the bouldering was the finger session. Pulling first while there is '
+      + 'something left, then the patterns climbing never trains, then the trunk. If you '
+      + 'are too cooked, pick TIRED: it keeps the pull, the press, the squat, the core '
+      + 'and the cuff, and drops the TRX work.',
     exercises: [
       {
         id: 'addon-weighted-pullup',
         name: 'Weighted Pull-Ups',
         capacities: ['pull'],
-        block: 'PRIMARY', intensity: 'HARD',
+        block: 'SECONDARY', intensity: 'HARD',
         sets: 3, work: 4, unit: 'reps', restSec: 150,
         load: { kind: 'added-kg', text: 'RPE 8 — two reps in reserve. You are pre-fatigued, so go lighter than you think.' },
         progression:
           'Bodyweight sets of 4 first. Once four sets of four are easy, start adding '
-          + '2kg at a time. With 8 strict pull-ups and no weighted history, this is '
-          + 'the fastest-moving number in the programme.',
+          + '2kg at a time. This is the lift that carries a one-arm pull-up for the '
+          + 'first year: a two-arm pull-up with about half your bodyweight added is '
+          + 'roughly the strength of one one-arm rep.',
         protocolId: 'max-strength',
+        // SECONDARY, not PRIMARY: level adds no sets here. The fresh,
+        // level-scaled weighted pull-up is in CAVE 01 and HOME 02; after two
+        // hours of bouldering, extra sets buy fatigue rather than strength.
         variations: [
           { minLevel: 1, name: 'Pull-Ups — Bodyweight', load: 'Bodyweight, 4 clean reps, stop well short of failure' },
           { minLevel: 2, name: 'Pull-Ups — 4s Eccentric', load: 'Bodyweight, four seconds down' },
@@ -558,13 +600,15 @@ export const DATA_CAVE: Circuit[] = [
           { minLevel: 6, name: 'Weighted Pull-Ups — Heavy', load: '+20% bodyweight or more' },
         ],
         form: {
-          setup: 'Full dead hang, pronated grip just outside shoulder width.',
+          setup: 'Full dead hang, pronated grip just outside shoulder width. Harness and plates for the weighted version.',
           execution: 'Pull elbows down and back, chest leading, chin clearly over. Lower under control to a complete dead hang every rep.',
           cue: 'Four reps means four good reps. After bouldering you have less than you think, and a grinding fifth rep buys nothing.',
           breathing: 'Exhale on the pull.',
           mistakes: 'Treating this as a finisher to burn out on. It is a strength set that happens to come late in the day.',
         },
       },
+      { ...oneArmShrug('addon-oap-shrug'), sets: 1 },
+      assistedOneArm('addon-oap-assisted', 'addon-oap-path', 'pulley'),
       {
         id: 'addon-pushup',
         name: 'Push-Ups / Ring Dips',
@@ -576,6 +620,7 @@ export const DATA_CAVE: Circuit[] = [
           'Reps to 12 across all three sets, then move up the variation ladder before '
           + 'you add any weight. Range before load on a pressing pattern you have barely trained.',
         protocolId: 'strength-endurance',
+        note: 'Wrists sore: push-ups on fists, dumbbells or push-up handles, so the wrist stays straight. Rings and dips already keep it neutral.',
         variations: [
           { minLevel: 1, name: 'Push-Ups' },
           { minLevel: 2, name: 'Ring Push-Ups' },
@@ -596,11 +641,11 @@ export const DATA_CAVE: Circuit[] = [
         capacities: ['legs'],
         block: 'SECONDARY', intensity: 'MODERATE',
         sets: 2, work: 10, unit: 'reps', restSec: 90,
-        load: { kind: 'added-kg', value: 12, text: 'KB 12kg at the chest. Bodyweight until the depth is honest.' },
+        load: { kind: 'added-kg', value: 12, text: 'Kettlebell or dumbbell at the chest. Bodyweight until the depth is honest.' },
         progression:
           'Full depth with a flat back for two sets of twelve first. Then a 3s pause in '
-          + 'the hole, then the heaviest bell in the gym. Legs recover fast - this is the '
-          + 'one place in the programme you can be impatient.',
+          + 'the hole, then a heavier bell. Legs recover fast - this is the one place in '
+          + 'the programme you can be impatient.',
         protocolId: 'strength-endurance',
         variations: [
           { minLevel: 1, name: 'Bodyweight Squat' },
@@ -617,26 +662,78 @@ export const DATA_CAVE: Circuit[] = [
         },
       },
       {
-        id: 'addon-russian-twist',
-        name: 'Russian Twist',
+        id: 'addon-mountain-climber',
+        name: 'Spiderman + Cross-Body Mountain Climber',
         capacities: ['tension'],
-        block: 'ACCESSORY', intensity: 'EASY',
-        sets: 2, work: 16, unit: 'reps', restSec: 60,
-        load: { kind: 'added-kg', text: 'Bodyweight, then the 12kg bell once the rotation is clean' },
-        progression: 'Feet down until 16 controlled reps are easy, then feet up, then hold the bell.',
-        protocolId: 'tension-iso',
-        note: 'Left plus right is 2 reps',
+        block: 'SECONDARY', intensity: 'MODERATE',
+        sets: 3, work: 16, unit: 'reps', restSec: 60,
+        load: { kind: 'bodyweight', text: 'Bodyweight. Slow, hips at plank height' },
+        progression:
+          'Sixteen slow reps with level hips on every set, then a two-second hold at each '
+          + 'elbow, then feet in the TRX straps.',
+        protocolId: 'dynamic-core',
+        note:
+          'One rep is one knee: to the same elbow, back, to the opposite elbow, back. '
+          + 'Alternate legs. Wrists sore: plank on fists or dumbbell handles, or drop to the forearms.',
         variations: [
-          { minLevel: 1, name: 'Russian Twist — Feet Down' },
-          { minLevel: 4, name: 'Russian Twist — Feet Up' },
-          { minLevel: 6, name: 'KB Russian Twist' },
+          { minLevel: 1, name: 'Spiderman + Cross-Body Mountain Climber' },
+          { minLevel: 3, name: 'Spiderman + Cross-Body, 2s Holds' },
+          { minLevel: 5, name: 'TRX Spiderman + Cross-Body', load: 'Feet in the TRX straps, hands on the floor or on handles' },
         ],
         form: {
-          setup: 'Sit on the mat, torso leaning back to about 45 degrees, knees bent. Feet on the floor to start, lifted once that is controlled. Chest tall, lower back long rather than rounded.',
-          execution: 'Rotate the ribcage to one side until the hands pass outside the hip, then to the other. Slow enough that the turn comes from the trunk and the arms are just along for the ride.',
-          cue: 'The rest of the programme trains the trunk to resist rotation - front lever, Pallof, bird dog. This is the one place it produces rotation, which is what a drop-knee and a big cross-through actually ask for.',
-          breathing: 'Exhale on each turn, short and sharp.',
-          mistakes: 'Swinging the arms while the ribcage stays still, which trains nothing. Rounding the lower back and grinding the reps out fast - this should look controlled. Going heavy before the movement is clean.',
+          setup: 'High plank, hands under the shoulders, body straight heels to head, glutes on. For the wrists: fists, dumbbells on their sides, or forearms. TRX version: toes in the foot cradles at mid-shin height.',
+          execution: 'Draw the right knee outside the right arm toward the right elbow, return, then under the body toward the left elbow, return. Then the left leg. Hips stay at plank height and level throughout.',
+          cue: 'This is the feet-on move: the hips and lower abs pulling a knee up and in while the arms hold. Outside the arm is a high step with the hip open; across the body is a drop-knee. Slow, it is not cardio.',
+          breathing: 'Exhale as the knee comes in.',
+          mistakes: 'Going fast and bouncing. Hips piking up or sagging. Shoulders drifting behind the hands. Bent wrists grinding through pain when a fist would do.',
+        },
+      },
+      {
+        id: 'addon-hanging-oblique',
+        name: 'Hanging Oblique Knee Raise',
+        capacities: ['tension'],
+        block: 'SECONDARY', intensity: 'HARD',
+        sets: 2, work: 8, unit: 'reps', restSec: 90,
+        load: { kind: 'bodyweight', text: 'Bodyweight. Ab straps if the grip or fingers complain.' },
+        progression:
+          'Eight controlled reps with no swing on both sets, then half wipers with bent '
+          + 'knees, then full windshield wipers.',
+        protocolId: 'dynamic-core',
+        note: 'Left plus right is 2 reps. Kept to two sets on purpose while the fingers are symptomatic.',
+        variations: [
+          { minLevel: 1, name: 'Hanging Oblique Knee Raise' },
+          { minLevel: 4, name: 'Half Windshield Wiper', load: 'Knees bent, legs up at the bar, rotate side to side' },
+          { minLevel: 6, name: 'Windshield Wiper', load: 'Legs straight at the bar, rotate side to side' },
+        ],
+        form: {
+          setup: 'Hang from a bar, shoulders engaged, not passive. After bouldering, elbow slings or ab straps take the fingers out of it: the exercise is the trunk, not the grip.',
+          execution: 'Draw both knees up and across toward one shoulder, lower under control, then the other side. Wipers: legs up at the bar, lower them to one side, return through the top, then the other side.',
+          cue: 'Hörst calls wipers his favourite climbing core exercise: it is the position of cutting loose and getting the feet back on while hanging from the hands.',
+          breathing: 'Exhale as the knees come up.',
+          mistakes: 'Swinging to generate the lift. Dead shoulders. Grinding through a finger that is complaining when straps would remove it.',
+        },
+      },
+      {
+        id: 'addon-trx-core',
+        name: 'TRX Body Saw / Pike',
+        capacities: ['tension'],
+        block: 'ACCESSORY', intensity: 'MODERATE',
+        sets: 2, work: 10, unit: 'reps', restSec: 60,
+        load: { kind: 'bodyweight', text: 'Feet in the TRX straps' },
+        progression: 'Ten clean reps on every set, then the next variation. Body saw range grows before the pike.',
+        protocolId: 'dynamic-core',
+        note: 'The body saw is on the forearms, so it spares the wrists. On the tuck and pike, use fists or handles if the wrists are sore.',
+        variations: [
+          { minLevel: 1, name: 'TRX Body Saw', load: 'Forearm plank, feet in the straps' },
+          { minLevel: 3, name: 'TRX Knee Tuck', load: 'High plank, feet in the straps' },
+          { minLevel: 5, name: 'TRX Pike', load: 'High plank, feet in the straps, hips to the ceiling' },
+        ],
+        form: {
+          setup: 'Straps at mid-shin height, toes in the foot cradles. Body saw: forearm plank. Tuck and pike: high plank, hands under the shoulders.',
+          execution: 'Body saw: rock the body back past the elbows and return, ribs down. Tuck: knees to the chest. Pike: hips straight up, legs straight, feet sliding toward the hands.',
+          cue: 'Straps make the feet unstable, which is exactly what a steep foothold is. Anti-extension keeps the hips from sagging; the tuck and pike pull the feet toward the hands.',
+          breathing: 'Exhale on the pull-in.',
+          mistakes: 'Lower back sagging on the body saw. Swinging the straps. Letting the shoulders drift behind the hands.',
         },
       },
       {
@@ -655,6 +752,217 @@ export const DATA_CAVE: Circuit[] = [
           cue: 'Two minutes. Do it on the way out of the gym.',
           breathing: 'Exhale rotating out.',
           mistakes: 'Skipping it because the session is nominally over.',
+        },
+      },
+    ],
+    substitutes: [oneArmPath('addon-oap-path')],
+  },
+  {
+    id: 'cave-06', circuitNum: '06',
+    title: 'FEET', subtitle: 'after bouldering - slab - tension',
+    focus: 'Stand on nothing, keep the feet on steep ground: footwork, balance and the tension behind it.',
+    capacities: ['legs', 'tension', 'mobility'],
+    illustration: 'squats.svg',
+    duration: 45,
+    recoveryHours: 12,
+    stacksOnSession: true,
+    note:
+      'Runs straight after a boulder session, the alternative to ADD-ON. The wall drills '
+      + 'come first while you are still coordinated; pick problems far below your limit. '
+      + 'Almost nothing here loads the fingers, so it is the add-on to pick on a day they '
+      + 'are complaining.',
+    exercises: [
+      {
+        id: 'feet-silent-laps',
+        name: 'Silent Feet',
+        capacities: ['legs'],
+        block: 'PRIMARY', intensity: 'TECHNIQUE',
+        sets: 3, work: 60, unit: 'sec', restSec: 60,
+        load: { kind: 'bodyweight', text: 'Easy vertical or slab problems, 3-4 grades below your limit' },
+        fixed: true,
+        progression: 'Smaller footholds, then steeper ground, then a grade harder. Never faster.',
+        protocolId: 'footwork-drill',
+        note: 'Look at the hold, place the foot once, silently. No readjusting, no scraping.',
+        form: {
+          setup: 'An easy wall with small footholds. Climb up, across or down continuously for the minute.',
+          execution: 'Watch each foothold until the shoe is on it. Place the exact spot you picked, first time, with no sound. The foot stays where it landed until it moves to the next hold.',
+          cue: 'Weight the standing foot fully, then the moving foot is free to hover and place slowly. A loud foot is a foot that was placed by hope.',
+          breathing: 'Slow, through the nose. Calm feet start with a calm body.',
+          mistakes: 'Climbing too hard to be precise. Looking away before the foot lands. Shuffling the foot after it is placed.',
+        },
+      },
+      {
+        id: 'feet-fewer-hands',
+        name: 'Fewer Hands Slab',
+        capacities: ['legs', 'mobility'],
+        block: 'PRIMARY', intensity: 'TECHNIQUE',
+        sets: 3, work: 60, unit: 'sec', restSec: 60,
+        load: { kind: 'bodyweight', text: 'The easiest slab in the gym' },
+        fixed: true,
+        progression: 'Two hands, then one hand, then no hands, then onto vertical ground where the margin is smaller.',
+        protocolId: 'footwork-drill',
+        note: 'Low to the mat. The point is to feel where the hips must be to stand on a foot.',
+        variations: [
+          { minLevel: 1, name: 'One-Hand Slab', load: 'One hand only, then the other' },
+          { minLevel: 3, name: 'No-Hands Traverse', load: 'Hands behind the back, traverse low' },
+          { minLevel: 5, name: 'No-Hands Slab', load: 'Hands off, up the easiest slab' },
+        ],
+        form: {
+          setup: 'An easy slab or low-angle wall, a thick mat, feet never more than a metre up for the no-hands versions.',
+          execution: 'Move up or across using as few hands as the version allows. Step through deliberately, weight shifting fully onto each foot before the next moves.',
+          cue: 'Hips over the foot and away from the wall. On a slab the heel drops and the knee bends: the more you lean in, the less the rubber holds.',
+          breathing: 'Exhale as you stand up onto a foot.',
+          mistakes: 'Hugging the wall. Rushing the weight shift. Going high without hands.',
+        },
+      },
+      {
+        id: 'feet-steep-walk',
+        name: 'Steep Foot Walk',
+        capacities: ['tension'],
+        block: 'SECONDARY', intensity: 'MODERATE',
+        sets: 3, work: 30, unit: 'sec', restSec: 90,
+        load: { kind: 'bodyweight', text: 'Jugs only on the steepest wall' },
+        progression: 'Smaller and further footholds, then fixed feet with moving hands, then controlled foot cuts.',
+        protocolId: 'tension-iso',
+        note: 'Hands stay on big holds. The feet do the work: they move, and they pull.',
+        variations: [
+          { minLevel: 1, name: 'Steep Foot Walk', load: 'Hands on two jugs, walk the feet across many footholds' },
+          { minLevel: 3, name: 'Fixed Feet, Moving Hands', load: 'Feet on two footholds, move the hands between jugs' },
+          { minLevel: 5, name: 'Foot Cut and Re-Place', load: 'Cut both feet, swing still, put them back silently on the same holds' },
+        ],
+        form: {
+          setup: 'Two jugs on steep ground, lots of footholds within reach. Arms long, not locked off.',
+          execution: 'Walk the feet from hold to hold for 30 seconds, never letting one come off by accident. Higher versions: keep the feet planted while the hands move, or cut and re-place them.',
+          cue: 'Pull with the toes as if dragging the foothold toward you, and push the hips into the wall. On steep ground a foot stays on because it pulls, not because it rests.',
+          breathing: 'Keep breathing, especially as the foot moves.',
+          mistakes: 'Hanging off bent arms. Resting the foot on the hold instead of pulling. Letting the hips sag away from the wall.',
+        },
+      },
+      {
+        id: 'feet-toe-hook',
+        name: 'Toe-Hook Hold',
+        capacities: ['tension'],
+        block: 'SECONDARY', intensity: 'MODERATE',
+        sets: 2, work: 8, unit: 'sec', restSec: 90,
+        load: { kind: 'bodyweight', text: 'Big hold or volume, hands on jugs' },
+        perSide: true,
+        progression: '8 then 10 seconds, then one hand off, then a smaller hold to hook.',
+        protocolId: 'tension-iso',
+        form: {
+          setup: 'Steep wall. Hands on two jugs, one toe hooked over a big hold or volume at about hip or hand height.',
+          execution: 'Take weight into the hook: flex the toe up and pull the heel toward the shin, then hold. Both sides.',
+          cue: 'The whole leg stays rigid. Relax it by a fraction and the toe slides off: that is what happens on the real problem.',
+          breathing: 'Controlled.',
+          mistakes: 'A floppy knee. Holding with the arms and letting the toe just touch.',
+        },
+      },
+      {
+        id: 'feet-edge-calf-raise',
+        name: 'Toe-Tip Edge Calf Raise',
+        capacities: ['legs'],
+        block: 'SECONDARY', intensity: 'MODERATE',
+        sets: 3, work: 8, unit: 'reps', restSec: 90,
+        load: { kind: 'added-kg', value: 0, text: 'Climbing shoes on a small foothold, then a dumbbell in the same-side hand' },
+        perSide: true,
+        progression: 'Eight slow reps a side, then a smaller foothold, then a dumbbell.',
+        protocolId: 'foot-strength',
+        note: 'Three seconds down, heel below the hold, rise all the way onto the toe tip.',
+        form: {
+          setup: 'In climbing shoes, one foot on a small foothold or step edge, big toe on the hold, the other foot free. One finger on the wall for balance, no more.',
+          execution: 'Lower the heel below the hold over three seconds, then press up until the ankle is fully extended and you are standing on the tip of the toe. Hold one second.',
+          cue: 'This is standing on a tiny hold: pressure through the big toe, ankle stiff, the calf holding the position. The top of each rep is the part that matters.',
+          breathing: 'Exhale on the way up.',
+          mistakes: 'Rolling onto the outside of the foot. Bouncing out of the bottom. Pulling on the wall with the hand.',
+        },
+      },
+      {
+        id: 'feet-star-reach',
+        name: 'Single-Leg Star Reach',
+        capacities: ['legs'],
+        block: 'SECONDARY', intensity: 'EASY',
+        sets: 2, work: 30, unit: 'sec', restSec: 30,
+        load: { kind: 'bodyweight', text: 'In climbing shoes, on a low foothold or a box edge' },
+        perSide: true,
+        progression: 'Floor, then a foothold, then eyes closed for the last 10 seconds.',
+        protocolId: 'balance',
+        form: {
+          setup: 'Stand on one foot on a low foothold or the edge of a box, knee soft, hips level.',
+          execution: 'Reach the free foot slowly forward, to the side, behind and across, touching down nothing, returning to centre each time. Thirty seconds, both sides.',
+          cue: 'Stab at imaginary footholds with the free toe, quietly and precisely, while the standing foot holds still. This is a slab move without the wall.',
+          breathing: 'Slow and even.',
+          mistakes: 'Hip dropping on the free side. Locking the standing knee. Grabbing the wall at the first wobble.',
+        },
+      },
+      {
+        id: 'feet-rockover',
+        name: 'Rock-Over Step-Up',
+        capacities: ['legs', 'mobility'],
+        block: 'SECONDARY', intensity: 'MODERATE',
+        sets: 2, work: 5, unit: 'reps', restSec: 90,
+        load: { kind: 'added-kg', value: 0, text: 'Box at knee height or higher, then a dumbbell in each hand' },
+        perSide: true,
+        progression: 'A higher box, then the foot placed wider with the knee turned out, then dumbbells.',
+        protocolId: 'max-strength',
+        note: 'No push from the back foot. The top leg does all of it.',
+        form: {
+          setup: 'A box at knee height or higher. One foot on top, turned slightly out, knee tracking over the toes.',
+          execution: 'Shift the chest over the high foot, then stand up on it with the back foot relaxed, toes only touching. Lower under control.',
+          cue: 'This is the single-leg squat up the wall: rock the weight over the high foot before you push. Hips open, knee out.',
+          breathing: 'Exhale as you stand.',
+          mistakes: 'Springing off the back foot. The knee collapsing inward. Standing up before the weight is over the foot.',
+        },
+      },
+      {
+        id: 'feet-pike-compression',
+        name: 'Seated Pike Compression',
+        capacities: ['tension', 'mobility'],
+        block: 'ACCESSORY', intensity: 'MODERATE',
+        sets: 2, work: 10, unit: 'reps', restSec: 60,
+        load: { kind: 'bodyweight', text: 'Seated, legs straight' },
+        progression: 'Higher lifts, then a two-second hold at the top, then legs in a straddle.',
+        protocolId: 'dynamic-core',
+        form: {
+          setup: 'Sit tall with the legs straight, hands on the floor beside the knees or further forward.',
+          execution: 'Lift both heels off the floor by pulling the thighs up toward the chest, without leaning back. Lower slowly.',
+          cue: 'Strength at the end of the hip range is what puts a high foot on, and keeps it on, when there is nothing to push against.',
+          breathing: 'Exhale on the lift.',
+          mistakes: 'Leaning back to fake the height. Bending the knees.',
+        },
+      },
+      {
+        id: 'feet-cossack',
+        name: 'Cossack Squat',
+        capacities: ['mobility', 'legs'],
+        block: 'MOBILITY', intensity: 'EASY',
+        sets: 2, work: 45, unit: 'sec', restSec: 15,
+        load: { kind: 'bodyweight', text: 'Bodyweight, hands on a post if needed' },
+        perSide: true,
+        progression: 'Deeper, then without a hand, then a light plate held at the chest.',
+        protocolId: 'mobility',
+        form: {
+          setup: 'Wide stance, toes turned slightly out.',
+          execution: 'Sit down over one leg while the other stays straight with its toes to the ceiling. Hold the bottom, then slow reps for the time. Both sides.',
+          cue: 'Loaded adductor range is what lets the hips open on a slab and in a bridge. Work where it is uncomfortable, never sharp.',
+          breathing: 'Exhale into the bottom.',
+          mistakes: 'The bent-leg heel lifting. The chest collapsing forward.',
+        },
+      },
+      {
+        id: 'feet-frogger',
+        name: 'Frogger + Active Straddle',
+        capacities: ['mobility'],
+        block: 'MOBILITY', intensity: 'EASY',
+        sets: 2, work: 45, unit: 'sec', restSec: 15,
+        load: { kind: 'bodyweight', text: 'No load' },
+        progression: 'Knees wider, then the hips closer to the floor. Active lifts higher and longer.',
+        protocolId: 'mobility',
+        note: 'Set 1: frogger. Set 2: seated straddle, lift one straight leg then the other, 5 each.',
+        form: {
+          setup: 'Frogger: on the forearms, knees wide, inside edges of the feet on the floor. Straddle: seated, legs wide and straight.',
+          execution: 'Frogger: rock the hips gently back and forward, sinking a little wider each time. Straddle: hands on the floor, lift one leg off the floor as high as possible and hold two seconds.',
+          cue: 'Wide, flat-to-the-wall hips are what put the weight over the toes on a slab. Passive range makes it possible, active strength makes it usable.',
+          breathing: 'Long exhales into the stretch.',
+          mistakes: 'Forcing the range. Arching the lower back in the frogger.',
         },
       },
     ],

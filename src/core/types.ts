@@ -287,6 +287,25 @@ export interface Exercise {
   gate?: Gate;
   variations?: Variation[];
   form?: FormGuide;
+  /** A TEST exercise whose result is saved as a benchmark, opening gates. */
+  records?: BenchmarkRecord;
+}
+
+/**
+ * How a test result is entered and what it becomes. The athlete enters what
+ * they can read off the equipment — kilos on the belt, seconds on the clock —
+ * and the app converts it to the benchmark's own unit.
+ */
+export interface BenchmarkRecord {
+  benchmarkId: string;
+  /** The stepper the result is entered on. */
+  axis: LoadAxis;
+  /**
+   * identity             — entered value is already in the benchmark's unit
+   * added-kg-to-pct-bw   — added kg on a max hang -> (BW + added) / BW x 100
+   * five-rm-to-pct-bw    — added kg on a 5RM pull-up -> estimated 1RM as % BW
+   */
+  convert: 'identity' | 'added-kg-to-pct-bw' | 'five-rm-to-pct-bw';
 }
 
 export interface ScaledExercise extends Exercise {
@@ -419,7 +438,7 @@ export type MuscleListItem = CapacityListItem;
  * where the variation ladder does the progressing).
  */
 export interface LoadAxis {
-  unit: 'kg' | 'mm' | '%' | 'RPE';
+  unit: 'kg' | 'mm' | '%' | 'RPE' | 's' | 'cm' | 'LVL';
   /** One tap of the stepper. Matched to how the equipment actually increments. */
   step: number;
   min: number;
