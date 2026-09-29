@@ -22,10 +22,13 @@ npm run build    # Production build
 npx serve out    # Serve the production build (static export: `npm run start` does not work)
 
 npm run check:morning   # Assert the MORN sessions still fit their time budgets
+npm run check:cave      # ADD-ON and FEET budgets, and the one-arm gates
 ```
 
-No test framework yet — test manually in browser. The one automated check is
-`check:morning`, which guards the two promises MORN makes.
+No test framework yet — test manually in browser. The automated checks are
+`check:morning`, which guards the two promises MORN makes, and `check:cave`,
+which keeps CAVE 05 and 06 inside 45 minutes NORMAL at every level and proves
+the one-arm rungs open on a tested weighted pull-up and never on XP.
 
 ## Architecture
 
@@ -42,6 +45,7 @@ src/
     stats.ts     # Trend scoring, chart data, capacity list sorting
     load.ts      # Load axes, load history, stepper formatting
     data-home.ts, data-cave.ts, data-hang.ts, data-morning.ts  # Session libraries
+    data-oap.ts  # One-arm pull-up path, shared by CAVE 01, CAVE 05 and HOME 02
     data-index.ts  # getModeData(mode) helper
   storage/       # Async storage abstraction (swap localStorage for Supabase later)
   store/         # Zustand store (app / workout / progress / stats / load slices)
@@ -147,7 +151,15 @@ intensity at HARD** — a tired athlete downgrades rather than grinds.
   hangs, repeaters). No level or energy scaling.
 - `gate` blocks dangerous exercises behind a **tested benchmark**, not XP. The
   campus board needs a recorded 130% bodyweight 20mm hang; until then it is
-  substituted with recruitment pulls.
+  substituted with recruitment pulls. A gate with no `substituteId` hides the
+  exercise until it opens. Substitutes are resolved one level deep, so a
+  substitute must not carry a gate of its own.
+- Benchmarks are recorded in CAVE 04 ASSESS. Each TEST exercise carries a
+  `records` spec: the result is entered on the load stepper (kilos on the belt,
+  seconds, cm, progression number) and saved on the last DONE, converted to the
+  benchmark's unit by `benchmarkValueFromEntry` — added kg to % bodyweight, and
+  a 5RM to an estimated 1RM at x1.15 of system mass. Weaker side is entered for
+  per-side tests. Bodyweight comes from `ATHLETE.bodyweightKg`.
 - `getReadiness()` enforces 48h between maximal finger sessions, and otherwise
   gates on the circuit's own `recoveryHours` rather than one flat number, so a
   12h session is available again after 12h.
@@ -164,9 +176,37 @@ intensity at HARD** — a tired athlete downgrades rather than grinds.
 | Mode | Sessions |
 |------|----------|
 | HOME | 01 TENSION, 02 PULL, 03 ARMOUR, 04 WRISTS |
-| CAVE | 01 MAX, 02 POWER, 03 CAPACITY, 04 ASSESS, 05 ADD-ON |
+| CAVE | 01 MAX, 02 POWER, 03 CAPACITY, 04 ASSESS, 05 ADD-ON, 06 FEET |
 | HANG | 01 MAX HANGS, 02 CAPACITY, 03 DENSITY |
 | MORN | 01 ABS + OBLIQUES, 02 SLOW START, 03 FEET ON, 04 BAND ONLY |
+
+### After bouldering: ADD-ON and FEET
+
+CAVE 05 and 06 are alternatives, picked on the day, both `stacksOnSession`, both
+kept at 45 minutes NORMAL by `check:cave`. Neither loads the fingers.
+
+- **05 ADD-ON**: weighted pull-ups (SECONDARY here, so level adds no sets —
+  the fresh, level-scaled version is in CAVE 01 and HOME 02), the one-arm path,
+  push-ups/dips, goblet squat, then the trunk: spiderman + cross-body mountain
+  climber and hanging oblique knee raise to windshield wipers (both SECONDARY,
+  so TIRED keeps them), TRX body saw to pike, cuff.
+- **06 FEET**: slab and feet-on work. Wall drills first while coordinated
+  (silent feet, fewer-hands slab — `fixed`, TECHNIQUE), then steep foot walk,
+  toe-hook hold, toe-tip calf raise on a foothold, single-leg balance,
+  rock-over step-up, pike compression, Cossack squat, frogger. Logged under
+  `legs`, `tension` and `mobility`; there is deliberately no footwork axis.
+- The athlete's wrists and fingers are symptomatic: every plank-based card
+  names a fist, handle or forearm option, and hanging core stays at two sets
+  with ab straps allowed.
+
+### One-arm pull-up
+
+The goal is a one-arm pull-up. `data-oap.ts` builds the path once: a
+one-arm scap shrug, then a lopsided two-hand ladder (uneven grip, archer,
+typewriter) until the gates open. Assisted one-arms open at a tested 140%
+bodyweight weighted pull-up, one-arm negatives (CAVE 01 only) at 150%. The
+weighted pull-up is the main driver until then. It lives in CAVE 01, HOME 02
+and CAVE 05.
 
 MORN is the wake-up routine: yoga mat, medium band with no anchor, small pull
 edge on a sling, done before anything else competes for it. 03 FEET ON swaps
@@ -276,7 +316,6 @@ keeps all three in sync. Do not hand-edit the PNGs.
   worth covering first: `scaleRest` never returns below the protocol value on a
   PRIMARY block, gates resolve to their substitute when closed, decay respects
   the grace periods, and `getLoadAxis` stays null for unlogged blocks.
-- **Wire ASSESS to `recordBenchmark`** so test results open the safety gates.
 
 ## Handoff Documents
 

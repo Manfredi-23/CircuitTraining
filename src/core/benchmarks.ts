@@ -7,7 +7,7 @@
 // approximation it says so.
 // =============================================================================
 
-import type { Benchmark, BenchmarkResult, Capacity } from './types';
+import type { Benchmark, BenchmarkRecord, BenchmarkResult, Capacity } from './types';
 
 /**
  * The athlete this programme is written for. Bodyweight drives every load
@@ -360,6 +360,33 @@ export function targetsForBoulderGrade(
   boulder = ATHLETE.boulder,
 ): { current: number | null; next: number | null } {
   return standardsAtVGrade(benchmarkId, FONT_GRADE_MAP[boulder]);
+}
+
+/**
+ * A 5RM predicts a 1RM at about 1.15 times the load, applied to the whole
+ * system mass — bodyweight plus belt — because that is what the lats move.
+ */
+const FIVE_RM_TO_ONE_RM = 1.15;
+
+/**
+ * Convert what the athlete entered on a test into the benchmark's own unit.
+ * Rounded to whole numbers: the standards are whole numbers, and a decimal
+ * point on a self-timed test is precision the measurement does not have.
+ */
+export function benchmarkValueFromEntry(
+  record: BenchmarkRecord,
+  entered: number,
+  bodyweightKg = ATHLETE.bodyweightKg,
+): number {
+  switch (record.convert) {
+    case 'added-kg-to-pct-bw':
+      return Math.round(((bodyweightKg + entered) / bodyweightKg) * 100);
+    case 'five-rm-to-pct-bw':
+      return Math.round((((bodyweightKg + entered) * FIVE_RM_TO_ONE_RM) / bodyweightKg) * 100);
+    case 'identity':
+    default:
+      return Math.round(entered);
+  }
 }
 
 /** Whether a recorded result clears a gate threshold. */

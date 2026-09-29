@@ -198,6 +198,31 @@ export const PROTOCOLS: Record<string, Protocol> = {
       'Climbing-specific strength assessment literature; Lattice assessment battery.',
   },
 
+  'one-arm-pull': {
+    id: 'one-arm-pull',
+    name: 'One-Arm Pull-Up Progression',
+    quality: 'Unilateral maximal pulling strength',
+    work: '2-5 reps per arm on the hardest rung you can do cleanly',
+    rest: '150-180s. The working arm rests while the other works, and still needs it.',
+    sets: '3-4 per arm',
+    intensity: 'Hard, never grinding: stop with one clean rep left',
+    frequency: 'Two or three one-arm exercises per week in total, on strength days',
+    rationale:
+      'A one-arm pull-up is roughly the strength of a two-arm pull-up with half to two '
+      + 'thirds of bodyweight added, so weighted pull-ups carry most of the early '
+      + 'progress. The one-arm-specific rungs teach what weighted pulls cannot: engaging '
+      + 'one shoulder alone and stopping the body rotating away from the bar. Load shifts '
+      + 'gradually from two hands to one — uneven grip, archer, typewriter, then assisted '
+      + 'one-arms and negatives — because eccentric and fully one-armed work is hard on '
+      + 'the elbow, which is why those rungs are gated on a tested weighted pull-up here. '
+      + 'Realistic timeline from 8 strict pull-ups: one to two years.',
+    source:
+      'Lattice Training one-arm pull-up exercise menu and 4 x 3 at 3 min prescription, as '
+      + 'reported by Gripped Magazine; Hörst, Training for Climbing: one-arm pull-up '
+      + 'progression and uneven-grip pull-ups. The weighted-equivalence figure is a '
+      + 'coaching rule of thumb, not a study.',
+  },
+
   'strength-endurance': {
     id: 'strength-endurance',
     name: 'Strength Endurance',
@@ -234,6 +259,88 @@ export const PROTOCOLS: Record<string, Protocol> = {
     source:
       'Saeterbakken et al., ten weeks dynamic or isometric core training in highly '
       + 'trained climbers, PLOS ONE (2018).',
+  },
+
+  'dynamic-core': {
+    id: 'dynamic-core',
+    name: 'Dynamic Trunk',
+    quality: 'Hip flexion and rotation under tension: pulling the feet in and keeping them on',
+    work: '6-16 controlled reps',
+    rest: '60-90s',
+    sets: '2-3',
+    intensity: 'Moderate to hard, every rep slow enough to stop at any point',
+    frequency: '2x per week',
+    rationale:
+      'The isometric work elsewhere teaches the trunk to resist. Steep climbing also asks '
+      + 'it to move: draw a knee up to a high foot, rotate into a drop-knee, and re-place '
+      + 'a cut foot while the arms hold. Dynamic and isometric core training produced '
+      + 'similar gains in climbing-specific tests, so both belong. Hanging versions add '
+      + 'the shoulder engagement of the real position; plank versions spare the grip '
+      + 'after a boulder session.',
+    source:
+      'Saeterbakken et al., ten weeks dynamic or isometric core training in highly trained '
+      + 'climbers, PLOS ONE (2018); Hörst, windshield wipers as a climbing core exercise '
+      + '(2-3 sets of 6-12).',
+  },
+
+  'footwork-drill': {
+    id: 'footwork-drill',
+    name: 'Footwork and Balance Drills',
+    quality: 'Precise foot placement, trust in small feet, weight over the feet',
+    work: '60s of climbing per set on terrain well below your limit',
+    rest: '60s',
+    sets: '3',
+    intensity: 'Technique. Easy enough that every placement is deliberate.',
+    frequency: 'Every climbing session if you like: it costs no recovery',
+    rationale:
+      'Slab and technical weakness is a movement-skill gap more than a strength gap, and '
+      + 'skill is trained by constraint: forbid readjusting a foot and placement gets '
+      + 'precise, take the hands away and the body learns to find balance over the feet. '
+      + 'Done on easy ground, right after the session while still coordinated. Honest '
+      + 'caveat: these are established coaching drills, not trial-tested protocols.',
+    source:
+      'Hörst on no-hands climbing and kinesthetic awareness (Climbing Magazine, "Steady '
+      + 'Yourself"); silent-feet and hover drills as taught across climbing coaching '
+      + 'resources; board-climbing feet-on drills (UKB, Unlevel Edge).',
+  },
+
+  'balance': {
+    id: 'balance',
+    name: 'Single-Leg Balance',
+    quality: 'Standing still on one small foothold',
+    work: '20-40s per side',
+    rest: '30s',
+    sets: '2-3',
+    intensity: 'Hard enough to wobble, never to fall',
+    frequency: '3x per week, about 10 minutes, works',
+    rationale:
+      'Balance draws on vision, the inner ear and the receptors of the foot and ankle, and '
+      + 'glute medius and lower-leg strength decide how well a loaded foot holds its '
+      + 'position. Short, frequent balance sessions improve it in healthy adults. On a '
+      + 'foothold in climbing shoes, it trains the exact position a slab asks for.',
+    source:
+      'The Climbing Doctor, balance and stability for climbers; Lesinski et al., '
+      + 'dose-response of balance training in healthy young adults, Sports Med (2015).',
+  },
+
+  'foot-strength': {
+    id: 'foot-strength',
+    name: 'Calf and Toe Strength',
+    quality: 'Pressing hard through the tip of the foot',
+    work: '6-10 slow reps per side, three seconds down',
+    rest: '90s',
+    sets: '2-3',
+    intensity: 'Moderate, full range, controlled',
+    frequency: '2x per week',
+    rationale:
+      'Standing on a small edge is a single-leg calf raise held at the top on a few '
+      + 'millimetres of rubber. Calf, Achilles and big-toe strength decide how long that '
+      + 'position holds and how hard the toe can press. Doing it in climbing shoes on a '
+      + 'real foothold keeps it specific. Honest caveat: no trial has measured this in '
+      + 'climbers; the support is anatomical and clinical.',
+    source:
+      'The Climbing Doctor, lower-body strength for high stepping and edging; Climbing '
+      + 'Magazine, a feet-first approach to training.',
   },
 
   'prehab': {

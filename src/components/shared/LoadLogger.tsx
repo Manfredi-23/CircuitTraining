@@ -2,6 +2,7 @@
 
 import { useStore } from '@/store/store';
 import { getLoadAxis, getLastLoad, formatLoad, formatLoadDate } from '@/core/load';
+import { benchmarkValueFromEntry } from '@/core/benchmarks';
 import { hapticTap } from '@/native/native';
 import type { ScaledExercise } from '@/core/types';
 import styles from './LoadLogger.module.css';
@@ -13,6 +14,9 @@ import styles from './LoadLogger.module.css';
  * decision against a known number rather than a guess. The value is written to
  * the log when the exercise's last set is marked DONE — no separate save, and
  * nothing recorded for work that was skipped.
+ *
+ * On a TEST exercise the same stepper enters the result, which is saved as a
+ * benchmark on DONE and opens any gate it clears.
  *
  * Renders nothing for exercises with no load axis: bodyweight and band work
  * progress through the variation ladder, and a number there would be noise.
@@ -27,6 +31,13 @@ export default function LoadLogger({ exercise }: { exercise: ScaledExercise }) {
 
   const last = getLastLoad(loadLog, exercise.id);
   const delta = last && last.unit === axis.unit ? pendingLoad - last.value : null;
+
+  // A test entered in kilos is judged in % bodyweight. Show the converted
+  // figure, because that is the number the gates and standards read.
+  const record = exercise.records;
+  const converted = record && record.convert !== 'identity'
+    ? `= ${benchmarkValueFromEntry(record, pendingLoad)}% BW`
+    : null;
 
   const step = (steps: number) => {
     adjustLoad(steps);
@@ -61,6 +72,7 @@ export default function LoadLogger({ exercise }: { exercise: ScaledExercise }) {
               {delta > 0 ? '+' : ''}{Number.isInteger(delta) ? delta : delta.toFixed(1)} vs last
             </span>
           )}
+          {converted && <span className={styles.deltaDown}>{converted}</span>}
         </div>
 
         <button

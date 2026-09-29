@@ -28,6 +28,10 @@ const UNLOGGED_BLOCKS: BlockType[] = ['WARMUP', 'PREHAB', 'MOBILITY'];
  * is to catch a fat-fingered entry, not to cap ambition.
  */
 export function getLoadAxis(exercise: Exercise): LoadAxis | null {
+  // A test result is entered on the benchmark's own stepper — seconds, cm,
+  // kilos on the belt — not on the load the exercise happens to carry.
+  if (exercise.records) return exercise.records.axis;
+
   if (UNLOGGED_BLOCKS.includes(exercise.block)) return null;
 
   switch (exercise.load.kind) {
@@ -101,8 +105,8 @@ export function clampToAxis(value: number, axis: LoadAxis): number {
 /** How the number reads on the card, e.g. "+14KG", "20MM", "85%". */
 export function formatLoad(value: number, axis: LoadAxis): string {
   const n = Number.isInteger(value) ? String(value) : value.toFixed(1);
-  return axis.unit === 'RPE'
-    ? `RPE ${n}`
+  return axis.unit === 'RPE' || axis.unit === 'LVL'
+    ? `${axis.unit} ${n}`
     : `${axis.prefix}${n}${axis.unit.toUpperCase()}`;
 }
 
