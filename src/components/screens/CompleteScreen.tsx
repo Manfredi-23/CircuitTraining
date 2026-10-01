@@ -7,7 +7,7 @@ import styles from './CompleteScreen.module.css';
 export default function CompleteScreen() {
   const {
     mode, energy, circuit, sessionStartTime, sessionLevelUps,
-    setScreen, pickHumorLine,
+    setScreen, pickHumorLine, openClimbLog,
   } = useStore();
 
   const duration = sessionStartTime ? Math.round((Date.now() - sessionStartTime) / 60000) : 0;
@@ -56,6 +56,12 @@ export default function CompleteScreen() {
       )}
 
       <div className={styles.spacer} />
+      {/* Sessions built to follow a climbing session prompt for the climbs themselves. */}
+      {circuit?.stacksOnSession && (
+        <button className={styles.btnLog} onClick={() => { pickHumorLine(); openClimbLog(); }}>
+          LOG TODAY&apos;S CLIMBS <span>&rarr;</span>
+        </button>
+      )}
       <button className={styles.btnDone} onClick={handleDone}>DONE</button>
     </div>
   );

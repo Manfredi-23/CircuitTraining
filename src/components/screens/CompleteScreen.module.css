@@ -30,3 +30,12 @@
   transition: transform 80ms ease;
 }
 .btnDone:active { transform: scale(0.98); }
+
+.btnLog {
+  display: flex; justify-content: space-between; align-items: center;
+  width: 100%; padding: 20px 24px; font-weight: 700; font-size: 16px;
+  letter-spacing: 0.04em; color: var(--accent); background: none;
+  border: 2px solid var(--accent); border-radius: var(--rad-lg); flex-shrink: 0;
+  transition: transform 80ms ease;
+}
+.btnLog:active { transform: scale(0.98); }

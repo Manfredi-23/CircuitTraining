@@ -10,6 +10,7 @@ import WorkoutScreen from '@/components/screens/WorkoutScreen';
 import RestScreen from '@/components/screens/RestScreen';
 import CompleteScreen from '@/components/screens/CompleteScreen';
 import StatsScreen from '@/components/screens/StatsScreen';
+import ClimbScreen from '@/components/screens/ClimbScreen';
 
 export default function Page() {
   const screen = useStore(s => s.screen);
@@ -41,6 +42,7 @@ export default function Page() {
       case 'rest': return <RestScreen />;
       case 'complete': return <CompleteScreen />;
       case 'stats': return <StatsScreen />;
+      case 'climb': return <ClimbScreen />;
       default: return <HomeScreen />;
     }
   };

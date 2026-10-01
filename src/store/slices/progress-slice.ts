@@ -49,5 +49,7 @@ export const createProgressSlice: StateCreator<Store, [], [], ProgressSlice> = (
     benchmarkResults: [],
     loadLog: [],
     pendingLoad: null,
+    climbLog: [],
+    editingClimbId: null,
   }),
 });

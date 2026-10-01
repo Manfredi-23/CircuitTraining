@@ -7,6 +7,7 @@ import { getOverallLevel, getStatInterpretation } from '@/core/engine';
 import { getSortedCapacities, getLastSession, getOverallTrendData, getCapacityTrendData, timeFilterToDays } from '@/core/stats';
 import { CONFIG } from '@/core/config';
 import { useSwipe } from '@/hooks/use-swipe';
+import ClimbStats from '@/components/shared/ClimbStats';
 import type { SortMode, TimeFilter, Capacity } from '@/core/types';
 import styles from './StatsScreen.module.css';
 
@@ -27,7 +28,7 @@ const TREND_SYMBOLS: Record<string, string> = { up: '^', down: 'v', stable: '-' 
 
 export default function StatsScreen() {
   const {
-    progress, sessionLog, statsSort, statsTimeFilter,
+    progress, sessionLog, climbLog, statsSort, statsTimeFilter,
     activeChartMuscles, highlightMuscle,
     setStatsSort, setStatsTimeFilter, toggleChartMuscle,
     setHighlightMuscle, setScreen,
@@ -165,6 +166,12 @@ export default function StatsScreen() {
               </LineChart>
             </ResponsiveContainer>
           </div>
+        </div>
+
+        {/* Climbing, from the climb log */}
+        <div className={styles.section}>
+          <div className={styles.sectionTitle}>CLIMBING</div>
+          <ClimbStats sessions={climbLog} />
         </div>
       </div>
     </div>
