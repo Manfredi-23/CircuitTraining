@@ -27,7 +27,7 @@ npm run check:cave      # ADD-ON and FEET budgets, and the one-arm gates
 
 No test framework yet — test manually in browser. The automated checks are
 `check:morning`, which guards the two promises MORN makes, and `check:cave`,
-which keeps CAVE 05 and 06 inside 45 minutes NORMAL at every level and proves
+which keeps CAVE 03 and 04 inside 45 minutes NORMAL at every level and proves
 the one-arm rungs open on a tested weighted pull-up and never on XP.
 
 ## Architecture
@@ -44,8 +44,8 @@ src/
     benchmarks.ts# Testable standards, athlete profile, %BW to kg conversions
     stats.ts     # Trend scoring, chart data, capacity list sorting
     load.ts      # Load axes, load history, stepper formatting
-    data-home.ts, data-cave.ts, data-hang.ts, data-morning.ts  # Session libraries
-    data-oap.ts  # One-arm pull-up path, shared by CAVE 01, CAVE 05 and HOME 02
+    data-home.ts, data-cave.ts, data-hang.ts, data-morning.ts, data-assess.ts  # Session libraries
+    data-oap.ts  # One-arm pull-up path, shared by CAVE 01, CAVE 03 and HOME 02
     data-index.ts  # getModeData(mode) helper
   storage/       # Async storage abstraction (swap localStorage for Supabase later)
   store/         # Zustand store (app / workout / progress / stats / load slices)
@@ -150,11 +150,12 @@ intensity at HARD** — a tired athlete downgrades rather than grinds.
 - `fixed: true` marks protocols taken exactly as written (warm-ups, density
   hangs, repeaters). No level or energy scaling.
 - `gate` blocks dangerous exercises behind a **tested benchmark**, not XP. The
-  campus board needs a recorded 130% bodyweight 20mm hang; until then it is
-  substituted with recruitment pulls. A gate with no `substituteId` hides the
+  one-arm rungs need a recorded weighted pull-up; until then they are
+  substituted with the lopsided two-hand ladder. A gate with no `substituteId` hides the
   exercise until it opens. Substitutes are resolved one level deep, so a
   substitute must not carry a gate of its own.
-- Benchmarks are recorded in CAVE 04 ASSESS. Each TEST exercise carries a
+- Benchmarks are recorded in TEST 01 ASSESS, which has its own tab so it is
+  there when wanted and out of the way otherwise. Each TEST exercise carries a
   `records` spec: the result is entered on the load stepper (kilos on the belt,
   seconds, cm, progression number) and saved on the last DONE, converted to the
   benchmark's unit by `benchmarkValueFromEntry` — added kg to % bodyweight, and
@@ -165,7 +166,7 @@ intensity at HARD** — a tired athlete downgrades rather than grinds.
   12h session is available again after 12h.
 - `stacksOnSession: true` marks a session built to run straight after another
   one, which never reports a recovery debt. Distinct from `recoveryHours: 0`,
-  which means the load is low enough to repeat daily: CAVE 05 ADD-ON is
+  which means the load is low enough to repeat daily: CAVE 03 ADD-ON is
   genuinely demanding and still intended to stack.
 - Skipping and quitting cost **zero** XP. Punishing a skip in an app that
   prescribes maximal finger loading pushes the athlete to train through a
@@ -176,21 +177,28 @@ intensity at HARD** — a tired athlete downgrades rather than grinds.
 | Mode | Sessions |
 |------|----------|
 | HOME | 01 TENSION, 02 PULL, 03 ARMOUR, 04 WRISTS |
-| CAVE | 01 MAX, 02 POWER, 03 CAPACITY, 04 ASSESS, 05 ADD-ON, 06 FEET |
+| CAVE | 01 MAX, 02 CAPACITY, 03 ADD-ON, 04 FEET |
 | HANG | 01 MAX HANGS, 02 CAPACITY, 03 DENSITY |
 | MORN | 01 ABS + OBLIQUES, 02 SLOW START, 03 FEET ON, 04 BAND ONLY |
+| TEST | 01 ASSESS |
+
+There is deliberately no limit-bouldering or campus session. Free bouldering is
+the athlete's own time and stays unprogrammed: CAVE 02 POWER was removed in
+October 2026, and the campus board and its 130% gate with it. Circuit ids were
+kept (`cave-03`, `cave-05`, `cave-06`) and only `circuitNum` renumbered, so
+session logs stay consistent. Nothing trains `contact` any more.
 
 ### After bouldering: ADD-ON and FEET
 
-CAVE 05 and 06 are alternatives, picked on the day, both `stacksOnSession`, both
+CAVE 03 and 04 are alternatives, picked on the day, both `stacksOnSession`, both
 kept at 45 minutes NORMAL by `check:cave`. Neither loads the fingers.
 
-- **05 ADD-ON**: weighted pull-ups (SECONDARY here, so level adds no sets —
+- **03 ADD-ON**: weighted pull-ups (SECONDARY here, so level adds no sets —
   the fresh, level-scaled version is in CAVE 01 and HOME 02), the one-arm path,
   push-ups/dips, goblet squat, then the trunk: spiderman + cross-body mountain
   climber and hanging oblique knee raise to windshield wipers (both SECONDARY,
   so TIRED keeps them), TRX body saw to pike, cuff.
-- **06 FEET**: slab and feet-on work. Wall drills first while coordinated
+- **04 FEET**: slab and feet-on work. Wall drills first while coordinated
   (silent feet, fewer-hands slab — `fixed`, TECHNIQUE), then steep foot walk,
   toe-hook hold, toe-tip calf raise on a foothold, single-leg balance,
   rock-over step-up, pike compression, Cossack squat, frogger. Logged under
@@ -206,7 +214,7 @@ one-arm scap shrug, then a lopsided two-hand ladder (uneven grip, archer,
 typewriter) until the gates open. Assisted one-arms open at a tested 140%
 bodyweight weighted pull-up, one-arm negatives (CAVE 01 only) at 150%. The
 weighted pull-up is the main driver until then. It lives in CAVE 01, HOME 02
-and CAVE 05.
+and CAVE 03.
 
 MORN is the wake-up routine: yoga mat, medium band with no anchor, small pull
 edge on a sling, done before anything else competes for it. 03 FEET ON swaps
