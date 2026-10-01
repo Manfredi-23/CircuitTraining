@@ -1,17 +1,18 @@
 // =============================================================================
 // data-cave.ts — CAVE mode: full gym sessions
-// Equipment: hangboard, rings, TRX, campus board, kettlebells, dumbbells and
+// Equipment: hangboard, rings, TRX, kettlebells, dumbbells and
 //            plates, pull-up bars, weighted pull-up harness, a pulley under the
 //            hangboard, bands + anchors, bouldering wall with slab and steep.
 //
-// Six sessions:
+// Four sessions:
 //   01 MAX      — fingers, heavy pulling and the one-arm path, all fresh.
-//   02 POWER    — limit bouldering and contact strength.
-//   03 CAPACITY — repeaters, strength endurance, antagonists, legs.
-//   04 ASSESS   — the test battery. Every 6-8 weeks, on a rest day. Results
-//                 are saved as benchmarks and open the safety gates.
-//   05 ADD-ON   — after bouldering: heavy pull, one-arm path, antagonists, core.
-//   06 FEET     — after bouldering: footwork, balance, slab, feet-on tension.
+//   02 CAPACITY — repeaters, strength endurance, antagonists, legs.
+//   03 ADD-ON   — after bouldering: heavy pull, one-arm path, antagonists, core.
+//   04 FEET     — after bouldering: footwork, balance, slab, feet-on tension.
+//
+// There is no limit-bouldering session: free bouldering is the athlete's own,
+// kept unprogrammed on purpose. The test battery lives in its own TEST tab
+// (data-assess.ts).
 //
 // Order inside every session is fixed by neurological cost: the fingers and the
 // nervous system get the session while they are fresh, and the conditioning
@@ -21,7 +22,7 @@
 import type { Circuit } from './types';
 import { oneArmPath, assistedOneArm, oneArmNegative, oneArmShrug } from './data-oap';
 
-const WARMUP_PULSE = {
+export const WARMUP_PULSE = {
   id: 'cave-warmup-pulse',
   name: 'Pulse Raiser + Shoulder Prep',
   capacities: ['shoulder' as const],
@@ -41,7 +42,7 @@ const WARMUP_PULSE = {
   },
 };
 
-const WARMUP_FINGERS = {
+export const WARMUP_FINGERS = {
   id: 'cave-warmup-fingers',
   name: 'Progressive Finger Loading',
   capacities: ['crimp' as const, 'openhand' as const],
@@ -193,139 +194,7 @@ export const DATA_CAVE: Circuit[] = [
     substitutes: [oneArmPath('cave01-oap-path')],
   },
   {
-    id: 'cave-02', circuitNum: '02',
-    title: 'POWER', subtitle: 'limit boulder - contact',
-    focus: 'Recruit harder: maximal moves, contact strength, explosive pulling.',
-    capacities: ['contact', 'crimp', 'pull', 'tension'],
-    illustration: 'kettlebell.svg',
-    duration: 58,
-    recoveryHours: 48,
-    note: 'Quality decides the length of this session. When attempts stop feeling explosive, it is over.',
-    exercises: [
-      WARMUP_PULSE,
-      WARMUP_FINGERS,
-      {
-        id: 'cave-limit-boulder',
-        name: 'Limit Bouldering',
-        capacities: ['contact', 'crimp', 'tension', 'pull'],
-        block: 'PRIMARY', intensity: 'MAX',
-        sets: 6, work: 1, unit: 'reps', restSec: 180,
-        load: { kind: 'rpe', value: 10, text: 'Problems you can do in 1-4 tries on a good day' },
-        progression: 'Harder problems, not more attempts. Six maximal attempts beats twelve tired ones.',
-        protocolId: 'limit-boulder',
-        note: 'Four to six move problems at your limit. One attempt per set.',
-        form: {
-          setup: 'Pick two or three problems that are genuinely hard for you, ideally on steep ground with small holds.',
-          execution: 'One full attempt per set, then three minutes of real rest. Sit down, breathe, do not fiddle with your phone under the board.',
-          cue: 'This is the most transferable power stimulus you have: fingers, tension and movement loaded together in the pattern the sport actually uses.',
-          breathing: 'Full recovery breathing between attempts. Commit and breathe out on the hard move.',
-          mistakes: 'Cutting rest to three attempts in five minutes. Continuing once quality drops. Choosing problems that suit you rather than ones that expose you.',
-        },
-      },
-      {
-        id: 'cave-campus',
-        name: 'Campus Ladders',
-        capacities: ['contact', 'pull'],
-        block: 'PRIMARY', intensity: 'MAX',
-        sets: 4, work: 1, unit: 'reps', restSec: 180,
-        load: { kind: 'bodyweight', text: '1-3-5 ladder, large rungs' },
-        progression: 'Add a rung span (1-4-7) before adding sets. Never more than 5 sets.',
-        protocolId: 'campus',
-        gate: {
-          benchmarkId: 'fs-2arm-20mm',
-          minValue: 130,
-          reason:
-            'Campus boarding is the highest injury-risk tool in the gym and loads fingers, '
-            + 'elbows and shoulders explosively. It stays locked until your 20mm two-arm hang '
-            + 'is at least 130% bodyweight and you have had four clear weeks with no finger or '
-            + 'elbow pain. Recruitment pulls give most of the benefit at a fraction of the risk.',
-          substituteId: 'cave-recruitment-pulls',
-        },
-        form: {
-          setup: 'Large rungs. Fully warm, after the limit boulders, never at the end of a session.',
-          execution: 'Match on rung 1, move up to 3, then 5, controlled. One ladder per set. Stop the exercise the moment a catch feels sloppy.',
-          cue: 'Stop while it still feels good. Every campus injury happens on the set someone should not have done.',
-          breathing: 'Sharp exhale on each move.',
-          mistakes: 'Campusing tired. Campusing on small rungs. Doing it because it looks impressive rather than because a test says you need it.',
-        },
-      },
-      {
-        id: 'cave-explosive-pull',
-        name: 'Explosive Pull-Ups',
-        capacities: ['pull', 'contact'],
-        block: 'SECONDARY', intensity: 'HARD',
-        sets: 3, work: 3, unit: 'reps', restSec: 150,
-        load: { kind: 'bodyweight', text: 'Bodyweight, maximal speed' },
-        progression: 'Chest to bar, then hands leaving the bar, then a small added load.',
-        protocolId: 'max-strength',
-        form: {
-          setup: 'Dead hang, shoulders engaged before the pull starts.',
-          execution: 'Pull as fast as you physically can, aiming to bring the chest to the bar. Lower under control, reset fully between reps.',
-          cue: 'Three reps means three maximal-speed reps. The moment speed drops the set is finished.',
-          breathing: 'Sharp exhale on each pull.',
-          mistakes: 'Grinding out slow reps. Using a swing to generate the speed.',
-        },
-      },
-      {
-        id: 'cave-toehook',
-        name: 'Ring Toe-Hook Hold',
-        capacities: ['tension'],
-        block: 'SECONDARY', intensity: 'HARD',
-        sets: 3, work: 8, unit: 'reps', restSec: 90,
-        load: { kind: 'bodyweight', text: 'Bodyweight' },
-        progression: 'Longer holds, then a straighter body, then one arm on the rings.',
-        protocolId: 'tension-iso',
-        note: 'Hang from rings, hook both heels over a bar or ring strap, hold body horizontal.',
-        form: {
-          setup: 'Rings at head height, feet hooked over a low bar or the straps.',
-          execution: 'Pull the body into a horizontal line and hold, or move slowly between positions for reps.',
-          cue: 'This is the tension climbing actually asks for: pulling with the feet while the hands hold. Steep rock is won here.',
-          breathing: 'Continuous, controlled.',
-          mistakes: 'Letting the hips drop. Relying on the arms and forgetting the feet are meant to be pulling.',
-        },
-      },
-      {
-        id: 'cave-trx-ytw',
-        name: 'TRX Y-T-W',
-        capacities: ['shoulder'],
-        block: 'PREHAB', intensity: 'EASY',
-        sets: 2, work: 10, unit: 'reps', restSec: 45,
-        load: { kind: 'bodyweight', text: 'Angle sets the load — stay light' },
-        progression: 'Walk the feet forward to steepen the angle. Never to failure.',
-        protocolId: 'prehab',
-        note: 'Ten reps in each of the three positions.',
-        form: {
-          setup: 'TRX or rings, lean back with arms straight, body rigid, feet forward enough to feel resistance.',
-          execution: 'Pull into a Y overhead, then a T out to the sides, then a W with elbows bent. Ten each.',
-          cue: 'Scapular control, not a back workout. Slow and precise beats heavy.',
-          breathing: 'Exhale on the pull.',
-          mistakes: 'Shrugging. Steepening the angle until it becomes a row.',
-        },
-      },
-    ],
-    substitutes: [
-      {
-        id: 'cave-recruitment-pulls',
-        name: 'Recruitment Pulls',
-        capacities: ['contact', 'crimp'],
-        block: 'PRIMARY', intensity: 'MAX',
-        sets: 4, work: 5, unit: 'sec', restSec: 150,
-        load: { kind: 'rpe', value: 10, text: 'Maximal intent against an immovable edge' },
-        progression: 'Measured peak force on a gauge, or a heavier block. Intent is the variable, not duration.',
-        protocolId: 'recruitment-pull',
-        note: 'Pull as hard as possible for 5 seconds. Reaching peak force fast is the point.',
-        form: {
-          setup: 'A block or edge fixed so it cannot move, or a hangboard edge with feet planted and a weight belt anchored down.',
-          execution: 'Build to maximum force as fast as you can and hold five seconds. Full effort from the first half-second.',
-          cue: 'Contact strength is how fast you reach force, not how much you eventually reach. Intent is the training variable.',
-          breathing: 'Brace and exhale hard through the pull.',
-          mistakes: 'Easing into the pull. Doing these fatigued, where maximal intent is not available.',
-        },
-      },
-    ],
-  },
-  {
-    id: 'cave-03', circuitNum: '03',
+    id: 'cave-03', circuitNum: '02',
     title: 'CAPACITY', subtitle: 'repeaters - endurance - armour',
     focus: 'Build the engine: sustain force for longer, and pay the antagonist and leg bills.',
     capacities: ['forearm', 'pull', 'press', 'legs', 'shoulder'],
@@ -432,137 +301,7 @@ export const DATA_CAVE: Circuit[] = [
     ],
   },
   {
-    id: 'cave-04', circuitNum: '04',
-    title: 'ASSESS', subtitle: 'test - not train',
-    focus: 'Find the limiter. Numbers now, opinions later.',
-    capacities: ['crimp', 'openhand', 'pull', 'tension', 'mobility'],
-    illustration: 'dumbbell.svg',
-    duration: 45,
-    recoveryHours: 48,
-    note:
-      'Run this every 6-8 weeks on a rest day, fully warm and fresh. Enter each result on '
-      + 'the stepper before the last DONE: it is saved as a benchmark, and benchmarks are '
-      + 'what open the campus board and the one-arm gates.',
-    exercises: [
-      WARMUP_PULSE,
-      { ...WARMUP_FINGERS, sets: 4 },
-      {
-        id: 'test-max-hang',
-        name: 'TEST — Max Hang 20mm Half-Crimp',
-        capacities: ['crimp'],
-        block: 'TEST', intensity: 'MAX',
-        sets: 4, work: 10, unit: 'sec', restSec: 180,
-        load: { kind: 'percent-max', text: 'Build up until 10s is the most you can hold' },
-        progression: 'Record (bodyweight + added) / bodyweight x 100. At 62kg: 128% = +17kg, 134% = +21kg, 140% = +25kg.',
-        protocolId: 'assessment',
-        note: 'Work up in 3-5kg jumps. Stop at the first failed 10s and record the last success.',
-        records: {
-          benchmarkId: 'fs-2arm-20mm',
-          axis: { unit: 'kg', step: 1, min: 0, max: 80, prefix: '+', label: 'BEST 10S, ADDED' },
-          convert: 'added-kg-to-pct-bw',
-        },
-        form: {
-          setup: 'Identical setup every test: same edge, same grip, same shoulder position, same time of day if possible.',
-          execution: 'Ten seconds. Successive attempts with three minutes between. Record the heaviest clean 10s.',
-          cue: 'A test only works if it is repeatable. Change nothing between tests except your training.',
-          breathing: 'Normal.',
-          mistakes: 'Testing tired. Changing edge size between tests and comparing the numbers anyway.',
-        },
-      },
-      {
-        id: 'test-weighted-pullup',
-        name: 'TEST — Weighted Pull-Up 5RM',
-        capacities: ['pull'],
-        block: 'TEST', intensity: 'MAX',
-        sets: 3, work: 5, unit: 'reps', restSec: 180,
-        load: { kind: 'added-kg', text: 'Build to the heaviest clean set of 5' },
-        progression: 'Estimated 1RM = 5RM load x 1.15. Record as % bodyweight. Lattice male standard is 165%.',
-        protocolId: 'assessment',
-        note: 'A 5RM is safer and almost as informative as a true single.',
-        records: {
-          benchmarkId: 'weighted-pullup',
-          axis: { unit: 'kg', step: 1, min: 0, max: 80, prefix: '+', label: 'BEST 5RM, ADDED' },
-          convert: 'five-rm-to-pct-bw',
-        },
-        form: {
-          setup: 'Dead hang start, weight on a belt.',
-          execution: 'Five strict reps, chin over bar, full extension each rep. Add weight and repeat until five is no longer clean.',
-          cue: 'This is the number that tells you whether pulling strength is still limiting you. Under 165% total, it usually is.',
-          breathing: 'Exhale on each pull.',
-          mistakes: 'Counting reps that did not start from a dead hang.',
-        },
-      },
-      {
-        id: 'test-lockoff',
-        name: 'TEST — 90 Degree Lock-Off',
-        capacities: ['pull'],
-        block: 'TEST', intensity: 'MAX',
-        sets: 1, work: 30, unit: 'sec', restSec: 120,
-        load: { kind: 'bodyweight', text: 'One arm, other hand lightly on the wrist' },
-        progression: 'Enter the WEAKER side: that is the one that limits you. Solid is 10s, strong is 15s.',
-        protocolId: 'assessment',
-        perSide: true,
-        records: {
-          benchmarkId: 'lockoff-90',
-          axis: { unit: 's', step: 1, min: 0, max: 60, prefix: '', label: 'WEAKER SIDE' },
-          convert: 'identity',
-        },
-        form: {
-          setup: 'Pull to 90 degrees of elbow flexion on one arm, free hand resting on the wrist.',
-          execution: 'Hold until the elbow angle opens past 90. Time both sides and note the difference.',
-          cue: 'A large left-right gap is worth training out. Climbers accumulate asymmetry without noticing.',
-          breathing: 'Keep breathing.',
-          mistakes: 'Pulling with the assisting hand.',
-        },
-      },
-      {
-        id: 'test-front-lever',
-        name: 'TEST — Front Lever Hold',
-        capacities: ['tension'],
-        block: 'TEST', intensity: 'MAX',
-        sets: 1, work: 30, unit: 'sec', restSec: 120,
-        load: { kind: 'bodyweight', text: 'Hardest progression with a flat lower back' },
-        progression: 'Enter the hardest progression held a clean 10s: 1 tuck, 2 advanced tuck, 3 one-leg, 4 straddle, 5 full. 0 if none yet.',
-        protocolId: 'assessment',
-        records: {
-          benchmarkId: 'front-lever',
-          axis: { unit: 'LVL', step: 1, min: 0, max: 5, prefix: '', label: 'PROGRESSION HELD 10S' },
-          convert: 'identity',
-        },
-        form: {
-          setup: 'Straight arms on a bar.',
-          execution: 'Hold your hardest clean progression to failure of position, not failure of grip.',
-          cue: 'The moment the lower back arches, the test is over. Arching is how people fake this hold.',
-          breathing: 'Short controlled breaths.',
-          mistakes: 'Recording a time that included five arched seconds.',
-        },
-      },
-      {
-        id: 'test-hip-mobility',
-        name: 'TEST — Foot Raise + Straddle',
-        capacities: ['mobility'],
-        block: 'TEST', intensity: 'MODERATE',
-        sets: 1, work: 120, unit: 'sec', restSec: 30,
-        load: { kind: 'bodyweight', text: 'No load' },
-        progression: 'Enter the WEAKER side foot raise in cm. Note the straddle separately. Average foot raise is about 74cm.',
-        protocolId: 'assessment',
-        records: {
-          benchmarkId: 'hip-footraise',
-          axis: { unit: 'cm', step: 1, min: 30, max: 130, prefix: '', label: 'FOOT RAISE, WEAKER' },
-          convert: 'identity',
-        },
-        form: {
-          setup: 'Stand next to a wall with a tape measure. Then sit into a maximal straddle with legs straight and feet flat.',
-          execution: 'Raise one foot as high as possible with the hip flexed, abducted and externally rotated, knee bent. Measure floor to heel. Both sides. Then measure the straddle.',
-          cue: 'Combined abduction and external rotation is what makes high steps, drop knees and bridging available. It is cheap to train and costs no recovery.',
-          breathing: 'Relaxed, exhale into end range.',
-          mistakes: 'Leaning the torso away to fake height. Not testing both sides.',
-        },
-      },
-    ],
-  },
-  {
-    id: 'cave-05', circuitNum: '05',
+    id: 'cave-05', circuitNum: '03',
     title: 'ADD-ON', subtitle: 'after bouldering - pull - core',
     focus: 'One heavy pull, the one-arm path, the antagonists, then the trunk that keeps the feet on.',
     capacities: ['pull', 'press', 'legs', 'tension'],
@@ -758,7 +497,7 @@ export const DATA_CAVE: Circuit[] = [
     substitutes: [oneArmPath('addon-oap-path')],
   },
   {
-    id: 'cave-06', circuitNum: '06',
+    id: 'cave-06', circuitNum: '04',
     title: 'FEET', subtitle: 'after bouldering - slab - tension',
     focus: 'Stand on nothing, keep the feet on steep ground: footwork, balance and the tension behind it.',
     capacities: ['legs', 'tension', 'mobility'],

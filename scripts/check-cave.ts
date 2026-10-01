@@ -2,7 +2,7 @@
 // check-cave.ts — guards the two after-bouldering sessions and the one-arm gates.
 // Run with: npm run check:cave
 //
-//   1. CAVE 05 ADD-ON and CAVE 06 FEET stay inside their NORMAL budget at every
+//   1. CAVE 03 ADD-ON and CAVE 04 FEET stay inside their NORMAL budget at every
 //      capacity level. Both run after a two-hour boulder session; volume added
 //      there creeps up unnoticed. FRESH and TIRED are printed for reference.
 //   2. The one-arm pull-up rungs open on a tested weighted pull-up and nothing
