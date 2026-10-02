@@ -26,3 +26,7 @@ next-env.d.ts
 ios/App/App/public/
 ios/App/Pods/
 ios/DerivedData/
+
+# Python
+__pycache__/
+*.pyc
