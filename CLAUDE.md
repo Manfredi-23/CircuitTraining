@@ -8,6 +8,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Repo:** github.com/manfredi-23/CircuitTraining
 
+## Working Agreements
+
+Read the newest `7bit-handover-vNN.md` before starting. Then, in every session:
+
+1. **End with a new handover.** Write `7bit-handover-vNN.md` one number up:
+   what changed, repo state, open items, next steps, Mac terminal commands.
+   Point the Handoff Documents list below at it. A message that changes the
+   repo updates the current handover before it ends.
+2. **End with housekeeping.** Work goes through PRs; merge them once checks
+   pass, resolve or close stale PRs, delete merged branches, leave `main`
+   building with both checks green. Anything left open is listed in the
+   handover.
+3. **End every message that changes the app with the Mac terminal commands**
+   to pull, build and test it (run from
+   `~/Desktop/Manfredi/05_Bit-apps/CircuitTraining`; the standard set is in
+   the current handover).
+4. Ask questions first when a request is ambiguous; brainstorm before building
+   when asked to.
+
 ## Tech Stack
 
 Next.js 16 (App Router) + TypeScript + React 19. State: Zustand with persist middleware. Charts: Recharts. Gestures: @use-gesture/react. Font: Kode Mono via next/font/google. CSS Modules + global CSS custom properties.
@@ -58,7 +77,9 @@ src/
   app/           # layout.tsx, page.tsx (screen router), globals.css
 ios/             # Xcode project (Capacitor 8, SPM)
 tools/           # generate-ios-assets.py — icon and splash from logo.svg
-                 # dot-figures.py — the animated session illustrations
+                 # dot-figures.py — the generated (skeleton) session illustrations
+                 # pixel-frames.py — hand-drawn grid frames to an animated illustration
+design/          # pixel-grid.svg drawing template; illustrations/<name>/NN.svg frames
 ```
 
 ### Key Design Decisions
@@ -281,6 +302,17 @@ in `public/images/still/`. The card picks the still through `<picture>` under
 see that preference itself. Edit a pose in the script and re-run it; do not
 hand-edit the SVGs.
 
+Hand-drawn illustrations use the same renderer through `tools/pixel-frames.py`.
+Frames are drawn on the 30 x 30 template `design/pixel-grid.svg` as 10px
+`<rect>` cells in three exact fills (`#181610` ink, `#8A8780` dim, `#E64D19`
+accent) and saved as `design/illustrations/<name>/01.svg, 02.svg ...` with an
+optional `anim.json` (`ms`, `loop` pingpong|cycle, `still`, `shape` dot|square).
+Frames play as steps, never tweened. The script writes `public/images/<name>.svg`
+and its still. Folders starting with `_` are examples and skipped by `--all`.
+
+The logo must stay plain `<rect>` elements: `tools/generate-ios-assets.py`
+parses them to draw the icon (the "7", rects with `x < 32`) and the splash.
+
 ## Load Logging
 
 Progression on this programme is load, so what was actually lifted is recorded,
@@ -370,6 +402,9 @@ keeps all three in sync. Do not hand-edit the PNGs.
 
 ## Handoff Documents
 
+- **`7bit-handover-v12.md`** — **start here.** Current state: the DAILY / CAVE /
+  TEST programme, the climb log, open items, the graphics rework plan (grid,
+  frames, logo), working agreements and the Mac terminal commands.
 - **`7bit-handover-v11.md`** — current for the app shell. The iOS setup
   (orientation, appearance, plugins, the status bar trap), the wall-clock timer
   fix, load logging, and asset generation. Defers to v10 for all training
