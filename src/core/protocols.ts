@@ -508,6 +508,59 @@ export const PROTOCOLS: Record<string, Protocol> = {
       + 'push-up versus bench press hypertrophy (2017); Calatayud et al., band '
       + 'push-up versus bench press strength (2015).',
   },
+
+  // ---------------------------------------------------------------------------
+  // Trunk size and the lower back
+  // ---------------------------------------------------------------------------
+
+  'trunk-hypertrophy': {
+    id: 'trunk-hypertrophy',
+    name: 'Abs and Obliques for Size',
+    quality: 'Rectus abdominis and oblique muscle size, not just endurance',
+    work: '10-16 reps, or 20-30s holds, taken close to failure',
+    rest: '30-60s',
+    sets: '2-3 per exercise, about 10-14 hard sets per week for the abs and 8-12 for the obliques',
+    intensity: 'RPE 7-8: the last reps slow, one or two left in reserve',
+    frequency: '3-4x per week, split between the daily sessions and the gym',
+    rationale:
+      'The trunk muscles grow like any other skeletal muscle: from hard sets near '
+      + 'failure, accumulated over the week. Holds keep the trunk stiff but load it '
+      + 'mostly isometrically; size needs movement against resistance. The rectus is '
+      + 'one muscle, but where the movement starts shifts the emphasis: curling the '
+      + 'pelvis up (reverse crunch, leg raise with a tuck) biases the lower portion, '
+      + 'curling the ribs down biases the upper. Obliques are loaded by rotation and '
+      + 'side-bending against resistance, which is why hip dips, chops and twists are '
+      + 'here rather than more planks. Visible definition is set by body fat: abdominal '
+      + 'training alone did not reduce abdominal fat.',
+    source:
+      'Schoenfeld, Ogborn and Krieger, dose-response of weekly training volume and '
+      + 'hypertrophy, J Sports Sci (2017); Vispute et al., abdominal exercise and '
+      + 'abdominal fat, J Strength Cond Res (2011); regional rectus abdominis EMG '
+      + 'studies of pelvic-tilt versus trunk-curl movements.',
+  },
+
+  'back-strength': {
+    id: 'back-strength',
+    name: 'Lower-Back Strength',
+    quality: 'Back extensor and hip extensor strength and endurance',
+    work: '10-15 controlled reps, a one-second hold at the top',
+    rest: '45-90s',
+    sets: '2-3',
+    intensity: 'Moderate, building to RPE 8. Never to a grinding failure.',
+    frequency: '3x per week',
+    rationale:
+      'Back extensor endurance is consistently lower in people who later develop back '
+      + 'trouble, and the extensors respond to direct training like any other muscle. '
+      + 'The order is graded: hold a neutral spine while the limbs move (bird dog), then '
+      + 'extend against bodyweight lying face down, then hinge at the hip with a band or '
+      + 'a weight. Extension and hinging keep the spine near neutral, so they suit a '
+      + 'morning session where loaded flexion does not. For a back that is weak rather '
+      + 'than painful, load is the goal, introduced in steps.',
+    source:
+      'McGill, Low Back Disorders, and the Biering-Sorensen extensor endurance '
+      + 'literature; Steele et al., isolated lumbar extension resistance training '
+      + 'reviews.',
+  },
 };
 
 export function getProtocol(id: string | undefined): Protocol | null {

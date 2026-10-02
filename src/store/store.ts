@@ -7,8 +7,9 @@ import { createWorkoutSlice, type WorkoutSlice } from './slices/workout-slice';
 import { createProgressSlice, type ProgressSlice } from './slices/progress-slice';
 import { createStatsSlice, type StatsSlice } from './slices/stats-slice';
 import { createLoadSlice, type LoadSlice } from './slices/load-slice';
+import { createClimbSlice, type ClimbSlice } from './slices/climb-slice';
 
-export type Store = AppSlice & WorkoutSlice & ProgressSlice & StatsSlice & LoadSlice;
+export type Store = AppSlice & WorkoutSlice & ProgressSlice & StatsSlice & LoadSlice & ClimbSlice;
 
 /** Bumped when the persisted shape changes. 2 = the v10 capacity model. */
 const PERSIST_VERSION = 2;
@@ -18,6 +19,7 @@ interface PersistedShape {
   sessionLog?: SessionLogEntry[];
   benchmarkResults?: unknown[];
   loadLog?: unknown[];
+  climbLog?: unknown[];
 }
 
 /**
@@ -64,9 +66,10 @@ function dropPreCapacityProgress(incoming: PersistedShape): PersistedShape {
     // move fast at the bottom; a clean start is worth more than that.
     progress: {},
 
-    // Neither existed before v10, so there is nothing to carry.
+    // None of these existed before v10, so there is nothing to carry.
     benchmarkResults: [],
     loadLog: [],
+    climbLog: [],
   };
 }
 
@@ -85,6 +88,7 @@ export const useStore = create<Store>()(
       ...createProgressSlice(...a),
       ...createStatsSlice(...a),
       ...createLoadSlice(...a),
+      ...createClimbSlice(...a),
     }),
     {
       name: '7bit_store',
@@ -102,6 +106,7 @@ export const useStore = create<Store>()(
         sessionLog: state.sessionLog,
         benchmarkResults: state.benchmarkResults,
         loadLog: state.loadLog,
+        climbLog: state.climbLog,
       }),
     }
   )

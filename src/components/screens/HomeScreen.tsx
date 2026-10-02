@@ -15,7 +15,7 @@ export default function HomeScreen() {
   const {
     mode, circuitIndex, energy, humorLine,
     pendingDecayEvents, progress, benchmarkResults,
-    setMode, changeCircuit, setEnergy, setScreen,
+    setMode, changeCircuit, setEnergy, setScreen, openClimbLog,
     startWorkout, dismissDecay,
   } = useStore();
 
@@ -173,6 +173,13 @@ export default function HomeScreen() {
         onClick={() => setScreen('stats')}
       >
         STATS <span className={styles.actionBtnArrow}>&rarr;</span>
+      </button>
+
+      <button
+        className={styles.actionBtn}
+        onClick={() => openClimbLog()}
+      >
+        CLIMB LOG <span className={styles.actionBtnArrow}>&rarr;</span>
       </button>
 
       <button

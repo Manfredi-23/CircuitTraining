@@ -20,7 +20,7 @@ export interface AppSlice {
 }
 
 export const createAppSlice: StateCreator<Store, [], [], AppSlice> = (set, get) => ({
-  mode: 'HOME',
+  mode: 'DAILY',
   circuitIndex: 0,
   energy: 'NORMAL',
   screen: 'home',
