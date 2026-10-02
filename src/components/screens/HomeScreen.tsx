@@ -122,13 +122,22 @@ export default function HomeScreen() {
             fixed 342x342 and a third text line collides with the illustration.
             It belongs on a session-detail view in the iOS rebuild. */}
         <div className={styles.illustrationWrap}>
-          <Image
-            src={`/images/${circuit.illustration}`}
-            alt={circuit.title}
-            width={200}
-            height={200}
-            className={`${styles.illustration} ${styles.illusPop}`}
-          />
+          {/* The dot-matrix figures animate themselves. Under reduced motion the
+              page swaps in the still key pose: an SVG loaded as an image does
+              not reliably see that preference itself. */}
+          <picture className={styles.illustrationPicture}>
+            <source
+              media="(prefers-reduced-motion: reduce)"
+              srcSet={`/images/still/${circuit.illustration}`}
+            />
+            <Image
+              src={`/images/${circuit.illustration}`}
+              alt={circuit.title}
+              width={200}
+              height={200}
+              className={`${styles.illustration} ${styles.illusPop}`}
+            />
+          </picture>
         </div>
 
         {/* Energy tabs */}
