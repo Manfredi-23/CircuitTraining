@@ -10,7 +10,7 @@
 
 export type Mode = 'HOME' | 'CAVE' | 'HANG' | 'MORN' | 'TEST';
 export type EnergyKey = 'FRESH' | 'NORMAL' | 'TIRED';
-export type ScreenName = 'home' | 'workout' | 'rest' | 'complete' | 'stats';
+export type ScreenName = 'home' | 'workout' | 'rest' | 'complete' | 'stats' | 'climb';
 export type SortMode = 'strongest' | 'weakest' | 'recent';
 export type TimeFilter = '7days' | '30days' | '90days' | 'total';
 export type Trend = 'up' | 'down' | 'stable';
@@ -457,4 +457,39 @@ export interface LoadLogEntry {
   date: string;
   value: number;
   unit: LoadAxis['unit'];
+}
+
+// ---- Climb log ---------------------------------------------------------------
+
+/** Where the climbing happened. Each venue has its own grade scale. */
+export type ClimbVenue = 'BOARD' | 'GYM' | 'OUTDOOR';
+export type ClimbDiscipline = 'BOULDER' | 'ROPE';
+export type BoardName = 'KILTER' | 'TENSION';
+
+/** One problem or route. `grade` is a Font grade, a French sport grade, or a gym colour. */
+export interface ClimbEntry {
+  grade: string;
+  /** Goes it took. 1 on a sent climb is a flash. */
+  attempts: number;
+  /** False while it is still a project. */
+  sent: boolean;
+}
+
+/**
+ * One visit to a board, gym or crag. Sessions are independent: a project sent
+ * the following week is a new entry, not a continuation.
+ */
+export interface ClimbSession {
+  id: string;
+  /** Local calendar date, YYYY-MM-DD. */
+  date: string;
+  venue: ClimbVenue;
+  discipline: ClimbDiscipline;
+  /** BOARD only. */
+  board?: BoardName;
+  /** BOARD only, degrees. */
+  angle?: number;
+  /** OUTDOOR only, optional crag or area name. */
+  place?: string;
+  climbs: ClimbEntry[];
 }

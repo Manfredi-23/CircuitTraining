@@ -44,16 +44,17 @@ src/
     benchmarks.ts# Testable standards, athlete profile, %BW to kg conversions
     stats.ts     # Trend scoring, chart data, capacity list sorting
     load.ts      # Load axes, load history, stepper formatting
+    climbing.ts  # Climb log: grade scales, gym colours, pyramid and weekly bests
     data-home.ts, data-cave.ts, data-hang.ts, data-morning.ts, data-assess.ts  # Session libraries
     data-oap.ts  # One-arm pull-up path, shared by CAVE 01, CAVE 03 and HOME 02
     data-index.ts  # getModeData(mode) helper
   storage/       # Async storage abstraction (swap localStorage for Supabase later)
-  store/         # Zustand store (app / workout / progress / stats / load slices)
+  store/         # Zustand store (app / workout / progress / stats / load / climb slices)
   hooks/         # use-timer, use-swipe, use-hydration, use-audio-init, use-wake-lock
   native/        # native.ts — Capacitor bridge: status bar, splash, haptics
   components/
-    screens/     # HomeScreen, WorkoutScreen, RestScreen, CompleteScreen, StatsScreen
-    shared/      # SettingsOverlay, TimerFlash, LoadLogger
+    screens/     # HomeScreen, WorkoutScreen, RestScreen, CompleteScreen, StatsScreen, ClimbScreen
+    shared/      # SettingsOverlay, TimerFlash, LoadLogger, ClimbStats
   app/           # layout.tsx, page.tsx (screen router), globals.css
 ios/             # Xcode project (Capacitor 8, SPM)
 tools/           # generate-ios-assets.py — icon and splash from logo.svg
@@ -67,8 +68,8 @@ tools/           # generate-ios-assets.py — icon and splash from logo.svg
   call `setStorageAdapter()` to move to Supabase.
 - **Single-page app**: No Next.js routes. All screens render in `page.tsx` based on
   `useStore(s => s.screen)`.
-- **Zustand persist**: Only `progress`, `sessionLog`, `benchmarkResults` and
-  `loadLog` are persisted (via `partialize`). UI state is transient. The blob
+- **Zustand persist**: Only `progress`, `sessionLog`, `benchmarkResults`,
+  `loadLog` and `climbLog` are persisted (via `partialize`). UI state is transient. The blob
   carries `version: 2`, but legacy cleanup runs from `merge`, not `migrate`:
   persist only calls `migrate` when the stored blob has a **numeric** version,
   and no install written before versioning existed has one, so v9 and early-v10
@@ -280,6 +281,32 @@ exercise, so adding load is a decision against a known number. The value is
 written to `loadLog` when the exercise's last set is marked DONE — the same
 moment XP is awarded. Skipping records nothing. One entry per exercise per day;
 repeating a session the same day overwrites rather than stacking.
+
+## Climb Log
+
+The athlete's own climbing, logged by hand after the session from the CLIMB LOG
+button on the home screen (and from the complete screen after any
+`stacksOnSession` session, since those follow a climbing day). No board app
+integration: Kilter and Tension have no public API, and typing a grade is faster
+than keeping a scraper alive.
+
+A `ClimbSession` is a date, a venue (`BOARD`, `GYM`, `OUTDOOR`), a discipline
+(`BOULDER`, `ROPE`; board is always boulder), the board and angle or an optional
+crag name, and a list of climbs: grade, attempts, sent or project. One attempt on
+a sent climb is a flash. Sessions are independent; a project sent next week is a
+new entry.
+
+Each view is one grade scale and they are never mixed on a chart: BOARD and ROCK
+use Font, ROPE uses French sport grades, GYM uses the Minimum Zurich colour
+circuit (`GYM_COLOURS`, each a published Font band). STATS shows a pyramid
+(flash / send / project, mean attempts per send) and the hardest send and flash
+per week.
+
+Training link, applied once on first save (edits and deletes do not touch XP):
+a boulder session moves `lastTrained` on `crimp` and `openhand` so the 48h
+finger rule sees it, and earns `CLIMB_SESSION_XP` in `contact` and `tension`.
+A roped session earns it in `forearm`. Climbing never earns crimp or open-hand
+XP, because those levels set hangboard loads.
 
 ## iOS
 
