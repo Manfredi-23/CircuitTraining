@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "check:morning": "npx --yes tsx scripts/check-morning-budget.ts",
+    "check:daily": "npx --yes tsx scripts/check-daily.ts",
     "check:cave": "npx --yes tsx scripts/check-cave.ts"
   },
   "dependencies": {

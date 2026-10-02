@@ -2,8 +2,8 @@
 // check-cave.ts — guards the two after-bouldering sessions and the one-arm gates.
 // Run with: npm run check:cave
 //
-//   1. CAVE 03 ADD-ON and CAVE 04 FEET stay inside their NORMAL budget at every
-//      capacity level. Both run after a two-hour boulder session; volume added
+//   1. CAVE 02 PULL + PUSH and CAVE 03 LEGS + BACK stay inside their NORMAL
+//      budget at every capacity level. Both run after a two-hour boulder session; volume added
 //      there creeps up unnoticed. FRESH and TIRED are printed for reference.
 //   2. The one-arm pull-up rungs open on a tested weighted pull-up and nothing
 //      else: no benchmark shows the lopsided substitute, 140% opens assisted
@@ -61,8 +61,7 @@ for (const circuit of cave) {
 console.log('\n=== one-arm gates ===');
 
 const idsAt = (circuitId: string, results: BenchmarkResult[]) => {
-  const circuit = getModeData('CAVE').find(c => c.id === circuitId)
-    ?? getModeData('HOME').find(c => c.id === circuitId);
+  const circuit = getModeData('CAVE').find(c => c.id === circuitId);
   if (!circuit) throw new Error(`no circuit ${circuitId}`);
   return buildList(circuit, 'NORMAL', progressAt(CONFIG.levels.length), results).map(e => e.id);
 };
@@ -70,7 +69,6 @@ const idsAt = (circuitId: string, results: BenchmarkResult[]) => {
 const cases: { circuit: string; prefix: string; negative: boolean }[] = [
   { circuit: 'cave-01', prefix: 'cave01', negative: true },
   { circuit: 'cave-05', prefix: 'addon', negative: false },
-  { circuit: 'home-02', prefix: 'home02', negative: false },
 ];
 
 for (const { circuit, prefix, negative } of cases) {
