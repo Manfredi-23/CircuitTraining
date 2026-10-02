@@ -1,8 +1,8 @@
 // =============================================================================
 // data-oap.ts — The one-arm pull-up path, shared by every session that uses it
 //
-// The athlete wants a one-arm pull-up. It lives in three places — CAVE 01 MAX
-// and HOME 02 PULL, where the arms are fresh, and CAVE 03 ADD-ON — so the
+// The athlete wants a one-arm pull-up. It lives in two places — CAVE 01 STRONG,
+// where the arms are fresh, and CAVE 02 PULL + PUSH after bouldering — so the
 // exercises are built here once and given a session-specific id, keeping the
 // load log per session and the prescription in one place.
 //
@@ -87,7 +87,7 @@ export function assistedOneArm(
       minValue: OAP_ASSISTED_GATE,
       reason:
         'Assisted one-arm pull-ups put the whole pull through one elbow. They open when a '
-        + 'tested weighted pull-up reaches 140% bodyweight (about +25kg at 62kg) — record it '
+        + 'tested weighted pull-up reaches 140% bodyweight (about +25kg for one, +12kg for five, at 62kg) — record it '
         + 'in TEST 01 ASSESS. Until then the lopsided two-hand ladder builds the same strength '
         + 'with the load shared.',
       substituteId,

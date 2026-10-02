@@ -21,13 +21,13 @@ npm run dev      # Dev server at localhost:3000
 npm run build    # Production build
 npx serve out    # Serve the production build (static export: `npm run start` does not work)
 
-npm run check:morning   # Assert the MORN sessions still fit their time budgets
-npm run check:cave      # ADD-ON and FEET budgets, and the one-arm gates
+npm run check:daily     # DAILY: 20-minute ceiling, TIRED drops nothing, curling last
+npm run check:cave      # CAVE 02 and 03 budgets, and the one-arm gates
 ```
 
 No test framework yet — test manually in browser. The automated checks are
-`check:morning`, which guards the two promises MORN makes, and `check:cave`,
-which keeps CAVE 03 and 04 inside 45 minutes NORMAL at every level and proves
+`check:daily`, which guards the promises DAILY makes, and `check:cave`,
+which keeps CAVE 02 and 03 inside 45 minutes NORMAL at every level and proves
 the one-arm rungs open on a tested weighted pull-up and never on XP.
 
 ## Architecture
@@ -45,8 +45,8 @@ src/
     stats.ts     # Trend scoring, chart data, capacity list sorting
     load.ts      # Load axes, load history, stepper formatting
     climbing.ts  # Climb log: grade scales, gym colours, pyramid and weekly bests
-    data-home.ts, data-cave.ts, data-hang.ts, data-morning.ts, data-assess.ts  # Session libraries
-    data-oap.ts  # One-arm pull-up path, shared by CAVE 01, CAVE 03 and HOME 02
+    data-daily.ts, data-cave.ts, data-assess.ts  # Session libraries, one per tab
+    data-oap.ts  # One-arm pull-up path, shared by CAVE 01 and CAVE 02
     data-index.ts  # getModeData(mode) helper
   storage/       # Async storage abstraction (swap localStorage for Supabase later)
   store/         # Zustand store (app / workout / progress / stats / load / climb slices)
@@ -167,7 +167,7 @@ intensity at HARD** — a tired athlete downgrades rather than grinds.
   12h session is available again after 12h.
 - `stacksOnSession: true` marks a session built to run straight after another
   one, which never reports a recovery debt. Distinct from `recoveryHours: 0`,
-  which means the load is low enough to repeat daily: CAVE 03 ADD-ON is
+  which means the load is low enough to repeat daily: CAVE 02 PULL + PUSH is
   genuinely demanding and still intended to stack.
 - Skipping and quitting cost **zero** XP. Punishing a skip in an app that
   prescribes maximal finger loading pushes the athlete to train through a
@@ -175,77 +175,80 @@ intensity at HARD** — a tired athlete downgrades rather than grinds.
 
 ### Sessions
 
+The athlete boulders twice a week at Minimum, spends weekends in the mountains,
+and has only a mat, a band and a portable pull edge at home: no bar, no
+hangboard, no weights. The programme was cut to three tabs in October 2026 to
+fit that week.
+
 | Mode | Sessions |
 |------|----------|
-| HOME | 01 TENSION, 02 PULL, 03 ARMOUR, 04 WRISTS |
-| CAVE | 01 MAX, 02 CAPACITY, 03 ADD-ON, 04 FEET |
-| HANG | 01 MAX HANGS, 02 CAPACITY, 03 DENSITY |
-| MORN | 01 ABS + OBLIQUES, 02 SLOW START, 03 FEET ON, 04 BAND ONLY |
+| DAILY | 01 FRONT CORE, 02 OBLIQUES + BACK, 03 BAND STRENGTH, 04 FINGERS + MOBILITY |
+| CAVE | 01 STRONG, 02 PULL + PUSH, 03 LEGS + BACK |
 | TEST | 01 ASSESS |
 
-There is deliberately no limit-bouldering or campus session. Free bouldering is
-the athlete's own time and stays unprogrammed: CAVE 02 POWER was removed in
-October 2026, and the campus board and its 130% gate with it. Circuit ids were
-kept (`cave-03`, `cave-05`, `cave-06`) and only `circuitNum` renumbered, so
-session logs stay consistent. Nothing trains `contact` any more.
+A typical week: DAILY most mornings, CAVE 02 or 03 straight after each
+bouldering session, CAVE 01 only in a week a bouldering day is skipped.
 
-### After bouldering: ADD-ON and FEET
+HOME, HANG and MORN no longer exist. Their exercises that fit a mat-and-band
+flat moved into DAILY with their ids unchanged, so load history carries over.
+There is deliberately no limit-bouldering, campus or repeater session: free
+bouldering is the athlete's own time and stays unprogrammed. Circuit ids in
+CAVE were kept (`cave-01`, `cave-05`, `cave-06`) and only `circuitNum` and the
+content changed. Old session-log entries may still carry the retired mode
+names; they are display-only.
 
-CAVE 03 and 04 are alternatives, picked on the day, both `stacksOnSession`, both
-kept at 45 minutes NORMAL by `check:cave`. Neither loads the fingers.
+### DAILY
 
-- **03 ADD-ON**: weighted pull-ups (SECONDARY here, so level adds no sets —
-  the fresh, level-scaled version is in CAVE 01 and HOME 02), the one-arm path,
-  push-ups/dips, goblet squat, then the trunk: spiderman + cross-body mountain
-  climber and hanging oblique knee raise to windshield wipers (both SECONDARY,
-  so TIRED keeps them), TRX body saw to pike, cuff.
-- **04 FEET**: slab and feet-on work. Wall drills first while coordinated
-  (silent feet, fewer-hands slab — `fixed`, TECHNIQUE), then steep foot walk,
-  toe-hook hold, toe-tip calf raise on a foothold, single-leg balance,
-  rock-over step-up, pike compression, Cossack squat, frogger. Logged under
-  `legs`, `tension` and `mobility`; there is deliberately no footwork axis.
-- The athlete's wrists and fingers are symptomatic: every plank-based card
-  names a fist, handle or forearm option, and hanging core stays at two sets
-  with ab straps allowed.
+Short home sessions before breakfast. `npm run check:daily` holds the rules:
+
+- **`recoveryHours: 0`** on every session, so readiness never blocks it and it
+  stacks on a climbing day.
+- **20 minutes at worst**, every level and energy. Working sets are SECONDARY
+  (FRESH +1 set, TIRED -1, no level set bonus); prep work is PREHAB, MOBILITY
+  or WARMUP. **No ACCESSORY**: TIRED would drop it. Over budget means cut an
+  exercise, never shorten a rest.
+- **Curling last.** Discs are most swollen in the first hour after waking, so
+  loaded flexion (`daily-reverse-crunch`, `daily-crunch`, the Russian twist)
+  only ever closes a session. Extension and hinging may sit anywhere.
+- **Fingers last and light.** DAILY 04 does density no-hangs on the portable
+  edge (`density-hang`, about 40%) after the mobility work.
+
+### Core
+
+Abs, obliques and the lower back are an explicit goal: size, not only
+endurance. `trunk-hypertrophy` covers abs and obliques (hard sets near failure,
+reverse crunch for the lower abs, crunch for the upper, side-bending and
+rotation for the obliques). `back-strength` covers the lower back, which is
+weak but not painful: bird dog, then prone extension, then band good morning in
+DAILY 02, then the loaded 45-degree back extension and single-leg RDL in CAVE
+03. `SIDE_PLANK_DIP` is shared between DAILY 02 and CAVE 03.
+
+### CAVE
+
+CAVE is almost always done straight after bouldering.
+
+- **01 STRONG** replaces a bouldering day: max hangs, heavy weighted pull-ups,
+  the one-arm path, lock-offs, front lever, hanging leg raise. 70-80 minutes.
+- **02 PULL + PUSH**, after bouldering: weighted pull-ups at RPE 8 (SECONDARY,
+  so level adds no sets), band-assisted one-arms, push-ups/dips, spiderman +
+  cross-body mountain climber, hanging oblique raise (ab straps allowed),
+  weighted Russian twist, cuff.
+- **03 LEGS + BACK**, after bouldering: goblet squat, 45-degree back extension,
+  single-leg RDL, toe-tip plate drag, Copenhagen plank, plate crunch, side
+  plank hip dip, frogger. Nothing loads the fingers.
+- 02 and 03 are `stacksOnSession` and `check:cave` keeps them inside 45
+  minutes NORMAL.
+- The athlete's wrists and fingers are symptomatic: plank-based cards name a
+  fist, handle or forearm option, and hanging core stays at two sets.
 
 ### One-arm pull-up
 
 The goal is a one-arm pull-up. `data-oap.ts` builds the path once: a
 one-arm scap shrug, then a lopsided two-hand ladder (uneven grip, archer,
-typewriter) until the gates open. Assisted one-arms open at a tested 140%
-bodyweight weighted pull-up, one-arm negatives (CAVE 01 only) at 150%. The
-weighted pull-up is the main driver until then. It lives in CAVE 01, HOME 02
-and CAVE 03.
-
-MORN is the wake-up routine: yoga mat, medium band with no anchor, small pull
-edge on a sling, done before anything else competes for it. 03 FEET ON swaps
-the edge for one 16kg kettlebell; 04 BAND ONLY is the same session with the
-band doing the kettlebell's job. No MORN session uses a pull-up bar or asks
-the athlete to jump: it runs early, in a flat with neighbours. Three constraints shape it, and
-`npm run check:morning` is what stops them regressing:
-
-- **`recoveryHours: 0`** on every session. Nothing loads a tendon hard enough to
-  cost the next session, so readiness never blocks it and it stacks on a
-  climbing day.
-- **No ACCESSORY block.** TIRED drops that block entirely, and TIRED is exactly
-  what a non-morning person reaches for. MORN is built from WARMUP, PREHAB and
-  MOBILITY, none of which are dropped and none of which gain sets when FRESH —
-  so the session has a hard time ceiling. 01 and 02 stay inside 15 minutes
-  (worst case 11). 03 FEET ON and 04 BAND ONLY have a 20-minute budget and
-  are the sessions that use SECONDARY: 03's swing, row and floor press and
-  04's split squat, row and push-up gain a set on FRESH and lose one on TIRED,
-  without ever being dropped. SECONDARY takes no level set bonus, so the
-  ceiling holds — 03 runs TIRED 11, NORMAL 16, FRESH 20 at every level with no
-  margin left, 04 about a minute less. Adding volume there will break the budget; the check
-  will say so.
-- **Fingers last and light.** One submaximal primer set of edge work, placed
-  after the trunk work has warmed the tissue. Pulleys are stiffest on waking.
-  The real finger dose is HANG 03.
-- **Practice, not max.** Nothing in 03 or 04 is above MODERATE. The heavy pulling
-  stays in HOME 02 and CAVE 01.
-- **No lumbar flexion until last.** Discs are most swollen in the first hour
-  after waking. 03 and 04 keep the lower back neutral until the Russian twist,
-  which closes the session, done tall and slow.
+typewriter) until the gates open. Assisted one-arms (band in the free hand)
+open at a tested 140% bodyweight weighted pull-up, one-arm negatives (CAVE 01
+only) at 150%. The weighted pull-up is the main driver. It lives in CAVE 01 and
+CAVE 02.
 
 ### Adding or changing an exercise
 
@@ -358,11 +361,11 @@ keeps all three in sync. Do not hand-edit the PNGs.
   (orientation, appearance, plugins, the status bar trap), the wall-clock timer
   fix, load logging, and asset generation. Defers to v10 for all training
   content.
-- **`7bit-handover-v10.md`** — current for the programme. The training model: diagnosis of what was
-  wrong with v9's programme, the new capacity/block/load model, the original ten
-  sessions (HOME 04, CAVE 05 and all of MORN came later and are documented in
-  their data files and the Sessions section above),
-  benchmarks and targets, the evidence base, and the Mac terminal commands.
+- **`7bit-handover-v10.md`** — current for the training model: diagnosis of what was
+  wrong with v9's programme, the capacity/block/load model, benchmarks and
+  targets, the evidence base, and the Mac terminal commands. Its session list
+  is historical: the current sessions are the ones in the Sessions section
+  above and in the data files.
 - **`7bit-handoff-v9.md`** — design system, screen layouts, copy system, stats
   specification. Still current for everything visual. **Its training content
   (sections 8, 9 and the mode/circuit tables) is superseded by v10.**

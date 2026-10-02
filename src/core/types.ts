@@ -8,7 +8,7 @@
 // progresses by LOAD, holding or extending rest on maximal work.
 // =============================================================================
 
-export type Mode = 'HOME' | 'CAVE' | 'HANG' | 'MORN' | 'TEST';
+export type Mode = 'DAILY' | 'CAVE' | 'TEST';
 export type EnergyKey = 'FRESH' | 'NORMAL' | 'TIRED';
 export type ScreenName = 'home' | 'workout' | 'rest' | 'complete' | 'stats' | 'climb';
 export type SortMode = 'strongest' | 'weakest' | 'recent';
