@@ -105,9 +105,9 @@ export function clampToAxis(value: number, axis: LoadAxis): number {
 /** How the number reads on the card, e.g. "+14KG", "20MM", "85%". */
 export function formatLoad(value: number, axis: LoadAxis): string {
   const n = Number.isInteger(value) ? String(value) : value.toFixed(1);
-  return axis.unit === 'RPE' || axis.unit === 'LVL'
-    ? `${axis.unit} ${n}`
-    : `${axis.prefix}${n}${axis.unit.toUpperCase()}`;
+  if (axis.unit === 'RPE' || axis.unit === 'LVL') return `${axis.unit} ${n}`;
+  if (axis.unit === 'reps') return `${n} REPS`;
+  return `${axis.prefix}${n}${axis.unit.toUpperCase()}`;
 }
 
 /** Short date for the LAST readout, e.g. "04 SEP". */

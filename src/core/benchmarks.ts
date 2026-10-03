@@ -140,6 +140,7 @@ export const REFERENCE_EDGE_MM = 20;
 export const BENCHMARKS: Benchmark[] = [
   {
     id: 'fs-2arm-20mm',
+    short: '% BW',
     name: 'Two-arm max hang, 20mm half-crimp',
     capacity: 'crimp',
     unit: '% bodyweight (total load / bodyweight)',
@@ -164,6 +165,7 @@ export const BENCHMARKS: Benchmark[] = [
   },
   {
     id: 'fs-1arm-20mm',
+    short: '% BW',
     name: 'One-arm pull, 20mm',
     capacity: 'crimp',
     unit: '% bodyweight pulled through one arm',
@@ -184,6 +186,7 @@ export const BENCHMARKS: Benchmark[] = [
   },
   {
     id: 'fs-1arm-10mm',
+    short: '% BW',
     name: 'One-arm block pull, 10mm',
     capacity: 'crimp',
     unit: '% bodyweight pulled through one arm',
@@ -205,6 +208,7 @@ export const BENCHMARKS: Benchmark[] = [
   },
   {
     id: 'weighted-pullup',
+    short: '% BW',
     name: 'Weighted pull-up 1RM',
     capacity: 'pull',
     unit: '% bodyweight (total load / bodyweight)',
@@ -225,6 +229,7 @@ export const BENCHMARKS: Benchmark[] = [
   },
   {
     id: 'max-pullups',
+    short: 'reps',
     name: 'Strict pull-ups to failure',
     capacity: 'pull',
     unit: 'reps',
@@ -238,6 +243,7 @@ export const BENCHMARKS: Benchmark[] = [
   },
   {
     id: 'lockoff-90',
+    short: 's',
     name: '90-degree lock-off hold',
     capacity: 'pull',
     unit: 'seconds, one arm',
@@ -253,6 +259,7 @@ export const BENCHMARKS: Benchmark[] = [
   },
   {
     id: 'critical-force',
+    short: '%',
     name: 'Forearm critical force',
     capacity: 'forearm',
     unit: '% of max hang load sustainable',
@@ -272,6 +279,7 @@ export const BENCHMARKS: Benchmark[] = [
   },
   {
     id: 'front-lever',
+    short: 'LVL',
     name: 'Front lever progression',
     capacity: 'tension',
     unit: 'seconds held at current progression',
@@ -289,6 +297,7 @@ export const BENCHMARKS: Benchmark[] = [
   },
   {
     id: 'hip-footraise',
+    short: 'cm',
     name: 'Standing foot raise height',
     capacity: 'mobility',
     unit: 'cm from floor to heel',
@@ -303,6 +312,129 @@ export const BENCHMARKS: Benchmark[] = [
     source:
       'Adapted Grant foot raise test; climbing mobility assessment literature '
       + '(mean around 74cm).',
+  },
+  {
+    id: 'bodyweight',
+    name: 'Bodyweight',
+    capacity: 'legs',
+    short: 'kg',
+    unit: 'kg',
+    protocol: 'On a scale before warming up, same clothes and time of day each test.',
+    standards: [],
+    source: 'Not a performance standard. Recorded so every % bodyweight result is computed against the weight on the day.',
+  },
+  {
+    id: 'max-pushups',
+    name: 'Push-ups to failure',
+    capacity: 'press',
+    short: 'reps',
+    unit: 'reps',
+    protocol: 'Chest to a fist from the floor, full lockout, body straight. Stop at the first rep that breaks form.',
+    standards: [
+      { label: 'Fair',      value: 17 },
+      { label: 'Good',      value: 22 },
+      { label: 'Very good', value: 30 },
+    ],
+    source: 'Approximate general-population norms for men aged 30-39 (ACSM-style push-up tables). A balance check against pulling, not a climbing standard.',
+  },
+  {
+    id: 'leg-raise-reps',
+    name: 'Strict hanging leg raises',
+    capacity: 'tension',
+    short: 'reps',
+    unit: 'reps',
+    protocol: 'Dead hang, straight legs raised to at least horizontal, no swing, controlled lowering. Straps allowed if the fingers complain.',
+    standards: [],
+    source: 'No published climbing standard. Tracked against your own previous results.',
+  },
+  {
+    id: 'hollow-hold',
+    name: 'Hollow body hold',
+    capacity: 'tension',
+    short: 's',
+    unit: 'seconds',
+    protocol: 'Arms overhead, legs straight and low, lower back pressed flat. Time ends when the lower back lifts.',
+    standards: [
+      { label: 'Developing', value: 30 },
+      { label: 'Solid',      value: 60 },
+      { label: 'Strong',     value: 90 },
+    ],
+    source: 'Approximate gymnastics conditioning benchmarks; no climbing dataset exists.',
+  },
+  {
+    id: 'side-plank',
+    name: 'Side plank hold, weaker side',
+    capacity: 'tension',
+    short: 's',
+    unit: 'seconds',
+    protocol: 'Forearm side plank, feet stacked, straight line head to heel. Time ends when the hips drop. Both sides; enter the weaker.',
+    standards: [
+      { label: 'Developing', value: 60 },
+      { label: 'Average',    value: 95 },
+      { label: 'Strong',     value: 120 },
+    ],
+    source: 'McGill trunk endurance norms for healthy young men (side bridge roughly 95s); approximate.',
+    note: 'A left/right difference of more than about 5% is worth training out.',
+  },
+  {
+    id: 'back-extension-hold',
+    name: 'Back extension hold (Biering-Sorensen)',
+    capacity: 'tension',
+    short: 's',
+    unit: 'seconds',
+    protocol: 'Hips on the edge of a bench or the 45-degree back extension, ankles fixed, arms crossed, torso held horizontal. Time ends when it drops below horizontal.',
+    standards: [
+      { label: 'Developing', value: 90 },
+      { label: 'Average',    value: 146 },
+      { label: 'Strong',     value: 180 },
+    ],
+    source: 'Biering-Sorensen extensor endurance test; McGill norms for healthy young men (roughly 146s). Approximate.',
+    note: 'Lower extensor endurance is associated with later back trouble. This tracks the weak point directly.',
+  },
+  {
+    id: 'repeaters-20mm',
+    name: '7:3 repeaters to failure, 20mm',
+    capacity: 'forearm',
+    short: 'reps',
+    unit: 'hangs completed',
+    protocol: '20mm edge, half-crimp, bodyweight. Hang 7s, rest 3s, repeat until a hang fails. Score = completed hangs.',
+    standards: [],
+    source: 'Gauge-free stand-in for the critical force test. Tracked against your own previous results.',
+  },
+  {
+    id: 'straddle',
+    name: 'Seated straddle width',
+    capacity: 'mobility',
+    short: 'cm',
+    unit: 'cm heel to heel',
+    protocol: 'Sit against a wall, legs straight and as wide as possible, knees up. Measure heel to heel.',
+    standards: [],
+    source: 'No published climbing standard. Tracked against your own previous results.',
+  },
+  {
+    id: 'sit-reach',
+    name: 'Sit and reach',
+    capacity: 'mobility',
+    short: 'cm',
+    unit: 'cm past the toes (negative = short of them)',
+    protocol: 'Seated, legs straight together, reach forward slowly and hold two seconds. Measure fingertips relative to the toes.',
+    standards: [
+      { label: 'Below average', value: -5 },
+      { label: 'Average',       value: 0 },
+      { label: 'Good',          value: 10 },
+    ],
+    source: 'Approximate sit-and-reach norms, measured from the toes.',
+  },
+  {
+    id: 'shoulder-reach',
+    name: 'Overhead reach gap',
+    capacity: 'shoulder',
+    short: 'cm',
+    better: 'lower',
+    unit: 'cm from thumbs to wall',
+    protocol: 'On your back, knees bent, lower back flat. Raise straight arms overhead toward the floor. Measure the gap from thumbs to floor; 0 is touching.',
+    standards: [],
+    source: 'Shoulder flexion screen. No published standard; 0 cm is full range.',
   },
 ];
 
@@ -383,19 +515,51 @@ export function benchmarkValueFromEntry(
       return Math.round(((bodyweightKg + entered) / bodyweightKg) * 100);
     case 'five-rm-to-pct-bw':
       return Math.round((((bodyweightKg + entered) * FIVE_RM_TO_ONE_RM) / bodyweightKg) * 100);
+    case 'kg-to-pct-bw':
+      return Math.round((entered / bodyweightKg) * 100);
     case 'identity':
     default:
       return Math.round(entered);
   }
 }
 
-/** Whether a recorded result clears a gate threshold. */
+/** Every result for a benchmark, oldest first. */
+export function resultHistory(results: BenchmarkResult[], benchmarkId: string): BenchmarkResult[] {
+  return results
+    .filter(r => r.benchmarkId === benchmarkId)
+    .sort((a, b) => a.date.localeCompare(b.date));
+}
+
+/** The result that counts: the most recent one. */
+export function latestResult(results: BenchmarkResult[], benchmarkId: string): BenchmarkResult | null {
+  const history = resultHistory(results, benchmarkId);
+  return history.length ? history[history.length - 1] : null;
+}
+
+/** Bodyweight on the latest test, or the profile's figure until one is recorded. */
+export function currentBodyweight(results: BenchmarkResult[]): number {
+  return latestResult(results, 'bodyweight')?.value ?? ATHLETE.bodyweightKg;
+}
+
+/**
+ * Add a result to the history. A second result for the same test on the same
+ * day replaces the first, so a re-run corrects rather than duplicates.
+ */
+export function addResult(results: BenchmarkResult[], result: BenchmarkResult): BenchmarkResult[] {
+  const day = result.date.slice(0, 10);
+  return [
+    ...results.filter(r => !(r.benchmarkId === result.benchmarkId && r.date.slice(0, 10) === day)),
+    result,
+  ];
+}
+
+/** Whether a recorded result clears a gate threshold. The latest result decides. */
 export function meetsStandard(
   results: BenchmarkResult[],
   benchmarkId: string,
   minValue: number,
 ): boolean {
-  const result = results.find(r => r.benchmarkId === benchmarkId);
+  const result = latestResult(results, benchmarkId);
   if (!result) return false;
   return result.value >= minValue;
 }

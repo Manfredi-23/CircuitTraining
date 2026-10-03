@@ -161,7 +161,7 @@ export interface WeekPoint {
   bestFlash: number | null;
 }
 
-function mondayOf(date: string): string {
+export function mondayOf(date: string): string {
   const [y, m, d] = date.split('-').map(Number);
   const day = new Date(y, m - 1, d);
   day.setDate(day.getDate() - ((day.getDay() + 6) % 7));

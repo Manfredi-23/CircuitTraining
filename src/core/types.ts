@@ -228,12 +228,21 @@ export interface Benchmark {
   capacity: Capacity;
   unit: string;
   protocol: string;
+  /** Empty when no published reference exists: the result is tracked against itself. */
   standards: BenchmarkStandard[];
   source: string;
   note?: string;
+  /** Short unit shown next to a value in STATS, e.g. '% BW', 's', 'cm'. */
+  short?: string;
+  /** Set when a smaller number is the better result (a gap measured in cm). */
+  better?: 'lower';
 }
 
-/** A recorded test result, used to open gates and set training loads. */
+/**
+ * A recorded test result, used to open gates and set training loads. Every
+ * result is kept, so a test can be read as a history; the latest one is the
+ * one that counts (see latestResult). One per benchmark per day.
+ */
 export interface BenchmarkResult {
   benchmarkId: string;
   value: number;
@@ -304,8 +313,9 @@ export interface BenchmarkRecord {
    * identity             — entered value is already in the benchmark's unit
    * added-kg-to-pct-bw   — added kg on a max hang -> (BW + added) / BW x 100
    * five-rm-to-pct-bw    — added kg on a 5RM pull-up -> estimated 1RM as % BW
+   * kg-to-pct-bw         — kg lifted one-handed -> kg / BW x 100
    */
-  convert: 'identity' | 'added-kg-to-pct-bw' | 'five-rm-to-pct-bw';
+  convert: 'identity' | 'added-kg-to-pct-bw' | 'five-rm-to-pct-bw' | 'kg-to-pct-bw';
 }
 
 export interface ScaledExercise extends Exercise {
@@ -374,6 +384,8 @@ export interface SessionLogEntry {
   circuitTitle: string;
   energy: EnergyKey;
   duration: number;
+  /** Sets completed per exercise id. Absent on sessions logged before it existed. */
+  sets?: Record<string, number>;
 }
 
 // ---- Decay -------------------------------------------------------------------
@@ -420,6 +432,13 @@ export interface CapacityListItem {
   level: number;
   trend: Trend;
   lastTrained: Date;
+  /** 0-1 through the current level. */
+  levelProgress: number;
+  /**
+   * Days until decay starts. Negative once it has started; null when the
+   * capacity has never been trained.
+   */
+  fadeInDays: number | null;
 }
 
 /** @deprecated Alias kept for existing call sites. */
@@ -438,7 +457,7 @@ export type MuscleListItem = CapacityListItem;
  * where the variation ladder does the progressing).
  */
 export interface LoadAxis {
-  unit: 'kg' | 'mm' | '%' | 'RPE' | 's' | 'cm' | 'LVL';
+  unit: 'kg' | 'mm' | '%' | 'RPE' | 's' | 'cm' | 'LVL' | 'reps';
   /** One tap of the stepper. Matched to how the equipment actually increments. */
   step: number;
   min: number;

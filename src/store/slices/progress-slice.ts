@@ -2,6 +2,7 @@ import type { StateCreator } from 'zustand';
 import type { Store } from '../store';
 import type { Progress, SessionLogEntry, DecayEvent, LevelUp, BenchmarkResult } from '@/core/types';
 import * as Engine from '@/core/engine';
+import { addResult } from '@/core/benchmarks';
 
 export interface ProgressSlice {
   progress: Progress;
@@ -35,10 +36,7 @@ export const createProgressSlice: StateCreator<Store, [], [], ProgressSlice> = (
   dismissDecay: () => set({ pendingDecayEvents: [] }),
 
   recordBenchmark: (result) => set(state => ({
-    benchmarkResults: [
-      ...state.benchmarkResults.filter(r => r.benchmarkId !== result.benchmarkId),
-      result,
-    ],
+    benchmarkResults: addResult(state.benchmarkResults, result),
   })),
 
   resetAllData: () => set({
