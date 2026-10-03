@@ -5,9 +5,12 @@ import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { useStore } from '@/store/store';
 import { getOverallLevel, getStatInterpretation } from '@/core/engine';
 import { getSortedCapacities, getLastSession, getOverallTrendData, getCapacityTrendData, timeFilterToDays } from '@/core/stats';
-import { CONFIG } from '@/core/config';
 import { useSwipe } from '@/hooks/use-swipe';
 import ClimbStats from '@/components/shared/ClimbStats';
+import {
+  WeekStripSection, CoreVolumeSection, BenchmarkSection, LiftSection,
+  CapacityRows, ClimbVsPullSection,
+} from '@/components/shared/StatsSections';
 import type { SortMode, TimeFilter, Capacity } from '@/core/types';
 import styles from './StatsScreen.module.css';
 
@@ -24,11 +27,9 @@ const TIME_OPTIONS: { key: TimeFilter; label: string }[] = [
   { key: 'total', label: 'total' },
 ];
 
-const TREND_SYMBOLS: Record<string, string> = { up: '^', down: 'v', stable: '-' };
-
 export default function StatsScreen() {
   const {
-    progress, sessionLog, climbLog, statsSort, statsTimeFilter,
+    progress, sessionLog, climbLog, loadLog, benchmarkResults, statsSort, statsTimeFilter,
     activeChartMuscles, highlightMuscle,
     setStatsSort, setStatsTimeFilter, toggleChartMuscle,
     setHighlightMuscle, setScreen,
@@ -80,7 +81,31 @@ export default function StatsScreen() {
           )}
         </div>
 
-        {/* Muscle groups */}
+        {/* Consistency: the last twelve weeks at a glance */}
+        <div className={styles.section}>
+          <div className={styles.sectionTitle}>WEEKS</div>
+          <WeekStripSection sessionLog={sessionLog} climbLog={climbLog} />
+        </div>
+
+        {/* Am I doing enough for the core goal */}
+        <div className={styles.section}>
+          <div className={styles.sectionTitle}>CORE THIS WEEK</div>
+          <CoreVolumeSection sessionLog={sessionLog} />
+        </div>
+
+        {/* Where am I: tests against published standards */}
+        <div className={styles.section}>
+          <div className={styles.sectionTitle}>TESTS</div>
+          <BenchmarkSection results={benchmarkResults} />
+        </div>
+
+        {/* Am I improving: what was actually lifted */}
+        <div className={styles.section}>
+          <div className={styles.sectionTitle}>LIFTS</div>
+          <LiftSection loadLog={loadLog} />
+        </div>
+
+        {/* Capacities */}
         <div className={styles.section}>
           <div className={styles.sectionTitle}>CAPACITIES</div>
 
@@ -98,24 +123,14 @@ export default function StatsScreen() {
             ))}
           </div>
 
-          <div className={styles.muscleList}>
-            {capacities.map((m, i) => (
-              <div
-                key={m.capacity}
-                className={styles.muscleRow}
-                style={{ animationDelay: `${i * 30}ms` }}
-                onClick={() => {
-                  toggleChartMuscle(m.capacity);
-                  setHighlightMuscle(highlightMuscle === m.capacity ? null : m.capacity);
-                }}
-              >
-                {m.trend === 'down' && <div className={styles.declineBar} />}
-                <span className={styles.muscleName}>{CONFIG.capacityLabels[m.capacity]}</span>
-                <span className={styles.muscleLevel}>Lvl{String(m.level).padStart(2, '0')}</span>
-                <span className={styles.muscleTrend}>{TREND_SYMBOLS[m.trend]}</span>
-              </div>
-            ))}
-          </div>
+          <CapacityRows
+            items={capacities}
+            highlight={highlightMuscle}
+            onPick={c => {
+              toggleChartMuscle(c);
+              setHighlightMuscle(highlightMuscle === c ? null : c);
+            }}
+          />
         </div>
 
         {/* Trend graph */}
@@ -172,6 +187,11 @@ export default function StatsScreen() {
         <div className={styles.section}>
           <div className={styles.sectionTitle}>CLIMBING</div>
           <ClimbStats sessions={climbLog} />
+        </div>
+
+        <div className={styles.section}>
+          <div className={styles.sectionTitle}>CLIMBING VS PULLING</div>
+          <ClimbVsPullSection climbLog={climbLog} loadLog={loadLog} />
         </div>
       </div>
     </div>

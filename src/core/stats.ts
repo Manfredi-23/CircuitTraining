@@ -120,7 +120,17 @@ export function getSortedCapacities(progress: Progress, sort: SortMode): Capacit
     const level = getLevelNum(pg.xp);
     const trend = getTrend(progress, m);
     const lastTrained = pg.lastTrained ? new Date(pg.lastTrained) : new Date(0);
-    return { capacity: m, level, trend, lastTrained };
+    const daysSince = pg.lastTrained
+      ? Math.floor((Date.now() - lastTrained.getTime()) / 86_400_000)
+      : null;
+    return {
+      capacity: m,
+      level,
+      trend,
+      lastTrained,
+      levelProgress: getProgressInLevel(pg.xp),
+      fadeInDays: daysSince === null ? null : CONFIG.decay.rates[m].graceDays - daysSince,
+    };
   });
 
   switch (sort) {

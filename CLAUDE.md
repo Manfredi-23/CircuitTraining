@@ -64,6 +64,7 @@ src/
     stats.ts     # Trend scoring, chart data, capacity list sorting
     load.ts      # Load axes, load history, stepper formatting
     climbing.ts  # Climb log: grade scales, gym colours, pyramid and weekly bests
+    insights.ts  # STATS data: week strip, core volume, test rows, lift series, climb vs pull
     data-daily.ts, data-cave.ts, data-assess.ts  # Session libraries, one per tab
     data-oap.ts  # One-arm pull-up path, shared by CAVE 01 and CAVE 02
     data-index.ts  # getModeData(mode) helper
@@ -73,7 +74,7 @@ src/
   native/        # native.ts — Capacitor bridge: status bar, splash, haptics
   components/
     screens/     # HomeScreen, WorkoutScreen, RestScreen, CompleteScreen, StatsScreen, ClimbScreen
-    shared/      # SettingsOverlay, TimerFlash, LoadLogger, ClimbStats, SessionInfo
+    shared/      # SettingsOverlay, TimerFlash, LoadLogger, ClimbStats, SessionInfo, StatsSections
   app/           # layout.tsx, page.tsx (screen router), globals.css
 ios/             # Xcode project (Capacitor 8, SPM)
 tools/           # generate-ios-assets.py — icon and splash from logo.svg
@@ -177,8 +178,11 @@ intensity at HARD** — a tired athlete downgrades rather than grinds.
   substituted with the lopsided two-hand ladder. A gate with no `substituteId` hides the
   exercise until it opens. Substitutes are resolved one level deep, so a
   substitute must not carry a gate of its own.
-- Benchmarks are recorded in TEST 01 ASSESS, which has its own tab so it is
-  there when wanted and out of the way otherwise. Each TEST exercise carries a
+- Benchmarks are recorded in TEST 01 ASSESS, one gym session of 17 tests
+  (bodyweight first, then fingers, pulling, trunk, pushing, forearm endurance,
+  mobility). Every result is kept (`addResult`, one per test per day);
+  `latestResult` is the one gates read. % bodyweight conversions use the latest
+  recorded bodyweight (`currentBodyweight`). Each TEST exercise carries a
   `records` spec: the result is entered on the load stepper (kilos on the belt,
   seconds, cm, progression number) and saved on the last DONE, converted to the
   benchmark's unit by `benchmarkValueFromEntry` — added kg to % bodyweight, and
@@ -206,7 +210,7 @@ fit that week.
 |------|----------|
 | DAILY | 01 FRONT CORE, 02 OBLIQUES + BACK, 03 BAND STRENGTH, 04 FINGERS + MOBILITY |
 | CAVE | 01 STRONG, 02 PULL + PUSH, 03 LEGS + BACK |
-| TEST | 01 ASSESS |
+| TEST | 01 ASSESS (full battery, ~86 min) |
 
 A typical week: DAILY most mornings, CAVE 02 or 03 straight after each
 bouldering session, CAVE 01 only in a week a bouldering day is skipped.
@@ -402,9 +406,10 @@ keeps all three in sync. Do not hand-edit the PNGs.
 
 ## Handoff Documents
 
-- **`7bit-handover-v13.md`** — **start here.** Latest session: the session info
-  popup on every card, and a review of how test results are recorded (with the
-  gaps found). Supersedes v12's repo state and open items.
+- **`7bit-handover-v14.md`** — **start here.** Latest session: the 17-test
+  ASSESS battery, test history, sets in the session log, and the new STATS
+  sections. Supersedes v12/v13 repo state and open items.
+- **`7bit-handover-v13.md`** — the session info popup and the test-recording review.
 - **`7bit-handover-v12.md`** — read second. The full picture: the DAILY / CAVE /
   TEST programme, the climb log, open items, the graphics rework plan (grid,
   frames, logo), working agreements and the Mac terminal commands.

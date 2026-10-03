@@ -2,7 +2,7 @@
 
 import { useStore } from '@/store/store';
 import { getLoadAxis, getLastLoad, formatLoad, formatLoadDate } from '@/core/load';
-import { benchmarkValueFromEntry } from '@/core/benchmarks';
+import { benchmarkValueFromEntry, currentBodyweight } from '@/core/benchmarks';
 import { hapticTap } from '@/native/native';
 import type { ScaledExercise } from '@/core/types';
 import styles from './LoadLogger.module.css';
@@ -25,6 +25,7 @@ export default function LoadLogger({ exercise }: { exercise: ScaledExercise }) {
   const pendingLoad = useStore(s => s.pendingLoad);
   const adjustLoad = useStore(s => s.adjustLoad);
   const loadLog = useStore(s => s.loadLog);
+  const benchmarkResults = useStore(s => s.benchmarkResults);
 
   const axis = getLoadAxis(exercise);
   if (!axis || pendingLoad === null) return null;
@@ -36,7 +37,7 @@ export default function LoadLogger({ exercise }: { exercise: ScaledExercise }) {
   // figure, because that is the number the gates and standards read.
   const record = exercise.records;
   const converted = record && record.convert !== 'identity'
-    ? `= ${benchmarkValueFromEntry(record, pendingLoad)}% BW`
+    ? `= ${benchmarkValueFromEntry(record, pendingLoad, currentBodyweight(benchmarkResults))}% BW`
     : null;
 
   const step = (steps: number) => {
@@ -73,6 +74,7 @@ export default function LoadLogger({ exercise }: { exercise: ScaledExercise }) {
             </span>
           )}
           {converted && <span className={styles.deltaDown}>{converted}</span>}
+          {record && <span className={styles.deltaDown}>saved on the last DONE</span>}
         </div>
 
         <button

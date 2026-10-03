@@ -3,7 +3,7 @@ import type { Store } from '../store';
 import type { Circuit, ScaledExercise, Capacity, LevelUp } from '@/core/types';
 import { getModeData } from '@/core/data-index';
 import * as Engine from '@/core/engine';
-import { benchmarkValueFromEntry } from '@/core/benchmarks';
+import { benchmarkValueFromEntry, currentBodyweight } from '@/core/benchmarks';
 
 /**
  * Sessions run as sets within an exercise, not rounds of a circuit.
@@ -24,6 +24,8 @@ export interface WorkoutSlice {
   swapActive: boolean;
   formGuideOpen: boolean;
   exerciseTimerActive: boolean;
+  /** Sets marked DONE per exercise id in this session; written to the session log. */
+  doneSets: Record<string, number>;
 
   startWorkout: () => void;
   exerciseDone: () => void;
@@ -45,6 +47,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   swapActive: false,
   formGuideOpen: false,
   exerciseTimerActive: false,
+  doneSets: {},
 
   startWorkout: () => {
     const { mode, circuitIndex, energy, progress, benchmarkResults } = get();
@@ -62,6 +65,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       swapActive: false,
       formGuideOpen: false,
       exerciseTimerActive: false,
+      doneSets: {},
       screen: 'workout',
     });
 
@@ -69,8 +73,9 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   },
 
   exerciseDone: () => {
-    const { exerciseList, stepIndex, setIndex, currentExercise, progress } = get();
+    const { exerciseList, stepIndex, setIndex, currentExercise, progress, doneSets } = get();
     if (!currentExercise) return;
+    set({ doneSets: { ...doneSets, [currentExercise.id]: (doneSets[currentExercise.id] ?? 0) + 1 } });
 
     // More sets of this exercise still to do: rest, then repeat.
     if (setIndex < currentExercise.scaledSets) {
@@ -81,11 +86,15 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
     // Last set of the exercise — award XP once, and record what was actually
     // on the belt. Both happen once per exercise, at the same moment.
     // A test also saves its result as a benchmark: this is what opens gates.
-    const { pendingLoad } = get();
+    // Percent-of-bodyweight results use the bodyweight on record, which this
+    // same session may have just updated: bodyweight is the first test.
+    const { pendingLoad, benchmarkResults } = get();
     if (currentExercise.records && pendingLoad !== null) {
       get().recordBenchmark({
         benchmarkId: currentExercise.records.benchmarkId,
-        value: benchmarkValueFromEntry(currentExercise.records, pendingLoad),
+        value: benchmarkValueFromEntry(
+          currentExercise.records, pendingLoad, currentBodyweight(benchmarkResults),
+        ),
         date: new Date().toISOString(),
       });
     }
@@ -206,7 +215,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   setExerciseTimerActive: (active) => set({ exerciseTimerActive: active }),
 
   completeSession: () => {
-    const { circuit, mode, energy, sessionStartTime, progress, exerciseList } = get();
+    const { circuit, mode, energy, sessionStartTime, progress, exerciseList, doneSets } = get();
     if (!circuit) return;
 
     const duration = sessionStartTime ? Math.round((Date.now() - sessionStartTime) / 60000) : 0;
@@ -223,6 +232,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       circuitTitle: circuit.title,
       energy,
       duration,
+      sets: doneSets,
     }];
 
     set({ progress: newProgress, sessionLog, screen: 'complete' });
