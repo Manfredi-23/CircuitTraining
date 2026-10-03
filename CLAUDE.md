@@ -73,7 +73,7 @@ src/
   native/        # native.ts — Capacitor bridge: status bar, splash, haptics
   components/
     screens/     # HomeScreen, WorkoutScreen, RestScreen, CompleteScreen, StatsScreen, ClimbScreen
-    shared/      # SettingsOverlay, TimerFlash, LoadLogger, ClimbStats
+    shared/      # SettingsOverlay, TimerFlash, LoadLogger, ClimbStats, SessionInfo
   app/           # layout.tsx, page.tsx (screen router), globals.css
 ios/             # Xcode project (Capacitor 8, SPM)
 tools/           # generate-ios-assets.py — icon and splash from logo.svg
@@ -402,7 +402,10 @@ keeps all three in sync. Do not hand-edit the PNGs.
 
 ## Handoff Documents
 
-- **`7bit-handover-v12.md`** — **start here.** Current state: the DAILY / CAVE /
+- **`7bit-handover-v13.md`** — **start here.** Latest session: the session info
+  popup on every card, and a review of how test results are recorded (with the
+  gaps found). Supersedes v12's repo state and open items.
+- **`7bit-handover-v12.md`** — read second. The full picture: the DAILY / CAVE /
   TEST programme, the climb log, open items, the graphics rework plan (grid,
   frames, logo), working agreements and the Mac terminal commands.
 - **`7bit-handover-v11.md`** — current for the app shell. The iOS setup

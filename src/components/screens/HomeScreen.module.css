@@ -95,6 +95,15 @@
   padding: 10px 12px; border: 2px solid var(--ink); border-radius: var(--rad-sm); flex-shrink: 0;
 }
 .duration { font-weight: 700; font-size: 12px; color: var(--ink); }
+.infoRight { display: flex; align-items: center; gap: 12px; }
+.infoBtn {
+  width: 26px; height: 26px; margin: -4px -4px -4px 0; border-radius: 50%;
+  border: 2px solid var(--ink); background: none; color: var(--ink);
+  font-family: inherit; font-weight: 700; font-size: 13px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 80ms ease;
+}
+.infoBtn:active { transform: scale(0.9); }
 
 .dots { display: flex; align-items: center; gap: 6px; }
 .dot {

@@ -8,6 +8,7 @@ import { getCapacityLevel, getReadiness, buildList, estimateDuration } from '@/c
 import { CONFIG } from '@/core/config';
 import { useSwipe } from '@/hooks/use-swipe';
 import SettingsOverlay from '@/components/shared/SettingsOverlay';
+import SessionInfo from '@/components/shared/SessionInfo';
 import type { Mode, EnergyKey } from '@/core/types';
 import styles from './HomeScreen.module.css';
 
@@ -20,6 +21,7 @@ export default function HomeScreen() {
   } = useStore();
 
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
   const [cardKey, setCardKey] = useState(0);
 
   const circuits = getModeData(mode);
@@ -51,7 +53,8 @@ export default function HomeScreen() {
 
   // Duration is computed from the session as it will actually be prescribed at
   // this level and energy, rather than read off a hardcoded number.
-  const duration = estimateDuration(buildList(circuit, energy, progress, benchmarkResults));
+  const list = buildList(circuit, energy, progress, benchmarkResults);
+  const duration = estimateDuration(list);
 
   // Derank message
   const derankMsg = pendingDecayEvents.length > 0
@@ -158,10 +161,19 @@ export default function HomeScreen() {
         {/* Info bar */}
         <div className={styles.infoBar} onClick={e => e.stopPropagation()}>
           <span className={styles.duration}>{duration} min.</span>
-          <div className={styles.dots}>
-            {[0, 1, 2].map(i => (
-              <div key={i} className={`${styles.dot}${i < filledDots ? ` ${styles.dotFilled}` : ''}`} />
-            ))}
+          <div className={styles.infoRight}>
+            <div className={styles.dots}>
+              {[0, 1, 2].map(i => (
+                <div key={i} className={`${styles.dot}${i < filledDots ? ` ${styles.dotFilled}` : ''}`} />
+              ))}
+            </div>
+            <button
+              className={styles.infoBtn}
+              onClick={() => setInfoOpen(true)}
+              aria-label={`What is in ${circuit.title}`}
+            >
+              i
+            </button>
           </div>
         </div>
         </div>
@@ -190,6 +202,16 @@ export default function HomeScreen() {
       </button>
 
       <SettingsOverlay open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <SessionInfo
+        open={infoOpen}
+        mode={mode}
+        circuit={circuit}
+        list={list}
+        energy={energy}
+        duration={duration}
+        onClose={() => setInfoOpen(false)}
+        onStart={() => { setInfoOpen(false); startWorkout(); }}
+      />
     </div>
   );
 }
