@@ -112,6 +112,12 @@ existing `@capacitor/local-notifications` plugin: no `cap sync` needed.
 - `TodayWidgetPlugin.swift` writes the snapshot (`src/core/widget.ts`) to
   the App Group and reloads the widget only when it changed.
 
+### Follow-up: Settings copy
+- "Save sessions as workouts" no longer promises ring credit. The workout is
+  saved with start and end only (no energy or heart-rate samples), so it is
+  listed in Health and Fitness but does not move the rings; a watch worn
+  during the session credits its own measured activity as usual.
+
 ### Also fixed in the second PR
 - A fresh install was recommended STRONG on day one (no climbs logged reads
   as "fewer than two climbing days"). The STRONG rule now needs a climb

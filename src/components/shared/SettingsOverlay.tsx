@@ -197,7 +197,7 @@ export default function SettingsOverlay({ open, onClose }: SettingsOverlayProps)
             >
               <span className="overlay-toggle-text">
                 <b>Save sessions as workouts</b>
-                <span>Finished sessions appear in Fitness and count toward the rings.</span>
+                <span>Finished sessions appear in Health and Fitness as workouts, with their time. Rings only fill from what a watch measures.</span>
               </span>
               <span className={`overlay-toggle-mark${healthSettings.writeWorkouts ? ' on' : ''}`}>
                 {healthSettings.writeWorkouts ? 'ON' : 'OFF'}
