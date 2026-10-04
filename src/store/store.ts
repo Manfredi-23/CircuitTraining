@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { CONFIG } from '@/core/config';
 import type { SessionLogEntry } from '@/core/types';
+import { PERSISTED_KEYS } from '@/core/backup';
 import { createAppSlice, type AppSlice } from './slices/app-slice';
 import { createWorkoutSlice, type WorkoutSlice } from './slices/workout-slice';
 import { createProgressSlice, type ProgressSlice } from './slices/progress-slice';
@@ -101,13 +102,11 @@ export const useStore = create<Store>()(
           : incoming;
         return { ...(current as Store), ...resolved } as Store;
       },
-      partialize: (state) => ({
-        progress: state.progress,
-        sessionLog: state.sessionLog,
-        benchmarkResults: state.benchmarkResults,
-        loadLog: state.loadLog,
-        climbLog: state.climbLog,
-      }),
+      // Every persisted key is listed once, in backup.ts, so a backup can never
+      // leave one out.
+      partialize: (state) => Object.fromEntries(
+        PERSISTED_KEYS.map(k => [k, (state as unknown as Record<string, unknown>)[k]]),
+      ) as Partial<Store>,
     }
   )
 );
