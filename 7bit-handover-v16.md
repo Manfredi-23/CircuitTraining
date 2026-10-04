@@ -12,8 +12,9 @@ agreements unchanged (`CLAUDE.md`).
 The athlete asked for a review of the app and a list of improvements, then
 asked for all of them, broken into chunks. The plan is `7bit-roadmap.md`:
 seven phases, 25 chunks, data first, then logic, then charts, then the
-phone. Phases 1-5 are built, tested and merged in this PR. Phases 6
-(Apple Health) and 7 (widget) are native Swift and follow in their own PR.
+phone. All of it is built. Phases 1-5 merged in PR #20; phases 6 (Apple
+Health) and 7 (widget) in the PR after it. The Swift in phases 6 and 7 could
+not be compiled in the cloud session: build it in Xcode first (section 6).
 
 ## 2. What changed, by phase
 
@@ -78,20 +79,60 @@ logged (21:00). Quiet hours 21:30-07:00. Settings > REMINDERS has a switch
 each and the DAILY time; permission is asked when one is switched on. Uses the
 existing `@capacitor/local-notifications` plugin: no `cap sync` needed.
 
+### Phase 6 — Apple Health
+- `ios/App/App/HealthPlugin.swift`, a local plugin like `RestActivity`,
+  registered in `MainViewController` and added to the App target's Sources.
+  Reads sleep (minutes asleep per night, deep and REM where the watch
+  records them), HRV (SDNN, daily mean), resting HR, body mass and climbing
+  workouts; saves finished sessions as workouts (DAILY as core training,
+  CAVE and TEST as strength). Usage strings are in Info.plist.
+- `src/core/health.ts`: last night's sleep and today's HRV and resting HR
+  against the athlete's own previous 7 days (at least 4 readings) suggest an
+  energy. Under 5h asleep, or two of {under 6h, HRV 12% below, resting HR
+  +5}: TIRED. 7h+ with HRV at or above the week: FRESH. Otherwise NORMAL.
+  Applied once a day to the energy tabs (suggested tab in accent); on a
+  TIRED day a banner gives the reasons and the recommender skips STRONG and
+  ASSESS.
+- Sync on open and on foreground once connected (Settings > APPLE HEALTH >
+  CONNECT). A newer weight that moved 0.3 kg or more is recorded as
+  bodyweight. Watch climbing workouts of 15 min or more on a day with no
+  logged climb become draft entries (GYM BOULDER, the watch's minutes, no
+  climbs yet), credited like any climb so the 48h and the load see them;
+  RECENT shows them as "From Apple Health ... Tap to add the climbs."
+- STATS > RECOVERY (only once connected): 14 nights of sleep with HRV, and
+  mean session effort after 7h+ nights against nights under 6h.
+- The `health` key is persisted and in backups.
+
+### Phase 7 — Widget
+- `TodayWidget` in the existing RestTimerWidget extension (sources in
+  `ios/LiveActivity/`, copied into `ios/App/RestTimerWidget/`): small home
+  screen, lock screen rectangular and inline. Today's recommended session,
+  its reason, the block week, and a countdown to fingers ready that flips to
+  READY on its own. A snapshot from an earlier day reads OPEN 7BIT.
+- `TodayWidgetPlugin.swift` writes the snapshot (`src/core/widget.ts`) to
+  the App Group and reloads the widget only when it changed.
+
+### Also fixed in the second PR
+- A fresh install was recommended STRONG on day one (no climbs logged reads
+  as "fewer than two climbing days"). The STRONG rule now needs a climb
+  history.
+
 ## 3. Verified
 
-`npx tsc --noEmit`, `npm test` (50 pass), `npm run check:daily` PASS,
+`npx tsc --noEmit`, `npm test` (64 pass), `npm run check:daily` PASS,
 `npm run check:cave` OK, `npm run build`. In Chromium at 390 px: export,
 import, pain check at 4 and 7, effort saved, climb minutes and effort, TRY
 +13KG suggestion, +60S (2:30 -> 3:30), recommended card with its reason, home
 screen still 845 px tall, all five STATS sections with seeded data, reminder
-switches and time saved. Not verifiable in the cloud: notifications on a real
-iPhone (check one fires: set the DAILY time two minutes ahead).
+switches and time saved; with simulated Health data, TIRED suggested and
+banner shown, DAILY recommended instead of STRONG, RECOVERY chart, a draft
+climb in RECENT. Not verifiable in the cloud: anything native. The Swift has
+not been compiled; notifications, Health and the widget need a device.
 
 ## 4. Repo state
 
-This session's work is on `claude/amazing-hawking-c1b0xc` and goes to
-`main` through its PR. Older merged branches still on GitHub (the proxy
+Merged: PR #20 (phases 1-5). Phases 6-7 and this handover go to `main`
+in the PR after it, from the same branch `claude/amazing-hawking-c1b0xc`. Older merged branches still on GitHub (the proxy
 refuses deletion): `claude/assess-tab-drop-power`, `claude/climb-log`,
 `claude/dot-matrix-illustrations`, `claude/programme-v12`,
 `claude/handover-v12`, `claude/session-info-popup`, `claude/assess-stats`,
@@ -99,7 +140,10 @@ refuses deletion): `claude/assess-tab-drop-power`, `claude/climb-log`,
 
 ## 5. Open items
 
-1. **Roadmap phases 6 and 7** (Apple Health, widget): native, need Xcode.
+1. **Build the Swift in Xcode** and add the capabilities (section 6). If
+   the build fails, the error will be in `HealthPlugin.swift`,
+   `TodayWidgetPlugin.swift` or `TodayWidget.swift`; those are the only
+   new native files.
 2. Old data has no `lastHard`: until the first hard session or boulder day
    after updating, finger readiness falls back to `lastTrained` as before.
 3. Load suggestions need `planned` sets, so they start after the first
@@ -127,6 +171,19 @@ npx cap open ios          # Xcode: scheme App, Cmd+R
 npm run dev               # or the browser, http://localhost:3000
 ```
 
-On the phone after installing: Settings > REMINDERS, switch one off and on to
-get the permission dialog, then Settings > BACKUP > EXPORT and save the file to
-Files.
+**Once in Xcode** (App target, then RestTimerWidgetExtension), under
+Signing & Capabilities:
+
+1. App: **+ Capability > HealthKit**.
+2. App and RestTimerWidgetExtension: **+ Capability > App Groups**, add
+   `group.com.sevenbit.circuittraining` to both.
+3. Cmd+R.
+
+**On the phone after installing:**
+
+1. Settings > BACKUP > EXPORT, save the file to Files.
+2. Settings > REMINDERS: switch one off and on to get the permission dialog.
+   Set the DAILY time two minutes ahead to see one fire.
+3. Settings > APPLE HEALTH > CONNECT, allow every category.
+4. Long-press the home screen > + > 7Bit Today. Lock screen: customise >
+   add the 7Bit widget.

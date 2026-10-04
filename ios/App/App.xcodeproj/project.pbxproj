@@ -16,6 +16,8 @@
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 		7B17A0022E9A000100C0FFEE /* RestActivityPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B17A0012E9A000100C0FFEE /* RestActivityPlugin.swift */; };
+		7B17A0062E9A000100C0FFEE /* HealthPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B17A0052E9A000100C0FFEE /* HealthPlugin.swift */; };
+		7B17A0082E9A000100C0FFEE /* TodayWidgetPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B17A0072E9A000100C0FFEE /* TodayWidgetPlugin.swift */; };
 		7B17A0042E9A000100C0FFEE /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B17A0032E9A000100C0FFEE /* MainViewController.swift */; };
 		CF007E48306A866E00598C4E /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF007E47306A866E00598C4E /* WidgetKit.framework */; };
 		CF007E4A306A866E00598C4E /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF007E49306A866E00598C4E /* SwiftUI.framework */; };
@@ -57,6 +59,8 @@
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
 		7B17A0012E9A000100C0FFEE /* RestActivityPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestActivityPlugin.swift; sourceTree = "<group>"; };
+		7B17A0052E9A000100C0FFEE /* HealthPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthPlugin.swift; sourceTree = "<group>"; };
+		7B17A0072E9A000100C0FFEE /* TodayWidgetPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayWidgetPlugin.swift; sourceTree = "<group>"; };
 		7B17A0032E9A000100C0FFEE /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
 		CF007E45306A866E00598C4E /* RestTimerWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RestTimerWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -125,6 +129,8 @@
 				50379B222058CBB4000EE86E /* capacitor.config.json */,
 				504EC3071FED79650016851F /* AppDelegate.swift */,
 				7B17A0012E9A000100C0FFEE /* RestActivityPlugin.swift */,
+				7B17A0052E9A000100C0FFEE /* HealthPlugin.swift */,
+				7B17A0072E9A000100C0FFEE /* TodayWidgetPlugin.swift */,
 				7B17A0032E9A000100C0FFEE /* MainViewController.swift */,
 				504EC30B1FED79650016851F /* Main.storyboard */,
 				504EC30E1FED79650016851F /* Assets.xcassets */,
@@ -263,6 +269,8 @@
 			files = (
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
 				7B17A0022E9A000100C0FFEE /* RestActivityPlugin.swift in Sources */,
+				7B17A0062E9A000100C0FFEE /* HealthPlugin.swift in Sources */,
+				7B17A0082E9A000100C0FFEE /* TodayWidgetPlugin.swift in Sources */,
 				7B17A0042E9A000100C0FFEE /* MainViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

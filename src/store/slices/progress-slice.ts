@@ -6,6 +6,7 @@ import { addResult } from '@/core/benchmarks';
 import type { PersistedKey } from '@/core/backup';
 import { localDate, mondayOf } from '@/core/dates';
 import { withDefaults } from './settings-slice';
+import { EMPTY_HEALTH } from '@/core/health';
 
 export interface ProgressSlice {
   progress: Progress;
@@ -63,6 +64,7 @@ export const createProgressSlice: StateCreator<Store, [], [], ProgressSlice> = (
   resetAllData: () => set({
     blockStart: null,
     settings: withDefaults(undefined),
+    health: EMPTY_HEALTH,
     progress: {},
     sessionLog: [],
     pendingDecayEvents: [],

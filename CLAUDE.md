@@ -74,6 +74,8 @@ src/
     progression.ts # suggested next load, personal bests
     recommend.ts # which session today
     reminders.ts # which local notifications to schedule
+    health.ts    # Apple Health: energy suggestion, merge, weight, climb imports
+    widget.ts    # the TodayWidget snapshot
     backup.ts    # export / import format; PERSISTED_KEYS
     dates.ts     # local-date helpers
     data-daily.ts, data-cave.ts, data-assess.ts  # Session libraries, one per tab
@@ -82,7 +84,8 @@ src/
   storage/       # Async storage abstraction (swap localStorage for Supabase later)
   store/         # Zustand store (app / workout / progress / stats / load / climb slices)
   hooks/         # use-timer, use-swipe, use-hydration, use-audio-init, use-wake-lock
-  native/        # native.ts — Capacitor bridge: status bar, splash, haptics
+  native/        # native.ts — Capacitor bridge: status bar, splash, haptics, notifications
+                 # health.ts, widget.ts — bridges to the local Health and TodayWidget plugins
   components/
     screens/     # HomeScreen, WorkoutScreen, RestScreen, CompleteScreen, StatsScreen, ClimbScreen
     shared/      # SettingsOverlay, TimerFlash, LoadLogger, ClimbStats, SessionInfo, StatsSections
@@ -419,22 +422,39 @@ Four first-party plugins: `@capacitor/status-bar`, `@capacitor/splash-screen`,
 means re-running `npx cap sync ios` so `ios/App/CapApp-SPM/Package.swift` is
 rewritten.
 
-One local plugin, `RestActivity` (`ios/App/App/RestActivityPlugin.swift`),
-starts and ends the rest Live Activity; no npm package covers ActivityKit.
-Local plugins are not auto-discovered, so `MainViewController` registers it in
-`capacitorDidLoad()`, and `Main.storyboard` points at `MainViewController`
+Three local plugins in `ios/App/App/`, each with a bridge in `src/native/`:
+`RestActivity` (`RestActivityPlugin.swift`) starts and ends the rest Live
+Activity; `Health` (`HealthPlugin.swift`, `src/native/health.ts`) reads sleep,
+HRV, resting HR, body mass and climbing workouts and saves sessions as
+workouts; `TodayWidget` (`TodayWidgetPlugin.swift`, `src/native/widget.ts`)
+hands the home-screen widget its snapshot. Local plugins are not
+auto-discovered, so `MainViewController` registers them in
+`capacitorDidLoad()`; adding one also means adding it to the App target's
+Sources in `project.pbxproj`, and `Main.storyboard` points at `MainViewController`
 instead of `CAPBridgeViewController`. `NSSupportsLiveActivities` is `true` in
 Info.plist.
 
-The countdown UI is the `RestTimerWidget` Widget Extension target. Its sources
-live in `ios/LiveActivity/` and are copied into the target once it has been
-created in Xcode (see the README there). `RestActivityAttributes` is defined in
+The countdown UI and the `TodayWidget` live in the `RestTimerWidget` Widget
+Extension target. Its sources live in `ios/LiveActivity/` and are copied into
+`ios/App/RestTimerWidget/`, a synchronized folder, so a new file there compiles
+without touching the project (keep the two copies identical). `RestActivityAttributes` is defined in
 both targets and the two must stay identical — ActivityKit matches them by type
 name and encoded shape. The extension needs a minimum deployment of iOS 16.2.
 
-The App target should carry the **Time Sensitive Notifications** capability so
-rest alerts break through Focus. Without it the alert is still delivered, at
-the normal level.
+Capabilities, added in Xcode under Signing & Capabilities:
+
+- **Time Sensitive Notifications** (App) so rest alerts break through Focus.
+  Without it the alert is still delivered, at the normal level.
+- **HealthKit** (App). Without it CONNECT APPLE HEALTH reports that Health did
+  not connect; nothing else is affected. Info.plist carries
+  `NSHealthShareUsageDescription` and `NSHealthUpdateUsageDescription`.
+- **App Groups** `group.com.sevenbit.circuittraining` (App and
+  RestTimerWidgetExtension). Without it the widget shows its placeholder.
+
+Apple Health suggests the energy from sleep and HRV / resting HR against the
+athlete's own 7-day baseline (`src/core/health.ts`), applied once a day; on a
+TIRED day the recommender skips STRONG and ASSESS. A newer Health weight is
+recorded as bodyweight; watch climbing workouts become draft climb entries.
 
 `UIViewControllerBasedStatusBarAppearance` must stay `true` in Info.plist —
 the status bar plugin sets the style through the view controller, and setting
@@ -448,14 +468,15 @@ keeps all three in sync. Do not hand-edit the PNGs.
 
 - **Supabase**: Auth + Postgres DB for multi-user. Swap storage adapter, add API routes.
 - **Vercel deployment**: Connect repo, configure build.
-- **The improvement roadmap**: `7bit-roadmap.md`. Phases 6 (Apple Health) and
-  7 (widget) remain.
+- **The improvement roadmap**: `7bit-roadmap.md`. All seven phases built; the
+  native ones still need checking on a device.
 
 ## Handoff Documents
 
-- **`7bit-handover-v16.md`** — **start here.** The improvement roadmap phases
-  1-5: backup, Vitest, pain check, effort and load, mesocycle, suggested
-  loads, recommended session, five STATS sections, reminders.
+- **`7bit-handover-v16.md`** — **start here.** The whole improvement roadmap:
+  backup, Vitest, pain check, effort and load, mesocycle, suggested loads,
+  recommended session, six STATS sections, reminders, Apple Health, widget,
+  and the Xcode steps the native parts still need.
 - **`7bit-roadmap.md`** — the plan those phases come from, and what remains.
 - **`7bit-handover-v15.md`** — ASSESS rebuilt from the
   research: five sections, ramp tests (MADE IT / FAILED), 2RM pull-up, McGill

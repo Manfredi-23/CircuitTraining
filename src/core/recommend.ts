@@ -28,6 +28,8 @@ export interface RecommendInput {
   progress: Progress;
   benchmarkResults: BenchmarkResult[];
   block: BlockWeek;
+  /** Apple Health suggested TIRED today: no maximal sessions. */
+  tired?: boolean;
   now?: Date;
 }
 
@@ -102,8 +104,9 @@ export function recommend(input: RecommendInput): Recommendation | null {
   const strong = cave.find(c => !c.stacksOnSession);
   const fingersReady = strong ? getReadiness(strong, progress).level === 'ready' : false;
 
-  // 3. ASSESS due, fresh fingers, not a deload week, no climbing today.
-  if (test[0] && !climbedToday && !block.deload && fingersReady && !doneToday('TEST')
+  // 3. ASSESS due, fresh fingers, not a deload week, no climbing today, and
+  // not a TIRED day: a test on a bad night measures the night.
+  if (test[0] && !input.tired && !climbedToday && !block.deload && fingersReady && !doneToday('TEST')
       && assessDue(benchmarkResults, sessionLog, now)) {
     const never = resultHistory(benchmarkResults, 'fs-2arm-20mm').length === 0;
     return {
@@ -113,11 +116,13 @@ export function recommend(input: RecommendInput): Recommendation | null {
   }
 
   // 4. CAVE 01: from Thursday, in a week with fewer than two climbing days.
+  // Only once climbs are being logged: with an empty climb log the app cannot
+  // tell a skipped bouldering day from one that was never written down.
   const monday = mondayOf(today);
   const weekday = daysBetween(monday, today); // 0 = Monday
   const climbsThisWeek = new Set(climbLog.filter(c => c.date >= monday && c.date <= today).map(c => c.date)).size;
   const strongThisWeek = strong ? sessionLog.some(s => s.circuitId === strong.id && dayOf(s.date) >= monday) : true;
-  if (strong && weekday >= 3 && climbsThisWeek < 2 && !climbedToday && fingersReady && !strongThisWeek && !doneToday('CAVE')) {
+  if (strong && climbLog.length > 0 && !input.tired && weekday >= 3 && climbsThisWeek < 2 && !climbedToday && fingersReady && !strongThisWeek && !doneToday('CAVE')) {
     return {
       mode: 'CAVE', circuitId: strong.id,
       reason: `${climbsThisWeek} climbing day${climbsThisWeek === 1 ? '' : 's'} this week. STRONG instead.`,
@@ -126,6 +131,10 @@ export function recommend(input: RecommendInput): Recommendation | null {
 
   // 5. The morning DAILY, rotating through the four.
   if (doneToday('DAILY')) return null;
+  if (input.tired) {
+    const pick = leastRecent(daily, sessionLog);
+    return { mode: 'DAILY', circuitId: pick.id, reason: 'A TIRED day: something light instead.' };
+  }
   const pick = leastRecent(daily, sessionLog);
   const last = lastDone(sessionLog, pick.id);
   const ago = last ? daysBetween(last, today) : null;

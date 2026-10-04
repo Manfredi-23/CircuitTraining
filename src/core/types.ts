@@ -541,4 +541,8 @@ export interface ClimbSession {
   durationMin?: number;
   /** Session effort, 1-10 (Borg CR10). */
   effort?: number;
+  /** Imported from an Apple Health climbing workout; grades still to add. */
+  draft?: boolean;
+  /** The Health workout it came from, so it is imported once. */
+  healthId?: string;
 }

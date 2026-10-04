@@ -9,7 +9,7 @@
 /** The persisted keys, in one place so a new one cannot be left out of a backup. */
 export const PERSISTED_KEYS = [
   'progress', 'sessionLog', 'benchmarkResults', 'loadLog', 'climbLog',
-  'blockStart', 'settings',
+  'blockStart', 'settings', 'health',
 ] as const;
 
 export type PersistedKey = typeof PERSISTED_KEYS[number];

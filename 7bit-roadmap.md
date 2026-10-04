@@ -1,6 +1,7 @@
 # 7BIT — Improvement Roadmap
 
-**Started:** 4 October 2026. Agreed with the athlete: build all of it, in
+**Started:** 4 October 2026. **All chunks built the same day**; phases 6 and 7
+are Swift and still need checking on a device (handover v16, section 6). Agreed with the athlete: build all of it, in
 small chunks. This file is the plan; the handovers record what was actually
 done. Tick a chunk here when its PR merges.
 
@@ -80,15 +81,15 @@ simply leaves that feature quiet.
 
 | # | Chunk | Notes |
 |---|-------|-------|
-| 6.1 | [ ] `HealthPlugin.swift` local plugin + `src/native/health.ts` bridge; Settings: CONNECT APPLE HEALTH | HealthKit capability, usage strings. Reads sleep, HRV (SDNN), resting HR, body mass, workouts. |
-| 6.2 | [ ] Morning readiness: suggest FRESH / NORMAL / TIRED from sleep and HRV against a 7-day baseline | Suggestion with its reason on the home card. |
-| 6.3 | [ ] Bodyweight sync into the bodyweight benchmark | |
-| 6.4 | [ ] Watch climbing workouts become draft climb log entries | |
-| 6.5 | [ ] Completed sessions written to Health as workouts | |
-| 6.6 | [ ] STATS: sleep and HRV against session effort and loads | |
+| 6.1 | [x] `HealthPlugin.swift` local plugin + `src/native/health.ts` bridge; Settings: CONNECT APPLE HEALTH | HealthKit capability, usage strings. Reads sleep, HRV (SDNN), resting HR, body mass, workouts. |
+| 6.2 | [x] Morning readiness: suggest FRESH / NORMAL / TIRED from sleep and HRV against a 7-day baseline | Suggestion with its reason on the home card. |
+| 6.3 | [x] Bodyweight sync into the bodyweight benchmark | |
+| 6.4 | [x] Watch climbing workouts become draft climb log entries | |
+| 6.5 | [x] Completed sessions written to Health as workouts | |
+| 6.6 | [x] STATS: sleep and HRV against session effort and loads | |
 
 ## Phase 7 — Widget
 
 | # | Chunk | Notes |
 |---|-------|-------|
-| 7.1 | [ ] Home and lock screen widget: today's recommended session, finger recovery countdown | App Group shared with `RestTimerWidget`. |
+| 7.1 | [x] Home and lock screen widget: today's recommended session, finger recovery countdown | App Group shared with `RestTimerWidget`. |

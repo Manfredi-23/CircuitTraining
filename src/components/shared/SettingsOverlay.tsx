@@ -7,6 +7,7 @@ import { exportText } from './backup-io';
 import { getBlockWeek, blockLabel } from '@/core/block';
 import { REMINDER_LABELS, type ReminderKind } from '@/core/reminders';
 import { isNative, requestNotifications } from '@/native/native';
+import { connectHealth, healthAvailable, readHealth } from '@/native/health';
 
 interface SettingsOverlayProps {
   open: boolean;
@@ -30,6 +31,10 @@ export default function SettingsOverlay({ open, onClose }: SettingsOverlayProps)
   const reminders = useStore(s => s.settings.reminders);
   const setReminder = useStore(s => s.setReminder);
   const setDailyTime = useStore(s => s.setDailyTime);
+  const healthSettings = useStore(s => s.settings.health);
+  const setHealthSettings = useStore(s => s.setHealthSettings);
+  const healthSyncedAt = useStore(s => s.health.syncedAt);
+  const applyHealthRead = useStore(s => s.applyHealthRead);
   const [entered, setEntered] = useState(false);
   const [status, setStatus] = useState<{ text: string; warn: boolean } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -79,6 +84,26 @@ export default function SettingsOverlay({ open, onClose }: SettingsOverlayProps)
     if (on && isNative() && !(await requestNotifications())) {
       setStatus({ text: 'Notifications are off for 7Bit. Turn them on in iOS Settings > Notifications.', warn: true });
     }
+  };
+
+  const handleConnectHealth = async () => {
+    if (!(await healthAvailable())) {
+      setStatus({ text: 'Apple Health is not available on this device.', warn: true });
+      return;
+    }
+    if (!(await connectHealth())) {
+      setStatus({ text: 'Health did not connect. Check that the app has the HealthKit capability.', warn: true });
+      return;
+    }
+    setHealthSettings({ connected: true });
+    const read = await readHealth(30);
+    if (read) applyHealthRead(read);
+    setStatus({
+      text: read && (read.sleep.length || read.hrv.length || read.bodyMass.length || read.climbs.length)
+        ? 'Apple Health connected.'
+        : 'Connected, but nothing came back yet. Allow the categories in Health > Sharing > Apps > 7Bit.',
+      warn: false,
+    });
   };
 
   const handleReset = () => {
@@ -148,6 +173,41 @@ export default function SettingsOverlay({ open, onClose }: SettingsOverlayProps)
             onChange={e => e.target.value && setDailyTime(e.target.value)}
           />
         </label>
+      </div>
+
+      <div className="overlay-section">
+        <div className="overlay-section-title">APPLE HEALTH</div>
+        <div className="overlay-body">
+          {!isNative()
+            ? 'Apple Health works in the iPhone app only.'
+            : healthSettings.connected
+              ? `Connected${healthSyncedAt ? `, last read ${new Date(healthSyncedAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}` : ''}. Sleep and HRV suggest the energy, your weight keeps bodyweight current, watch climbing workouts land in the climb log.`
+              : 'Reads sleep, HRV, resting heart rate, weight and climbing workouts. Nothing leaves the phone.'}
+        </div>
+        {isNative() && !healthSettings.connected && (
+          <button className="overlay-btn" onClick={() => void handleConnectHealth()}>CONNECT APPLE HEALTH</button>
+        )}
+        {isNative() && healthSettings.connected && (
+          <>
+            <button
+              className="overlay-toggle"
+              role="switch"
+              aria-checked={healthSettings.writeWorkouts}
+              onClick={() => setHealthSettings({ writeWorkouts: !healthSettings.writeWorkouts })}
+            >
+              <span className="overlay-toggle-text">
+                <b>Save sessions as workouts</b>
+                <span>Finished sessions appear in Fitness and count toward the rings.</span>
+              </span>
+              <span className={`overlay-toggle-mark${healthSettings.writeWorkouts ? ' on' : ''}`}>
+                {healthSettings.writeWorkouts ? 'ON' : 'OFF'}
+              </span>
+            </button>
+            <button className="overlay-btn" onClick={() => setHealthSettings({ connected: false })}>
+              DISCONNECT
+            </button>
+          </>
+        )}
       </div>
 
       <div className="overlay-section">

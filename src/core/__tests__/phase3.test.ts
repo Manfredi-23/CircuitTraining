@@ -136,8 +136,14 @@ describe('recommend', () => {
   });
 
   it('suggests STRONG late in a week with under two climbing days', () => {
-    const r = recommend({ ...base, sessionLog: [session(iso(2026, 10, 5), 'daily-01', 'DAILY')], climbLog: [] });
+    const lastWeek: ClimbSession = { id: 'c', date: '2026-09-29', venue: 'GYM', discipline: 'BOULDER', climbs: [] };
+    const r = recommend({ ...base, sessionLog: [session(iso(2026, 10, 5), 'daily-01', 'DAILY')], climbLog: [lastWeek] });
     expect(r).toMatchObject({ mode: 'CAVE', circuitId: 'cave-01' });
+  });
+
+  it('never suggests STRONG to an athlete who has logged no climbing', () => {
+    const r = recommend({ ...base, sessionLog: [], climbLog: [] });
+    expect(r?.mode).toBe('DAILY');
   });
 
   it('rotates DAILY once nothing else is due', () => {
@@ -164,5 +170,14 @@ describe('recommendation copy', () => {
       recommend({ progress: {}, benchmarkResults: [{ benchmarkId: 'fs-2arm-20mm', value: 1, date: iso(2026, 10, 1) }], block, now: NOW, sessionLog: [session(iso(2026, 9, 25), 'daily-02', 'DAILY')], climbLog: [] }),
     ];
     for (const r of cases) expect(r?.reason.length ?? 0, r?.reason).toBeLessThanOrEqual(45);
+  });
+});
+
+describe('recommend on a TIRED day', () => {
+  it('never picks STRONG or ASSESS', () => {
+    const block = getBlockWeek(null, [], NOW);
+    const r = recommend({ progress: {}, benchmarkResults: [], block, tired: true, now: NOW, sessionLog: [session(iso(2026, 8, 1), 'daily-01', 'DAILY')], climbLog: [] });
+    expect(r?.mode).toBe('DAILY');
+    expect(r!.reason.length).toBeLessThanOrEqual(45);
   });
 });

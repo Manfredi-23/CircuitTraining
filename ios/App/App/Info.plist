@@ -51,5 +51,9 @@
 	<string>Light</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
+	<key>NSHealthShareUsageDescription</key>
+	<string>7Bit reads sleep, heart rate variability and resting heart rate to suggest how hard to train, your weight for bodyweight percentages, and climbing workouts from your watch so recovery counts them.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>7Bit saves finished sessions to Health as workouts.</string>
 </dict>
 </plist>

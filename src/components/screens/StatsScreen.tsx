@@ -10,7 +10,7 @@ import ClimbStats from '@/components/shared/ClimbStats';
 import {
   WeekStripSection, CoreVolumeSection, BenchmarkSection, LiftSection,
   CapacityRows, ClimbVsPullSection,
-  LoadSection, FingerSection, FreshnessSection, OneArmSection, SkippedSection,
+  LoadSection, FingerSection, FreshnessSection, OneArmSection, SkippedSection, RecoverySection,
 } from '@/components/shared/StatsSections';
 import type { SortMode, TimeFilter, Capacity } from '@/core/types';
 import styles from './StatsScreen.module.css';
@@ -30,7 +30,7 @@ const TIME_OPTIONS: { key: TimeFilter; label: string }[] = [
 
 export default function StatsScreen() {
   const {
-    progress, sessionLog, climbLog, loadLog, benchmarkResults, statsSort, statsTimeFilter,
+    progress, sessionLog, climbLog, loadLog, benchmarkResults, statsSort, statsTimeFilter, health, settings,
     activeChartMuscles, highlightMuscle,
     setStatsSort, setStatsTimeFilter, toggleChartMuscle,
     setHighlightMuscle, setScreen,
@@ -93,6 +93,14 @@ export default function StatsScreen() {
           <div className={styles.sectionTitle}>LOAD</div>
           <LoadSection sessionLog={sessionLog} climbLog={climbLog} />
         </div>
+
+        {/* Sleep and HRV, once Apple Health is connected */}
+        {settings.health.connected && (
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>RECOVERY</div>
+            <RecoverySection health={health} sessionLog={sessionLog} />
+          </div>
+        )}
 
         {/* Are the fingers keeping up with the load */}
         <div className={styles.section}>

@@ -11,6 +11,7 @@ import { getModeData } from './data-index';
 import { OAP_ASSISTED_GATE, OAP_NEGATIVE_GATE } from './data-oap';
 import { asksPainCheck } from './engine';
 import { loadItems, weeklyLoad } from './training-load';
+import { GOOD_SLEEP_MIN, SHORT_SLEEP_MIN, type HealthData } from './health';
 import { getBestPerWeek, localDate, mondayOf, viewFor, type ClimbView } from './climbing';
 import type {
   Benchmark, BenchmarkResult, Capacity, ClimbSession, LoadLogEntry, Progress, SessionLogEntry,
@@ -438,4 +439,58 @@ export function getSkipped(sessionLog: SessionLogEntry[], days = 90, now = new D
   return [...rows.values()]
     .filter(r => r.short > 0)
     .sort((a, b) => b.short / b.planned - a.short / a.planned || b.short - a.short);
+}
+
+// ---- 11. Recovery: sleep and HRV against how sessions felt -----------------------------
+
+export interface RecoveryNight {
+  date: string;
+  sleepH: number | null;
+  hrv: number | null;
+}
+
+export interface RecoveryCompare {
+  label: string;
+  sessions: number;
+  /** Mean session effort, 1-10, or null with no rated sessions. */
+  effort: number | null;
+}
+
+export interface Recovery {
+  nights: RecoveryNight[];
+  compare: RecoveryCompare[];
+}
+
+/**
+ * The last `days` nights, and mean session effort on days after a good night
+ * against days after a short one. The same session feeling harder after short
+ * sleep is the athlete's own evidence for taking TIRED seriously.
+ */
+export function getRecovery(health: HealthData, sessionLog: SessionLogEntry[], days = 14, now = new Date()): Recovery {
+  const today = localDate(now);
+  const sleep = new Map(health.sleep.map(s => [s.date, s.asleepMin]));
+  const hrv = new Map(health.hrv.map(h => [h.date, h.value]));
+  const nights: RecoveryNight[] = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const date = addDays(today, -i);
+    const min = sleep.get(date);
+    nights.push({ date, sleepH: min === undefined ? null : Math.round((min / 60) * 10) / 10, hrv: hrv.get(date) ?? null });
+  }
+  const good: number[] = [];
+  const short: number[] = [];
+  for (const s of sessionLog) {
+    if (s.effort === undefined) continue;
+    const min = sleep.get(localDate(new Date(s.date)));
+    if (min === undefined) continue;
+    if (min >= GOOD_SLEEP_MIN) good.push(s.effort);
+    else if (min < SHORT_SLEEP_MIN) short.push(s.effort);
+  }
+  const mean = (xs: number[]) => (xs.length ? Math.round((xs.reduce((a, b) => a + b, 0) / xs.length) * 10) / 10 : null);
+  return {
+    nights,
+    compare: [
+      { label: 'After 7h+ sleep', sessions: good.length, effort: mean(good) },
+      { label: 'After under 6h', sessions: short.length, effort: mean(short) },
+    ],
+  };
 }

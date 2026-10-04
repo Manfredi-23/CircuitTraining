@@ -7,5 +7,7 @@ import Capacitor
 class MainViewController: CAPBridgeViewController {
     override open func capacitorDidLoad() {
         bridge?.registerPluginInstance(RestActivityPlugin())
+        bridge?.registerPluginInstance(HealthPlugin())
+        bridge?.registerPluginInstance(TodayWidgetPlugin())
     }
 }
