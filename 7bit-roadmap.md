@@ -33,49 +33,50 @@ done. Tick a chunk here when its PR merges.
 
 | # | Chunk | Notes |
 |---|-------|-------|
-| 1.1 | [ ] Backup: export and import all data as JSON from Settings | Share sheet on iOS, file download on web, clipboard fallback. Import validates and asks before replacing. |
-| 1.2 | [ ] Vitest around `src/core/` | The four invariants from CLAUDE.md, then a test file per new core module. |
+| 1.1 | [x] Backup: export and import all data as JSON from Settings | Share sheet on iOS, file download on web, clipboard fallback. Import validates and asks before replacing. |
+| 1.2 | [x] Vitest around `src/core/` | The four invariants from CLAUDE.md, then a test file per new core module. |
 
 ## Phase 2 — Record what matters
 
 | # | Chunk | Notes |
 |---|-------|-------|
-| 2.1 | [ ] Session effort (1-10) on the complete screen; planned sets in the session log | sRPE x minutes is the training load unit. Planned sets let the app tell "all sets done" from "cut short". |
-| 2.2 | [ ] Climb log: duration and effort | Optional fields, so old entries still read. |
-| 2.3 | [ ] Finger and wrist pain check before finger sessions | 0-2 as written, 3-5 TIRED caps applied, 6+ finger work removed. Score saved on the session. |
+| 2.1 | [x] Session effort (1-10) on the complete screen; planned sets in the session log | sRPE x minutes is the training load unit. Planned sets let the app tell "all sets done" from "cut short". |
+| 2.2 | [x] Climb log: duration and effort | Optional fields, so old entries still read. |
+| 2.3 | [x] Finger and wrist pain check before finger sessions | 0-2 as written, 3-5 TIRED caps applied, 6+ finger work removed. Score saved on the session. |
 
 ## Phase 3 — Training logic
 
 | # | Chunk | Notes |
 |---|-------|-------|
-| 3.1 | [ ] Training load: daily sRPE load (climbing included), weekly totals, acute:chronic ratio | `src/core/training-load.ts`. |
-| 3.2 | [ ] Mesocycle: three build weeks, one deload week | Uses `recovery.mesocycleWeeks`. Deload: one set fewer on PRIMARY and SECONDARY work, loads held. Block start persisted, restartable from Settings. |
-| 3.3 | [ ] Suggested next load | Previous load + one step when every planned set was done and the session felt 8 or easier; hold otherwise. Shown on the stepper, one tap to take it. |
-| 3.4 | [ ] XP for personal bests | +1 when a logged load beats the previous best, +2 when a test improves. |
-| 3.5 | [ ] Recommended session on the home screen | Readiness, deload week, neglected capacities, core volume. Home opens on it. |
-| 3.6 | [ ] Rest +60s; DAILY 04 no longer trips the CAVE 01 finger warning | v15 open items 1 and 4. |
+| 3.1 | [x] Training load: daily sRPE load (climbing included), weekly totals, acute:chronic ratio | `src/core/training-load.ts`. |
+| 3.2 | [x] Mesocycle: three build weeks, one deload week | Uses `recovery.mesocycleWeeks`. Deload: one set fewer on PRIMARY and SECONDARY work, loads held. Block start persisted, restartable from Settings. |
+| 3.3 | [x] Suggested next load | Previous load + one step when every planned set was done and the session felt 8 or easier; hold otherwise. Shown on the stepper, one tap to take it. |
+| 3.4 | [x] XP for personal bests | +1 when a logged load beats the previous best, +2 when a test improves. |
+| 3.5 | [x] Recommended session on the home screen | Readiness, deload week, neglected capacities, core volume. Home opens on it. |
+| 3.6 | [x] Rest +60s; DAILY 04 no longer trips the CAVE 01 finger warning | v15 open items 1 and 4. |
 
 ## Phase 4 — Visualisations
 
 | # | Chunk | Notes |
 |---|-------|-------|
-| 4.1 | [ ] LOAD section: weekly load bars, acute:chronic ratio | From 3.1. |
-| 4.2 | [ ] FRESHNESS section: days since trained against decay grace, per capacity | |
-| 4.3 | [ ] ONE-ARM PATH: pull-up 2RM %BW against the 131% / 141% gates, projected date | |
-| 4.4 | [ ] FINGERS: pain against weekly finger load | From 2.3 and 3.1. |
-| 4.5 | [ ] SKIPPED: exercises cut short most often | From 2.1. |
+| 4.1 | [x] LOAD section: weekly load bars, acute:chronic ratio | From 3.1. |
+| 4.2 | [x] FRESHNESS section: days since trained against decay grace, per capacity | |
+| 4.3 | [x] ONE-ARM PATH: pull-up 2RM %BW against the 131% / 141% gates, projected date | |
+| 4.4 | [x] FINGERS: pain against weekly finger load | From 2.3 and 3.1. |
+| 4.5 | [x] SKIPPED: exercises cut short most often | From 2.1. |
 
 ## Phase 5 — Reminders (local notifications, iOS)
 
 | # | Chunk | Notes |
 |---|-------|-------|
-| 5.1 | [ ] `src/core/reminders.ts`: plan the next reminders from state | Fingers recovered, capacity about to decay, core behind on Thursday, DAILY morning, ASSESS retest due, climb not logged. Pure and tested. |
-| 5.2 | [ ] Schedule them on app open, foreground and session end; switches and a DAILY time in Settings | Reuses `@capacitor/local-notifications`; one id range per reminder kind, so rescheduling replaces. |
+| 5.1 | [x] `src/core/reminders.ts`: plan the next reminders from state | Fingers recovered, capacity about to decay, core behind on Thursday, DAILY morning, ASSESS retest due, climb not logged. Pure and tested. |
+| 5.2 | [x] Schedule them on app open, foreground and session end; switches and a DAILY time in Settings | Reuses `@capacitor/local-notifications`; one id range per reminder kind, so rescheduling replaces. |
 
 ## Phase 6 — Apple Health
 
-Waiting on two answers: an Apple Watch worn at night (sleep stages and HRV),
-and a smart scale (bodyweight).
+Built to work with whatever Health holds: sleep and HRV need a watch worn at
+night, bodyweight needs a scale or manual entries in Health. Missing data
+simply leaves that feature quiet.
 
 | # | Chunk | Notes |
 |---|-------|-------|
