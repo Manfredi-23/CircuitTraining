@@ -191,6 +191,60 @@ export async function cancelRestAlert(): Promise<void> {
   } catch { /* nothing scheduled */ }
 }
 
+// ---- Reminders ----------------------------------------------------------------
+// Planned in src/core/reminders.ts from the logs, scheduled here. Every call
+// replaces the whole set: cancel every reminder id, then schedule the plan.
+
+/** Whether notifications are allowed, without raising the OS dialog. */
+async function notificationsGranted(): Promise<boolean> {
+  if (!isNative()) return false;
+  if (notificationsAllowed !== null) return notificationsAllowed;
+  try {
+    const { LocalNotifications } = await import('@capacitor/local-notifications');
+    return (await LocalNotifications.checkPermissions()).display === 'granted';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Ask for notification permission now. Called when a reminder is switched on
+ * in Settings, so the dialog arrives with an obvious reason and never at launch.
+ */
+export async function requestNotifications(): Promise<boolean> {
+  return ensureNotificationPermission();
+}
+
+export interface ScheduledReminder {
+  id: number;
+  at: Date;
+  title: string;
+  body: string;
+}
+
+let reminderGeneration = 0;
+
+export async function scheduleReminders(reminders: ScheduledReminder[], allIds: number[]): Promise<void> {
+  if (!isNative()) return;
+  const generation = ++reminderGeneration;
+  if (!(await notificationsGranted())) return;
+  try {
+    const { LocalNotifications } = await import('@capacitor/local-notifications');
+    await LocalNotifications.cancel({ notifications: allIds.map(id => ({ id })) });
+    // A newer plan arrived while this one was cancelling: it wins.
+    if (generation !== reminderGeneration || reminders.length === 0) return;
+    await LocalNotifications.schedule({
+      notifications: reminders.map(r => ({
+        id: r.id,
+        title: r.title,
+        body: r.body,
+        schedule: { at: r.at, allowWhileIdle: true },
+        sound: REST_ALERT_SOUND,
+      })),
+    });
+  } catch { /* scheduling unavailable: the app still shows the same state on open */ }
+}
+
 // ---- Live Activity ----------------------------------------------------------
 // A ticking rest countdown on the lock screen and in the Dynamic Island, so the
 // time left is visible from any other app without switching back. The alert

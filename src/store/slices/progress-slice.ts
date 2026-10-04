@@ -5,6 +5,7 @@ import * as Engine from '@/core/engine';
 import { addResult } from '@/core/benchmarks';
 import type { PersistedKey } from '@/core/backup';
 import { localDate, mondayOf } from '@/core/dates';
+import { withDefaults } from './settings-slice';
 
 export interface ProgressSlice {
   progress: Progress;
@@ -61,6 +62,7 @@ export const createProgressSlice: StateCreator<Store, [], [], ProgressSlice> = (
 
   resetAllData: () => set({
     blockStart: null,
+    settings: withDefaults(undefined),
     progress: {},
     sessionLog: [],
     pendingDecayEvents: [],
@@ -76,6 +78,7 @@ export const createProgressSlice: StateCreator<Store, [], [], ProgressSlice> = (
   // double every count on STATS. Keys the backup does not carry start empty.
   importBackup: (data) => {
     get().resetAllData();
-    set(data as Partial<Store>);
+    const { settings, ...rest } = data as Partial<Store>;
+    set({ ...rest, settings: withDefaults(settings) });
   },
 });

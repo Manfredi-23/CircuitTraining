@@ -5,6 +5,8 @@ import { useStore } from '@/store/store';
 import { createBackup, parseBackup, backupFileName, PERSISTED_KEYS } from '@/core/backup';
 import { exportText } from './backup-io';
 import { getBlockWeek, blockLabel } from '@/core/block';
+import { REMINDER_LABELS, type ReminderKind } from '@/core/reminders';
+import { isNative, requestNotifications } from '@/native/native';
 
 interface SettingsOverlayProps {
   open: boolean;
@@ -25,6 +27,9 @@ export default function SettingsOverlay({ open, onClose }: SettingsOverlayProps)
   const restartBlock = useStore(s => s.restartBlock);
   const blockStart = useStore(s => s.blockStart);
   const sessionLog = useStore(s => s.sessionLog);
+  const reminders = useStore(s => s.settings.reminders);
+  const setReminder = useStore(s => s.setReminder);
+  const setDailyTime = useStore(s => s.setDailyTime);
   const [entered, setEntered] = useState(false);
   const [status, setStatus] = useState<{ text: string; warn: boolean } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -67,6 +72,15 @@ export default function SettingsOverlay({ open, onClose }: SettingsOverlayProps)
     setStatus({ text: 'Backup restored.', warn: false });
   };
 
+  const toggleReminder = async (kind: ReminderKind) => {
+    const on = !reminders.enabled[kind];
+    setReminder(kind, on);
+    // Permission is asked the first time a reminder is switched on, never at launch.
+    if (on && isNative() && !(await requestNotifications())) {
+      setStatus({ text: 'Notifications are off for 7Bit. Turn them on in iOS Settings > Notifications.', warn: true });
+    }
+  };
+
   const handleReset = () => {
     if (confirm('Reset all training data? This cannot be undone.')) {
       resetAllData();
@@ -100,6 +114,40 @@ export default function SettingsOverlay({ open, onClose }: SettingsOverlayProps)
           style={{ display: 'none' }}
           onChange={e => handleImportFile(e.target.files?.[0])}
         />
+      </div>
+
+      <div className="overlay-section">
+        <div className="overlay-section-title">REMINDERS</div>
+        <div className="overlay-body">
+          {isNative()
+            ? 'Planned on this phone from your logs. Nothing between 21:30 and 07:00.'
+            : 'Reminders work in the iPhone app only. A browser cannot notify while it is closed.'}
+        </div>
+        {(Object.keys(REMINDER_LABELS) as ReminderKind[]).map(kind => (
+          <button
+            key={kind}
+            className="overlay-toggle"
+            role="switch"
+            aria-checked={reminders.enabled[kind]}
+            onClick={() => void toggleReminder(kind)}
+          >
+            <span className="overlay-toggle-text">
+              <b>{REMINDER_LABELS[kind].title}</b>
+              <span>{REMINDER_LABELS[kind].hint}</span>
+            </span>
+            <span className={`overlay-toggle-mark${reminders.enabled[kind] ? ' on' : ''}`}>
+              {reminders.enabled[kind] ? 'ON' : 'OFF'}
+            </span>
+          </button>
+        ))}
+        <label className="overlay-time">
+          <span>DAILY reminder at</span>
+          <input
+            type="time"
+            value={reminders.dailyTime}
+            onChange={e => e.target.value && setDailyTime(e.target.value)}
+          />
+        </label>
       </div>
 
       <div className="overlay-section">
