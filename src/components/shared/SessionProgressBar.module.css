@@ -1,0 +1,12 @@
+.wrap { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; width: 100%; }
+.bar { display: flex; gap: 5px; width: 100%; }
+.group { display: flex; gap: 2px; flex-basis: 0; min-width: 0; }
+.cell { flex: 1; height: 6px; border-radius: 1px; min-width: 2px; transition: background 300ms ease; }
+.done { background: var(--ink); }
+.current { background: var(--accent); }
+.todo { background: var(--ink-faint); }
+.meta {
+  display: flex; justify-content: space-between;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--ink-dim);
+  font-variant-numeric: tabular-nums;
+}
