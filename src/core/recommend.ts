@@ -116,11 +116,13 @@ export function recommend(input: RecommendInput): Recommendation | null {
   }
 
   // 4. CAVE 01: from Thursday, in a week with fewer than two climbing days.
+  // Only once climbs are being logged: with an empty climb log the app cannot
+  // tell a skipped bouldering day from one that was never written down.
   const monday = mondayOf(today);
   const weekday = daysBetween(monday, today); // 0 = Monday
   const climbsThisWeek = new Set(climbLog.filter(c => c.date >= monday && c.date <= today).map(c => c.date)).size;
   const strongThisWeek = strong ? sessionLog.some(s => s.circuitId === strong.id && dayOf(s.date) >= monday) : true;
-  if (strong && !input.tired && weekday >= 3 && climbsThisWeek < 2 && !climbedToday && fingersReady && !strongThisWeek && !doneToday('CAVE')) {
+  if (strong && climbLog.length > 0 && !input.tired && weekday >= 3 && climbsThisWeek < 2 && !climbedToday && fingersReady && !strongThisWeek && !doneToday('CAVE')) {
     return {
       mode: 'CAVE', circuitId: strong.id,
       reason: `${climbsThisWeek} climbing day${climbsThisWeek === 1 ? '' : 's'} this week. STRONG instead.`,

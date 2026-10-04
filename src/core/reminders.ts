@@ -13,6 +13,7 @@
 
 import { CONFIG } from './config';
 import { getModeData } from './data-index';
+import { fingersReadyAt } from './engine';
 import { addDays, dayOf, localDate, mondayOf } from './dates';
 import { getCoreVolume, CORE_TARGETS, type CoreGroup } from './insights';
 import { assessDue, lastAssess, RETEST_WEEKS } from './recommend';
@@ -112,12 +113,8 @@ export function planReminders(input: ReminderInput): Reminder[] {
 
   // Fingers: 48h after the last hard loading, if that is still ahead.
   if (on.fingers) {
-    const lastHard = (['crimp', 'openhand'] as const)
-      .map(c => progress[c]?.lastHard ?? null)
-      .filter((d): d is string => Boolean(d))
-      .map(d => new Date(d).getTime());
-    if (lastHard.length) {
-      const ready = new Date(Math.max(...lastHard) + CONFIG.recovery.fingerMaxHours * 3600000);
+    const ready = fingersReadyAt(progress);
+    if (ready) {
       push({ kind: 'fingers', id: idFor('fingers'), at: outOfQuietHours(ready), title: 'Fingers recovered', body: '48 hours since the last hard finger session. STRONG or a board session is on.' });
     }
   }

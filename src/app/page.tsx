@@ -6,6 +6,7 @@ import { useHydration } from '@/hooks/use-hydration';
 import { useAudioInit } from '@/hooks/use-audio-init';
 import { useReminders } from '@/hooks/use-reminders';
 import { useHealthSync } from '@/hooks/use-health';
+import { useTodayWidget } from '@/hooks/use-widget';
 import { initNativeShell } from '@/native/native';
 import HomeScreen from '@/components/screens/HomeScreen';
 import WorkoutScreen from '@/components/screens/WorkoutScreen';
@@ -23,6 +24,7 @@ export default function Page() {
   useAudioInit();
   useReminders(hydrated);
   useHealthSync(hydrated);
+  useTodayWidget(hydrated);
 
   // Style the status bar and dismiss the native launch screen. Runs once, and
   // is a no-op in the browser.

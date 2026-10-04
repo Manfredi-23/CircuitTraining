@@ -418,6 +418,18 @@ export function applyPainCheck(list: ScaledExercise[], pain: number | null | und
   });
 }
 
+/**
+ * When the fingers are next ready for maximal work: 48h after the last hard
+ * loading. Null when there is no hard loading on record.
+ */
+export function fingersReadyAt(progress: Progress): Date | null {
+  const times = FINGER_CAPACITIES
+    .map(c => progress[c]?.lastHard ?? null)
+    .filter((d): d is string => Boolean(d))
+    .map(d => new Date(d).getTime());
+  return times.length ? new Date(Math.max(...times) + CONFIG.recovery.fingerMaxHours * 3600000) : null;
+}
+
 // ---------------------------------------------------------------------------
 // XP mutations (return new progress — immutable)
 // ---------------------------------------------------------------------------
