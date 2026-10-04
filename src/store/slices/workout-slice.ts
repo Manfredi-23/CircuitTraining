@@ -337,7 +337,8 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       energy,
       duration,
       sets: doneSets,
-      planned: Object.fromEntries(exerciseList.map(ex => [ex.id, ex.scaledSets])),
+      // Ramp tests end on a failed attempt by design, so they have no plan to fall short of.
+      planned: Object.fromEntries(exerciseList.filter(ex => !ex.ramp).map(ex => [ex.id, ex.scaledSets])),
       ...(sessionPain !== null ? { pain: sessionPain } : {}),
     }];
 
