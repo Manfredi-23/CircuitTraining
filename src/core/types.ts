@@ -382,6 +382,13 @@ export interface HistoryEntry {
 export interface CapacityProgress {
   xp: number;
   lastTrained: string | null;
+  /**
+   * Last HARD or MAX working set, or a boulder session. Recovery between
+   * maximal finger sessions counts from this, so light work (DAILY 04's
+   * density no-hangs) keeps a capacity trained without restarting the 48h.
+   * Absent on data from before it existed.
+   */
+  lastHard?: string | null;
   history: HistoryEntry[];
 }
 
@@ -399,6 +406,12 @@ export interface SessionLogEntry {
   duration: number;
   /** Sets completed per exercise id. Absent on sessions logged before it existed. */
   sets?: Record<string, number>;
+  /** Sets prescribed per exercise id, so "all done" can be told from "cut short". */
+  planned?: Record<string, number>;
+  /** Session effort, 1-10 (Borg CR10), asked on the complete screen. */
+  effort?: number;
+  /** Finger and wrist pain before the session, 0-10. Only asked before finger work. */
+  pain?: number;
 }
 
 // ---- Decay -------------------------------------------------------------------
@@ -524,4 +537,8 @@ export interface ClimbSession {
   /** OUTDOOR only, optional crag or area name. */
   place?: string;
   climbs: ClimbEntry[];
+  /** Minutes on the wall, warm-up included. Absent on entries logged before it existed. */
+  durationMin?: number;
+  /** Session effort, 1-10 (Borg CR10). */
+  effort?: number;
 }

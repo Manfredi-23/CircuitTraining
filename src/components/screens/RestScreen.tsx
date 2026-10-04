@@ -1,15 +1,25 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useStore } from '@/store/store';
 import { useTimer, formatTime } from '@/hooks/use-timer';
 import styles from './RestScreen.module.css';
 
 const CIRCUMFERENCE = 2 * Math.PI * 54; // 339.3
 
+/**
+ * Time added per tap. Rest on maximal work is a floor, never a ceiling: IRCRA
+ * rests five minutes between tests, and a set that is not ready yet is a
+ * lower-quality set.
+ */
+const EXTRA_REST_SEC = 60;
+
 export default function RestScreen() {
   const { currentExercise, setIndex, setScreen } = useStore();
   const startedRef = useRef(false);
+  const nextRef = useRef('');
+  /** Rest as written plus any time added, so the ring stays in proportion. */
+  const [total, setTotal] = useState(currentExercise?.scaledRest || 1);
 
   // Rest always returns to the workout screen. Completion is decided by the
   // workout slice when the last set of the last exercise is done, so there is
@@ -26,13 +36,18 @@ export default function RestScreen() {
       const next = currentExercise.ramp
         ? `${currentExercise.displayName} — attempt ${setIndex}`
         : `${currentExercise.displayName} — set ${setIndex}/${currentExercise.scaledSets}`;
+      nextRef.current = next;
       timer.start(currentExercise.scaledRest, next);
     }
     return () => { startedRef.current = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const total = currentExercise?.scaledRest || 1;
+  const addRest = () => {
+    timer.extend(EXTRA_REST_SEC, nextRef.current);
+    setTotal(t => t + EXTRA_REST_SEC);
+  };
+
   const progress = timer.remaining / total;
   const dashOffset = CIRCUMFERENCE * (1 - progress);
 
@@ -57,7 +72,10 @@ export default function RestScreen() {
         </div>
       </div>
 
-      <button className={styles.btnSkip} onClick={timer.skip}>SKIP REST</button>
+      <div className={styles.actions}>
+        <button className={styles.btnSkip} onClick={addRest}>+60S</button>
+        <button className={styles.btnSkip} onClick={timer.skip}>SKIP REST</button>
+      </div>
     </div>
   );
 }

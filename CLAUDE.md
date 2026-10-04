@@ -42,12 +42,15 @@ npx serve out    # Serve the production build (static export: `npm run start` do
 
 npm run check:daily     # DAILY: 20-minute ceiling, TIRED drops nothing, curling last
 npm run check:cave      # CAVE 02 and 03 budgets, and the one-arm gates
+npm test                # Vitest around src/core/ (src/core/__tests__)
 ```
 
-No test framework yet — test manually in browser. The automated checks are
-`check:daily`, which guards the promises DAILY makes, and `check:cave`,
-which keeps CAVE 02 and 03 inside 45 minutes NORMAL at every level and proves
-the one-arm rungs open on a tested weighted pull-up and never on XP.
+The automated checks are `check:daily`, which guards the promises DAILY
+makes, `check:cave`, which keeps CAVE 02 and 03 inside 45 minutes NORMAL at
+every level and proves the one-arm rungs open on a tested weighted pull-up and
+never on XP, and `npm test`. Every new core module gets a test file in
+`src/core/__tests__/` in the same commit. UI is still tested by hand in the
+browser.
 
 ## Architecture
 
@@ -64,7 +67,15 @@ src/
     stats.ts     # Trend scoring, chart data, capacity list sorting
     load.ts      # Load axes, load history, stepper formatting
     climbing.ts  # Climb log: grade scales, gym colours, pyramid and weekly bests
-    insights.ts  # STATS data: week strip, core volume, test rows, lift series, climb vs pull
+    insights.ts  # STATS data: week strip, core volume, test rows, lifts, climb vs pull,
+                 #   freshness, one-arm path, finger weeks, cut short
+    training-load.ts # session-RPE load (effort x minutes), weekly totals, acute:chronic
+    block.ts     # mesocycle: three build weeks, one deload week
+    progression.ts # suggested next load, personal bests
+    recommend.ts # which session today
+    reminders.ts # which local notifications to schedule
+    backup.ts    # export / import format; PERSISTED_KEYS
+    dates.ts     # local-date helpers
     data-daily.ts, data-cave.ts, data-assess.ts  # Session libraries, one per tab
     data-oap.ts  # One-arm pull-up path, shared by CAVE 01 and CAVE 02
     data-index.ts  # getModeData(mode) helper
@@ -91,8 +102,10 @@ design/          # pixel-grid.svg drawing template; illustrations/<name>/NN.svg 
   call `setStorageAdapter()` to move to Supabase.
 - **Single-page app**: No Next.js routes. All screens render in `page.tsx` based on
   `useStore(s => s.screen)`.
-- **Zustand persist**: Only `progress`, `sessionLog`, `benchmarkResults`,
-  `loadLog` and `climbLog` are persisted (via `partialize`). UI state is transient. The blob
+- **Zustand persist**: Only the keys in `PERSISTED_KEYS` (`src/core/backup.ts`)
+  are persisted: `progress`, `sessionLog`, `benchmarkResults`, `loadLog`,
+  `climbLog`, `blockStart` and `settings`. `partialize` reads that list, so a
+  new key is persisted and backed up by adding it there. UI state is transient. The blob
   carries `version: 2`, but legacy cleanup runs from `merge`, not `migrate`:
   persist only calls `migrate` when the stored blob has a **numeric** version,
   and no install written before versioning existed has one, so v9 and early-v10
@@ -109,6 +122,12 @@ design/          # pixel-grid.svg drawing template; illustrations/<name>/NN.svg 
   rather than decrementing per tick. iOS suspends timers when the app
   backgrounds or the screen locks, and a decrementing counter silently loses
   that time.
+- **Reminders are local too**: `reminders.ts` plans them from the logs
+  (DAILY morning, fingers recovered, capacity fading, core behind, ASSESS due,
+  climbs not logged); `use-reminders` reschedules the whole set on open, on
+  foreground and on any change, with ids 1000+. Permission is asked when a
+  reminder is switched on in Settings, never at launch. Quiet hours
+  21:30-07:00.
 - **Rest alerts are local, not push**: the deadline is known on the device, so
   there is nothing for a server to tell us — no APNs, no certificates, no
   network. `use-timer` schedules a local notification with the OS when rest
@@ -162,6 +181,29 @@ loop. `Circuit.exercises` is a flat ordered list; each exercise carries its own
 
 `WARMUP` | `PRIMARY` | `SECONDARY` | `ACCESSORY` | `PREHAB` | `MOBILITY` | `TEST`.
 Order is by neurological cost: fingers and CNS when fresh, conditioning last.
+
+### Pain check, effort and load
+
+Sessions that load the fingers open with a 0-10 finger and wrist pain check
+(`applyPainCheck`): up to 2 as written; 3-5 caps finger work at HARD, one set
+shorter, and drops maximal finger tests; 6+ removes finger work. The score is
+saved on the session. The complete screen asks session effort (1-10); the
+climb log takes minutes and effort. Effort x minutes is the training load
+(`training-load.ts`), climbing included. The session log keeps `planned` beside
+`sets` so "all sets done" can be told from "cut short".
+
+### Mesocycle, suggestions, personal bests
+
+Three build weeks, then a deload week (`block.ts`, counted from
+`blockStart` or the first session, restartable in Settings). On a deload week
+CAVE loses one working set on PRIMARY and SECONDARY work; DAILY and TEST are
+untouched; suggested loads hold. The stepper suggests one step on when every
+planned set was done and the session felt 8 or easier (`progression.ts`).
+A heavier logged load than ever earns +1 XP, a better test +2.
+
+Finger readiness reads `lastHard` (last HARD or MAX working set, or a boulder
+day), so light finger work such as DAILY 04 keeps the capacity trained without
+restarting the 48h.
 
 ### Energy
 
@@ -406,14 +448,16 @@ keeps all three in sync. Do not hand-edit the PNGs.
 
 - **Supabase**: Auth + Postgres DB for multi-user. Swap storage adapter, add API routes.
 - **Vercel deployment**: Connect repo, configure build.
-- **Vitest around `src/core/`**: no test framework exists yet. The invariants
-  worth covering first: `scaleRest` never returns below the protocol value on a
-  PRIMARY block, gates resolve to their substitute when closed, decay respects
-  the grace periods, and `getLoadAxis` stays null for unlogged blocks.
+- **The improvement roadmap**: `7bit-roadmap.md`. Phases 6 (Apple Health) and
+  7 (widget) remain.
 
 ## Handoff Documents
 
-- **`7bit-handover-v15.md`** — **start here.** ASSESS rebuilt from the
+- **`7bit-handover-v16.md`** — **start here.** The improvement roadmap phases
+  1-5: backup, Vitest, pain check, effort and load, mesocycle, suggested
+  loads, recommended session, five STATS sections, reminders.
+- **`7bit-roadmap.md`** — the plan those phases come from, and what remains.
+- **`7bit-handover-v15.md`** — ASSESS rebuilt from the
   research: five sections, ramp tests (MADE IT / FAILED), 2RM pull-up, McGill
   trunk four with ratios. Supersedes earlier repo state and open items.
 - **`7bit-handover-v14.md`** — test history, sets in the session log, the STATS sections.

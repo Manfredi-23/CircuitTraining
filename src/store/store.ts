@@ -2,14 +2,16 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { CONFIG } from '@/core/config';
 import type { SessionLogEntry } from '@/core/types';
+import { PERSISTED_KEYS } from '@/core/backup';
 import { createAppSlice, type AppSlice } from './slices/app-slice';
 import { createWorkoutSlice, type WorkoutSlice } from './slices/workout-slice';
 import { createProgressSlice, type ProgressSlice } from './slices/progress-slice';
 import { createStatsSlice, type StatsSlice } from './slices/stats-slice';
 import { createLoadSlice, type LoadSlice } from './slices/load-slice';
 import { createClimbSlice, type ClimbSlice } from './slices/climb-slice';
+import { createSettingsSlice, withDefaults, type SettingsSlice, type AppSettings } from './slices/settings-slice';
 
-export type Store = AppSlice & WorkoutSlice & ProgressSlice & StatsSlice & LoadSlice & ClimbSlice;
+export type Store = AppSlice & WorkoutSlice & ProgressSlice & StatsSlice & LoadSlice & ClimbSlice & SettingsSlice;
 
 /** Bumped when the persisted shape changes. 2 = the v10 capacity model. */
 const PERSIST_VERSION = 2;
@@ -20,6 +22,7 @@ interface PersistedShape {
   benchmarkResults?: unknown[];
   loadLog?: unknown[];
   climbLog?: unknown[];
+  settings?: Partial<AppSettings>;
 }
 
 /**
@@ -89,6 +92,7 @@ export const useStore = create<Store>()(
       ...createStatsSlice(...a),
       ...createLoadSlice(...a),
       ...createClimbSlice(...a),
+      ...createSettingsSlice(...a),
     }),
     {
       name: '7bit_store',
@@ -99,15 +103,14 @@ export const useStore = create<Store>()(
         const resolved = isPreCapacityData(incoming.progress)
           ? dropPreCapacityProgress(incoming)
           : incoming;
-        return { ...(current as Store), ...resolved } as Store;
+        // Settings gain keys over time; an older blob gets the new defaults.
+        return { ...(current as Store), ...resolved, settings: withDefaults(resolved.settings) } as Store;
       },
-      partialize: (state) => ({
-        progress: state.progress,
-        sessionLog: state.sessionLog,
-        benchmarkResults: state.benchmarkResults,
-        loadLog: state.loadLog,
-        climbLog: state.climbLog,
-      }),
+      // Every persisted key is listed once, in backup.ts, so a backup can never
+      // leave one out.
+      partialize: (state) => Object.fromEntries(
+        PERSISTED_KEYS.map(k => [k, (state as unknown as Record<string, unknown>)[k]]),
+      ) as Partial<Store>,
     }
   )
 );

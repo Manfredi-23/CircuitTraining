@@ -28,3 +28,6 @@
   transition: transform 80ms ease, background 80ms ease;
 }
 .btnSkip:active { transform: scale(0.97); background: rgba(24,22,16,0.05); }
+
+.actions { display: flex; gap: 12px; }
+.actions .btnSkip { padding: 16px 24px; }

@@ -1,0 +1,10 @@
+.wrap { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+.row { display: grid; gap: 4px; }
+.btn {
+  height: 40px; font-weight: 700; font-size: 13px; color: var(--ink); background: none;
+  border: 2px solid var(--ink); border-radius: var(--rad-sm); padding: 0;
+  transition: transform 80ms ease;
+}
+.btn:active { transform: scale(0.94); }
+.btnOn { background: var(--ink); color: #E4E2DD; }
+.ends { display: flex; justify-content: space-between; font-size: 10px; color: var(--ink-dim); letter-spacing: 0.04em; }

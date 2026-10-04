@@ -3,13 +3,16 @@
 import { useStore } from '@/store/store';
 import { CONFIG } from '@/core/config';
 import { getBenchmark } from '@/core/benchmarks';
+import ScalePicker from '@/components/shared/ScalePicker';
 import styles from './CompleteScreen.module.css';
 
 export default function CompleteScreen() {
   const {
     mode, energy, circuit, sessionStartTime, sessionLevelUps,
     setScreen, pickHumorLine, openClimbLog, benchmarkResults,
+    sessionLog, rateLastSession, sessionPBs,
   } = useStore();
+  const effort = sessionLog[sessionLog.length - 1]?.effort;
 
   const duration = sessionStartTime ? Math.round((Date.now() - sessionStartTime) / 60000) : 0;
 
@@ -49,6 +52,21 @@ export default function CompleteScreen() {
         </div>
       </div>
 
+      {/* Session effort x minutes is the training load the LOAD chart and the
+          load suggestions read. Asked once, here, while it is still fresh. */}
+      <div className={styles.effort}>
+        <div className={styles.effortTitle}>HOW HARD WAS THAT?</div>
+        <ScalePicker
+          min={1}
+          max={10}
+          value={effort}
+          onChange={rateLastSession}
+          label="Session effort, 1 to 10"
+          lowText="VERY EASY"
+          highText="MAXIMAL"
+        />
+      </div>
+
       {sessionLevelUps.length > 0 && (
         <div className={styles.levelupList}>
           {sessionLevelUps.map((lu, i) => (
@@ -59,6 +77,15 @@ export default function CompleteScreen() {
             >
               {CONFIG.capacityLabels[lu.capacity].toUpperCase()} &gt; L{lu.level}! {lu.unlocks}
             </div>
+          ))}
+        </div>
+      )}
+
+      {sessionPBs.length > 0 && (
+        <div className={styles.saved}>
+          <div className={styles.savedTitle}>PERSONAL BEST</div>
+          {sessionPBs.map(pb => (
+            <div key={pb} className={styles.savedRow}><span>{pb}</span></div>
           ))}
         </div>
       )}

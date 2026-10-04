@@ -51,3 +51,11 @@
 }
 .deltaUp   { color: var(--accent); }
 .deltaDown { color: var(--ink-dim); }
+
+.suggest { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.suggestText { font-size: 11px; line-height: 1.4; color: var(--ink-dim); }
+.suggestBtn {
+  flex-shrink: 0; padding: 8px 10px; font-weight: 700; font-size: 11px; letter-spacing: 0.06em;
+  border: 2px solid var(--accent); border-radius: var(--rad-sm); color: var(--accent); background: none;
+}
+.suggestBtn:active { transform: scale(0.96); }

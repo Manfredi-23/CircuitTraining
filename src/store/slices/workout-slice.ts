@@ -3,7 +3,24 @@ import type { Store } from '../store';
 import type { Circuit, ScaledExercise, Capacity, LevelUp } from '@/core/types';
 import { getModeData } from '@/core/data-index';
 import * as Engine from '@/core/engine';
-import { benchmarkValueFromEntry, currentBodyweight, getBenchmark } from '@/core/benchmarks';
+import { benchmarkValueFromEntry, currentBodyweight, getBenchmark, latestResult } from '@/core/benchmarks';
+import { getBlockWeek, deloads } from '@/core/block';
+import { isPersonalBest } from '@/core/progression';
+import { getLoadAxis, formatLoad } from '@/core/load';
+
+/**
+ * The session as it will run: level, energy, gates, and the deload week. The
+ * home card and the workout build it the same way, so the duration on the card
+ * is the session you get.
+ */
+export function sessionListFor(
+  state: Pick<Store, 'energy' | 'progress' | 'benchmarkResults' | 'blockStart' | 'sessionLog'>,
+  circuit: Circuit,
+  now = new Date(),
+): ScaledExercise[] {
+  const deload = getBlockWeek(state.blockStart, state.sessionLog, now).deload && deloads(circuit);
+  return Engine.buildList(circuit, state.energy, state.progress, state.benchmarkResults, { deload });
+}
 
 /**
  * Sessions run as sets within an exercise, not rounds of a circuit.
@@ -28,8 +45,13 @@ export interface WorkoutSlice {
   doneSets: Record<string, number>;
   /** Best clean attempt so far on a ramp test, as entered on the stepper. */
   rampBest: number | null;
+  /** Pain score given before this session, when it was asked. */
+  sessionPain: number | null;
+  /** Personal bests set in this session, as display lines. */
+  sessionPBs: string[];
 
-  startWorkout: () => void;
+  /** Start the selected session. `pain` is the pre-session score, for finger sessions. */
+  startWorkout: (pain?: number) => void;
   exerciseDone: () => void;
   /** Ramp test: this attempt was clean. Rest, then a harder one. */
   attemptMade: () => void;
@@ -59,12 +81,14 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   exerciseTimerActive: false,
   doneSets: {},
   rampBest: null,
+  sessionPain: null,
+  sessionPBs: [],
 
-  startWorkout: () => {
-    const { mode, circuitIndex, energy, progress, benchmarkResults } = get();
+  startWorkout: (pain) => {
+    const { mode, circuitIndex } = get();
     const circuits = getModeData(mode);
     const circuit = circuits[circuitIndex];
-    const exerciseList = Engine.buildList(circuit, energy, progress, benchmarkResults);
+    const exerciseList = Engine.applyPainCheck(sessionListFor(get(), circuit), pain);
 
     set({
       circuit,
@@ -78,6 +102,9 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       exerciseTimerActive: false,
       doneSets: {},
       rampBest: null,
+      sessionPain: pain ?? null,
+      sessionPBs: [],
+      sessionLevelUps: [],
       screen: 'workout',
     });
 
@@ -135,6 +162,29 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
     // benchmark: this is what opens gates. Percent-of-bodyweight results use the
     // bodyweight on record, which this same session may have just updated.
     // A ramp test saves its best clean attempt, not the last thing on the stepper.
+    // Personal bests earn XP on top of the set: levels should track getting
+    // stronger, not only turning up. Judged before this result is written.
+    let bonus = 0;
+    const pbs = [...get().sessionPBs];
+    if (currentExercise.records && entry !== null) {
+      const bench = getBenchmark(currentExercise.records.benchmarkId);
+      const before = latestResult(benchmarkResults, currentExercise.records.benchmarkId);
+      const value = benchmarkValueFromEntry(currentExercise.records, entry, currentBodyweight(benchmarkResults));
+      const better = before && bench
+        && (bench.better === 'lower' ? value < before.value : value > before.value)
+        && before.date.slice(0, 10) !== new Date().toISOString().slice(0, 10);
+      if (better) {
+        bonus += Engine.PB_TEST_XP;
+        pbs.push(`${bench!.name}: ${value} ${bench!.short ?? ''} (was ${before!.value})`.trim());
+      }
+    } else if (get().pendingLoad !== null) {
+      const today = new Date().toISOString().slice(0, 10);
+      if (isPersonalBest(currentExercise, get().pendingLoad!, get().loadLog, today)) {
+        bonus += Engine.PB_LOAD_XP;
+        pbs.push(`${currentExercise.displayName}: ${formatLoad(get().pendingLoad!, getLoadAxis(currentExercise)!)}`);
+      }
+    }
+
     if (currentExercise.records && entry !== null) {
       get().recordBenchmark({
         benchmarkId: currentExercise.records.benchmarkId,
@@ -149,7 +199,8 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       else set({ pendingLoad: null });
     }
     get().commitLoad(currentExercise);
-    const newProgress = Engine.applyXP(progress, currentExercise, 'done');
+    const earned = Engine.applyXP(progress, currentExercise, 'done');
+    const newProgress = bonus ? Engine.applyBonusXP(earned, currentExercise.capacities, bonus) : earned;
 
     const sessionLevelUps = [...get().sessionLevelUps];
     for (const c of currentExercise.capacities) {
@@ -164,7 +215,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
     const nextStep = stepIndex + 1;
 
     if (nextStep >= exerciseList.length) {
-      set({ progress: newProgress, sessionLevelUps });
+      set({ progress: newProgress, sessionLevelUps, sessionPBs: pbs });
       get().completeSession();
       return;
     }
@@ -172,6 +223,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
     set({
       progress: newProgress,
       sessionLevelUps,
+      sessionPBs: pbs,
       stepIndex: nextStep,
       setIndex: 1,
       currentExercise: exerciseList[nextStep],
@@ -267,7 +319,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   setExerciseTimerActive: (active) => set({ exerciseTimerActive: active }),
 
   completeSession: () => {
-    const { circuit, mode, energy, sessionStartTime, progress, exerciseList, doneSets } = get();
+    const { circuit, mode, energy, sessionStartTime, progress, exerciseList, doneSets, sessionPain } = get();
     if (!circuit) return;
 
     const duration = sessionStartTime ? Math.round((Date.now() - sessionStartTime) / 60000) : 0;
@@ -285,6 +337,9 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       energy,
       duration,
       sets: doneSets,
+      // Ramp tests end on a failed attempt by design, so they have no plan to fall short of.
+      planned: Object.fromEntries(exerciseList.filter(ex => !ex.ramp).map(ex => [ex.id, ex.scaledSets])),
+      ...(sessionPain !== null ? { pain: sessionPain } : {}),
     }];
 
     set({ progress: newProgress, sessionLog, screen: 'complete' });

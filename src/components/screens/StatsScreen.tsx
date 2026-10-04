@@ -10,6 +10,7 @@ import ClimbStats from '@/components/shared/ClimbStats';
 import {
   WeekStripSection, CoreVolumeSection, BenchmarkSection, LiftSection,
   CapacityRows, ClimbVsPullSection,
+  LoadSection, FingerSection, FreshnessSection, OneArmSection, SkippedSection,
 } from '@/components/shared/StatsSections';
 import type { SortMode, TimeFilter, Capacity } from '@/core/types';
 import styles from './StatsScreen.module.css';
@@ -87,10 +88,28 @@ export default function StatsScreen() {
           <WeekStripSection sessionLog={sessionLog} climbLog={climbLog} />
         </div>
 
+        {/* How much, climbing included, against what the body is used to */}
+        <div className={styles.section}>
+          <div className={styles.sectionTitle}>LOAD</div>
+          <LoadSection sessionLog={sessionLog} climbLog={climbLog} />
+        </div>
+
+        {/* Are the fingers keeping up with the load */}
+        <div className={styles.section}>
+          <div className={styles.sectionTitle}>FINGERS</div>
+          <FingerSection sessionLog={sessionLog} climbLog={climbLog} />
+        </div>
+
         {/* Am I doing enough for the core goal */}
         <div className={styles.section}>
           <div className={styles.sectionTitle}>CORE THIS WEEK</div>
           <CoreVolumeSection sessionLog={sessionLog} />
+        </div>
+
+        {/* What has been neglected */}
+        <div className={styles.section}>
+          <div className={styles.sectionTitle}>FRESHNESS</div>
+          <FreshnessSection progress={progress} />
         </div>
 
         {/* Where am I: tests against published standards */}
@@ -99,10 +118,22 @@ export default function StatsScreen() {
           <BenchmarkSection results={benchmarkResults} />
         </div>
 
+        {/* The goal: how far to the one-arm gates */}
+        <div className={styles.section}>
+          <div className={styles.sectionTitle}>ONE-ARM PATH</div>
+          <OneArmSection results={benchmarkResults} />
+        </div>
+
         {/* Am I improving: what was actually lifted */}
         <div className={styles.section}>
           <div className={styles.sectionTitle}>LIFTS</div>
           <LiftSection loadLog={loadLog} />
+        </div>
+
+        {/* What keeps getting dropped */}
+        <div className={styles.section}>
+          <div className={styles.sectionTitle}>CUT SHORT</div>
+          <SkippedSection sessionLog={sessionLog} />
         </div>
 
         {/* Capacities */}

@@ -44,3 +44,6 @@
 .savedTitle { font-weight: 700; font-size: 11px; letter-spacing: 0.1em; color: var(--accent); }
 .savedRow { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; }
 .savedRow b { white-space: nowrap; }
+
+.effort { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+.effortTitle { font-weight: 700; font-size: 11px; letter-spacing: 0.1em; color: var(--ink); }

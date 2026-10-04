@@ -10,6 +10,8 @@ export interface AppSlice {
   energy: EnergyKey;
   screen: ScreenName;
   humorLine: string;
+  /** Day the home screen last jumped to the recommended session; transient. */
+  recommendedOn: string | null;
 
   setMode: (mode: Mode) => void;
   setCircuitIndex: (index: number) => void;
@@ -17,6 +19,8 @@ export interface AppSlice {
   setEnergy: (energy: EnergyKey) => void;
   setScreen: (screen: ScreenName) => void;
   pickHumorLine: () => void;
+  /** Open the home screen on a given session, once per day. */
+  showRecommended: (mode: Mode, circuitId: string, day: string) => void;
 }
 
 export const createAppSlice: StateCreator<Store, [], [], AppSlice> = (set, get) => ({
@@ -25,6 +29,7 @@ export const createAppSlice: StateCreator<Store, [], [], AppSlice> = (set, get) 
   energy: 'NORMAL',
   screen: 'home',
   humorLine: CONFIG.humorLines[Math.floor(Math.random() * CONFIG.humorLines.length)],
+  recommendedOn: null,
 
   setMode: (mode) => set({ mode, circuitIndex: 0 }),
 
@@ -45,5 +50,10 @@ export const createAppSlice: StateCreator<Store, [], [], AppSlice> = (set, get) 
   pickHumorLine: () => {
     const line = CONFIG.humorLines[Math.floor(Math.random() * CONFIG.humorLines.length)];
     set({ humorLine: line });
+  },
+
+  showRecommended: (mode, circuitId, day) => {
+    const index = getModeData(mode).findIndex(c => c.id === circuitId);
+    set({ recommendedOn: day, ...(index >= 0 ? { mode, circuitIndex: index } : {}) });
   },
 });

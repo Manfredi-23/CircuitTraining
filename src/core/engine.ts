@@ -205,11 +205,23 @@ export function resolveLoadText(
 // Session building
 // ---------------------------------------------------------------------------
 
+export interface BuildOptions {
+  /** Deload week: one working set fewer on PRIMARY and SECONDARY work. */
+  deload?: boolean;
+}
+
+/** Working sets on a deload week. Loads are not touched; volume is. */
+function deloadSets(exercise: Exercise, sets: number): number {
+  if (exercise.fixed || (exercise.block !== 'PRIMARY' && exercise.block !== 'SECONDARY')) return sets;
+  return Math.max(exercise.block === 'PRIMARY' ? 2 : 1, sets - 1);
+}
+
 export function buildList(
   circuit: Circuit,
   energyKey: EnergyKey,
   progress: Progress,
   benchmarkResults: BenchmarkResult[] = [],
+  options: BuildOptions = {},
 ): ScaledExercise[] {
   const energyCfg = CONFIG.energy[energyKey];
   const byId = new Map(
@@ -246,7 +258,9 @@ export function buildList(
       displayName: variation ? variation.name : resolved.name,
       activeVariation: variation,
       scaledWork: scaleWork(resolved, energyKey),
-      scaledSets: scaleSets(resolved, energyKey, level),
+      scaledSets: options.deload
+        ? deloadSets(resolved, scaleSets(resolved, energyKey, level))
+        : scaleSets(resolved, energyKey, level),
       scaledRest: scaleRest(resolved, energyKey, level),
       loadText: resolveLoadText(resolved, variation, level),
       appliedIntensity: applyIntensityCap(resolved, energyKey),
@@ -308,7 +322,13 @@ export function getReadiness(circuit: Circuit, progress: Progress): Readiness {
   const relevant = loadsFingersHard ? FINGER_CAPACITIES : circuit.capacities;
 
   const lastTimes = relevant
-    .map(c => progress[c]?.lastTrained)
+    // Maximal finger sessions count from the last hard loading only. Older
+    // data has no lastHard yet and falls back to lastTrained until it does.
+    .map(c => {
+      const pg = progress[c];
+      if (!pg) return null;
+      return loadsFingersHard && pg.lastHard !== undefined ? pg.lastHard : pg.lastTrained;
+    })
     .filter((d): d is string => Boolean(d))
     .map(d => new Date(d).getTime());
 
@@ -343,6 +363,62 @@ export function getReadiness(circuit: Circuit, progress: Progress): Readiness {
 }
 
 // ---------------------------------------------------------------------------
+// Pain check
+//
+// Fingers and wrists are symptomatic, so finger sessions start by asking for a
+// 0-10 pain score. The bands follow the pain-monitoring model used in tendon
+// rehabilitation, made stricter for pulleys, which do not give a second
+// warning: up to 2 trains as written; 3-5 keeps the finger work but
+// below maximal and one set shorter, with no maximal tests; 6 and above takes
+// the finger work out of the session altogether.
+// ---------------------------------------------------------------------------
+
+/** Capacities that put load through the finger flexors and pulleys. */
+const FINGER_LOADED: Capacity[] = ['crimp', 'openhand', 'forearm'];
+
+export function loadsFingers(exercise: Exercise): boolean {
+  return exercise.capacities.some(c => FINGER_LOADED.includes(c));
+}
+
+/** Whether a session should ask the pain question before it starts. */
+export function asksPainCheck(circuit: Circuit): boolean {
+  return circuit.exercises.some(e => e.block !== 'WARMUP' && loadsFingers(e));
+}
+
+export type PainBand = 'clear' | 'reduce' | 'remove';
+
+export const PAIN_REDUCE_FROM = 3;
+export const PAIN_REMOVE_FROM = 6;
+
+export function painBand(pain: number): PainBand {
+  if (pain >= PAIN_REMOVE_FROM) return 'remove';
+  if (pain >= PAIN_REDUCE_FROM) return 'reduce';
+  return 'clear';
+}
+
+export const PAIN_MESSAGES: Record<PainBand, string> = {
+  clear: 'Train as written.',
+  reduce: 'Finger work stays, below maximal and one set shorter. No maximal finger tests today.',
+  remove: 'Finger work comes out of this session. If it is still above 5 tomorrow morning, see a physio.',
+};
+
+export function applyPainCheck(list: ScaledExercise[], pain: number | null | undefined): ScaledExercise[] {
+  if (pain === null || pain === undefined) return list;
+  const band = painBand(pain);
+  if (band === 'clear') return list;
+  if (band === 'remove') return list.filter(e => !loadsFingers(e));
+  return list.flatMap(e => {
+    if (!loadsFingers(e)) return [e];
+    // A test under pain measures the pain, not the capacity.
+    if (e.block === 'TEST' && e.intensity === 'MAX') return [];
+    if (e.fixed || e.block === 'WARMUP') return [e];
+    const capped = INTENSITY_ORDER.indexOf(e.appliedIntensity) > INTENSITY_ORDER.indexOf('HARD')
+      ? 'HARD' as Intensity : e.appliedIntensity;
+    return [{ ...e, appliedIntensity: capped, scaledSets: Math.max(1, e.scaledSets - 1) }];
+  });
+}
+
+// ---------------------------------------------------------------------------
 // XP mutations (return new progress — immutable)
 // ---------------------------------------------------------------------------
 
@@ -365,12 +441,38 @@ export function applyXP(progress: Progress, exercise: Exercise, action: Exercise
       const earns = exercise.block !== 'WARMUP' && exercise.block !== 'PREHAB';
       if (earns) pg.xp = Math.max(0, pg.xp + 1);
       pg.lastTrained = new Date().toISOString();
+      // null rather than absent: from here on this capacity is on the new
+      // model, and readiness stops falling back to lastTrained for it.
+      if (isHardWork(exercise)) pg.lastHard = pg.lastTrained;
+      else if (pg.lastHard === undefined) pg.lastHard = null;
     } else {
       pg.xp = Math.max(0, pg.xp + CONFIG.decay.skipPenalty);
     }
   }
 
   return newProgress;
+}
+
+/** Bonus XP for a personal best: progress measured, not just attendance. */
+export function applyBonusXP(progress: Progress, capacities: Capacity[], amount: number): Progress {
+  const next: Progress = structuredClone(progress);
+  for (const c of capacities) {
+    if (!next[c]) next[c] = { xp: 0, lastTrained: null, history: [] };
+    (next[c] as CapacityProgress).xp += amount;
+  }
+  return next;
+}
+
+/** XP for a heavier logged load than ever before. */
+export const PB_LOAD_XP = 1;
+/** XP for a better test result than the last one. */
+export const PB_TEST_XP = 2;
+
+/** Working sets heavy enough to count against recovery between maximal sessions. */
+export function isHardWork(exercise: Exercise): boolean {
+  if (['WARMUP', 'PREHAB', 'MOBILITY'].includes(exercise.block)) return false;
+  const intensity = (exercise as Partial<ScaledExercise>).appliedIntensity ?? exercise.intensity;
+  return intensity === 'HARD' || intensity === 'MAX';
 }
 
 /** Quitting early forfeits the XP that was not earned. It costs nothing more. */

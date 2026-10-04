@@ -80,6 +80,30 @@ img { display: block; max-width: 100%; }
   transition: transform 80ms ease;
 }
 .overlay-btn:active { transform: scale(0.98); }
+.overlay-panel { overflow-y: auto; }
+.overlay-section { display: flex; flex-direction: column; gap: 10px; }
+.overlay-section-title { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--ink-dim); }
+.overlay-row { display: flex; gap: 10px; }
+.overlay-row > .overlay-btn { flex: 1; padding: 14px 12px; font-size: 13px; }
+.overlay-status { font-size: 12px; line-height: 1.5; color: var(--ink); }
+.overlay-status-warn { color: var(--accent); }
+.overlay-toggle {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 8px 0; border: none; border-bottom: 1px solid var(--ink-faint); background: none;
+  font-family: inherit; color: var(--ink); text-align: left; cursor: pointer;
+}
+.overlay-toggle-text { display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
+.overlay-toggle-text span { font-size: 10px; color: var(--ink-dim); line-height: 1.4; }
+.overlay-toggle-mark {
+  flex-shrink: 0; width: 48px; padding: 6px 0; text-align: center; font-size: 11px; font-weight: 700;
+  border: 2px solid var(--ink-ghost); border-radius: var(--rad-sm); color: var(--ink-dim);
+}
+.overlay-toggle-mark.on { border-color: var(--ink); background: var(--ink); color: #E4E2DD; }
+.overlay-time { display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
+.overlay-time input {
+  font: inherit; font-size: 14px; color: var(--ink); background: none;
+  border: 2px solid var(--ink); border-radius: var(--rad-sm); padding: 6px 8px;
+}
 .overlay-footer { font-size: 11px; color: var(--ink-dim); margin-top: auto; opacity: 0.5; }
 
 @media (min-height: 800px) { .screen { padding-top: 56px; } }
