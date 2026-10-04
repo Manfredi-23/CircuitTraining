@@ -118,6 +118,12 @@ existing `@capacitor/local-notifications` plugin: no `cap sync` needed.
   listed in Health and Fitness but does not move the rings; a watch worn
   during the session credits its own measured activity as usual.
 
+### Follow-up: APPLE HEALTH moved up in Settings
+- It sat below the six reminder switches, with its heading at the bottom edge
+  of a 390 x 844 screen and CONNECT out of view. It now comes right after
+  BACKUP. The section only appears in builds from PR #21 on; an older build on
+  the phone (for example when signing failed) has no APPLE HEALTH section.
+
 ### Also fixed in the second PR
 - A fresh install was recommended STRONG on day one (no climbs logged reads
   as "fewer than two climbing days"). The STRONG rule now needs a climb
