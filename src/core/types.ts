@@ -298,6 +298,19 @@ export interface Exercise {
   form?: FormGuide;
   /** A TEST exercise whose result is saved as a benchmark, opening gates. */
   records?: BenchmarkRecord;
+  /**
+   * A test run as an attempt ladder rather than fixed sets: each attempt is
+   * harder than the last, MADE IT or FAILED is marked per attempt, and the best
+   * clean attempt is the result. `sets` is the expected number of attempts
+   * (used for the duration estimate), `maxAttempts` the hard stop.
+   */
+  ramp?: {
+    maxAttempts: number;
+    /** The stepper opens this far below the last result, in axis units. */
+    startBelow: number;
+  };
+  /** Section heading shown on the card and in the session list, e.g. 'MAX STRENGTH'. */
+  section?: string;
 }
 
 /**

@@ -23,7 +23,9 @@ export default function RestScreen() {
   useEffect(() => {
     if (!startedRef.current && currentExercise) {
       startedRef.current = true;
-      const next = `${currentExercise.displayName} — set ${setIndex}/${currentExercise.scaledSets}`;
+      const next = currentExercise.ramp
+        ? `${currentExercise.displayName} — attempt ${setIndex}`
+        : `${currentExercise.displayName} — set ${setIndex}/${currentExercise.scaledSets}`;
       timer.start(currentExercise.scaledRest, next);
     }
     return () => { startedRef.current = false; };

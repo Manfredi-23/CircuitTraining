@@ -71,7 +71,11 @@ export default function SessionInfo({
       <div className={styles.scroll}>
       <ol className={styles.list}>
         {list.map((ex, i) => (
-          <li key={ex.id} className={styles.row}>
+          <li key={ex.id} className={styles.rowWrap}>
+            {ex.section && ex.section !== list[i - 1]?.section && (
+              <div className={styles.section}>{ex.section}</div>
+            )}
+            <div className={styles.row}>
             <span className={styles.num}>{String(i + 1).padStart(2, '0')}</span>
             <div className={styles.body}>
               <div className={styles.name}>{ex.displayName}</div>
@@ -82,8 +86,9 @@ export default function SessionInfo({
               <div className={styles.load}>{ex.loadText}</div>
             </div>
             <div className={styles.dose}>
-              <div>{dose(ex)}</div>
+              <div>{ex.ramp ? `ramp, ${ex.scaledSets}-${ex.ramp.maxAttempts}` : dose(ex)}</div>
               <div className={styles.rest}>rest {formatRest(ex.scaledRest)}</div>
+            </div>
             </div>
           </li>
         ))}

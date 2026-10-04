@@ -3,7 +3,7 @@ import type { Store } from '../store';
 import type { Circuit, ScaledExercise, Capacity, LevelUp } from '@/core/types';
 import { getModeData } from '@/core/data-index';
 import * as Engine from '@/core/engine';
-import { benchmarkValueFromEntry, currentBodyweight } from '@/core/benchmarks';
+import { benchmarkValueFromEntry, currentBodyweight, getBenchmark } from '@/core/benchmarks';
 
 /**
  * Sessions run as sets within an exercise, not rounds of a circuit.
@@ -26,9 +26,19 @@ export interface WorkoutSlice {
   exerciseTimerActive: boolean;
   /** Sets marked DONE per exercise id in this session; written to the session log. */
   doneSets: Record<string, number>;
+  /** Best clean attempt so far on a ramp test, as entered on the stepper. */
+  rampBest: number | null;
 
   startWorkout: () => void;
   exerciseDone: () => void;
+  /** Ramp test: this attempt was clean. Rest, then a harder one. */
+  attemptMade: () => void;
+  /** Ramp test: this attempt failed. The test ends on the best clean attempt. */
+  attemptFailed: () => void;
+  /** Ramp test: stop here and keep the best clean attempt. */
+  finishRamp: () => void;
+  /** Close the current exercise: save its result, award XP, move on. */
+  finishExercise: (entry: number | null) => void;
   exerciseSkip: () => void;
   exitWorkout: () => void;
   toggleSwap: () => void;
@@ -48,6 +58,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   formGuideOpen: false,
   exerciseTimerActive: false,
   doneSets: {},
+  rampBest: null,
 
   startWorkout: () => {
     const { mode, circuitIndex, energy, progress, benchmarkResults } = get();
@@ -66,6 +77,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       formGuideOpen: false,
       exerciseTimerActive: false,
       doneSets: {},
+      rampBest: null,
       screen: 'workout',
     });
 
@@ -73,7 +85,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   },
 
   exerciseDone: () => {
-    const { exerciseList, stepIndex, setIndex, currentExercise, progress, doneSets } = get();
+    const { setIndex, currentExercise, doneSets } = get();
     if (!currentExercise) return;
     set({ doneSets: { ...doneSets, [currentExercise.id]: (doneSets[currentExercise.id] ?? 0) + 1 } });
 
@@ -83,20 +95,58 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       return;
     }
 
-    // Last set of the exercise — award XP once, and record what was actually
-    // on the belt. Both happen once per exercise, at the same moment.
-    // A test also saves its result as a benchmark: this is what opens gates.
-    // Percent-of-bodyweight results use the bodyweight on record, which this
-    // same session may have just updated: bodyweight is the first test.
-    const { pendingLoad, benchmarkResults } = get();
-    if (currentExercise.records && pendingLoad !== null) {
+    get().finishExercise(get().pendingLoad);
+  },
+
+  attemptMade: () => {
+    const { currentExercise, pendingLoad, rampBest, setIndex, doneSets } = get();
+    if (!currentExercise?.ramp) return;
+    set({ doneSets: { ...doneSets, [currentExercise.id]: (doneSets[currentExercise.id] ?? 0) + 1 } });
+    const lower = getBenchmark(currentExercise.records?.benchmarkId ?? '')?.better === 'lower';
+    const best = pendingLoad === null ? rampBest
+      : rampBest === null ? pendingLoad
+      : lower ? Math.min(rampBest, pendingLoad) : Math.max(rampBest, pendingLoad);
+    if (setIndex >= currentExercise.ramp.maxAttempts) {
+      set({ rampBest: best });
+      get().finishExercise(best);
+      return;
+    }
+    set({ rampBest: best, setIndex: setIndex + 1, formGuideOpen: false, screen: 'rest' });
+  },
+
+  attemptFailed: () => {
+    const { currentExercise, doneSets } = get();
+    if (!currentExercise?.ramp) return;
+    set({ doneSets: { ...doneSets, [currentExercise.id]: (doneSets[currentExercise.id] ?? 0) + 1 } });
+    get().finishExercise(get().rampBest);
+  },
+
+  finishRamp: () => {
+    if (!get().currentExercise?.ramp) return;
+    get().finishExercise(get().rampBest);
+  },
+
+  finishExercise: (entry) => {
+    const { exerciseList, stepIndex, currentExercise, progress, benchmarkResults } = get();
+    if (!currentExercise) return;
+
+    // Award XP once, and record what was actually on the belt. Both happen once
+    // per exercise, at the same moment. A test also saves its result as a
+    // benchmark: this is what opens gates. Percent-of-bodyweight results use the
+    // bodyweight on record, which this same session may have just updated.
+    // A ramp test saves its best clean attempt, not the last thing on the stepper.
+    if (currentExercise.records && entry !== null) {
       get().recordBenchmark({
         benchmarkId: currentExercise.records.benchmarkId,
         value: benchmarkValueFromEntry(
-          currentExercise.records, pendingLoad, currentBodyweight(benchmarkResults),
+          currentExercise.records, entry, currentBodyweight(benchmarkResults),
         ),
         date: new Date().toISOString(),
       });
+    }
+    if (currentExercise.ramp) {
+      if (entry !== null) set({ pendingLoad: entry });
+      else set({ pendingLoad: null });
     }
     get().commitLoad(currentExercise);
     const newProgress = Engine.applyXP(progress, currentExercise, 'done');
@@ -127,6 +177,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       currentExercise: exerciseList[nextStep],
       swapActive: false,
       formGuideOpen: false,
+      rampBest: null,
       screen: 'rest',
     });
 
@@ -158,6 +209,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       currentExercise: exerciseList[nextStep],
       swapActive: false,
       formGuideOpen: false,
+      rampBest: null,
       screen: 'workout',
     });
 

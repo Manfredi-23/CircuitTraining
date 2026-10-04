@@ -6,7 +6,7 @@ import { CONFIG } from '@/core/config';
 import { gradeLabel, gradesOf, viewScale, type ClimbView } from '@/core/climbing';
 import {
   CORE_TARGETS, getBenchmarkRows, getBodyweight, getClimbVsPull, getCoreVolume,
-  getLiftSeries, getWeekStrip, primaryClimbView, type CoreGroup, type DayKind,
+  getLiftSeries, getTrunkRatios, getWeekStrip, primaryClimbView, type CoreGroup, type DayKind,
 } from '@/core/insights';
 import type {
   BenchmarkResult, CapacityListItem, ClimbSession, LoadLogEntry, SessionLogEntry,
@@ -89,6 +89,7 @@ export function CoreVolumeSection({ sessionLog }: { sessionLog: SessionLogEntry[
 
 export function BenchmarkSection({ results }: { results: BenchmarkResult[] }) {
   const rows = useMemo(() => getBenchmarkRows(results), [results]);
+  const ratios = useMemo(() => getTrunkRatios(results), [results]);
   const bw = getBodyweight(results);
   if (!rows.length) {
     return <div className={styles.empty}>No tests recorded yet. Run TEST 01 ASSESS to fill this in.</div>;
@@ -139,6 +140,18 @@ export function BenchmarkSection({ results }: { results: BenchmarkResult[] }) {
           </div>
         );
       })}
+      {ratios.length > 0 && (
+        <div className={styles.ratios}>
+          <div className={styles.chartLabel}>Trunk balance (McGill ratios)</div>
+          {ratios.map(r => (
+            <div key={r.label} className={styles.ratioRow}>
+              <span>{r.label}</span>
+              <span className={styles.ratioTarget}>{r.target}</span>
+              <b className={r.ok ? undefined : styles.down}>{r.value.toFixed(2)}</b>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

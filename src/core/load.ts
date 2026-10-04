@@ -107,7 +107,10 @@ export function formatLoad(value: number, axis: LoadAxis): string {
   const n = Number.isInteger(value) ? String(value) : value.toFixed(1);
   if (axis.unit === 'RPE' || axis.unit === 'LVL') return `${axis.unit} ${n}`;
   if (axis.unit === 'reps') return `${n} REPS`;
-  return `${axis.prefix}${n}${axis.unit.toUpperCase()}`;
+  // A negative value on a '+' axis is assistance (a counterweight on a max
+  // hang), so it reads as minus rather than '+-'.
+  const prefix = value < 0 && axis.prefix === '+' ? '' : axis.prefix;
+  return `${prefix}${n}${axis.unit.toUpperCase()}`;
 }
 
 /** Short date for the LAST readout, e.g. "04 SEP". */

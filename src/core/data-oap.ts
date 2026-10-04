@@ -14,16 +14,19 @@
 //
 // Loading one arm with the whole body is the elbow's worst day, so the genuinely
 // one-armed work is gated on a TESTED weighted pull-up, never on XP:
-//   assisted one-arm pull-ups  weighted pull-up 1RM >= 140% bodyweight
-//   one-arm negatives          weighted pull-up 1RM >= 150% bodyweight
+//   assisted one-arm pull-ups  weighted pull-up 2RM >= 131% bodyweight
+//   one-arm negatives          weighted pull-up 2RM >= 141% bodyweight
+// These are the original 140% and 150% one-rep thresholds expressed on the
+// 2RM scale ASSESS now tests (1RM = 2RM x 1.067, Epley). A result recorded
+// with the old 5RM method still counts, converted (see gateResult).
 // Record the number in TEST 01 ASSESS; until then the gate shows the
 // two-handed-but-lopsided substitute instead.
 // =============================================================================
 
 import type { Exercise } from './types';
 
-export const OAP_ASSISTED_GATE = 140;
-export const OAP_NEGATIVE_GATE = 150;
+export const OAP_ASSISTED_GATE = 131;
+export const OAP_NEGATIVE_GATE = 141;
 
 /**
  * Uneven grip, then archer, then typewriter: both hands on, the load shifted
@@ -83,11 +86,11 @@ export function assistedOneArm(
       : 'Three clean reps a side, then grip the band lower, then a lighter band.',
     protocolId: 'one-arm-pull',
     gate: {
-      benchmarkId: 'weighted-pullup',
+      benchmarkId: 'weighted-pullup-2rm',
       minValue: OAP_ASSISTED_GATE,
       reason:
         'Assisted one-arm pull-ups put the whole pull through one elbow. They open when a '
-        + 'tested weighted pull-up reaches 140% bodyweight (about +25kg for one, +12kg for five, at 62kg) — record it '
+        + 'tested weighted pull-up 2RM reaches 131% bodyweight (about +19kg for two clean reps at 62kg) — record it '
         + 'in TEST 01 ASSESS. Until then the lopsided two-hand ladder builds the same strength '
         + 'with the load shared.',
       substituteId,
@@ -121,9 +124,9 @@ export function oneArmNegative(id: string): Exercise {
     progression: 'Two five-second lowerings a side, then less counterweight. Never more reps.',
     protocolId: 'one-arm-pull',
     gate: {
-      benchmarkId: 'weighted-pullup',
+      benchmarkId: 'weighted-pullup-2rm',
       minValue: OAP_NEGATIVE_GATE,
-      reason: 'One-arm negatives open at a tested 150% bodyweight weighted pull-up.',
+      reason: 'One-arm negatives open at a tested 141% bodyweight weighted pull-up 2RM (about +25kg for two at 62kg).',
     },
     form: {
       setup: 'Step or jump to the top position on one arm, chin over the bar, free hand on the pulley handle or at the side.',

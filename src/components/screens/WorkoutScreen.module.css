@@ -112,3 +112,8 @@
   color: var(--ink-dim);
   margin: 6px 0 0;
 }
+
+/* Ramp tests: attempt ladder */
+.rampBest { font-weight: 700; font-size: 11px; letter-spacing: 0.08em; color: var(--accent); flex-shrink: 0; }
+.rampLinks { display: flex; justify-content: space-between; gap: 12px; flex-shrink: 0; }
+.linkBtn { font-family: inherit; font-weight: 700; font-size: 11px; letter-spacing: 0.06em; color: var(--ink-dim); background: none; border: none; padding: 4px 0; text-transform: uppercase; }

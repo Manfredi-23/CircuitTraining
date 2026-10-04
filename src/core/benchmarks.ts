@@ -145,9 +145,10 @@ export const BENCHMARKS: Benchmark[] = [
     capacity: 'crimp',
     unit: '% bodyweight (total load / bodyweight)',
     protocol:
-      'Fully warm. 20mm flat edge, half-crimp, both arms, 7-10s hang. Add weight '
-      + 'until 10s is the most you can hold with good form. Score = '
-      + '(bodyweight + added) / bodyweight x 100.',
+      'Fully warm, after a rest day. 20mm flat edge, half-crimp, both arms. A ramp '
+      + 'of 7s hangs, each heavier than the last, 2 minutes apart, reaching the max '
+      + 'within 4-8 hangs. Score = heaviest clean 7s: (bodyweight + added) / '
+      + 'bodyweight x 100.',
     standards: [
       { label: 'V4',  value: 128 },
       { label: 'V5',  value: 134 },
@@ -209,19 +210,18 @@ export const BENCHMARKS: Benchmark[] = [
   {
     id: 'weighted-pullup',
     short: '% BW',
-    name: 'Weighted pull-up 1RM',
+    name: 'Weighted pull-up, est. 1RM (old method)',
     capacity: 'pull',
     unit: '% bodyweight (total load / bodyweight)',
     protocol:
       'One strict pull-up, dead hang to chin over bar, added weight on a harness. '
       + 'Score = (bodyweight + added) / bodyweight x 100. A 5RM x 1.15 estimate is '
       + 'acceptable and safer.',
-    standards: [
-      { label: 'Developing',       value: 120 },
-      { label: 'Solid',            value: 140 },
-      { label: 'Lattice standard', value: 165 },
-      { label: 'Strong',           value: 180 },
-    ],
+    standards: [],
+    note:
+      'Retired method: a 5RM converted to an estimated 1RM. Kept for history and read by the '
+      + 'one-arm gates (divided by 1.067) until a 2RM is recorded. Not comparable to the 2RM '
+      + 'standards.',
     source:
       'Lattice Training weighted pull-up dataset (>700 assessments); 165% is their '
       + 'published male standard, below which pulling strength is usually a limiter '
@@ -435,6 +435,71 @@ export const BENCHMARKS: Benchmark[] = [
     protocol: 'On your back, knees bent, lower back flat. Raise straight arms overhead toward the floor. Measure the gap from thumbs to floor; 0 is touching.',
     standards: [],
     source: 'Shoulder flexion screen. No published standard; 0 cm is full range.',
+  },  {
+    id: 'weighted-pullup-2rm',
+    name: 'Weighted pull-up 2RM',
+    capacity: 'pull',
+    short: '% BW',
+    unit: '% bodyweight (total load / bodyweight)',
+    protocol:
+      'A ramp of 2-rep sets, each heavier than the last, 3 minutes apart: dead hang '
+      + 'to chin over bar, no kip. Score = heaviest clean 2 reps: (bodyweight + '
+      + 'added) / bodyweight x 100.',
+    standards: [
+      { label: 'Developing',       value: 120 },
+      { label: 'Solid',            value: 140 },
+      { label: 'Lattice standard', value: 165 },
+    ],
+    source:
+      'Lattice Training: 733 weighted pull-up 2-rep-max tests; ~165% for men is the '
+      + 'point below which pulling strength usually limits climbing and above which '
+      + 'returns diminish. Developing and Solid are approximate interpolations.',
+  },
+  {
+    id: 'trunk-flexor-hold',
+    name: 'Trunk flexor hold (McGill)',
+    capacity: 'tension',
+    short: 's',
+    unit: 'seconds',
+    protocol:
+      'Seated, back resting on a support at 60 degrees, knees and hips bent 90, feet '
+      + 'anchored, arms crossed. The support is pulled 10cm back; hold the angle. '
+      + 'Time ends when the back drops to the support.',
+    standards: [
+      { label: 'Developing', value: 90 },
+      { label: 'Average',    value: 144 },
+      { label: 'Strong',     value: 180 },
+    ],
+    source: 'McGill torso endurance battery; mean around 144s in healthy young men. Approximate.',
+    note: 'Read against the back extension hold: flexor / extensor should stay below 1.0.',
+  },
+  {
+    id: 'side-plank-left',
+    name: 'Side plank hold, left',
+    capacity: 'tension',
+    short: 's',
+    unit: 'seconds',
+    protocol: 'Full side bridge on the left forearm, legs straight, top foot in front of the bottom one. Time ends when the hips drop.',
+    standards: [
+      { label: 'Developing', value: 60 },
+      { label: 'Average',    value: 95 },
+      { label: 'Strong',     value: 120 },
+    ],
+    source: 'McGill torso endurance battery (side bridge roughly 95-99s in healthy young men). Approximate.',
+  },
+  {
+    id: 'side-plank-right',
+    name: 'Side plank hold, right',
+    capacity: 'tension',
+    short: 's',
+    unit: 'seconds',
+    protocol: 'Full side bridge on the right forearm, legs straight, top foot in front of the bottom one. Time ends when the hips drop.',
+    standards: [
+      { label: 'Developing', value: 60 },
+      { label: 'Average',    value: 95 },
+      { label: 'Strong',     value: 120 },
+    ],
+    source: 'McGill torso endurance battery (side bridge roughly 95-99s in healthy young men). Approximate.',
   },
 ];
 
@@ -553,13 +618,32 @@ export function addResult(results: BenchmarkResult[], result: BenchmarkResult): 
   ];
 }
 
+/**
+ * Results from a retired method that still count for a newer benchmark,
+ * converted onto its scale. The weighted pull-up moved from an estimated 1RM
+ * (5RM x 1.15) to a tested 2RM; 1RM = 2RM x 1.067 (Epley), so an old result is
+ * divided by that to read on the 2RM scale.
+ */
+const EQUIVALENTS: Record<string, { from: string; factor: number }> = {
+  'weighted-pullup-2rm': { from: 'weighted-pullup', factor: 1 / 1.067 },
+};
+
+/** The result a gate reads: the latest on this benchmark, else a converted older method. */
+export function gateResult(results: BenchmarkResult[], benchmarkId: string): BenchmarkResult | null {
+  const direct = latestResult(results, benchmarkId);
+  if (direct) return direct;
+  const eq = EQUIVALENTS[benchmarkId];
+  const old = eq ? latestResult(results, eq.from) : null;
+  return old ? { ...old, benchmarkId, value: Math.round(old.value * eq.factor) } : null;
+}
+
 /** Whether a recorded result clears a gate threshold. The latest result decides. */
 export function meetsStandard(
   results: BenchmarkResult[],
   benchmarkId: string,
   minValue: number,
 ): boolean {
-  const result = latestResult(results, benchmarkId);
+  const result = gateResult(results, benchmarkId);
   if (!result) return false;
   return result.value >= minValue;
 }
