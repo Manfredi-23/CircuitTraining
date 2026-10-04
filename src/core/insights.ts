@@ -214,6 +214,7 @@ export const CORE_EXERCISES: Record<CoreGroup, string[]> = {
   obliques: [
     'daily-side-plank-dip', 'morn-bw-russian-twist', 'addon-russian-twist',
     'addon-hanging-oblique', 'addon-mountain-climber', 'home-copenhagen',
+    'daily-spiderman', 'daily-mountain-climber',
   ],
   back: [
     'daily-prone-extension', 'daily-band-good-morning', 'legs-back-extension',

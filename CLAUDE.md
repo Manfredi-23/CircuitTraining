@@ -267,7 +267,7 @@ fit that week.
 
 | Mode | Sessions |
 |------|----------|
-| DAILY | 01 FRONT CORE, 02 OBLIQUES + BACK, 03 BAND STRENGTH, 04 FINGERS + MOBILITY |
+| DAILY | 01 CORE + OBLIQUES, 02 OBLIQUES + BACK, 03 BAND STRENGTH, 04 FINGERS + MOBILITY |
 | CAVE | 01 STRONG, 02 PULL + PUSH, 03 LEGS + BACK |
 | TEST | 01 ASSESS (five sections, ramps, ~76-88 min) |
 
@@ -293,8 +293,8 @@ Short home sessions before breakfast. `npm run check:daily` holds the rules:
   or WARMUP. **No ACCESSORY**: TIRED would drop it. Over budget means cut an
   exercise, never shorten a rest.
 - **Curling last.** Discs are most swollen in the first hour after waking, so
-  loaded flexion (`daily-reverse-crunch`, `daily-crunch`, the Russian twist)
-  only ever closes a session. Extension and hinging may sit anywhere.
+  loaded flexion (`daily-reverse-crunch`, the Russian twist) only ever closes
+  a session. Extension and hinging may sit anywhere.
 - **Fingers last and light.** DAILY 04 does density no-hangs on the portable
   edge (`density-hang`, about 40%) after the mobility work.
 
@@ -302,8 +302,11 @@ Short home sessions before breakfast. `npm run check:daily` holds the rules:
 
 Abs, obliques and the lower back are an explicit goal: size, not only
 endurance. `trunk-hypertrophy` covers abs and obliques (hard sets near failure,
-reverse crunch for the lower abs, crunch for the upper, side-bending and
-rotation for the obliques). `back-strength` covers the lower back, which is
+reverse crunch for the lower abs, side-bending and rotation for the obliques).
+DAILY 01 CORE + OBLIQUES is mat only and weighted to the waist: push-ups on
+fists, spiderman plank (knee to the same elbow), cross-body mountain climber,
+reverse crunch, Russian twist. The band dead bug, leg lowers, press-out,
+hollow hold and slow crunch left it to fit the 20 minutes. `back-strength` covers the lower back, which is
 weak but not painful: bird dog, then prone extension, then band good morning in
 DAILY 02, then the loaded 45-degree back extension and single-leg RDL in CAVE
 03. `SIDE_PLANK_DIP` is shared between DAILY 02 and CAVE 03.
@@ -483,7 +486,8 @@ keeps all three in sync. Do not hand-edit the PNGs.
 
 - **`7bit-handover-v17.md`** — **start here.** Rest shows the next exercise
   with its form guide; a set-by-set progress bar on the card and on rest;
-  ASSESS tests that need only a bar and a mat.
+  ASSESS tests that need only a bar and a mat; DAILY 01 rebuilt as mat-only
+  CORE + OBLIQUES.
 - **`7bit-handover-v16.md`** — read second. The whole improvement roadmap:
   backup, Vitest, pain check, effort and load, mesocycle, suggested loads,
   recommended session, six STATS sections, reminders, Apple Health, widget,
