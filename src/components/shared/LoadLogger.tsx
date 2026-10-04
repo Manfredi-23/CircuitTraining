@@ -74,7 +74,11 @@ export default function LoadLogger({ exercise }: { exercise: ScaledExercise }) {
             </span>
           )}
           {converted && <span className={styles.deltaDown}>{converted}</span>}
-          {record && <span className={styles.deltaDown}>saved on the last DONE</span>}
+          {record && (
+            <span className={styles.deltaDown}>
+              {exercise.ramp ? 'best clean attempt is saved' : 'saved on the last DONE'}
+            </span>
+          )}
         </div>
 
         <button

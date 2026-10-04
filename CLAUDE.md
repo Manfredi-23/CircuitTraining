@@ -178,9 +178,15 @@ intensity at HARD** — a tired athlete downgrades rather than grinds.
   substituted with the lopsided two-hand ladder. A gate with no `substituteId` hides the
   exercise until it opens. Substitutes are resolved one level deep, so a
   substitute must not carry a gate of its own.
-- Benchmarks are recorded in TEST 01 ASSESS, one gym session of 17 tests
-  (bodyweight first, then fingers, pulling, trunk, pushing, forearm endurance,
-  mobility). Every result is kept (`addResult`, one per test per day);
+- Benchmarks are recorded in TEST 01 ASSESS, one gym session in five sections
+  (WARM-UP, BODY + RANGE, MAX STRENGTH, ENDURANCE, TRUNK), ordered as the NSCA
+  and IRCRA batteries order tests. Maximal tests are **ramps**
+  (`Exercise.ramp`): attempts get harder, each is marked MADE IT or FAILED, and
+  the best clean attempt is saved; they are never fixed sets. The weighted
+  pull-up is a tested 2RM (`weighted-pullup-2rm`, the rep range Lattice's 165%
+  standard was collected in); old 5RM-method results (`weighted-pullup`) stay as
+  history and still count for gates through `gateResult`, divided by 1.067.
+  Every result is kept (`addResult`, one per test per day); `gateResult` /
   `latestResult` is the one gates read. % bodyweight conversions use the latest
   recorded bodyweight (`currentBodyweight`). Each TEST exercise carries a
   `records` spec: the result is entered on the load stepper (kilos on the belt,
@@ -210,7 +216,7 @@ fit that week.
 |------|----------|
 | DAILY | 01 FRONT CORE, 02 OBLIQUES + BACK, 03 BAND STRENGTH, 04 FINGERS + MOBILITY |
 | CAVE | 01 STRONG, 02 PULL + PUSH, 03 LEGS + BACK |
-| TEST | 01 ASSESS (full battery, ~86 min) |
+| TEST | 01 ASSESS (five sections, ramps, ~81-90 min) |
 
 A typical week: DAILY most mornings, CAVE 02 or 03 straight after each
 bouldering session, CAVE 01 only in a week a bouldering day is skipped.
@@ -272,8 +278,9 @@ CAVE is almost always done straight after bouldering.
 The goal is a one-arm pull-up. `data-oap.ts` builds the path once: a
 one-arm scap shrug, then a lopsided two-hand ladder (uneven grip, archer,
 typewriter) until the gates open. Assisted one-arms (band in the free hand)
-open at a tested 140% bodyweight weighted pull-up, one-arm negatives (CAVE 01
-only) at 150%. The weighted pull-up is the main driver. It lives in CAVE 01 and
+open at a tested 131% bodyweight weighted pull-up 2RM, one-arm negatives (CAVE
+01 only) at 141% (the original 140% / 150% one-rep thresholds on the 2RM
+scale). The weighted pull-up is the main driver. It lives in CAVE 01 and
 CAVE 02.
 
 ### Adding or changing an exercise
@@ -406,9 +413,10 @@ keeps all three in sync. Do not hand-edit the PNGs.
 
 ## Handoff Documents
 
-- **`7bit-handover-v14.md`** — **start here.** Latest session: the 17-test
-  ASSESS battery, test history, sets in the session log, and the new STATS
-  sections. Supersedes v12/v13 repo state and open items.
+- **`7bit-handover-v15.md`** — **start here.** ASSESS rebuilt from the
+  research: five sections, ramp tests (MADE IT / FAILED), 2RM pull-up, McGill
+  trunk four with ratios. Supersedes earlier repo state and open items.
+- **`7bit-handover-v14.md`** — test history, sets in the session log, the STATS sections.
 - **`7bit-handover-v13.md`** — the session info popup and the test-recording review.
 - **`7bit-handover-v12.md`** — read second. The full picture: the DAILY / CAVE /
   TEST programme, the climb log, open items, the graphics rework plan (grid,

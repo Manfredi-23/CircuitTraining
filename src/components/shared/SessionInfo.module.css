@@ -36,3 +36,6 @@
   transition: transform 80ms ease;
 }
 .start:active { transform: scale(0.98); }
+
+.rowWrap { display: block; }
+.section { font-weight: 700; font-size: 11px; letter-spacing: 0.12em; color: var(--accent); padding: 14px 0 2px; }

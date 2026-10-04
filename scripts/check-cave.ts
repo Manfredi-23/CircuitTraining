@@ -6,8 +6,8 @@
 //      budget at every capacity level. Both run after a two-hour boulder session; volume added
 //      there creeps up unnoticed. FRESH and TIRED are printed for reference.
 //   2. The one-arm pull-up rungs open on a tested weighted pull-up and nothing
-//      else: no benchmark shows the lopsided substitute, 140% opens assisted
-//      one-arms, 150% opens negatives. At max level with no benchmark, none of
+//      else: no benchmark shows the lopsided substitute, 131% (2RM) opens
+//      assisted one-arms, 141% opens negatives. At max level with no benchmark, none of
 //      the gated work may appear — XP must never open it.
 //
 // Duration comes from estimateDuration, the number printed on the card.
@@ -32,7 +32,7 @@ function progressAt(level: number): Progress {
 }
 
 const pullup = (value: number): BenchmarkResult[] =>
-  [{ benchmarkId: 'weighted-pullup', value, date: new Date().toISOString() }];
+  [{ benchmarkId: 'weighted-pullup-2rm', value, date: new Date().toISOString() }];
 
 let failures = 0;
 const fail = (msg: string) => { failures++; console.log(`  FAIL  ${msg}`); };
@@ -85,6 +85,16 @@ for (const { circuit, prefix, negative } of cases) {
 
   console.log(`  ${circuit}  none: path   ${OAP_ASSISTED_GATE}%: assisted   ${negative ? `${OAP_NEGATIVE_GATE}%: + negatives` : ''}`);
 }
+
+// An estimated 1RM recorded with the retired 5RM method still counts, divided
+// by 1.067 onto the 2RM scale: 142% reads as 133%, past the assisted gate and
+// short of negatives.
+const oldMethod: BenchmarkResult[] =
+  [{ benchmarkId: 'weighted-pullup', value: 142, date: new Date().toISOString() }];
+const legacy = idsAt('cave-01', oldMethod);
+if (!legacy.includes('cave01-oap-assisted')) fail('old-method 142% should open assisted');
+if (legacy.includes('cave01-oap-negative')) fail('old-method 142% should not open negatives');
+console.log('  old 5RM-method 142% -> assisted open, negatives closed');
 
 console.log(failures === 0 ? '\nOK\n' : `\n${failures} failure(s)\n`);
 process.exit(failures === 0 ? 0 : 1);

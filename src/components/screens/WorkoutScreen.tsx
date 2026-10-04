@@ -4,6 +4,7 @@ import { useStore } from '@/store/store';
 import { getCapacityLevel } from '@/core/engine';
 import { getProtocol } from '@/core/protocols';
 import { CONFIG } from '@/core/config';
+import { getLoadAxis, formatLoad } from '@/core/load';
 import LoadLogger from '@/components/shared/LoadLogger';
 import type { FormGuide } from '@/core/types';
 import styles from './WorkoutScreen.module.css';
@@ -21,6 +22,7 @@ export default function WorkoutScreen() {
     mode, circuit, exerciseList, stepIndex, setIndex,
     currentExercise, swapActive, formGuideOpen, progress,
     exerciseDone, exerciseSkip, exitWorkout, toggleSwap, toggleFormGuide,
+    rampBest, attemptMade, attemptFailed, finishRamp,
   } = useStore();
 
   if (!currentExercise || !circuit) return null;
@@ -31,6 +33,10 @@ export default function WorkoutScreen() {
   const hasVariations = currentExercise.variations && currentExercise.variations.length > 1;
   const baseName = currentExercise.variations?.[0]?.name || currentExercise.name;
   const protocol = getProtocol(currentExercise.protocolId);
+  const ramp = currentExercise.ramp;
+  const axis = getLoadAxis(currentExercise);
+  const bestText = rampBest !== null && axis ? formatLoad(rampBest, axis) : null;
+  const tagLead = currentExercise.section ?? currentExercise.block;
 
   return (
     <div className={`screen screen-enter ${styles.screen}`}>
@@ -50,8 +56,15 @@ export default function WorkoutScreen() {
       {/* Scrollable content */}
       <div className={styles.scroll}>
         <div className={styles.roundTag}>
-          {currentExercise.block} - SET {setIndex}/{currentExercise.scaledSets}
+          {ramp
+            ? `${tagLead} - ATTEMPT ${setIndex} OF UP TO ${ramp.maxAttempts}`
+            : `${tagLead} - SET ${setIndex}/${currentExercise.scaledSets}`}
         </div>
+        {ramp && (
+          <div className={styles.rampBest}>
+            {bestText ? `BEST CLEAN SO FAR: ${bestText}` : 'NO CLEAN ATTEMPT YET'}
+          </div>
+        )}
 
         <div key={`name-${stepIndex}`} className={`${styles.exName} ${styles.exNameEnter}`}>
           {currentExercise.displayName}
@@ -129,10 +142,25 @@ export default function WorkoutScreen() {
       </div>
 
       {/* Actions */}
-      <div className={styles.actions}>
-        <button className={styles.btnSkip} onClick={exerciseSkip}>SKIP</button>
-        <button className={styles.btnDone} onClick={exerciseDone}>DONE</button>
-      </div>
+      {ramp ? (
+        <>
+          <div className={styles.rampLinks}>
+            <button className={styles.linkBtn} onClick={exerciseSkip}>SKIP TEST</button>
+            {bestText && (
+              <button className={styles.linkBtn} onClick={finishRamp}>STOP HERE, SAVE {bestText}</button>
+            )}
+          </div>
+          <div className={styles.actions}>
+            <button className={styles.btnSkip} onClick={attemptFailed}>FAILED</button>
+            <button className={styles.btnDone} onClick={attemptMade}>MADE IT</button>
+          </div>
+        </>
+      ) : (
+        <div className={styles.actions}>
+          <button className={styles.btnSkip} onClick={exerciseSkip}>SKIP</button>
+          <button className={styles.btnDone} onClick={exerciseDone}>DONE</button>
+        </div>
+      )}
     </div>
   );
 }

@@ -85,9 +85,21 @@ export interface BenchmarkRow {
   gradeTargets: { current: number | null; next: number | null };
 }
 
+/** Session order: strength, endurance, trunk, range; retired tests last. */
+const ROW_ORDER = [
+  'fs-2arm-20mm', 'weighted-pullup-2rm', 'front-lever',
+  'max-pullups', 'repeaters-20mm', 'max-pushups',
+  'trunk-flexor-hold', 'back-extension-hold', 'side-plank-left', 'side-plank-right',
+  'hip-footraise', 'straddle', 'sit-reach', 'shoulder-reach',
+];
+const rank = (id: string) => {
+  const i = ROW_ORDER.indexOf(id);
+  return i === -1 ? ROW_ORDER.length : i;
+};
+
 export function getBenchmarkRows(results: BenchmarkResult[]): BenchmarkRow[] {
   const rows: BenchmarkRow[] = [];
-  for (const bench of BENCHMARKS) {
+  for (const bench of [...BENCHMARKS].sort((a, b) => rank(a.id) - rank(b.id))) {
     if (bench.id === 'bodyweight') continue;
     const history = resultHistory(results, bench.id);
     if (!history.length) continue;
@@ -107,6 +119,47 @@ export function getBenchmarkRows(results: BenchmarkResult[]): BenchmarkRow[] {
     });
   }
   return rows;
+}
+
+export interface TrunkRatio {
+  label: string;
+  value: number;
+  /** Plain-language target, e.g. 'below 1.00'. */
+  target: string;
+  ok: boolean;
+}
+
+/**
+ * McGill's torso endurance ratios. They separate people who have had back
+ * trouble from those who have not better than any single hold does:
+ * flexor / extensor below 1.0, each side bridge / extensor below 0.75, and
+ * left / right within 0.05 of 1.0.
+ */
+export function getTrunkRatios(results: BenchmarkResult[]): TrunkRatio[] {
+  const v = (id: string) => latestResult(results, id)?.value ?? null;
+  const flex = v('trunk-flexor-hold');
+  const ext = v('back-extension-hold');
+  const left = v('side-plank-left');
+  const right = v('side-plank-right');
+  const out: TrunkRatio[] = [];
+  const r = (a: number, b: number) => Math.round((a / b) * 100) / 100;
+  if (flex !== null && ext) {
+    const x = r(flex, ext);
+    out.push({ label: 'Flexor / back', value: x, target: 'below 1.00', ok: x < 1 });
+  }
+  if (left !== null && ext) {
+    const x = r(left, ext);
+    out.push({ label: 'Side left / back', value: x, target: 'below 0.75', ok: x < 0.75 });
+  }
+  if (right !== null && ext) {
+    const x = r(right, ext);
+    out.push({ label: 'Side right / back', value: x, target: 'below 0.75', ok: x < 0.75 });
+  }
+  if (left !== null && right) {
+    const x = r(left, right);
+    out.push({ label: 'Side left / right', value: x, target: '0.95 to 1.05', ok: Math.abs(x - 1) <= 0.05 });
+  }
+  return out;
 }
 
 export function getBodyweight(results: BenchmarkResult[]): BenchmarkResult | null {
