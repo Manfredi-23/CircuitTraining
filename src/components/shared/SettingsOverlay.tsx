@@ -142,40 +142,6 @@ export default function SettingsOverlay({ open, onClose }: SettingsOverlayProps)
       </div>
 
       <div className="overlay-section">
-        <div className="overlay-section-title">REMINDERS</div>
-        <div className="overlay-body">
-          {isNative()
-            ? 'Planned on this phone from your logs. Nothing between 21:30 and 07:00.'
-            : 'Reminders work in the iPhone app only. A browser cannot notify while it is closed.'}
-        </div>
-        {(Object.keys(REMINDER_LABELS) as ReminderKind[]).map(kind => (
-          <button
-            key={kind}
-            className="overlay-toggle"
-            role="switch"
-            aria-checked={reminders.enabled[kind]}
-            onClick={() => void toggleReminder(kind)}
-          >
-            <span className="overlay-toggle-text">
-              <b>{REMINDER_LABELS[kind].title}</b>
-              <span>{REMINDER_LABELS[kind].hint}</span>
-            </span>
-            <span className={`overlay-toggle-mark${reminders.enabled[kind] ? ' on' : ''}`}>
-              {reminders.enabled[kind] ? 'ON' : 'OFF'}
-            </span>
-          </button>
-        ))}
-        <label className="overlay-time">
-          <span>DAILY reminder at</span>
-          <input
-            type="time"
-            value={reminders.dailyTime}
-            onChange={e => e.target.value && setDailyTime(e.target.value)}
-          />
-        </label>
-      </div>
-
-      <div className="overlay-section">
         <div className="overlay-section-title">APPLE HEALTH</div>
         <div className="overlay-body">
           {!isNative()
@@ -208,6 +174,40 @@ export default function SettingsOverlay({ open, onClose }: SettingsOverlayProps)
             </button>
           </>
         )}
+      </div>
+
+      <div className="overlay-section">
+        <div className="overlay-section-title">REMINDERS</div>
+        <div className="overlay-body">
+          {isNative()
+            ? 'Planned on this phone from your logs. Nothing between 21:30 and 07:00.'
+            : 'Reminders work in the iPhone app only. A browser cannot notify while it is closed.'}
+        </div>
+        {(Object.keys(REMINDER_LABELS) as ReminderKind[]).map(kind => (
+          <button
+            key={kind}
+            className="overlay-toggle"
+            role="switch"
+            aria-checked={reminders.enabled[kind]}
+            onClick={() => void toggleReminder(kind)}
+          >
+            <span className="overlay-toggle-text">
+              <b>{REMINDER_LABELS[kind].title}</b>
+              <span>{REMINDER_LABELS[kind].hint}</span>
+            </span>
+            <span className={`overlay-toggle-mark${reminders.enabled[kind] ? ' on' : ''}`}>
+              {reminders.enabled[kind] ? 'ON' : 'OFF'}
+            </span>
+          </button>
+        ))}
+        <label className="overlay-time">
+          <span>DAILY reminder at</span>
+          <input
+            type="time"
+            value={reminders.dailyTime}
+            onChange={e => e.target.value && setDailyTime(e.target.value)}
+          />
+        </label>
       </div>
 
       <div className="overlay-section">
