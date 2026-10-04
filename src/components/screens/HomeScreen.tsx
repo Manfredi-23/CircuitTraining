@@ -1,10 +1,14 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { useStore } from '@/store/store';
 import { getModeData } from '@/core/data-index';
-import { getCapacityLevel, getReadiness, buildList, estimateDuration, asksPainCheck, applyPainCheck } from '@/core/engine';
+import { getCapacityLevel, getReadiness, estimateDuration, asksPainCheck, applyPainCheck } from '@/core/engine';
+import { getBlockWeek } from '@/core/block';
+import { recommend } from '@/core/recommend';
+import { localDate } from '@/core/dates';
+import { sessionListFor } from '@/store/slices/workout-slice';
 import { CONFIG } from '@/core/config';
 import { useSwipe } from '@/hooks/use-swipe';
 import SettingsOverlay from '@/components/shared/SettingsOverlay';
@@ -16,7 +20,8 @@ import styles from './HomeScreen.module.css';
 export default function HomeScreen() {
   const {
     mode, circuitIndex, energy, humorLine,
-    pendingDecayEvents, progress, benchmarkResults, sessionLog,
+    pendingDecayEvents, progress, benchmarkResults, sessionLog, climbLog, blockStart,
+    recommendedOn, showRecommended,
     setMode, changeCircuit, setEnergy, setScreen, openClimbLog,
     startWorkout, dismissDecay,
   } = useStore();
@@ -28,6 +33,25 @@ export default function HomeScreen() {
 
   const circuits = getModeData(mode);
   const circuit = circuits[circuitIndex];
+
+  // Where this week sits in the training block, and what today calls for.
+  const block = getBlockWeek(blockStart, sessionLog);
+  const recommendation = useMemo(
+    () => recommend({ sessionLog, climbLog, progress, benchmarkResults, block }),
+    // block is derived from blockStart and sessionLog.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [sessionLog, climbLog, progress, benchmarkResults, blockStart],
+  );
+  const isRecommended = recommendation?.circuitId === circuit.id;
+
+  // Open on the recommendation once a day; after that the athlete's own
+  // choice of card stands.
+  useEffect(() => {
+    const today = localDate();
+    if (recommendedOn === today || !recommendation) return;
+    showRecommended(recommendation.mode, recommendation.circuitId, today);
+    setCardKey(k => k + 1);
+  }, [recommendation, recommendedOn, showRecommended]);
 
   const handleSwipe = useCallback((dir: number) => {
     changeCircuit(dir);
@@ -62,7 +86,7 @@ export default function HomeScreen() {
 
   // Duration is computed from the session as it will actually be prescribed at
   // this level and energy, rather than read off a hardcoded number.
-  const list = buildList(circuit, energy, progress, benchmarkResults);
+  const list = sessionListFor({ energy, progress, benchmarkResults, blockStart, sessionLog }, circuit);
   const duration = estimateDuration(list);
 
   // Derank message
@@ -77,7 +101,11 @@ export default function HomeScreen() {
       {/* Logo */}
       <div className={styles.logoWrap}>
         <Image src="/images/logo.svg" alt="7Bit" width={120} height={48} className={styles.logo} priority />
-        <div className={styles.humorLine}>{humorLine}</div>
+        {/* On the recommended card the line under the logo says why it is the
+            one for today; on any other card it is the usual joke. */}
+        <div className={styles.humorLine}>
+          {isRecommended && recommendation ? recommendation.reason : humorLine}
+        </div>
       </div>
 
       {/* Mode tabs */}
@@ -169,7 +197,12 @@ export default function HomeScreen() {
 
         {/* Info bar */}
         <div className={styles.infoBar} onClick={e => e.stopPropagation()}>
-          <span className={styles.duration}>{duration} min.</span>
+          <span className={styles.duration}>
+            {duration} min.
+            <span className={block.deload ? styles.blockDeload : styles.blockWeek}>
+              {block.deload ? 'DELOAD' : `WEEK ${block.week}/${block.buildWeeks}`}
+            </span>
+          </span>
           <div className={styles.infoRight}>
             <div className={styles.dots}>
               {[0, 1, 2].map(i => (

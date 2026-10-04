@@ -45,6 +45,8 @@ interface UseTimerReturn {
   start: (seconds: number, alertBody?: string) => void;
   stop: () => void;
   skip: () => void;
+  /** Add seconds to a running countdown, moving the alert and the Live Activity with it. */
+  extend: (seconds: number, alertBody?: string) => void;
   remaining: number;
   isRunning: boolean;
   isWarning: boolean;
@@ -158,6 +160,20 @@ export function useTimer(onDone?: () => void): UseTimerReturn {
     intervalRef.current = setInterval(tick, 250);
   }, [clear, flash]);
 
+  /** Push the deadline back: more rest when the next set needs it. */
+  const extend = useCallback((seconds: number, alertBody?: string) => {
+    if (finishedRef.current || !intervalRef.current) return;
+    deadlineRef.current += seconds * 1000;
+    warnedRef.current = false;
+    alertCancelledRef.current = false;
+    setIsWarning(false);
+    setRemaining(Math.max(0, Math.ceil((deadlineRef.current - Date.now()) / 1000)));
+    if (alertBody) {
+      void cancelRestAlert().then(() => scheduleRestAlert(new Date(deadlineRef.current), alertBody));
+      void endRestActivity().then(() => startRestActivity(new Date(deadlineRef.current), alertBody));
+    }
+  }, []);
+
   const skip = useCallback(() => {
     finishedRef.current = true;
     alertCancelledRef.current = true;
@@ -175,5 +191,5 @@ export function useTimer(onDone?: () => void): UseTimerReturn {
     void endRestActivity();
   }, [clear]);
 
-  return { start, stop, skip, remaining, isRunning, isWarning, flashActive };
+  return { start, stop, skip, extend, remaining, isRunning, isWarning, flashActive };
 }

@@ -10,7 +10,7 @@ export default function CompleteScreen() {
   const {
     mode, energy, circuit, sessionStartTime, sessionLevelUps,
     setScreen, pickHumorLine, openClimbLog, benchmarkResults,
-    sessionLog, rateLastSession,
+    sessionLog, rateLastSession, sessionPBs,
   } = useStore();
   const effort = sessionLog[sessionLog.length - 1]?.effort;
 
@@ -77,6 +77,15 @@ export default function CompleteScreen() {
             >
               {CONFIG.capacityLabels[lu.capacity].toUpperCase()} &gt; L{lu.level}! {lu.unlocks}
             </div>
+          ))}
+        </div>
+      )}
+
+      {sessionPBs.length > 0 && (
+        <div className={styles.saved}>
+          <div className={styles.savedTitle}>PERSONAL BEST</div>
+          {sessionPBs.map(pb => (
+            <div key={pb} className={styles.savedRow}><span>{pb}</span></div>
           ))}
         </div>
       )}

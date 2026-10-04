@@ -382,6 +382,13 @@ export interface HistoryEntry {
 export interface CapacityProgress {
   xp: number;
   lastTrained: string | null;
+  /**
+   * Last HARD or MAX working set, or a boulder session. Recovery between
+   * maximal finger sessions counts from this, so light work (DAILY 04's
+   * density no-hangs) keeps a capacity trained without restarting the 48h.
+   * Absent on data from before it existed.
+   */
+  lastHard?: string | null;
   history: HistoryEntry[];
 }
 

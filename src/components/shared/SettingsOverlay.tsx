@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useStore } from '@/store/store';
 import { createBackup, parseBackup, backupFileName, PERSISTED_KEYS } from '@/core/backup';
 import { exportText } from './backup-io';
+import { getBlockWeek, blockLabel } from '@/core/block';
 
 interface SettingsOverlayProps {
   open: boolean;
@@ -21,6 +22,9 @@ const EXPORT_MESSAGES = {
 export default function SettingsOverlay({ open, onClose }: SettingsOverlayProps) {
   const resetAllData = useStore(s => s.resetAllData);
   const importBackup = useStore(s => s.importBackup);
+  const restartBlock = useStore(s => s.restartBlock);
+  const blockStart = useStore(s => s.blockStart);
+  const sessionLog = useStore(s => s.sessionLog);
   const [entered, setEntered] = useState(false);
   const [status, setStatus] = useState<{ text: string; warn: boolean } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -76,6 +80,9 @@ export default function SettingsOverlay({ open, onClose }: SettingsOverlayProps)
         <span style={{ fontWeight: 700, fontSize: 16 }}>Settings</span>
         <button className="overlay-close" onClick={onClose}>X</button>
       </div>
+      {status && (
+        <div className={`overlay-status${status.warn ? ' overlay-status-warn' : ''}`}>{status.text}</div>
+      )}
 
       <div className="overlay-section">
         <div className="overlay-section-title">BACKUP</div>
@@ -93,9 +100,25 @@ export default function SettingsOverlay({ open, onClose }: SettingsOverlayProps)
           style={{ display: 'none' }}
           onChange={e => handleImportFile(e.target.files?.[0])}
         />
-        {status && (
-          <div className={`overlay-status${status.warn ? ' overlay-status-warn' : ''}`}>{status.text}</div>
-        )}
+      </div>
+
+      <div className="overlay-section">
+        <div className="overlay-section-title">TRAINING BLOCK</div>
+        <div className="overlay-body">
+          Three build weeks, then a deload week. This week: {blockLabel(getBlockWeek(blockStart, sessionLog))}.
+          Restart after time off, or to line the deload up with a trip.
+        </div>
+        <button
+          className="overlay-btn"
+          onClick={() => {
+            if (confirm('Start a new block this week? This week becomes build week 1.')) {
+              restartBlock();
+              setStatus({ text: 'New block started: build week 1.', warn: false });
+            }
+          }}
+        >
+          START NEW BLOCK
+        </button>
       </div>
 
       <div className="overlay-section">

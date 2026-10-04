@@ -19,6 +19,8 @@ export interface LoadSlice {
 
   primeLoad: (exercise: Exercise | null) => void;
   adjustLoad: (steps: number) => void;
+  /** Put a value on the stepper directly: taking a suggested load. */
+  setLoad: (value: number) => void;
   commitLoad: (exercise: Exercise) => void;
   clearLoadLog: () => void;
 }
@@ -51,6 +53,13 @@ export const createLoadSlice: StateCreator<Store, [], [], LoadSlice> = (set, get
     const axis = getLoadAxis(currentExercise);
     if (!axis) return;
     set({ pendingLoad: clampToAxis(pendingLoad + steps * axis.step, axis) });
+  },
+
+  setLoad: (value) => {
+    const { currentExercise } = get();
+    const axis = currentExercise ? getLoadAxis(currentExercise) : null;
+    if (!axis) return;
+    set({ pendingLoad: clampToAxis(value, axis) });
   },
 
   commitLoad: (exercise) => {

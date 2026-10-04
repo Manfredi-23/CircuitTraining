@@ -4,6 +4,8 @@ import { useStore } from '@/store/store';
 import { getLoadAxis, getLastLoad, formatLoad, formatLoadDate } from '@/core/load';
 import { benchmarkValueFromEntry, currentBodyweight } from '@/core/benchmarks';
 import { hapticTap } from '@/native/native';
+import { suggestLoad } from '@/core/progression';
+import { getBlockWeek, deloads } from '@/core/block';
 import type { ScaledExercise } from '@/core/types';
 import styles from './LoadLogger.module.css';
 
@@ -26,6 +28,10 @@ export default function LoadLogger({ exercise }: { exercise: ScaledExercise }) {
   const adjustLoad = useStore(s => s.adjustLoad);
   const loadLog = useStore(s => s.loadLog);
   const benchmarkResults = useStore(s => s.benchmarkResults);
+  const sessionLog = useStore(s => s.sessionLog);
+  const blockStart = useStore(s => s.blockStart);
+  const circuit = useStore(s => s.circuit);
+  const setLoad = useStore(s => s.setLoad);
 
   const axis = getLoadAxis(exercise);
   if (!axis || pendingLoad === null) return null;
@@ -39,6 +45,10 @@ export default function LoadLogger({ exercise }: { exercise: ScaledExercise }) {
   const converted = record && record.convert !== 'identity'
     ? `= ${benchmarkValueFromEntry(record, pendingLoad, currentBodyweight(benchmarkResults))}% BW`
     : null;
+
+  // The next load, from how the last session went. One tap to take it.
+  const deload = Boolean(circuit && deloads(circuit) && getBlockWeek(blockStart, sessionLog).deload);
+  const suggestion = suggestLoad(exercise, loadLog, sessionLog, deload);
 
   const step = (steps: number) => {
     adjustLoad(steps);
@@ -90,6 +100,17 @@ export default function LoadLogger({ exercise }: { exercise: ScaledExercise }) {
           +
         </button>
       </div>
+
+      {suggestion && (
+        <div className={styles.suggest}>
+          <span className={styles.suggestText}>{suggestion.reason}</span>
+          {suggestion.kind === 'up' && pendingLoad !== suggestion.value && (
+            <button className={styles.suggestBtn} onClick={() => { setLoad(suggestion.value); void hapticTap(); }}>
+              TRY {formatLoad(suggestion.value, axis)}
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -40,7 +40,12 @@ function creditSession(progress: Progress, session: ClimbSession): Progress {
     pg.xp += CLIMB_SESSION_XP;
     touch(pg);
   }
-  for (const c of climbLoadedCapacities(session)) touch(ensure(c));
+  // Bouldering is near-maximal finger loading: it restarts the 48h as well.
+  for (const c of climbLoadedCapacities(session)) {
+    const pg = ensure(c);
+    touch(pg);
+    if (!pg.lastHard || new Date(pg.lastHard) < at) pg.lastHard = at.toISOString();
+  }
 
   return Engine.recordHistory(next, earning);
 }
