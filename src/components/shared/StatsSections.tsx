@@ -1,15 +1,16 @@
 'use client';
 
 import { useMemo } from 'react';
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, ReferenceLine, ComposedChart, Bar, Cell } from 'recharts';
 import { CONFIG } from '@/core/config';
 import { gradeLabel, gradesOf, viewScale, type ClimbView } from '@/core/climbing';
 import {
   CORE_TARGETS, getBenchmarkRows, getBodyweight, getClimbVsPull, getCoreVolume,
   getLiftSeries, getTrunkRatios, getWeekStrip, primaryClimbView, type CoreGroup, type DayKind,
-  getFreshness, getOneArmPath, getFingerWeeks, getSkipped,
+  getFreshness, getOneArmPath, getFingerWeeks, getSkipped, getRecovery,
 } from '@/core/insights';
 import { loadItems, weeklyLoad, loadRatio, ZONE_TEXT, type LoadSource } from '@/core/training-load';
+import { healthReadiness, type HealthData } from '@/core/health';
 import type {
   BenchmarkResult, CapacityListItem, ClimbSession, LoadLogEntry, Progress, SessionLogEntry,
 } from '@/core/types';
@@ -455,6 +456,56 @@ export function SkippedSection({ sessionLog }: { sessionLog: SessionLogEntry[] }
         </div>
       ))}
       <div className={styles.hint}>Sessions cut short out of sessions planned, last 90 days. One that keeps coming up is too long, too hard, or in the wrong place.</div>
+    </div>
+  );
+}
+
+// ---- Recovery (Apple Health) ------------------------------------------------------------
+
+export function RecoverySection({ health, sessionLog }: { health: HealthData; sessionLog: SessionLogEntry[] }) {
+  const rec = useMemo(() => getRecovery(health, sessionLog), [health, sessionLog]);
+  const today = useMemo(() => healthReadiness(health), [health]);
+  const hasSleep = rec.nights.some(n => n.sleepH !== null);
+  const hasHrv = rec.nights.some(n => n.hrv !== null);
+  if (!hasSleep && !hasHrv) {
+    return <div className={styles.empty}>No sleep or HRV from Apple Health yet. Wear the watch to bed for a few nights.</div>;
+  }
+  return (
+    <div className={styles.block}>
+      {today && (
+        <div className={styles.summary}>
+          Today suggests <b>{today.energy}</b>: {today.reasons.join(', ')}.
+        </div>
+      )}
+      <div className={styles.chartLabel}>Sleep, hours{hasHrv ? ' · HRV, ms (line)' : ''} · last 14 nights</div>
+      <div className={styles.chart}>
+        <ResponsiveContainer width="100%" height="100%">
+          <ComposedChart data={rec.nights} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
+            <XAxis dataKey="date" hide />
+            <YAxis yAxisId="h" width={24} domain={[0, 10]} ticks={[0, 6, 8]} axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#181610' }} />
+            <YAxis yAxisId="v" orientation="right" hide domain={['dataMin - 10', 'dataMax + 10']} />
+            <ReferenceLine yAxisId="h" y={7} stroke="rgba(24,22,16,0.25)" strokeDasharray="3 4" />
+            <Bar yAxisId="h" dataKey="sleepH" isAnimationActive={false}>
+              {rec.nights.map(n => (
+                <Cell key={n.date} fill={n.sleepH !== null && n.sleepH < 6 ? '#E64D19' : '#181610'} />
+              ))}
+            </Bar>
+            {hasHrv && (
+              <Line yAxisId="v" type="monotone" dataKey="hrv" stroke="#E64D19" strokeWidth={2} dot={{ r: 2 }} connectNulls isAnimationActive={false} />
+            )}
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
+      {rec.compare.map(c => (
+        <div key={c.label} className={styles.ratioRow}>
+          <span>{c.label}</span>
+          <span className={styles.ratioTarget}>{c.sessions} rated session{c.sessions === 1 ? '' : 's'}</span>
+          <b>{c.effort === null ? '--' : `${c.effort}/10`}</b>
+        </div>
+      ))}
+      <div className={styles.hint}>
+        Bars under 6 hours in orange; the dashed line is 7. Effort is how hard sessions felt. The same sessions feeling harder after short nights is the reason TIRED exists.
+      </div>
     </div>
   );
 }

@@ -166,3 +166,12 @@ describe('recommendation copy', () => {
     for (const r of cases) expect(r?.reason.length ?? 0, r?.reason).toBeLessThanOrEqual(45);
   });
 });
+
+describe('recommend on a TIRED day', () => {
+  it('never picks STRONG or ASSESS', () => {
+    const block = getBlockWeek(null, [], NOW);
+    const r = recommend({ progress: {}, benchmarkResults: [], block, tired: true, now: NOW, sessionLog: [session(iso(2026, 8, 1), 'daily-01', 'DAILY')], climbLog: [] });
+    expect(r?.mode).toBe('DAILY');
+    expect(r!.reason.length).toBeLessThanOrEqual(45);
+  });
+});

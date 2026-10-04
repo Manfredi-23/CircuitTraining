@@ -7,6 +7,7 @@ import { getModeData } from '@/core/data-index';
 import { getCapacityLevel, getReadiness, estimateDuration, asksPainCheck, applyPainCheck } from '@/core/engine';
 import { getBlockWeek } from '@/core/block';
 import { recommend } from '@/core/recommend';
+import { healthReadiness } from '@/core/health';
 import { localDate } from '@/core/dates';
 import { sessionListFor } from '@/store/slices/workout-slice';
 import { CONFIG } from '@/core/config';
@@ -21,7 +22,7 @@ export default function HomeScreen() {
   const {
     mode, circuitIndex, energy, humorLine,
     pendingDecayEvents, progress, benchmarkResults, sessionLog, climbLog, blockStart,
-    recommendedOn, showRecommended,
+    recommendedOn, showRecommended, health, settings, energySuggestedOn, suggestEnergy,
     setMode, changeCircuit, setEnergy, setScreen, openClimbLog,
     startWorkout, dismissDecay,
   } = useStore();
@@ -34,15 +35,27 @@ export default function HomeScreen() {
   const circuits = getModeData(mode);
   const circuit = circuits[circuitIndex];
 
+  // Apple Health: sleep and HRV against the athlete's own week suggest an
+  // energy. Applied once a day; any tap on the tabs overrides it.
+  const healthDay = useMemo(
+    () => (settings.health.connected ? healthReadiness(health) : null),
+    [health, settings.health.connected],
+  );
   // Where this week sits in the training block, and what today calls for.
   const block = getBlockWeek(blockStart, sessionLog);
   const recommendation = useMemo(
-    () => recommend({ sessionLog, climbLog, progress, benchmarkResults, block }),
+    () => recommend({ sessionLog, climbLog, progress, benchmarkResults, block, tired: healthDay?.energy === 'TIRED' }),
     // block is derived from blockStart and sessionLog.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [sessionLog, climbLog, progress, benchmarkResults, blockStart],
+    [sessionLog, climbLog, progress, benchmarkResults, blockStart, healthDay],
   );
   const isRecommended = recommendation?.circuitId === circuit.id;
+
+  useEffect(() => {
+    const today = localDate();
+    if (!healthDay || energySuggestedOn === today) return;
+    suggestEnergy(healthDay.energy, today);
+  }, [healthDay, energySuggestedOn, suggestEnergy]);
 
   // Open on the recommendation once a day; after that the athlete's own
   // choice of card stands.
@@ -131,6 +144,13 @@ export default function HomeScreen() {
         </div>
       )}
 
+      {/* A rough night: say why TIRED was picked */}
+      {healthDay?.energy === 'TIRED' && (
+        <div className={styles.readinessBanner}>
+          TIRED suggested: {healthDay.reasons.join(', ')}.
+        </div>
+      )}
+
       {/* Recovery warning — the app should not reward training fingers too soon */}
       {readiness.level !== 'ready' && (
         <div className={`${styles.readinessBanner} ${readiness.level === 'rest' ? styles.readinessRest : ''}`}>
@@ -187,7 +207,8 @@ export default function HomeScreen() {
               key={e}
               role="tab"
               aria-selected={e === energy}
-              className={`${styles.energyTab}${e === energy ? ` ${styles.energyTabActive}` : ''}`}
+              className={`${styles.energyTab}${e === energy ? ` ${styles.energyTabActive}` : ''}${e === healthDay?.energy ? ` ${styles.energyTabSuggested}` : ''}`}
+              title={e === healthDay?.energy ? `Suggested by Apple Health: ${healthDay.reasons.join(', ')}` : undefined}
               onClick={(ev) => { ev.stopPropagation(); setEnergy(e); }}
             >
               {e}

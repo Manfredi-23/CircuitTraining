@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { useStore } from '@/store/store';
+import { saveWorkout } from '@/native/health';
 import { CONFIG } from '@/core/config';
 import { getBenchmark } from '@/core/benchmarks';
 import ScalePicker from '@/components/shared/ScalePicker';
@@ -13,6 +15,16 @@ export default function CompleteScreen() {
     sessionLog, rateLastSession, sessionPBs,
   } = useStore();
   const effort = sessionLog[sessionLog.length - 1]?.effort;
+  const health = useStore(s => s.settings.health);
+
+  // Saved to Apple Health once, when the screen first shows. DAILY is core
+  // and mobility work; CAVE and TEST are strength.
+  const savedRef = useRef(false);
+  useEffect(() => {
+    if (savedRef.current || !health.connected || !health.writeWorkouts || !sessionStartTime || !circuit) return;
+    savedRef.current = true;
+    void saveWorkout(new Date(sessionStartTime), new Date(), mode === 'DAILY' ? 'core' : 'strength', `${mode} ${circuit.title}`);
+  }, [health.connected, health.writeWorkouts, sessionStartTime, circuit, mode]);
 
   const duration = sessionStartTime ? Math.round((Date.now() - sessionStartTime) / 60000) : 0;
 

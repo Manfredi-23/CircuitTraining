@@ -100,7 +100,9 @@ export default function ClimbScreen() {
 
   const save = () => {
     if (draft.climbs.length === 0) return;
-    saveClimbSession(draft);
+    // A Health import becomes a full entry once its climbs are added.
+    const { draft: _imported, ...complete } = draft;
+    saveClimbSession(complete);
     setDraft(blankSession());
   };
 
@@ -282,7 +284,9 @@ export default function ClimbScreen() {
                   <span>{s.date}</span>
                   <span className={styles.sessionVenue}>{describeVenue(s)}</span>
                 </span>
-                <span className={styles.sessionClimbs}>{describeClimbs(s.climbs)}</span>
+                <span className={styles.sessionClimbs}>
+                  {s.draft ? `From Apple Health, ${s.durationMin ?? '?'} min. Tap to add the climbs.` : describeClimbs(s.climbs)}
+                </span>
               </button>
             ))}
           </div>

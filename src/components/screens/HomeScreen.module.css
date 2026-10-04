@@ -148,3 +148,4 @@
 /* Block week beside the duration: the deload is the one worth noticing. */
 .blockWeek { margin-left: 10px; font-weight: 500; color: var(--ink-dim); }
 .blockDeload { margin-left: 10px; color: var(--accent); }
+.energyTabSuggested { color: var(--accent); }
