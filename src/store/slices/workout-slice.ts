@@ -28,8 +28,11 @@ export interface WorkoutSlice {
   doneSets: Record<string, number>;
   /** Best clean attempt so far on a ramp test, as entered on the stepper. */
   rampBest: number | null;
+  /** Pain score given before this session, when it was asked. */
+  sessionPain: number | null;
 
-  startWorkout: () => void;
+  /** Start the selected session. `pain` is the pre-session score, for finger sessions. */
+  startWorkout: (pain?: number) => void;
   exerciseDone: () => void;
   /** Ramp test: this attempt was clean. Rest, then a harder one. */
   attemptMade: () => void;
@@ -59,12 +62,16 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   exerciseTimerActive: false,
   doneSets: {},
   rampBest: null,
+  sessionPain: null,
 
-  startWorkout: () => {
+  startWorkout: (pain) => {
     const { mode, circuitIndex, energy, progress, benchmarkResults } = get();
     const circuits = getModeData(mode);
     const circuit = circuits[circuitIndex];
-    const exerciseList = Engine.buildList(circuit, energy, progress, benchmarkResults);
+    const exerciseList = Engine.applyPainCheck(
+      Engine.buildList(circuit, energy, progress, benchmarkResults),
+      pain,
+    );
 
     set({
       circuit,
@@ -78,6 +85,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       exerciseTimerActive: false,
       doneSets: {},
       rampBest: null,
+      sessionPain: pain ?? null,
       screen: 'workout',
     });
 
@@ -267,7 +275,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   setExerciseTimerActive: (active) => set({ exerciseTimerActive: active }),
 
   completeSession: () => {
-    const { circuit, mode, energy, sessionStartTime, progress, exerciseList, doneSets } = get();
+    const { circuit, mode, energy, sessionStartTime, progress, exerciseList, doneSets, sessionPain } = get();
     if (!circuit) return;
 
     const duration = sessionStartTime ? Math.round((Date.now() - sessionStartTime) / 60000) : 0;
@@ -285,6 +293,8 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       energy,
       duration,
       sets: doneSets,
+      planned: Object.fromEntries(exerciseList.map(ex => [ex.id, ex.scaledSets])),
+      ...(sessionPain !== null ? { pain: sessionPain } : {}),
     }];
 
     set({ progress: newProgress, sessionLog, screen: 'complete' });

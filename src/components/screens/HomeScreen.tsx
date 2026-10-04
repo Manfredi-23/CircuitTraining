@@ -4,24 +4,26 @@ import { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { useStore } from '@/store/store';
 import { getModeData } from '@/core/data-index';
-import { getCapacityLevel, getReadiness, buildList, estimateDuration } from '@/core/engine';
+import { getCapacityLevel, getReadiness, buildList, estimateDuration, asksPainCheck, applyPainCheck } from '@/core/engine';
 import { CONFIG } from '@/core/config';
 import { useSwipe } from '@/hooks/use-swipe';
 import SettingsOverlay from '@/components/shared/SettingsOverlay';
 import SessionInfo from '@/components/shared/SessionInfo';
+import PainCheck from '@/components/shared/PainCheck';
 import type { Mode, EnergyKey } from '@/core/types';
 import styles from './HomeScreen.module.css';
 
 export default function HomeScreen() {
   const {
     mode, circuitIndex, energy, humorLine,
-    pendingDecayEvents, progress, benchmarkResults,
+    pendingDecayEvents, progress, benchmarkResults, sessionLog,
     setMode, changeCircuit, setEnergy, setScreen, openClimbLog,
     startWorkout, dismissDecay,
   } = useStore();
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
+  const [painOpen, setPainOpen] = useState(false);
   const [cardKey, setCardKey] = useState(0);
 
   const circuits = getModeData(mode);
@@ -37,8 +39,15 @@ export default function HomeScreen() {
     onSwipeRight: () => handleSwipe(-1),
   });
 
+  // Finger sessions ask how fingers and wrists feel before they start.
+  const begin = () => {
+    if (asksPainCheck(circuit)) setPainOpen(true);
+    else startWorkout();
+  };
+  const lastPain = [...sessionLog].reverse().find(s => s.pain !== undefined)?.pain ?? null;
+
   const handleCardClick = () => {
-    if (!swipeInProgress.current) startWorkout();
+    if (!swipeInProgress.current) begin();
   };
 
   // Dots map the weakest capacity this session trains to a filled count.
@@ -202,6 +211,14 @@ export default function HomeScreen() {
       </button>
 
       <SettingsOverlay open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <PainCheck
+        open={painOpen}
+        title={circuit.title}
+        lastPain={lastPain}
+        remainingFor={pain => applyPainCheck(list, pain).filter(e => e.block !== 'WARMUP').length}
+        onClose={() => setPainOpen(false)}
+        onStart={pain => { setPainOpen(false); startWorkout(pain); }}
+      />
       <SessionInfo
         open={infoOpen}
         mode={mode}
@@ -210,7 +227,7 @@ export default function HomeScreen() {
         energy={energy}
         duration={duration}
         onClose={() => setInfoOpen(false)}
-        onStart={() => { setInfoOpen(false); startWorkout(); }}
+        onStart={() => { setInfoOpen(false); begin(); }}
       />
     </div>
   );

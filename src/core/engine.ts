@@ -343,6 +343,62 @@ export function getReadiness(circuit: Circuit, progress: Progress): Readiness {
 }
 
 // ---------------------------------------------------------------------------
+// Pain check
+//
+// Fingers and wrists are symptomatic, so finger sessions start by asking for a
+// 0-10 pain score. The bands follow the pain-monitoring model used in tendon
+// rehabilitation, made stricter for pulleys, which do not give a second
+// warning: up to 2 trains as written; 3-5 keeps the finger work but
+// below maximal and one set shorter, with no maximal tests; 6 and above takes
+// the finger work out of the session altogether.
+// ---------------------------------------------------------------------------
+
+/** Capacities that put load through the finger flexors and pulleys. */
+const FINGER_LOADED: Capacity[] = ['crimp', 'openhand', 'forearm'];
+
+export function loadsFingers(exercise: Exercise): boolean {
+  return exercise.capacities.some(c => FINGER_LOADED.includes(c));
+}
+
+/** Whether a session should ask the pain question before it starts. */
+export function asksPainCheck(circuit: Circuit): boolean {
+  return circuit.exercises.some(e => e.block !== 'WARMUP' && loadsFingers(e));
+}
+
+export type PainBand = 'clear' | 'reduce' | 'remove';
+
+export const PAIN_REDUCE_FROM = 3;
+export const PAIN_REMOVE_FROM = 6;
+
+export function painBand(pain: number): PainBand {
+  if (pain >= PAIN_REMOVE_FROM) return 'remove';
+  if (pain >= PAIN_REDUCE_FROM) return 'reduce';
+  return 'clear';
+}
+
+export const PAIN_MESSAGES: Record<PainBand, string> = {
+  clear: 'Train as written.',
+  reduce: 'Finger work stays, below maximal and one set shorter. No maximal finger tests today.',
+  remove: 'Finger work comes out of this session. If it is still above 5 tomorrow morning, see a physio.',
+};
+
+export function applyPainCheck(list: ScaledExercise[], pain: number | null | undefined): ScaledExercise[] {
+  if (pain === null || pain === undefined) return list;
+  const band = painBand(pain);
+  if (band === 'clear') return list;
+  if (band === 'remove') return list.filter(e => !loadsFingers(e));
+  return list.flatMap(e => {
+    if (!loadsFingers(e)) return [e];
+    // A test under pain measures the pain, not the capacity.
+    if (e.block === 'TEST' && e.intensity === 'MAX') return [];
+    if (e.fixed || e.block === 'WARMUP') return [e];
+    const capped = INTENSITY_ORDER.indexOf(e.appliedIntensity) > INTENSITY_ORDER.indexOf('HARD')
+      ? 'HARD' as Intensity : e.appliedIntensity;
+    return [{ ...e, appliedIntensity: capped, scaledSets: Math.max(1, e.scaledSets - 1) }];
+  });
+}
+
+// ---------------------------------------------------------------------------
 // XP mutations (return new progress — immutable)
 // ---------------------------------------------------------------------------
 

@@ -3,13 +3,16 @@
 import { useStore } from '@/store/store';
 import { CONFIG } from '@/core/config';
 import { getBenchmark } from '@/core/benchmarks';
+import ScalePicker from '@/components/shared/ScalePicker';
 import styles from './CompleteScreen.module.css';
 
 export default function CompleteScreen() {
   const {
     mode, energy, circuit, sessionStartTime, sessionLevelUps,
     setScreen, pickHumorLine, openClimbLog, benchmarkResults,
+    sessionLog, rateLastSession,
   } = useStore();
+  const effort = sessionLog[sessionLog.length - 1]?.effort;
 
   const duration = sessionStartTime ? Math.round((Date.now() - sessionStartTime) / 60000) : 0;
 
@@ -47,6 +50,21 @@ export default function CompleteScreen() {
           <span className={styles.metaLabel}>Energy</span>
           <span className={styles.metaVal}>{energy}</span>
         </div>
+      </div>
+
+      {/* Session effort x minutes is the training load the LOAD chart and the
+          load suggestions read. Asked once, here, while it is still fresh. */}
+      <div className={styles.effort}>
+        <div className={styles.effortTitle}>HOW HARD WAS THAT?</div>
+        <ScalePicker
+          min={1}
+          max={10}
+          value={effort}
+          onChange={rateLastSession}
+          label="Session effort, 1 to 10"
+          lowText="VERY EASY"
+          highText="MAXIMAL"
+        />
       </div>
 
       {sessionLevelUps.length > 0 && (

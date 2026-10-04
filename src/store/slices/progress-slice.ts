@@ -17,6 +17,8 @@ export interface ProgressSlice {
   dismissDecay: () => void;
   recordBenchmark: (result: BenchmarkResult) => void;
   resetAllData: () => void;
+  /** Session effort for the session just finished. */
+  rateLastSession: (effort: number) => void;
   /** Replace everything persisted with a backup's contents. */
   importBackup: (data: Partial<Record<PersistedKey, unknown>>) => void;
 }
@@ -41,6 +43,13 @@ export const createProgressSlice: StateCreator<Store, [], [], ProgressSlice> = (
   recordBenchmark: (result) => set(state => ({
     benchmarkResults: addResult(state.benchmarkResults, result),
   })),
+
+  rateLastSession: (effort) => set(state => {
+    if (state.sessionLog.length === 0) return {};
+    const log = [...state.sessionLog];
+    log[log.length - 1] = { ...log[log.length - 1], effort };
+    return { sessionLog: log };
+  }),
 
   resetAllData: () => set({
     progress: {},

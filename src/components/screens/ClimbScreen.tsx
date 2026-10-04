@@ -7,17 +7,22 @@ import {
   BOARD_ANGLES, GYM_COLOURS, gradeLabel, gradesOf, localDate, scaleFor,
 } from '@/core/climbing';
 import type { BoardName, ClimbDiscipline, ClimbEntry, ClimbSession, ClimbVenue } from '@/core/types';
+import ScalePicker from '@/components/shared/ScalePicker';
 import styles from './ClimbScreen.module.css';
 
 const VENUES: ClimbVenue[] = ['BOARD', 'GYM', 'OUTDOOR'];
 const BOARDS: BoardName[] = ['KILTER', 'TENSION'];
 const DISCIPLINES: ClimbDiscipline[] = ['BOULDER', 'ROPE'];
 
+/** Minutes on the wall. A Minimum session runs about two hours. */
+const DURATION = { min: 15, max: 360, step: 15, default: 120 };
+
 const newId = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 
 function blankSession(): ClimbSession {
   return {
     id: newId(), date: localDate(), venue: 'GYM', discipline: 'BOULDER', climbs: [],
+    durationMin: DURATION.default,
   };
 }
 
@@ -226,6 +231,36 @@ export default function ClimbScreen() {
               })}
             </div>
           )}
+
+          <div className={styles.row}>
+            <span className={styles.label}>MINUTES</span>
+            <div className={styles.stepper}>
+              <button
+                className={styles.stepBtn}
+                disabled={(draft.durationMin ?? DURATION.default) <= DURATION.min}
+                onClick={() => patch({ durationMin: Math.max(DURATION.min, (draft.durationMin ?? DURATION.default) - DURATION.step) })}
+                aria-label="Shorter"
+              >-</button>
+              <span className={styles.stepValue}>{draft.durationMin ?? '--'}</span>
+              <button
+                className={styles.stepBtn}
+                disabled={(draft.durationMin ?? DURATION.default) >= DURATION.max}
+                onClick={() => patch({ durationMin: Math.min(DURATION.max, (draft.durationMin ?? DURATION.default) + DURATION.step) })}
+                aria-label="Longer"
+              >+</button>
+            </div>
+          </div>
+
+          <div className={styles.label}>HOW HARD WAS IT?</div>
+          <ScalePicker
+            min={1}
+            max={10}
+            value={draft.effort}
+            onChange={v => patch({ effort: v })}
+            label="Session effort, 1 to 10"
+            lowText="VERY EASY"
+            highText="MAXIMAL"
+          />
 
           <button className={styles.saveBtn} disabled={draft.climbs.length === 0} onClick={save}>
             {editing ? 'SAVE CHANGES' : `SAVE SESSION${draft.climbs.length ? ` (${draft.climbs.length})` : ''}`}
