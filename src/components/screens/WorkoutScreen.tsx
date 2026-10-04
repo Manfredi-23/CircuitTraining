@@ -2,24 +2,16 @@
 
 import { useStore } from '@/store/store';
 import { getCapacityLevel } from '@/core/engine';
-import { getProtocol } from '@/core/protocols';
 import { CONFIG } from '@/core/config';
 import { getLoadAxis, formatLoad } from '@/core/load';
 import LoadLogger from '@/components/shared/LoadLogger';
-import type { FormGuide } from '@/core/types';
+import FormGuide from '@/components/shared/FormGuide';
+import SessionProgressBar from '@/components/shared/SessionProgressBar';
 import styles from './WorkoutScreen.module.css';
-
-const FORM_SECTIONS: { key: keyof FormGuide; label: string }[] = [
-  { key: 'setup', label: 'SETUP' },
-  { key: 'execution', label: 'EXECUTION' },
-  { key: 'cue', label: 'CUE' },
-  { key: 'breathing', label: 'BREATHING' },
-  { key: 'mistakes', label: 'MISTAKES' },
-];
 
 export default function WorkoutScreen() {
   const {
-    mode, circuit, exerciseList, stepIndex, setIndex,
+    mode, circuit, stepIndex, setIndex,
     currentExercise, swapActive, formGuideOpen, progress,
     exerciseDone, exerciseSkip, exitWorkout, toggleSwap, toggleFormGuide,
     rampBest, attemptMade, attemptFailed, finishRamp,
@@ -27,12 +19,8 @@ export default function WorkoutScreen() {
 
   if (!currentExercise || !circuit) return null;
 
-  const totalSteps = exerciseList.length;
-  const pct = totalSteps > 0 ? ((stepIndex + 1) / totalSteps) * 100 : 0;
-
   const hasVariations = currentExercise.variations && currentExercise.variations.length > 1;
   const baseName = currentExercise.variations?.[0]?.name || currentExercise.name;
-  const protocol = getProtocol(currentExercise.protocolId);
   const ramp = currentExercise.ramp;
   const axis = getLoadAxis(currentExercise);
   const bestText = rampBest !== null && axis ? formatLoad(rampBest, axis) : null;
@@ -45,13 +33,10 @@ export default function WorkoutScreen() {
         <button className={styles.exitBtn} onClick={exitWorkout}>EXIT</button>
         <span className={styles.modeLabel}>{mode} [{circuit.title}]</span>
         <span className={styles.energyBadge}>{currentExercise.appliedIntensity}</span>
-        <span className={styles.step}>{stepIndex + 1}/{totalSteps}</span>
       </div>
 
-      {/* Progress bar */}
-      <div className={styles.progressBar}>
-        <div className={styles.progressFill} style={{ width: `${pct}%` }} />
-      </div>
+      {/* Every set of the session, grouped by exercise */}
+      <SessionProgressBar />
 
       {/* Scrollable content */}
       <div className={styles.scroll}>
@@ -111,34 +96,7 @@ export default function WorkoutScreen() {
           <p className={styles.progressionText}>{currentExercise.progression}</p>
         </div>
 
-        {/* Form guide */}
-        {currentExercise.form && (
-          <>
-            <div className={styles.formToggle} onClick={toggleFormGuide}>
-              <span className={styles.btnFormToggle}>FORM GUIDE</span>
-              <span className={styles.btnFormToggle}>{formGuideOpen ? '-' : '+'}</span>
-            </div>
-            {formGuideOpen && (
-              <div className={styles.formContent}>
-                {FORM_SECTIONS.map(({ key, label }) => (
-                  currentExercise.form?.[key] ? (
-                    <div key={key} className={styles.formSection}>
-                      <span className={styles.formLabel}>{label}</span>
-                      <p className={styles.formText}>{currentExercise.form[key]}</p>
-                    </div>
-                  ) : null
-                ))}
-                {protocol && (
-                  <div className={styles.formSection}>
-                    <span className={styles.formLabel}>WHY</span>
-                    <p className={styles.formText}>{protocol.rationale}</p>
-                    <p className={styles.formSource}>{protocol.source}</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </>
-        )}
+        <FormGuide exercise={currentExercise} open={formGuideOpen} onToggle={toggleFormGuide} />
       </div>
 
       {/* Actions */}

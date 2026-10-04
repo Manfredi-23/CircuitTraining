@@ -78,6 +78,7 @@ src/
     widget.ts    # the TodayWidget snapshot
     backup.ts    # export / import format; PERSISTED_KEYS
     dates.ts     # local-date helpers
+    session-progress.ts # the set-by-set progress bar on the workout card and rest
     data-daily.ts, data-cave.ts, data-assess.ts  # Session libraries, one per tab
     data-oap.ts  # One-arm pull-up path, shared by CAVE 01 and CAVE 02
     data-index.ts  # getModeData(mode) helper
@@ -88,7 +89,8 @@ src/
                  # health.ts, widget.ts — bridges to the local Health and TodayWidget plugins
   components/
     screens/     # HomeScreen, WorkoutScreen, RestScreen, CompleteScreen, StatsScreen, ClimbScreen
-    shared/      # SettingsOverlay, TimerFlash, LoadLogger, ClimbStats, SessionInfo, StatsSections
+    shared/      # SettingsOverlay, TimerFlash, LoadLogger, ClimbStats, SessionInfo, StatsSections,
+                 #   FormGuide, SessionProgressBar
   app/           # layout.tsx, page.tsx (screen router), globals.css
 ios/             # Xcode project (Capacitor 8, SPM)
 tools/           # generate-ios-assets.py — icon and splash from logo.svg
@@ -121,6 +123,9 @@ design/          # pixel-grid.svg drawing template; illustrations/<name>/NN.svg 
   `next build` can still prerender it in Node. Prefer a web standard over a
   Capacitor plugin where one exists — screen wake uses the Wake Lock API, not a
   plugin, and so works in both shells.
+- **Rest is for getting ready**: the rest screen previews the next piece of
+  work (the store already points at it when rest starts) with its form guide
+  open for a new exercise, and both screens carry the set-by-set progress bar.
 - **Timers count against the clock**: `use-timer` reads a `Date.now()` deadline
   rather than decrementing per tick. iOS suspends timers when the app
   backgrounds or the screen locks, and a decrementing counter silently loses
@@ -473,7 +478,9 @@ keeps all three in sync. Do not hand-edit the PNGs.
 
 ## Handoff Documents
 
-- **`7bit-handover-v16.md`** — **start here.** The whole improvement roadmap:
+- **`7bit-handover-v17.md`** — **start here.** Rest shows the next exercise
+  with its form guide; a set-by-set progress bar on the card and on rest.
+- **`7bit-handover-v16.md`** — read second. The whole improvement roadmap:
   backup, Vitest, pain check, effort and load, mesocycle, suggested loads,
   recommended session, six STATS sections, reminders, Apple Health, widget,
   and the Xcode steps the native parts still need.
