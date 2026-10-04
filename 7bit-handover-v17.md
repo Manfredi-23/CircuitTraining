@@ -13,6 +13,11 @@ show what is coming next, with its form guide, so there is time to get ready;
 and a progress bar that shows both the set within the exercise and the place
 in the whole session.
 
+Then, from the same ASSESS: the front lever ramp, the trunk flexor hold and
+the back extension hold were skipped. The athlete tests alone, the gym
+reliably has only a bar, and a front lever cannot be graded alone. Those three
+were replaced with tests that need only a bar or a mat and score themselves.
+
 ## 2. What changed
 
 - **Rest shows what is next.** Under a smaller ring (with +60S and SKIP REST
@@ -29,6 +34,18 @@ in the whole session.
   Ramps draw their expected attempts and grow a cell at a time if the ladder
   runs past them, up to the hard stop. Skipped exercises count as passed:
   the bar is position, not achievement.
+- **ASSESS, bar and mat only.** Front lever ramp -> max strict
+  **toes-to-bar** (TRUNK, a rep counts only if the toes touch). McGill
+  trunk flexor hold -> **hollow body hold** (ends when the lower back leaves
+  the mat). Back extension hold (Biering-Sorensen) -> **prone extension
+  hold**, the Ito test (face down, breastbone just off the floor). New
+  benchmarks `toes-to-bar`, `hollow-hold`, `prone-extension-hold`, with no
+  standards: tracked against your own results. The old three benchmarks stay,
+  so any results show as history, sorted last in STATS. The McGill ratios
+  now show only left / right side bridge unless old flexor or extensor
+  results exist. ASSESS is now 76 min NORMAL, 88 TIRED (was 81).
+  `src/core/__tests__/assess.test.ts` checks every ASSESS result maps to a
+  benchmark and none of the retired ones is recorded.
 - New core module `src/core/session-progress.ts` (`sessionProgress`), tested
   in `src/core/__tests__/session-progress.test.ts`.
 - New shared components `SessionProgressBar` and `FormGuide` (the guide was
@@ -36,7 +53,7 @@ in the whole session.
 
 ## 3. Verified
 
-`npx tsc --noEmit`, `npm test` (68 passing), `npm run check:daily`,
+`npx tsc --noEmit`, `npm test` (71 passing), `npm run check:daily`,
 `npm run check:cave`, `npm run build`. Walked TEST 01 and CAVE 01 in a
 390 x 844 browser: workout card, rest before another set, rest before a new
 exercise. Largest session is CAVE 01 FRESH at 38 sets over 10 exercises;
@@ -44,8 +61,9 @@ ASSESS is 31 cells over 18 groups, both fit the 342px width.
 
 ## 4. Repo state
 
-This work merged as one PR from `claude/rest-preview-progress`; branch
-deleted from the Mac if the cloud proxy refused (section 6). Otherwise as
+The rest preview merged as PR #25 from `claude/rest-preview-progress`; the
+ASSESS change as the PR after it from `claude/assess-bar-and-mat`. Delete
+both branches from the Mac if the cloud proxy refused (section 6). Otherwise as
 in v16: no open PRs, `main` is the latest.
 
 ## 5. Open items
@@ -54,7 +72,9 @@ in v16: no open PRs, `main` is the latest.
    guide should also open for every set, and whether the load stepper belongs
    on rest too (left on the card for now, so a load is never set from two
    places).
-2. Everything open in v16 section 5 still stands (Xcode build and
+2. The next ASSESS is the first baseline for toes-to-bar, hollow hold and
+   prone extension: no comparison until the one after.
+3. Everything open in v16 section 5 still stands (Xcode build and
    capabilities, ASSESS retest, graphics rework, Supabase, Vercel).
 
 ## 6. Mac terminal commands
@@ -66,6 +86,8 @@ git checkout main
 git pull
 git branch -d claude/rest-preview-progress 2>/dev/null
 git push origin --delete claude/rest-preview-progress 2>/dev/null
+git branch -d claude/assess-bar-and-mat 2>/dev/null
+git push origin --delete claude/assess-bar-and-mat 2>/dev/null
 npm install
 npx tsc --noEmit
 npm test
