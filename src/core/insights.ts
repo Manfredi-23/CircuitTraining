@@ -5,10 +5,15 @@
 // the load log, benchmark results and the climb log. Pure functions, no React.
 // =============================================================================
 
-import { BENCHMARKS, latestResult, resultHistory, targetsForBoulderGrade } from './benchmarks';
+import { BENCHMARKS, currentBodyweight, latestResult, resultHistory, targetsForBoulderGrade } from './benchmarks';
+import { CONFIG } from './config';
+import { getModeData } from './data-index';
+import { OAP_ASSISTED_GATE, OAP_NEGATIVE_GATE } from './data-oap';
+import { asksPainCheck } from './engine';
+import { loadItems, weeklyLoad } from './training-load';
 import { getBestPerWeek, localDate, mondayOf, viewFor, type ClimbView } from './climbing';
 import type {
-  Benchmark, BenchmarkResult, ClimbSession, LoadLogEntry, SessionLogEntry,
+  Benchmark, BenchmarkResult, Capacity, ClimbSession, LoadLogEntry, Progress, SessionLogEntry,
 } from './types';
 
 function addDays(date: string, n: number): string {
@@ -272,3 +277,165 @@ export function getClimbVsPull(
   return out;
 }
 
+
+// ---- 7. Freshness ------------------------------------------------------------------
+
+export interface FreshnessRow {
+  capacity: Capacity;
+  /** Whole days since last trained, or null if never. */
+  days: number | null;
+  graceDays: number;
+}
+
+/** Days since each capacity was trained, against the grace before it starts to fade. Stalest first, never-trained last. */
+export function getFreshness(progress: Progress, now = new Date()): FreshnessRow[] {
+  const rows = CONFIG.capacities.map(capacity => {
+    const last = progress[capacity]?.lastTrained;
+    const days = last ? Math.floor((now.getTime() - new Date(last).getTime()) / 86400000) : null;
+    return { capacity, days, graceDays: CONFIG.decay.rates[capacity].graceDays };
+  });
+  // Never trained sorts last: that is a new install, not neglect.
+  const share = (r: FreshnessRow) => (r.days === null ? -1 : r.days / r.graceDays);
+  return rows.sort((a, b) => share(b) - share(a));
+}
+
+// ---- 8. One-arm path -------------------------------------------------------------------
+
+export interface OapGate {
+  label: string;
+  value: number;
+  /** Kilos on the belt for a 2RM at this gate, at the current bodyweight. */
+  addedKg: number;
+  reached: boolean;
+  /** Projected date from the trend of tested results, when it is rising. */
+  projected: string | null;
+}
+
+export interface OapPath {
+  points: { date: string; value: number }[];
+  gates: OapGate[];
+}
+
+/** Days of tested history needed before a projection is drawn. */
+const OAP_PROJECTION_MIN_DAYS = 21;
+/** Projections further out than this are noise, not a plan. */
+const OAP_PROJECTION_MAX_DAYS = 730;
+
+/**
+ * Weighted pull-up 2RM as % bodyweight, against the two one-arm gates. Old
+ * 5RM-method results are converted the way the gates read them.
+ */
+export function getOneArmPath(results: BenchmarkResult[]): OapPath {
+  const direct = resultHistory(results, 'weighted-pullup-2rm');
+  const old = resultHistory(results, 'weighted-pullup')
+    .map(r => ({ ...r, value: Math.round(r.value / 1.067) }));
+  const points = [...old, ...direct]
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .map(r => ({ date: r.date.slice(0, 10), value: r.value }));
+
+  const bw = currentBodyweight(results);
+  const latest = points.length ? points[points.length - 1].value : null;
+
+  // Least-squares slope in % per day over the tested history.
+  let slope: number | null = null;
+  if (points.length >= 2) {
+    const t = points.map(p => new Date(`${p.date}T12:00:00`).getTime() / 86400000);
+    const span = t[t.length - 1] - t[0];
+    if (span >= OAP_PROJECTION_MIN_DAYS) {
+      const mt = t.reduce((a, b) => a + b, 0) / t.length;
+      const mv = points.reduce((a, p) => a + p.value, 0) / points.length;
+      const num = t.reduce((a, ti, i) => a + (ti - mt) * (points[i].value - mv), 0);
+      const den = t.reduce((a, ti) => a + (ti - mt) ** 2, 0);
+      slope = den ? num / den : null;
+    }
+  }
+
+  const gate = (label: string, value: number): OapGate => {
+    const reached = latest !== null && latest >= value;
+    let projected: string | null = null;
+    if (!reached && latest !== null && slope && slope > 0) {
+      const days = Math.ceil((value - latest) / slope);
+      if (days <= OAP_PROJECTION_MAX_DAYS) {
+        const last = points[points.length - 1].date;
+        projected = addDays(last, Math.max(1, days));
+      }
+    }
+    return { label, value, addedKg: Math.round((bw * value) / 100 - bw), reached, projected };
+  };
+
+  return {
+    points,
+    gates: [gate('Assisted one-arms', OAP_ASSISTED_GATE), gate('One-arm negatives', OAP_NEGATIVE_GATE)],
+  };
+}
+
+// ---- 9. Fingers: pain against finger load ----------------------------------------------
+
+export interface FingerWeek {
+  monday: string;
+  /** Session-RPE load from boulder sessions and finger-loading training sessions. */
+  load: number;
+  /** Highest pain score given that week, or null if none was asked. */
+  maxPain: number | null;
+}
+
+export function getFingerWeeks(
+  sessionLog: SessionLogEntry[],
+  climbLog: ClimbSession[],
+  weeks = 12,
+  now = new Date(),
+): FingerWeek[] {
+  const fingerCircuits = new Set(
+    CONFIG.modes.flatMap(m => getModeData(m)).filter(asksPainCheck).map(c => c.id),
+  );
+  const items = loadItems(
+    sessionLog.filter(s => fingerCircuits.has(s.circuitId)),
+    climbLog.filter(c => c.discipline === 'BOULDER'),
+  );
+  const loads = weeklyLoad(items, weeks, now);
+  return loads.map(w => {
+    const end = addDays(w.monday, 7);
+    const pains = sessionLog
+      .filter(s => s.pain !== undefined)
+      .filter(s => { const d = localDate(new Date(s.date)); return d >= w.monday && d < end; })
+      .map(s => s.pain!);
+    return { monday: w.monday, load: w.total, maxPain: pains.length ? Math.max(...pains) : null };
+  });
+}
+
+// ---- 10. Exercises cut short -------------------------------------------------------------
+
+export interface SkipRow {
+  exerciseId: string;
+  name: string;
+  /** Sessions in which it was planned. */
+  planned: number;
+  /** Of those, sessions where fewer sets were done than planned. */
+  short: number;
+  /** Of those, sessions where it was skipped outright. */
+  skipped: number;
+}
+
+/** Exercises cut short most often over the last `days`, worst first. Needs planned sets, so newer sessions only. */
+export function getSkipped(sessionLog: SessionLogEntry[], days = 90, now = new Date()): SkipRow[] {
+  const since = addDays(localDate(now), -days);
+  const names = new Map<string, string>();
+  for (const c of CONFIG.modes.flatMap(m => getModeData(m))) {
+    for (const e of [...c.exercises, ...(c.substitutes ?? [])]) names.set(e.id, e.name);
+  }
+  const rows = new Map<string, SkipRow>();
+  for (const s of sessionLog) {
+    if (!s.planned || localDate(new Date(s.date)) < since) continue;
+    for (const [id, planned] of Object.entries(s.planned)) {
+      const done = s.sets?.[id] ?? 0;
+      const row = rows.get(id) ?? { exerciseId: id, name: names.get(id) ?? id, planned: 0, short: 0, skipped: 0 };
+      row.planned++;
+      if (done < planned) row.short++;
+      if (done === 0) row.skipped++;
+      rows.set(id, row);
+    }
+  }
+  return [...rows.values()]
+    .filter(r => r.short > 0)
+    .sort((a, b) => b.short / b.planned - a.short / a.planned || b.short - a.short);
+}
