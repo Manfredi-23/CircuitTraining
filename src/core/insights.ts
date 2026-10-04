@@ -93,10 +93,11 @@ export interface BenchmarkRow {
 
 /** Session order: strength, endurance, trunk, range; retired tests last. */
 const ROW_ORDER = [
-  'fs-2arm-20mm', 'weighted-pullup-2rm', 'front-lever',
+  'fs-2arm-20mm', 'weighted-pullup-2rm',
   'max-pullups', 'repeaters-20mm', 'max-pushups',
-  'trunk-flexor-hold', 'back-extension-hold', 'side-plank-left', 'side-plank-right',
+  'toes-to-bar', 'hollow-hold', 'prone-extension-hold', 'side-plank-left', 'side-plank-right',
   'hip-footraise', 'straddle', 'sit-reach', 'shoulder-reach',
+  'front-lever', 'trunk-flexor-hold', 'back-extension-hold',
 ];
 const rank = (id: string) => {
   const i = ROW_ORDER.indexOf(id);
@@ -139,7 +140,8 @@ export interface TrunkRatio {
  * McGill's torso endurance ratios. They separate people who have had back
  * trouble from those who have not better than any single hold does:
  * flexor / extensor below 1.0, each side bridge / extensor below 0.75, and
- * left / right within 0.05 of 1.0.
+ * left / right within 0.05 of 1.0. ASSESS now records only the side bridges
+ * of the four; the flexor and extensor ratios appear only from older results.
  */
 export function getTrunkRatios(results: BenchmarkResult[]): TrunkRatio[] {
   const v = (id: string) => latestResult(results, id)?.value ?? null;

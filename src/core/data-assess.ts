@@ -10,11 +10,13 @@
 //   MAX STRENGTH  ramps, not sets: each attempt harder than the last, MADE IT
 //                 or FAILED marked per attempt, the best clean one saved.
 //                 Max hang 20mm (7s, Lattice), weighted pull-up 2RM (the
-//                 rep range Lattice's 165% standard was collected in), front
-//                 lever progression.
+//                 rep range Lattice's 165% standard was collected in).
 //   ENDURANCE     one all-out set each: pull-ups, 7:3 repeaters, push-ups.
-//   TRUNK         McGill's four: flexor, extensor, left and right side bridge.
-//                 STATS reads them as ratios.
+//   TRUNK         toes-to-bar, hollow hold, prone extension (Ito), left and
+//                 right side bridge. Only a bar and a mat: the athlete tests
+//                 alone in a gym with no bench, no back extension and no
+//                 partner, and a front lever cannot be graded alone. STATS
+//                 reads the side bridges as a ratio.
 //
 // Every result is kept; STATS draws the history. Benchmarks, not XP, open the
 // one-arm gates.
@@ -236,53 +238,78 @@ const PUSHUPS: Exercise = {
   },
 };
 
-const BACK_HOLD: Exercise = {
-  id: 'test-back-extension',
-  name: 'TEST — Back Extension Hold',
+const TOES_TO_BAR: Exercise = {
+  id: 'test-toes-to-bar',
+  name: 'TEST — Max Strict Toes-to-Bar',
   section: 'TRUNK',
   capacities: ['tension'],
   block: 'TEST', intensity: 'MAX',
-  sets: 1, work: 120, unit: 'sec', restSec: 180,
-  load: { kind: 'bodyweight', text: 'Torso horizontal over the bench edge, arms crossed' },
-  progression: 'Enter the seconds held level. Average is about 146s. STATS reads the flexor and side planks against it.',
+  sets: 1, work: 10, unit: 'reps', restSec: 180,
+  load: { kind: 'bodyweight', text: 'Bodyweight, one all-out set' },
+  progression: 'Enter the strict reps. Tracked against your own last result.',
   protocolId: 'assessment',
-  note: 'The Biering-Sorensen test. The 45-degree back extension works if you hold the torso level with the floor.',
+  note: 'Replaces the front lever ramp: a rep counts or it does not, so it can be scored alone.',
   records: {
-    benchmarkId: 'back-extension-hold',
-    axis: { unit: 's', step: 1, min: 0, max: 300, prefix: '', label: 'SECONDS LEVEL' },
+    benchmarkId: 'toes-to-bar',
+    axis: { unit: 'reps', step: 1, min: 0, max: 50, prefix: '', label: 'STRICT REPS' },
     convert: 'identity',
   },
   form: {
-    setup: 'Hips on the edge of a bench or the back extension pad, ankles fixed, arms crossed on the chest.',
-    execution: 'Hold the torso horizontal, in line with the legs. The time ends when it drops below horizontal or you put a hand down.',
-    cue: 'Lower-back endurance is what the extensors are mostly asked for. This is the test the research uses, so the number means something.',
-    breathing: 'Slow and steady.',
-    mistakes: 'Arching above horizontal. Pad too high, blocking the hips. Stopping at the first discomfort rather than the first drop.',
+    setup: 'Dead hang, shoulder-width overhand grip, legs together. Same grip every test: ab straps are fine if they are used every time.',
+    execution: 'Lift the legs until the toes touch the bar, lower under control to a still dead hang. The set ends at the first rep that misses the bar or needs a swing.',
+    cue: 'Compression and straight-arm lat work on a bar: the same chain the front lever loads, scored as reps.',
+    breathing: 'Exhale on the way up.',
+    mistakes: 'Kipping off the swing. Bending the arms to shorten the lever. Counting a rep the toes did not touch.',
   },
 };
 
-const FLEXOR_HOLD: Exercise = {
-  id: 'test-trunk-flexor',
-  name: 'TEST — Trunk Flexor Hold',
+const HOLLOW_HOLD: Exercise = {
+  id: 'test-hollow-hold',
+  name: 'TEST — Hollow Body Hold',
+  section: 'TRUNK',
+  capacities: ['tension'],
+  block: 'TEST', intensity: 'MAX',
+  sets: 1, work: 60, unit: 'sec', restSec: 120,
+  load: { kind: 'bodyweight', text: 'On the mat, arms overhead, lower back pressed down' },
+  progression: 'Enter the seconds held. Tracked against your own last result.',
+  protocolId: 'assessment',
+  note: 'Replaces the McGill flexor hold, which needs a wedge or a partner.',
+  records: {
+    benchmarkId: 'hollow-hold',
+    axis: { unit: 's', step: 1, min: 0, max: 300, prefix: '', label: 'SECONDS HELD' },
+    convert: 'identity',
+  },
+  form: {
+    setup: 'On your back, lower back pressed flat into the mat. Arms straight overhead by the ears, legs straight and together.',
+    execution: 'Lift shoulders and feet a hand\'s width off the floor and hold. Time ends the moment the lower back leaves the mat, or a heel or hand touches down.',
+    cue: 'The lower back on the mat is the judge: you can feel the moment it lifts, so no one else is needed to call it.',
+    breathing: 'Short breaths, ribs kept down.',
+    mistakes: 'Letting the back arch and still counting. Lifting the shoulders so high it becomes a sit-up.',
+  },
+};
+
+const PRONE_HOLD: Exercise = {
+  id: 'test-prone-extension',
+  name: 'TEST — Prone Extension Hold',
   section: 'TRUNK',
   capacities: ['tension'],
   block: 'TEST', intensity: 'MAX',
   sets: 1, work: 120, unit: 'sec', restSec: 120,
-  load: { kind: 'bodyweight', text: 'Back held at 60 degrees, feet anchored' },
-  progression: 'Enter the seconds held. Average is about 144s. Should stay below the back extension time.',
+  load: { kind: 'bodyweight', text: 'Face down on the mat, chest just off the floor' },
+  progression: 'Enter the seconds held. Tracked against your own last result.',
   protocolId: 'assessment',
-  note: 'First of the McGill four. The ratios between them matter more than any one number.',
+  note: 'The Ito test. Replaces the back extension hold, which needs a bench and fixed ankles.',
   records: {
-    benchmarkId: 'trunk-flexor-hold',
+    benchmarkId: 'prone-extension-hold',
     axis: { unit: 's', step: 1, min: 0, max: 400, prefix: '', label: 'SECONDS HELD' },
     convert: 'identity',
   },
   form: {
-    setup: 'Sit with knees and hips bent to 90 degrees, feet hooked under a bar or held. Lean back to 60 degrees against a wedge or a partner\'s hands, arms crossed on the chest.',
-    execution: 'The support is moved 10cm back. Hold the 60-degree angle without it. Time ends when the back drops toward the support.',
-    cue: 'McGill\'s flexor test. Read with the extensor and side tests: a back that is weak against the front is the pattern associated with back trouble.',
-    breathing: 'Keep breathing; do not hold the breath.',
-    mistakes: 'Rounding forward to rest. Letting the angle drift back slowly and still counting it.',
+    setup: 'Face down, a folded towel or small cushion under the lower belly, arms by the sides, legs straight.',
+    execution: 'Lift the chest until the breastbone just clears the floor, chin tucked, and hold. Time ends when the chest touches down.',
+    cue: 'Lower-back endurance without any equipment. Lift only as far as clearing the floor: higher turns it into a test of how far you can arch.',
+    breathing: 'Slow and steady.',
+    mistakes: 'Arching high. Lifting the head instead of the chest. Pushing with the hands.',
   },
 };
 
@@ -407,35 +434,12 @@ export const DATA_ASSESS: Circuit[] = [
           mistakes: 'Kipping the second rep. Not returning to a dead hang. Adding too much at once and failing early.',
         },
       },
-      {
-        id: 'test-front-lever',
-        name: 'TEST — Front Lever Ramp',
-        section: 'MAX STRENGTH',
-        capacities: ['tension'],
-        block: 'TEST', intensity: 'MAX',
-        sets: 3, work: 10, unit: 'sec', restSec: 120,
-        load: { kind: 'bodyweight', text: 'Hardest progression with a flat lower back' },
-        progression: 'Set the progression for each attempt (1 tuck, 2 advanced tuck, 3 one-leg, 4 straddle, 5 full), then MADE IT if held 10s with a flat back. The hardest clean one is saved.',
-        ramp: { maxAttempts: 5, startBelow: 1 },
-        protocolId: 'assessment',
-        records: {
-          benchmarkId: 'front-lever',
-          axis: { unit: 'LVL', step: 1, min: 1, max: 5, prefix: '', label: 'THIS ATTEMPT, PROGRESSION' },
-          convert: 'identity',
-        },
-        form: {
-          setup: 'Straight arms on a bar.',
-          execution: 'Start one progression below your last result. Hold 10 seconds; if clean, rest two minutes and go one harder.',
-          cue: 'The moment the lower back arches, the test is over. Arching is how people fake this hold.',
-          breathing: 'Short controlled breaths.',
-          mistakes: 'Recording a time that included five arched seconds.',
-        },
-      },
       MAX_PULLUPS,
       REPEATERS,
       PUSHUPS,
-      FLEXOR_HOLD,
-      BACK_HOLD,
+      TOES_TO_BAR,
+      HOLLOW_HOLD,
+      PRONE_HOLD,
       sidePlank('left'),
       sidePlank('right'),
     ],

@@ -230,7 +230,10 @@ intensity at HARD** — a tired athlete downgrades rather than grinds.
   substitute must not carry a gate of its own.
 - Benchmarks are recorded in TEST 01 ASSESS, one gym session in five sections
   (WARM-UP, BODY + RANGE, MAX STRENGTH, ENDURANCE, TRUNK), ordered as the NSCA
-  and IRCRA batteries order tests. Maximal tests are **ramps**
+  and IRCRA batteries order tests. It needs only a bar and a mat, and every test
+  can be scored alone: the front lever ramp and the McGill flexor and
+  back extension holds were replaced by toes-to-bar, a hollow body hold and
+  the prone (Ito) extension hold. The old benchmarks stay for history. Maximal tests are **ramps**
   (`Exercise.ramp`): attempts get harder, each is marked MADE IT or FAILED, and
   the best clean attempt is saved; they are never fixed sets. The weighted
   pull-up is a tested 2RM (`weighted-pullup-2rm`, the rep range Lattice's 165%
@@ -266,7 +269,7 @@ fit that week.
 |------|----------|
 | DAILY | 01 FRONT CORE, 02 OBLIQUES + BACK, 03 BAND STRENGTH, 04 FINGERS + MOBILITY |
 | CAVE | 01 STRONG, 02 PULL + PUSH, 03 LEGS + BACK |
-| TEST | 01 ASSESS (five sections, ramps, ~81-90 min) |
+| TEST | 01 ASSESS (five sections, ramps, ~76-88 min) |
 
 A typical week: DAILY most mornings, CAVE 02 or 03 straight after each
 bouldering session, CAVE 01 only in a week a bouldering day is skipped.
@@ -479,7 +482,8 @@ keeps all three in sync. Do not hand-edit the PNGs.
 ## Handoff Documents
 
 - **`7bit-handover-v17.md`** — **start here.** Rest shows the next exercise
-  with its form guide; a set-by-set progress bar on the card and on rest.
+  with its form guide; a set-by-set progress bar on the card and on rest;
+  ASSESS tests that need only a bar and a mat.
 - **`7bit-handover-v16.md`** — read second. The whole improvement roadmap:
   backup, Vitest, pain check, effort and load, mesocycle, suggested loads,
   recommended session, six STATS sections, reminders, Apple Health, widget,
