@@ -107,7 +107,7 @@ design/          # pixel-grid.svg drawing template; illustrations/<name>/NN.svg 
   `useStore(s => s.screen)`.
 - **Zustand persist**: Only the keys in `PERSISTED_KEYS` (`src/core/backup.ts`)
   are persisted: `progress`, `sessionLog`, `benchmarkResults`, `loadLog`,
-  `climbLog`, `blockStart` and `settings`. `partialize` reads that list, so a
+  `climbLog`, `blockStart`, `settings` and `health`. `partialize` reads that list, so a
   new key is persisted and backed up by adding it there. UI state is transient. The blob
   carries `version: 2`, but legacy cleanup runs from `merge`, not `migrate`:
   persist only calls `migrate` when the stored blob has a **numeric** version,

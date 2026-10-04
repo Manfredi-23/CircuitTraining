@@ -137,12 +137,23 @@ not been compiled; notifications, Health and the widget need a device.
 
 ## 4. Repo state
 
-Merged: PR #20 (phases 1-5). Phases 6-7 and this handover go to `main`
-in the PR after it, from the same branch `claude/amazing-hawking-c1b0xc`. Older merged branches still on GitHub (the proxy
-refuses deletion): `claude/assess-tab-drop-power`, `claude/climb-log`,
-`claude/dot-matrix-illustrations`, `claude/programme-v12`,
-`claude/handover-v12`, `claude/session-info-popup`, `claude/assess-stats`,
-`claude/assess-v2`. Stale unmerged: `claude/exercise-form-guide-pdf-kzrz1x`.
+All merged: PR #20 (phases 1-5), #21 (phases 6-7), #22 (Settings copy),
+#23 (this repo-state update). No open PRs. `main` is the latest.
+
+Branches still on GitHub, all fully contained in `main` (the cloud proxy
+refuses deletion, so they are deleted from the Mac, section 6):
+`claude/amazing-hawking-c1b0xc`, `claude/assess-stats`,
+`claude/assess-tab-drop-power`, `claude/assess-v2`, `claude/climb-log`,
+`claude/dot-matrix-illustrations`, `claude/handover-v12`,
+`claude/programme-v12`, `claude/session-info-popup`.
+
+One unmerged: `claude/exercise-form-guide-pdf-kzrz1x`, a printed form guide
+built for the retired HOME / MORN programme. Archived as the tag
+`archive/form-guide-pdf` before deleting, so it can be restored.
+
+Xcode signing (4 October): "PLA Update available" blocked the HealthKit
+profile. Accept the updated Program License Agreement at
+developer.apple.com/account, then Try Again in Signing & Capabilities.
 
 ## 5. Open items
 
