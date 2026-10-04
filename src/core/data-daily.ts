@@ -6,11 +6,13 @@
 // breakfast, most days of the week, climbing days included.
 //
 // Four sessions:
-//   01 FRONT CORE        — the abdominal wall: anti-extension holds, then the
-//                          lower abs, then the upper abs. Curling work last.
+//   01 CORE + OBLIQUES   — mat only. Push-ups, spiderman plank, cross-body
+//                          mountain climber, then the reverse crunch and the
+//                          Russian twist last.
 //   02 OBLIQUES + BACK   — rotation and side-bending for the obliques, and the
 //                          graded lower-back progression: bird dog, prone
-//                          extension, band good morning.
+//                          extension, band good morning. The Russian twist
+//                          closes it.
 //   03 BAND STRENGTH     — the pulling, pushing and legs that a bar and a
 //                          kettlebell used to do, with a band.
 //   04 FINGERS + MOBILITY — the tired-morning session. Hips, spine and wrists,
@@ -34,10 +36,11 @@
 //                      rest of the session has warmed the tissue, and is never
 //                      near a max.
 //
-// Core volume across a normal week (DAILY 01 and 02 twice each, plus CAVE 02
-// and 03) lands around 12 hard sets for the abs, 10 for the obliques and 9 for
-// the lower back, which is where the trunk-hypertrophy and back-strength
-// protocols put it.
+// DAILY 01 is weighted to the obliques at the athlete's request (October
+// 2026): spiderman, cross-body climber and twist are all waist work, and the
+// reverse crunch is the only straight-abs exercise left in it. STATS core
+// volume counts the week against the trunk-hypertrophy and back-strength
+// targets, so a shortfall on the abs shows there.
 // =============================================================================
 
 import type { Circuit, Exercise } from './types';
@@ -155,30 +158,28 @@ const REVERSE_CRUNCH: Exercise = {
   },
 };
 
-const CRUNCH: Exercise = {
-  id: 'daily-crunch',
-  name: 'Slow Crunch',
+/** Closes DAILY 01 and DAILY 02: it is curling work, so it is always last. */
+const RUSSIAN_TWIST: Exercise = {
+  id: 'morn-bw-russian-twist',
+  name: 'Russian Twist',
   capacities: ['tension'],
   block: 'SECONDARY', intensity: 'MODERATE',
-  sets: 2, work: 15, unit: 'reps', restSec: 30,
-  load: { kind: 'bodyweight', text: 'Arm position is the load: across the chest, behind the head, overhead' },
-  progression:
-    'Fifteen slow reps with a one-second squeeze, then move the arms further from the '
-    + 'hips, then a three-second lowering with the arms overhead.',
+  sets: 2, work: 16, unit: 'reps', restSec: 30,
+  load: { kind: 'bodyweight', text: 'Hands together, arms long - the further out, the heavier' },
+  progression: 'Feet down before feet up. Then arms straight out in front, then a one-second pause each side.',
   protocolId: 'trunk-hypertrophy',
-  note: 'Upper abs. Last on purpose, by which point the spine has been awake for fifteen minutes.',
+  note: 'Last on purpose, and tall and slow. Left plus right is 2 reps.',
   variations: [
-    { minLevel: 1, name: 'Slow Crunch - Arms Crossed' },
-    { minLevel: 3, name: 'Slow Crunch - Hands Behind Head' },
-    { minLevel: 5, name: 'Slow Crunch - Arms Overhead' },
-    { minLevel: 7, name: 'Slow Crunch - Arms Overhead, 3s Lower' },
+    { minLevel: 1, name: 'Russian Twist - Feet Down' },
+    { minLevel: 4, name: 'Russian Twist - Feet Up' },
+    { minLevel: 6, name: 'Russian Twist - Feet Up, Long Arms, 1s Pause' },
   ],
   form: {
-    setup: 'On your back, knees bent, feet flat. Lower back relaxed on the mat, not pressed or arched.',
-    execution: 'Curl the ribcage toward the pelvis until the shoulder blades leave the mat. Squeeze one second, lower slowly. The lower back stays on the mat: this is a short movement, not a sit-up.',
-    cue: 'Ribs down to the pelvis biases the upper portion of the abs, the mirror of the reverse crunch. Short range, slow, every rep squeezed: size comes from tension, not from distance.',
-    breathing: 'Exhale fully as you curl. The exhale is half the contraction.',
-    mistakes: 'Pulling on the neck. Sitting all the way up, which hands the work to the hip flexors. Bouncing. Doing them first thing out of bed.',
+    setup: 'Sit with knees bent and heels on the floor. Lean back to about 45 degrees with the chest up and the lower back straight, not rounded into a C. Hands together in front of the chest; the long-arm version straightens them out in front.',
+    execution: 'Turn the ribcage and the hands together to one side, then to the other. Move slowly. The rotation comes from the ribs and the middle of the back, while the pelvis stays still.',
+    cue: 'No weight, so the load is the lever: the further the hands are from the chest, the harder the obliques work. A straight back and a slow turn. The injury risk in a twist is a rounded back turning fast, which is why it closes the session instead of opening it.',
+    breathing: 'Exhale as you turn to each side.',
+    mistakes: 'Rounding the lower back. Moving only the arms while the chest faces forward. Going fast. Doing this first thing after waking.',
   },
 };
 
@@ -215,15 +216,17 @@ const EDGE_DENSITY: Exercise = {
 export const DATA_DAILY: Circuit[] = [
   {
     id: 'daily-01', circuitNum: '01',
-    title: 'FRONT CORE', subtitle: 'daily - abs - 12 min',
-    focus: 'The abdominal wall: hold it rigid, then curl it from the bottom and the top.',
-    capacities: ['tension'],
+    title: 'CORE + OBLIQUES', subtitle: 'daily - mat only - abs - obliques - 13 min',
+    focus: 'The waist first: knees to elbows, knees across, a slow twist. Push-ups to wake the top half.',
+    capacities: ['tension', 'press'],
     illustration: 'squats.svg',
-    duration: 12,
+    duration: 13,
     recoveryHours: 0,
     note:
-      'Holds first, while the spine is waking up. Then the lower abs, then the upper '
-      + 'abs, which close the session because they are the only curling work in it.',
+      'Mat only. Breathing and the dead bug wake the trunk, push-ups wake the top half, '
+      + 'then the two plank drills for the obliques: knee to the same elbow, knee across '
+      + 'the body. The curling work closes it: reverse crunch, then the Russian twist. '
+      + 'Wrists sore: fists or push-up handles for every plank.',
     exercises: [
       {
         id: 'morn-breathing',
@@ -239,11 +242,10 @@ export const DATA_DAILY: Circuit[] = [
         variations: [
           { minLevel: 1, name: '90/90 Breathing Reset' },
           { minLevel: 4, name: '90/90 Breathing + Heel Press' },
-          { minLevel: 6, name: '90/90 Breathing + Band Pull-Apart' },
         ],
         form: {
           setup: 'On your back on the mat. Feet flat on a wall, a chair, or the floor with hips and knees both at 90 degrees. Arms at your sides, palms up. Press the lower back flat into the mat and keep it there.',
-          execution: 'Inhale through the nose for 4 counts into the sides and back of the ribcage, not the belly. Exhale through pursed lips for 6-8 counts until the ribs pull down and the abs switch on by themselves. Roughly four breath cycles. For the heel press, push the heels into the wall at about 20 percent throughout; for the band version, hold it overhead under light tension and pull apart on each exhale.',
+          execution: 'Inhale through the nose for 4 counts into the sides and back of the ribcage, not the belly. Exhale through pursed lips for 6-8 counts until the ribs pull down and the abs switch on by themselves. Roughly four breath cycles. For the heel press, push the heels into the wall at about 20 percent throughout.',
           cue: 'This is not a stretch and not a rest. The long exhale drops the ribcage and turns on the deep abdominal wall, which is the position every other exercise here is built on. If the lower ribs flare toward the ceiling, the exhale was too short.',
           breathing: 'This exercise is the breathing. Four seconds in through the nose, six to eight out through the mouth.',
           mistakes: 'Belly breathing instead of rib breathing. Lower back arching off the mat. Rushing the exhale. Skipping it because it feels too easy, which loses the switch that makes the rest of the session work.',
@@ -251,96 +253,106 @@ export const DATA_DAILY: Circuit[] = [
       },
       {
         id: 'morn-deadbug',
-        name: 'Band Dead Bug',
+        name: 'Dead Bug',
         capacities: ['tension'],
         block: 'PREHAB', intensity: 'EASY',
         sets: 1, work: 16, unit: 'reps', restSec: 20,
-        load: { kind: 'band', text: 'Light band arch to hand, or none until the back stays flat' },
-        progression: 'Hold a flat back for all 16 first. Then add band tension, not reps.',
+        load: { kind: 'bodyweight', text: 'The reach is the load: longer arm and leg, harder' },
+        progression: 'Hold a flat back for all 16 first. Then a 3s hold at full reach, then both arms overhead while one leg moves.',
         protocolId: 'daily-trunk',
         note: 'Alternating - left plus right is 2 reps',
         variations: [
           { minLevel: 1, name: 'Dead Bug' },
-          { minLevel: 4, name: 'Band Dead Bug' },
-          { minLevel: 6, name: 'Band Dead Bug, 3s Hold' },
+          { minLevel: 4, name: 'Dead Bug, 3s Hold' },
+          { minLevel: 6, name: 'Dead Bug - Arms Overhead, Legs Alternate' },
         ],
         form: {
-          setup: 'On your back, arms straight up over the chest, hips and knees at 90 degrees. For the band version, loop the band around both arches and hold one end in each hand, arms vertical, band under light tension. Lower back pressed flat.',
-          execution: 'Extend one leg long and low while the opposite arm reaches back overhead. Go only as far as the lower back stays down. Return under control and alternate. The band loads both directions, so the return is working too.',
+          setup: 'On your back, arms straight up over the chest, hips and knees at 90 degrees. Lower back pressed flat.',
+          execution: 'Extend one leg long and low while the opposite arm reaches back overhead. Go only as far as the lower back stays down. Return under control and alternate.',
           cue: 'Imagine a strip of paper under your lower back that someone is trying to pull out. Your job for the whole set is to trap it. The moment it slips free, you went too far.',
           breathing: 'Exhale slowly as the limbs extend, inhale as they return. If you have to hold your breath, shorten the range.',
-          mistakes: 'Lower back arching as the leg lowers. Arm and leg on the same side. Racing the reps. Letting the band snap the limbs back instead of resisting it.',
+          mistakes: 'Lower back arching as the leg lowers. Arm and leg on the same side. Racing the reps.',
         },
       },
       {
-        id: 'morn-hollow',
-        name: 'Hollow Body Hold',
-        capacities: ['tension'],
+        id: 'daily-pushup',
+        name: 'Push-Up',
+        capacities: ['press', 'shoulder'],
         block: 'SECONDARY', intensity: 'MODERATE',
-        sets: 2, work: 25, unit: 'sec', restSec: 30,
-        load: { kind: 'bodyweight', text: 'Longest lever you can hold with the lower back glued down' },
-        progression: 'Two clean 25s holds, then lengthen the lever: knees out, then arms overhead, then rocks.',
-        protocolId: 'tension-iso',
+        sets: 2, work: 10, unit: 'reps', restSec: 45,
+        load: { kind: 'bodyweight', text: 'On fists or push-up handles, so the wrist stays straight' },
+        progression:
+          'Two sets of twelve with a clean line, then a three-second lowering, then a '
+          + 'pause with the chest a fist off the mat, then archer push-ups.',
+        protocolId: 'hypertrophy',
+        note: 'One or two reps left in the tank: this wakes the top half, it is not a test.',
         variations: [
-          { minLevel: 1, name: 'Hollow Body Hold - Tucked' },
-          { minLevel: 4, name: 'Hollow Body Hold' },
-          { minLevel: 6, name: 'Hollow Body Rocks' },
+          { minLevel: 1, name: 'Push-Up' },
+          { minLevel: 3, name: 'Push-Up, 3s Lower' },
+          { minLevel: 5, name: 'Push-Up, 3s Lower + Bottom Pause' },
+          { minLevel: 7, name: 'Archer Push-Up' },
         ],
         form: {
-          setup: 'On your back. Lower back pressed into the mat, ribs squeezed down. Tucked: knees to the chest, hands past the knees, shoulder blades just off the mat. Full: arms overhead by the ears, legs straight and low.',
-          execution: 'Hold the shape. The longer the arms and legs, the harder the lever, so lengthen only as far as the lower back stays glued down. For rocks, keep the identical rigid shape and rock from shoulders to hips using the curve of the back, never bending in the middle.',
-          cue: 'The shape is the exercise. This loads the whole abdominal sheet from ribcage to pubic bone at once, which is the part a sit-up misses entirely.',
-          breathing: 'Short controlled breaths through the mouth. If the lower back lifts on the inhale, bend the knees more.',
-          mistakes: 'Lower back arching, which loses the whole exercise. Chin jammed to the chest. Arms drifting down to compensate. Holding to failure on day one and dreading it tomorrow.',
+          setup: 'Fists or handles under the shoulders, knuckles flat, wrists straight. Body one line from heels to crown, glutes and abs on. Knees down if the line breaks before rep eight.',
+          execution: 'Lower with the elbows about 45 degrees from the ribs until the chest is a fist from the mat, then press to full lockout and push the floor away at the top.',
+          cue: 'Climbing is all pulling. A little pressing most mornings keeps the shoulder balanced, and a straight plank on the way down is core work too.',
+          breathing: 'Inhale down, exhale on the press.',
+          mistakes: 'Hips sagging. Elbows flaring to 90 degrees. Half reps. Bent wrists grinding through pain when a fist would do.',
         },
       },
       {
-        id: 'morn-leg-lowers',
-        name: 'Band Leg Lowers',
+        id: 'daily-spiderman',
+        name: 'Spiderman Plank',
+        capacities: ['tension'],
+        block: 'SECONDARY', intensity: 'MODERATE',
+        sets: 2, work: 6, unit: 'reps', restSec: 30,
+        load: { kind: 'bodyweight', text: 'Slow, hips at plank height, knee to the same elbow' },
+        progression:
+          'Six slow reps a side with level hips, then a two-second hold at the elbow, '
+          + 'then from a push-up: one push-up, one spiderman each side.',
+        protocolId: 'trunk-hypertrophy',
+        perSide: true,
+        note: 'Per side, alternating. Wrists sore: fists, handles, or a forearm plank.',
+        variations: [
+          { minLevel: 1, name: 'Spiderman Plank' },
+          { minLevel: 3, name: 'Spiderman Plank, 2s Hold' },
+          { minLevel: 6, name: 'Spiderman Push-Up' },
+        ],
+        form: {
+          setup: 'High plank on fists or handles, hands under the shoulders, body straight heels to head, glutes on.',
+          execution: 'Lift the right foot and draw the right knee up the outside of the body toward the right elbow, the side of the waist crunching to meet it. Return the foot to the plank, then the left. Hips stay level and at plank height.',
+          cue: 'Knee to the same-side elbow is a side-bend while the arms hold you up: the obliques on the working side do the pulling. It is the high-step-with-hip-open move from the wall.',
+          breathing: 'Exhale as the knee comes up.',
+          mistakes: 'Hips piking up to make room for the knee. Rotating the hips toward the floor. Rushing. Shoulders drifting behind the hands.',
+        },
+      },
+      {
+        id: 'daily-mountain-climber',
+        name: 'Cross-Body Mountain Climber',
         capacities: ['tension'],
         block: 'SECONDARY', intensity: 'MODERATE',
         sets: 2, work: 12, unit: 'reps', restSec: 30,
-        load: { kind: 'band', text: 'Band over both arches, ends held at the chest' },
-        progression: 'Straighten the legs before you slow the tempo. Then take five seconds on the lowering.',
+        load: { kind: 'bodyweight', text: 'Slow and controlled, knee under the body to the opposite elbow' },
+        progression:
+          'Twelve slow reps with level hips, then a one-second hold at the elbow, then '
+          + 'sliding the feet on a towel so the knee drags in against friction.',
         protocolId: 'trunk-hypertrophy',
+        note: 'Left plus right is 2 reps. This is trunk work, not cardio: slow enough to stop at any point.',
         variations: [
-          { minLevel: 1, name: 'Bent-Knee Leg Lowers' },
-          { minLevel: 4, name: 'Band Leg Lowers' },
-          { minLevel: 6, name: 'Band Leg Lowers, 5s Lowering' },
+          { minLevel: 1, name: 'Cross-Body Mountain Climber' },
+          { minLevel: 3, name: 'Cross-Body Mountain Climber, 1s Hold' },
+          { minLevel: 6, name: 'Cross-Body Mountain Climber - Towel Slide' },
         ],
         form: {
-          setup: 'On your back, legs up toward the ceiling. Hands flat under the glutes at first, arms at the sides later. Band over both arches with the ends held at the chest so it resists the legs coming down. Lower back flat.',
-          execution: 'Lower both legs slowly, stopping the instant the lower back starts to arch. Pause a beat, then return to vertical. Bent knees shorten the lever if the straight-leg version breaks the position.',
-          cue: 'This is the lower abdominal exercise. The bottom segments respond to holding a posterior pelvic tilt under load, which is exactly what you are defending here.',
-          breathing: 'Inhale as the legs lower, exhale hard as they return. The exhale keeps the ribs down.',
-          mistakes: 'Arching the lower back to gain range you cannot control. Yanking the legs back with the hip flexors. Bouncing at the bottom. Straining the neck instead of leaving the head down.',
-        },
-      },
-      {
-        id: 'morn-pressout',
-        name: 'Half-Kneeling Band Press-Out',
-        capacities: ['tension', 'shoulder'],
-        block: 'PREHAB', intensity: 'EASY',
-        sets: 1, work: 10, unit: 'reps', restSec: 25,
-        load: { kind: 'band', text: 'Band trapped under the down knee — enough tension to feel the pull' },
-        progression: 'Add a 3s hold at full extension, then move to tall kneeling, then press overhead.',
-        protocolId: 'daily-trunk',
-        perSide: true,
-        variations: [
-          { minLevel: 1, name: 'Half-Kneeling Band Press-Out' },
-          { minLevel: 4, name: 'Half-Kneeling Band Press-Out, 3s Hold' },
-          { minLevel: 6, name: 'Tall-Kneeling Band Press-Out + Overhead' },
-        ],
-        form: {
-          setup: 'Half-kneeling: one knee down, other foot forward and flat. Trap one end of the band under the down knee or the front foot on that same side, other end in both hands at the sternum. The band pulls diagonally down and across and will try to twist and bend you toward it. Squeeze the down-side glute and stand tall through the spine.',
-          execution: 'Press both hands straight out from the chest to full extension, hold a beat, return to the sternum. The band gets harder as the hands travel. Do not let the ribcage turn or the torso tip toward the anchor. All reps, then swap knees and band side.',
-          cue: 'Anti-rotation. You are not trying to twist, you are refusing to. This is what an oblique actually does on the wall when you are fighting a barn-door, and it builds the deep waist tension flexion work never will.',
-          breathing: 'Exhale as you press out, inhale as you return. The tension lives in the trunk, not in a held breath.',
-          mistakes: 'Rotating or side-bending toward the band, which loses the entire point. Band too light to feel. Front foot too close to the knee, killing the base. Hips shifting instead of staying square.',
+          setup: 'High plank on fists or handles, hands under the shoulders, body straight, glutes on. For the towel version, a towel under the toes on a smooth floor.',
+          execution: 'Draw the right knee under the body toward the left elbow, rotating the hips a little to get there, then back to the plank. Then the left knee to the right elbow. The shoulders stay square over the hands.',
+          cue: 'Across the body is rotation: the oblique on the far side pulls the knee over while the trunk keeps the shoulders still. It is the drop-knee move, done on the floor.',
+          breathing: 'Exhale as each knee comes across.',
+          mistakes: 'Going fast and bouncing. Hips piking. Twisting the shoulders instead of the hips. Feet hopping instead of the knee being pulled in.',
         },
       },
       REVERSE_CRUNCH,
-      CRUNCH,
+      RUSSIAN_TWIST,
     ],
   },
   {
@@ -429,29 +441,7 @@ export const DATA_DAILY: Circuit[] = [
         },
       },
       BAND_GOOD_MORNING,
-      {
-        id: 'morn-bw-russian-twist',
-        name: 'Russian Twist',
-        capacities: ['tension'],
-        block: 'SECONDARY', intensity: 'MODERATE',
-        sets: 2, work: 16, unit: 'reps', restSec: 30,
-        load: { kind: 'bodyweight', text: 'Hands together, arms long - the further out, the heavier' },
-        progression: 'Feet down before feet up. Then arms straight out in front, then a one-second pause each side.',
-        protocolId: 'trunk-hypertrophy',
-        note: 'Last on purpose, and tall and slow. Left plus right is 2 reps.',
-        variations: [
-          { minLevel: 1, name: 'Russian Twist - Feet Down' },
-          { minLevel: 4, name: 'Russian Twist - Feet Up' },
-          { minLevel: 6, name: 'Russian Twist - Feet Up, Long Arms, 1s Pause' },
-        ],
-        form: {
-          setup: 'Sit with knees bent and heels on the floor. Lean back to about 45 degrees with the chest up and the lower back straight, not rounded into a C. Hands together in front of the chest; the long-arm version straightens them out in front.',
-          execution: 'Turn the ribcage and the hands together to one side, then to the other. Move slowly. The rotation comes from the ribs and the middle of the back, while the pelvis stays still.',
-          cue: 'No weight, so the load is the lever: the further the hands are from the chest, the harder the obliques work. A straight back and a slow turn. The injury risk in a twist is a rounded back turning fast, which is why it closes the session instead of opening it.',
-          breathing: 'Exhale as you turn to each side.',
-          mistakes: 'Rounding the lower back. Moving only the arms while the chest faces forward. Going fast. Doing this first thing after waking.',
-        },
-      },
+      RUSSIAN_TWIST,
     ],
   },
   {

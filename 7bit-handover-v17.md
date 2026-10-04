@@ -18,6 +18,10 @@ the back extension hold were skipped. The athlete tests alone, the gym
 reliably has only a bar, and a front lever cannot be graded alone. Those three
 were replaced with tests that need only a bar or a mat and score themselves.
 
+Last, a mat-only DAILY for the core, weighted to the obliques, with
+push-ups, Russian twists, spidermans and mountain climbers. The athlete chose
+to rebuild DAILY 01, which keeps DAILY 02's lower-back work as it was.
+
 ## 2. What changed
 
 - **Rest shows what is next.** Under a smaller ring (with +60S and SKIP REST
@@ -46,6 +50,18 @@ were replaced with tests that need only a bar or a mat and score themselves.
   results exist. ASSESS is now 76 min NORMAL, 88 TIRED (was 81).
   `src/core/__tests__/assess.test.ts` checks every ASSESS result maps to a
   benchmark and none of the retired ones is recorded.
+- **DAILY 01 is now CORE + OBLIQUES, mat only** (13 min NORMAL, 19 FRESH,
+  8 TIRED): 90/90 breathing, dead bug (no band), push-up on fists 2x10
+  (`daily-pushup`, hypertrophy, 45s), spiderman plank 2x6/side
+  (`daily-spiderman`), cross-body mountain climber 2x12 (`daily-mountain-climber`),
+  then reverse crunch and Russian twist, curling last as always. The band
+  dead bug, band leg lowers, band press-out, hollow hold and slow crunch
+  left the session: first built with side plank dips and the hollow hold,
+  it ran 30 min on FRESH, so exercises were cut, never rests. The Russian
+  twist is now one shared `RUSSIAN_TWIST` for DAILY 01 and 02; `CRUNCH` is
+  gone. The new plank drills count as oblique sets in STATS core volume.
+  Abs (rectus) volume is lower than before; the core-volume panel will show
+  it.
 - New core module `src/core/session-progress.ts` (`sessionProgress`), tested
   in `src/core/__tests__/session-progress.test.ts`.
 - New shared components `SessionProgressBar` and `FormGuide` (the guide was
@@ -61,9 +77,10 @@ ASSESS is 31 cells over 18 groups, both fit the 342px width.
 
 ## 4. Repo state
 
-The rest preview merged as PR #25 from `claude/rest-preview-progress`; the
-ASSESS change as the PR after it from `claude/assess-bar-and-mat`. Delete
-both branches from the Mac if the cloud proxy refused (section 6). Otherwise as
+Merged: PR #25 (rest preview, `claude/rest-preview-progress`), #26 (ASSESS,
+`claude/assess-bar-and-mat`), and the DAILY 01 PR after it
+(`claude/daily-core-obliques`). Delete the three branches from the Mac if the
+cloud proxy refused (section 6). Otherwise as
 in v16: no open PRs, `main` is the latest.
 
 ## 5. Open items
@@ -74,7 +91,10 @@ in v16: no open PRs, `main` is the latest.
    places).
 2. The next ASSESS is the first baseline for toes-to-bar, hollow hold and
    prone extension: no comparison until the one after.
-3. Everything open in v16 section 5 still stands (Xcode build and
+3. DAILY 01 after a week: if the abs fall short of 12 hard sets in STATS
+   core volume, the slow crunch can come back into DAILY 02 only by cutting
+   something there (02 is at 20 min FRESH).
+4. Everything open in v16 section 5 still stands (Xcode build and
    capabilities, ASSESS retest, graphics rework, Supabase, Vercel).
 
 ## 6. Mac terminal commands
@@ -88,6 +108,7 @@ git branch -d claude/rest-preview-progress 2>/dev/null
 git push origin --delete claude/rest-preview-progress 2>/dev/null
 git branch -d claude/assess-bar-and-mat 2>/dev/null
 git push origin --delete claude/assess-bar-and-mat 2>/dev/null
+git push origin --delete claude/daily-core-obliques 2>/dev/null
 npm install
 npx tsc --noEmit
 npm test
