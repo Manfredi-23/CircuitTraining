@@ -129,7 +129,7 @@ export function recommend(input: RecommendInput): Recommendation | null {
     };
   }
 
-  // 5. The morning DAILY, rotating through the four.
+  // 5. The morning DAILY, rotating through the five.
   if (doneToday('DAILY')) return null;
   if (input.tired) {
     const pick = leastRecent(daily, sessionLog);

@@ -209,7 +209,7 @@ export type CoreGroup = 'abs' | 'obliques' | 'back';
 export const CORE_EXERCISES: Record<CoreGroup, string[]> = {
   abs: [
     'morn-hollow', 'morn-leg-lowers', 'daily-reverse-crunch', 'daily-crunch',
-    'legs-plate-crunch', 'home-leg-raise', 'cave-front-lever',
+    'legs-plate-crunch', 'home-leg-raise', 'cave-front-lever', 'daily-plank-climber',
   ],
   obliques: [
     'daily-side-plank-dip', 'morn-bw-russian-twist', 'addon-russian-twist',
@@ -218,7 +218,7 @@ export const CORE_EXERCISES: Record<CoreGroup, string[]> = {
   ],
   back: [
     'daily-prone-extension', 'daily-band-good-morning', 'legs-back-extension',
-    'legs-sl-rdl', 'home-sl-rdl',
+    'legs-sl-rdl', 'home-sl-rdl', 'daily-glute-bridge',
   ],
 };
 
