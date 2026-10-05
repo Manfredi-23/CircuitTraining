@@ -267,7 +267,7 @@ fit that week.
 
 | Mode | Sessions |
 |------|----------|
-| DAILY | 01 CORE + OBLIQUES, 02 OBLIQUES + BACK, 03 BAND STRENGTH, 04 FINGERS + MOBILITY |
+| DAILY | 01 CORE + OBLIQUES, 02 OBLIQUES + BACK, 03 BAND STRENGTH, 04 FINGERS + MOBILITY, 05 LEGS + CORE |
 | CAVE | 01 STRONG, 02 PULL + PUSH, 03 LEGS + BACK |
 | TEST | 01 ASSESS (five sections, ramps, ~76-88 min) |
 
@@ -297,6 +297,13 @@ Short home sessions before breakfast. `npm run check:daily` holds the rules:
   a session. Extension and hinging may sit anywhere.
 - **Fingers last and light.** DAILY 04 does density no-hangs on the portable
   edge (`density-hang`, about 40%) after the mobility work.
+- **DAILY 05 LEGS + CORE** is mat only and gentle on the belly: nothing jumps,
+  nothing curls. Cat-cow, spiderman lunge + reach and Cossack shifts (MOBILITY)
+  open it; bodyweight squat (tempo progressions to the skater squat), glute
+  bridge, push-up and a slow straight mountain climber are the working sets;
+  cobra + open book closes it, extension and rotation only. `PUSH_UP` and
+  `CAT_COW` are shared constants, so their ids and history are the ones
+  DAILY 01 and 04 already use. 13 min NORMAL, 18 FRESH, 9 TIRED.
 
 ### Core
 
@@ -484,11 +491,13 @@ keeps all three in sync. Do not hand-edit the PNGs.
 
 ## Handoff Documents
 
-- **`7bit-handover-v17.md`** — **start here.** Rest shows the next exercise
+- **`7bit-handover-v18.md`** — **start here.** DAILY 05 LEGS + CORE, the
+  mat-only morning session for legs and trunk.
+- **`7bit-handover-v17.md`** — read second. Rest shows the next exercise
   with its form guide; a set-by-set progress bar on the card and on rest;
   ASSESS tests that need only a bar and a mat; DAILY 01 rebuilt as mat-only
   CORE + OBLIQUES.
-- **`7bit-handover-v16.md`** — read second. The whole improvement roadmap:
+- **`7bit-handover-v16.md`** — The whole improvement roadmap:
   backup, Vitest, pain check, effort and load, mesocycle, suggested loads,
   recommended session, six STATS sections, reminders, Apple Health, widget,
   and the Xcode steps the native parts still need.

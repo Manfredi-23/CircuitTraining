@@ -5,7 +5,7 @@
 // on a sling. No bar, no hangboard, no weights. Done in the morning before
 // breakfast, most days of the week, climbing days included.
 //
-// Four sessions:
+// Five sessions:
 //   01 CORE + OBLIQUES   — mat only. Push-ups, spiderman plank, cross-body
 //                          mountain climber, then the reverse crunch and the
 //                          Russian twist last.
@@ -17,6 +17,10 @@
 //                          kettlebell used to do, with a band.
 //   04 FINGERS + MOBILITY — the tired-morning session. Hips, spine and wrists,
 //                          then the density no-hangs on the portable edge.
+//   05 LEGS + CORE       — mat only and gentle on the belly: no jumping, no
+//                          curling. Back and hip mobility, slow squats, glute
+//                          bridges, push-ups, slow mountain climbers, then
+//                          the cobra and open book to unwind the back.
 //
 // Constraints, all enforced by `npm run check:daily`:
 //
@@ -183,6 +187,215 @@ const RUSSIAN_TWIST: Exercise = {
   },
 };
 
+/** Opens the top half in DAILY 01 and DAILY 05. */
+const PUSH_UP: Exercise = {
+  id: 'daily-pushup',
+  name: 'Push-Up',
+  capacities: ['press', 'shoulder'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 2, work: 10, unit: 'reps', restSec: 45,
+  load: { kind: 'bodyweight', text: 'On fists or push-up handles, so the wrist stays straight' },
+  progression:
+    'Two sets of twelve with a clean line, then a three-second lowering, then a '
+    + 'pause with the chest a fist off the mat, then archer push-ups.',
+  protocolId: 'hypertrophy',
+  note: 'One or two reps left in the tank: this wakes the top half, it is not a test.',
+  variations: [
+    { minLevel: 1, name: 'Push-Up' },
+    { minLevel: 3, name: 'Push-Up, 3s Lower' },
+    { minLevel: 5, name: 'Push-Up, 3s Lower + Bottom Pause' },
+    { minLevel: 7, name: 'Archer Push-Up' },
+  ],
+  form: {
+    setup: 'Fists or handles under the shoulders, knuckles flat, wrists straight. Body one line from heels to crown, glutes and abs on. Knees down if the line breaks before rep eight.',
+    execution: 'Lower with the elbows about 45 degrees from the ribs until the chest is a fist from the mat, then press to full lockout and push the floor away at the top.',
+    cue: 'Climbing is all pulling. A little pressing most mornings keeps the shoulder balanced, and a straight plank on the way down is core work too.',
+    breathing: 'Inhale down, exhale on the press.',
+    mistakes: 'Hips sagging. Elbows flaring to 90 degrees. Half reps. Bent wrists grinding through pain when a fist would do.',
+  },
+};
+
+/** Gets the spine moving in DAILY 04 and opens DAILY 05. */
+const CAT_COW: Exercise = {
+  id: 'morn-catcow',
+  name: 'Cat-Cow + Thread the Needle',
+  capacities: ['mobility', 'shoulder'],
+  block: 'MOBILITY', intensity: 'TECHNIQUE',
+  sets: 1, work: 12, unit: 'reps', restSec: 15,
+  load: { kind: 'bodyweight', text: 'No load' },
+  progression: 'Add the overhead reach on the unwind once the thread reaches the mat without forcing.',
+  protocolId: 'mobility',
+  note: 'Eight cat-cow, then four threads alternating',
+  variations: [
+    { minLevel: 1, name: 'Cat-Cow + Thread the Needle' },
+    { minLevel: 4, name: 'Cat-Cow + Thread the Needle with Reach' },
+  ],
+  form: {
+    setup: 'On hands and knees. Hands under shoulders, knees under hips, spine long and neutral.',
+    execution: 'Cat: press the floor away, round the whole spine, tuck the tailbone. Cow: let the belly drop, lift chest and tailbone. Move one vertebra at a time. After eight, thread one arm under the body and across until the shoulder and the side of the head rest on the mat, then unwind and reach that arm to the ceiling. Alternate.',
+    cue: 'This is the segment that gets your spine out of the shape it held all night and out of the shape climbing put it in. Move slowly enough to feel each vertebra arrive.',
+    breathing: 'Inhale into cow, exhale into cat. Exhale as you thread through.',
+    mistakes: 'Moving the spine as one rigid block. Cranking the neck. Hands drifting ahead of the shoulders. Speeding up — this is the wake-up, not the workout.',
+  },
+};
+
+// ---- DAILY 05 ------------------------------------------------------------------
+
+const SPIDERMAN_LUNGE: Exercise = {
+  id: 'daily-spiderman-lunge',
+  name: 'Spiderman Lunge + Reach',
+  capacities: ['mobility', 'legs'],
+  block: 'MOBILITY', intensity: 'TECHNIQUE',
+  sets: 1, work: 5, unit: 'reps', restSec: 15,
+  load: { kind: 'bodyweight', text: 'No load. Hands on the mat, the reach is the stretch' },
+  progression:
+    'Back knee down until the front heel stays flat, then back knee up, then a '
+    + 'two-second pause with the elbow sinking toward the instep before the reach.',
+  protocolId: 'mobility',
+  perSide: true,
+  note: 'Per side. Step forward, elbow to instep, open the arm to the ceiling, step back.',
+  variations: [
+    { minLevel: 1, name: 'Spiderman Lunge + Reach - Knee Down' },
+    { minLevel: 3, name: 'Spiderman Lunge + Reach' },
+    { minLevel: 5, name: 'Spiderman Lunge, Elbow Pause + Reach' },
+  ],
+  form: {
+    setup: 'High plank or all fours on the mat. Fists or flat hands, whichever the wrists like this morning.',
+    execution: 'Step the right foot up outside the right hand. Let the hips sink and the right elbow drop toward the inside of the right foot. Then put the right hand back down and turn the chest open, the right arm reaching to the ceiling, eyes following the hand. Hand back down, foot back to the plank, other side.',
+    cue: 'The spiderman as a stretch: hip flexor of the back leg, groin of the front, and a rotation through the upper back that the night took away. It is the high step with the hip open, slowed right down.',
+    breathing: 'Exhale as the hips sink, inhale as the arm opens.',
+    mistakes: 'Front foot landing inside the hand. Rushing the reach. Rotating from the lower back instead of the ribs. Forcing the elbow to the floor.',
+  },
+};
+
+const COSSACK_SHIFT: Exercise = {
+  id: 'daily-cossack-shift',
+  name: 'Cossack Shift',
+  capacities: ['mobility', 'legs'],
+  block: 'MOBILITY', intensity: 'EASY',
+  sets: 1, work: 5, unit: 'reps', restSec: 15,
+  load: { kind: 'bodyweight', text: 'No load. Hands on the floor or a chair until the bottom is easy' },
+  progression:
+    'Hands on the floor until the straight leg toes point up at the bottom, then hands '
+    + 'free in front, then a three-second hold at the bottom of each side.',
+  protocolId: 'mobility',
+  perSide: true,
+  note: 'Per side, shifting slowly side to side. Only as deep as the heel stays down.',
+  variations: [
+    { minLevel: 1, name: 'Cossack Shift - Hands Down' },
+    { minLevel: 4, name: 'Cossack Shift' },
+    { minLevel: 6, name: 'Cossack Shift, 3s Hold' },
+  ],
+  form: {
+    setup: 'Stand very wide, feet turned out a little. Hands on the floor in front or on a chair seat.',
+    execution: 'Sit down and across onto the right leg, the left leg straightening with its toes turning up to the ceiling. Stay as low as the right heel allows, then shift through the middle, low, to the left side.',
+    cue: 'Groin, inner thigh and a deep single-leg knee bend in one move: the position of a wide bridging step or a drop-knee on the wall. It warms the legs for the squats without loading them.',
+    breathing: 'Exhale on the way down into each side.',
+    mistakes: 'Heel of the bent leg lifting. Knee caving inward. Bouncing at the bottom. Rounding the back to get lower.',
+  },
+};
+
+const BODYWEIGHT_SQUAT: Exercise = {
+  id: 'daily-bw-squat',
+  name: 'Bodyweight Squat',
+  capacities: ['legs'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 2, work: 12, unit: 'reps', restSec: 45,
+  load: { kind: 'bodyweight', text: 'Bodyweight. The tempo is the load: slower, heavier' },
+  progression:
+    'Twelve deep reps with the heels down, then a three-second lowering and a two-second '
+    + 'pause at the bottom, then one-and-a-half reps, then skater squats.',
+  protocolId: 'submax-practice',
+  note: 'Slow and quiet: no bounce, no jump. Two or three good reps left at the end of a set.',
+  variations: [
+    { minLevel: 1, name: 'Bodyweight Squat' },
+    { minLevel: 3, name: 'Squat, 3s Lower + 2s Pause' },
+    { minLevel: 5, name: '1.5-Rep Squat' },
+    { minLevel: 7, name: 'Skater Squat', load: 'Per leg, alternating: the back knee lowers to a folded mat' },
+  ],
+  form: {
+    setup: 'Feet a little wider than the hips, toes turned out slightly. Arms out in front for balance. Ribs down, glutes lightly on.',
+    execution: 'Sit the hips down and back between the heels, knees tracking over the toes, as deep as the back stays flat and the heels stay down. Stand by pushing the floor away through the whole foot. One-and-a-half: down, halfway up, back down, then all the way up is one rep. Skater: on one leg, the other knee lowering behind toward the mat.',
+    cue: 'The legs are the part of a climber that gets the least work and could do the most: high feet, rock-overs and heel hooks all need strength deep in the knee bend. Slow tempo makes bodyweight enough, with nothing jolting the belly.',
+    breathing: 'Inhale down, exhale up.',
+    mistakes: 'Heels lifting. Knees caving in on the way up. Dropping into the bottom. Chest falling forward.',
+  },
+};
+
+const GLUTE_BRIDGE: Exercise = {
+  id: 'daily-glute-bridge',
+  name: 'Glute Bridge',
+  capacities: ['legs', 'tension'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 2, work: 12, unit: 'reps', restSec: 30,
+  load: { kind: 'bodyweight', text: 'Bodyweight, heels close to the hips' },
+  progression:
+    'Twelve with a two-second squeeze at the top, then the march at the top, then '
+    + 'single-leg bridges, alternating, then single-leg with a three-second hold.',
+  protocolId: 'back-strength',
+  note: 'Single-leg versions alternate legs: twelve in total, six a leg.',
+  variations: [
+    { minLevel: 1, name: 'Glute Bridge, 2s Squeeze' },
+    { minLevel: 3, name: 'Glute Bridge March' },
+    { minLevel: 5, name: 'Single-Leg Glute Bridge' },
+    { minLevel: 7, name: 'Single-Leg Glute Bridge, 3s Hold' },
+  ],
+  form: {
+    setup: 'On your back, knees bent, feet flat and hip-width, heels a hand from the hips. Arms by the sides. Breathe out to drop the ribs before the first rep.',
+    execution: 'Drive through the heels and lift the hips until knees, hips and shoulders are in a line. Squeeze the glutes at the top, then lower slowly. March: at the top, lift one foot a few centimetres, set it down, then the other, hips level. Single-leg: the free knee pulled toward the chest.',
+    cue: 'Hip extension with the spine lying flat and unloaded, which makes it the friendliest posterior-chain work there is first thing in the morning. Strong glutes take the load off a weak lower back.',
+    breathing: 'Exhale on the way up.',
+    mistakes: 'Arching the lower back to get the hips higher. Pushing through the toes. Hips tilting on the single-leg version. Feeling it in the hamstrings only: bring the heels closer.',
+  },
+};
+
+const PLANK_CLIMBER: Exercise = {
+  id: 'daily-plank-climber',
+  name: 'Slow Mountain Climber',
+  capacities: ['tension'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 2, work: 12, unit: 'reps', restSec: 30,
+  load: { kind: 'bodyweight', text: 'Slow, knee straight under the chest, hips at plank height' },
+  progression:
+    'Twelve slow reps with a still back, then a two-second hold with the knee at the chest, '
+    + 'then from a forearm plank, then sliding the feet on a towel.',
+  protocolId: 'trunk-hypertrophy',
+  note: 'Left plus right is 2 reps. No running: the belly stays still while the legs move.',
+  variations: [
+    { minLevel: 1, name: 'Slow Mountain Climber' },
+    { minLevel: 3, name: 'Slow Mountain Climber, 2s Hold' },
+    { minLevel: 5, name: 'Forearm Plank Mountain Climber' },
+    { minLevel: 7, name: 'Mountain Climber - Towel Slide' },
+  ],
+  form: {
+    setup: 'High plank on fists or handles, hands under the shoulders, body straight heels to head, glutes on. Forearm version: elbows under the shoulders. Towel version: a towel under the toes on a smooth floor.',
+    execution: 'Draw the right knee straight up under the body toward the chest, without letting the back round or the hips rise. Return the foot to the plank, then the left. Every rep slow enough to stop at any point.',
+    cue: 'The straight-ahead climber is the front of the trunk refusing to let the back sag while a leg moves: anti-extension, the job the abs do on a steep wall when the feet hold on. DAILY 01 takes the knee across the body; this one keeps it in line.',
+    breathing: 'Exhale as each knee comes in.',
+    mistakes: 'Running it as cardio. Hips piking up. Back rounding to meet the knee. Shoulders drifting behind the hands.',
+  },
+};
+
+const BACK_UNWIND: Exercise = {
+  id: 'daily-back-unwind',
+  name: 'Cobra + Open Book',
+  capacities: ['mobility'],
+  block: 'MOBILITY', intensity: 'TECHNIQUE',
+  sets: 1, work: 75, unit: 'sec', restSec: 15,
+  load: { kind: 'bodyweight', text: 'No load' },
+  fixed: true,
+  progression: 'Never progressed. More range comes by itself; do not push for it.',
+  protocolId: 'mobility',
+  note: 'Eight slow cobra press-ups, then five open books a side.',
+  form: {
+    setup: 'Face down on the mat, hands under the shoulders, hips and legs relaxed. For the open book, lie on one side with the knees bent up to hip height and the arms straight out in front, palms together.',
+    execution: 'Cobra: press the chest up while the hips stay on the mat and the glutes stay soft, only as high as is comfortable, then lower. Open book: keep the knees together on the mat and sweep the top arm up and over to the other side, letting the chest turn to the ceiling. Hold a breath there, come back. Five, then roll over.',
+    cue: 'The back stretch, and the right one for the morning: extension and rotation, never folding forward while the discs are still full from the night. The cobra undoes the curl of sleep; the open book turns the upper back that climbing locks up.',
+    breathing: 'Exhale at the top of each press-up and as the arm opens.',
+    mistakes: 'Squeezing the glutes in the cobra, which pinches the lower back. Lifting the hips. Knees sliding apart in the open book. Forcing the arm to the floor.',
+  },
+};
+
 const EDGE_DENSITY: Exercise = {
   id: 'daily-edge-density',
   name: 'Edge Density No-Hangs',
@@ -274,32 +487,7 @@ export const DATA_DAILY: Circuit[] = [
           mistakes: 'Lower back arching as the leg lowers. Arm and leg on the same side. Racing the reps.',
         },
       },
-      {
-        id: 'daily-pushup',
-        name: 'Push-Up',
-        capacities: ['press', 'shoulder'],
-        block: 'SECONDARY', intensity: 'MODERATE',
-        sets: 2, work: 10, unit: 'reps', restSec: 45,
-        load: { kind: 'bodyweight', text: 'On fists or push-up handles, so the wrist stays straight' },
-        progression:
-          'Two sets of twelve with a clean line, then a three-second lowering, then a '
-          + 'pause with the chest a fist off the mat, then archer push-ups.',
-        protocolId: 'hypertrophy',
-        note: 'One or two reps left in the tank: this wakes the top half, it is not a test.',
-        variations: [
-          { minLevel: 1, name: 'Push-Up' },
-          { minLevel: 3, name: 'Push-Up, 3s Lower' },
-          { minLevel: 5, name: 'Push-Up, 3s Lower + Bottom Pause' },
-          { minLevel: 7, name: 'Archer Push-Up' },
-        ],
-        form: {
-          setup: 'Fists or handles under the shoulders, knuckles flat, wrists straight. Body one line from heels to crown, glutes and abs on. Knees down if the line breaks before rep eight.',
-          execution: 'Lower with the elbows about 45 degrees from the ribs until the chest is a fist from the mat, then press to full lockout and push the floor away at the top.',
-          cue: 'Climbing is all pulling. A little pressing most mornings keeps the shoulder balanced, and a straight plank on the way down is core work too.',
-          breathing: 'Inhale down, exhale on the press.',
-          mistakes: 'Hips sagging. Elbows flaring to 90 degrees. Half reps. Bent wrists grinding through pain when a fist would do.',
-        },
-      },
+      PUSH_UP,
       {
         id: 'daily-spiderman',
         name: 'Spiderman Plank',
@@ -601,28 +789,7 @@ export const DATA_DAILY: Circuit[] = [
       'The session for a heavy morning, or the day after climbing. Nothing here is hard. '
       + 'Mobility first so the fingers are warm by the time they load.',
     exercises: [
-      {
-        id: 'morn-catcow',
-        name: 'Cat-Cow + Thread the Needle',
-        capacities: ['mobility', 'shoulder'],
-        block: 'MOBILITY', intensity: 'TECHNIQUE',
-        sets: 1, work: 12, unit: 'reps', restSec: 15,
-        load: { kind: 'bodyweight', text: 'No load' },
-        progression: 'Add the overhead reach on the unwind once the thread reaches the mat without forcing.',
-        protocolId: 'mobility',
-        note: 'Eight cat-cow, then four threads alternating',
-        variations: [
-          { minLevel: 1, name: 'Cat-Cow + Thread the Needle' },
-          { minLevel: 4, name: 'Cat-Cow + Thread the Needle with Reach' },
-        ],
-        form: {
-          setup: 'On hands and knees. Hands under shoulders, knees under hips, spine long and neutral.',
-          execution: 'Cat: press the floor away, round the whole spine, tuck the tailbone. Cow: let the belly drop, lift chest and tailbone. Move one vertebra at a time. After eight, thread one arm under the body and across until the shoulder and the side of the head rest on the mat, then unwind and reach that arm to the ceiling. Alternate.',
-          cue: 'This is the segment that gets your spine out of the shape it held all night and out of the shape climbing put it in. Move slowly enough to feel each vertebra arrive.',
-          breathing: 'Inhale into cow, exhale into cat. Exhale as you thread through.',
-          mistakes: 'Moving the spine as one rigid block. Cranking the neck. Hands drifting ahead of the shoulders. Speeding up — this is the wake-up, not the workout.',
-        },
-      },
+      CAT_COW,
       {
         id: 'morn-hip-9090',
         name: '90/90 Hip Switch',
@@ -710,6 +877,30 @@ export const DATA_DAILY: Circuit[] = [
         },
       },
       EDGE_DENSITY,
+    ],
+  },
+  {
+    id: 'daily-05', circuitNum: '05',
+    title: 'LEGS + CORE', subtitle: 'daily - mat only - legs - trunk - 13 min',
+    focus: 'Back and hips moving, slow squats and bridges, push-ups, a still plank. No curling.',
+    capacities: ['legs', 'tension', 'mobility', 'press'],
+    illustration: 'squats.svg',
+    duration: 13,
+    recoveryHours: 0,
+    note:
+      'Mat only, and the gentle one for the belly: nothing jumps, nothing curls. Cat-cow, '
+      + 'spiderman lunges and Cossack shifts wake the back and hips, then squats, bridges, '
+      + 'push-ups and slow mountain climbers. The cobra and open book unwind the back last. '
+      + 'Wrists sore: fists or push-up handles for every plank.',
+    exercises: [
+      CAT_COW,
+      SPIDERMAN_LUNGE,
+      COSSACK_SHIFT,
+      BODYWEIGHT_SQUAT,
+      GLUTE_BRIDGE,
+      PUSH_UP,
+      PLANK_CLIMBER,
+      BACK_UNWIND,
     ],
   },
 ];
