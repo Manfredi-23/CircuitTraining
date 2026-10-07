@@ -561,6 +561,63 @@ export const PROTOCOLS: Record<string, Protocol> = {
       + 'literature; Steele et al., isolated lumbar extension resistance training '
       + 'reviews.',
   },
+
+  // ---------------------------------------------------------------------------
+  // HEAL: training around an injured finger
+  // ---------------------------------------------------------------------------
+
+  'train-around': {
+    id: 'train-around',
+    name: 'Training Around a Finger Injury',
+    quality: 'Keeping everything else strong while one finger heals',
+    work: 'Gym strength for the legs, the hinge, pressing and the trunk. Nothing that closes the hand under load.',
+    rest: 'As each exercise prescribes',
+    sets: 'As each exercise prescribes',
+    intensity: 'Up to RPE 8 on everything that does not touch the hand. Zero pain in the finger, ever.',
+    frequency: 'Two to three gym sessions a week until the finger is cleared to climb',
+    rationale:
+      'Most finger pulley and tendon strains in climbers heal with a short period of '
+      + 'relative rest followed by graded loading, and the finger decides the timeline, '
+      + 'not the calendar. The rest of the body does not need to wait: whole-body '
+      + 'strength is kept or built in exactly the qualities climbing never trains, and '
+      + 'strength training is the best-supported injury-prevention intervention in '
+      + 'sport. The one rule is that the hand only ever rests on things, or presses '
+      + 'flat: a barbell on the back, a plate hugged to the chest, a flat palm on the '
+      + 'floor. Pain-free tendon glides keep the finger moving, which every pulley '
+      + 'protocol asks for from the first days. A finger that hurts more after a '
+      + 'session than before it is a reason to stop and see a hand therapist.',
+    source:
+      'Schoffl et al., pulley injuries in rock climbers: diagnosis and conservative '
+      + 'treatment, Wilderness Environ Med (2003) and the 2021 update; Lauersen, '
+      + 'Bertelsen and Andersen, exercise interventions to prevent sports injuries, '
+      + 'Br J Sports Med (2014); Wehbe and Hunter, tendon gliding exercises, J Hand '
+      + 'Surg (1985).',
+  },
+
+  'heal-strength': {
+    id: 'heal-strength',
+    name: 'Barbell Strength for the Legs and Hinge',
+    quality: 'Maximal and sub-maximal leg and posterior-chain strength',
+    work: '4-6 reps on the main lift, 8-10 on the supporting lifts',
+    rest: '150-180s on the main lift, 90-120s on the supporting lifts',
+    sets: '3-4 working sets',
+    intensity: 'RPE 7-8: two reps left in reserve. The last rep fast, never a grind.',
+    frequency: '1-2x per week per pattern',
+    rationale:
+      'A climber off the wall has spare recovery for the first time in years, and the '
+      + 'legs and hips are where it buys the most: high steps, rockovers, heel hooks '
+      + 'and dynos are leg strength and leg power, and they add little mass for the '
+      + 'force they give. Low-rep sets at two reps in reserve build strength with '
+      + 'little soreness, so the next session is not lost, and hard sets near failure '
+      + 'grow muscle across a wide range of loads, so size comes from the 8-10 rep '
+      + 'work without grinding the heavy sets. Rest is set long because a short rest '
+      + 'lowers the load lifted and the strength gained.',
+    source:
+      'ACSM position stand, progression models in resistance training (2009); '
+      + 'Schoenfeld et al., loading recommendations for strength and hypertrophy '
+      + '(2017, 2021); Grgic et al., inter-set rest and strength (2018); Barbalho et '
+      + 'al., back squat versus hip thrust (2020).',
+  },
 };
 
 export function getProtocol(id: string | undefined): Protocol | null {

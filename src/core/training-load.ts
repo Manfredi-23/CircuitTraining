@@ -27,7 +27,7 @@ export const DEFAULT_EFFORT: Record<LoadSource, number> = { CLIMB: 7, CAVE: 7, D
 export const DEFAULT_CLIMB_MINUTES = 120;
 
 const MODE_SOURCE: Record<string, LoadSource> = {
-  DAILY: 'DAILY', MORN: 'DAILY', HOME: 'DAILY', CAVE: 'CAVE', HANG: 'CAVE', TEST: 'TEST',
+  DAILY: 'DAILY', MORN: 'DAILY', HOME: 'DAILY', CAVE: 'CAVE', HANG: 'CAVE', TEST: 'TEST', HEAL: 'CAVE',
 };
 
 export interface LoadItem {

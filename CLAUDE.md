@@ -79,7 +79,7 @@ src/
     backup.ts    # export / import format; PERSISTED_KEYS
     dates.ts     # local-date helpers
     session-progress.ts # the set-by-set progress bar on the workout card and rest
-    data-daily.ts, data-cave.ts, data-assess.ts  # Session libraries, one per tab
+    data-daily.ts, data-cave.ts, data-assess.ts, data-heal.ts  # Session libraries, one per tab
     data-oap.ts  # One-arm pull-up path, shared by CAVE 01 and CAVE 02
     data-index.ts  # getModeData(mode) helper
   storage/       # Async storage abstraction (swap localStorage for Supabase later)
@@ -263,13 +263,14 @@ intensity at HARD** — a tired athlete downgrades rather than grinds.
 The athlete boulders twice a week at Minimum, spends weekends in the mountains,
 and has only a mat, a band and a portable pull edge at home: no bar, no
 hangboard, no weights. The programme was cut to three tabs in October 2026 to
-fit that week.
+fit that week; HEAL was added as a fourth while a finger heals.
 
 | Mode | Sessions |
 |------|----------|
 | DAILY | 01 CORE + OBLIQUES, 02 OBLIQUES + BACK, 03 BAND STRENGTH, 04 FINGERS + MOBILITY, 05 LEGS + CORE |
 | CAVE | 01 STRONG, 02 PULL + PUSH, 03 LEGS + BACK |
 | TEST | 01 ASSESS (five sections, ramps, ~76-88 min) |
+| HEAL | 01 LEGS + TRUNK, 02 PUSH + HINGE (injured finger, gym, ~60-70 min) |
 
 A typical week: DAILY most mornings, CAVE 02 or 03 straight after each
 bouldering session, CAVE 01 only in a week a bouldering day is skipped.
@@ -281,6 +282,23 @@ bouldering is the athlete's own time and stays unprogrammed. Circuit ids in
 CAVE were kept (`cave-01`, `cave-05`, `cave-06`) and only `circuitNum` and the
 content changed. Old session-log entries may still carry the retired mode
 names; they are display-only.
+
+### HEAL
+
+Added in October 2026 when the athlete hurt a finger: no climbing and no
+pulling for a few weeks. Two gym sessions for the bouldering gym's training
+area (one barbell, bench, box, back-extension bench, TRX, bands; no machines),
+alternated two or three times a week. The rule: **the hands only rest on things
+or press flat.** Nothing is gripped (no dumbbell, kettlebell, ring, bar hang or
+band handle) and nothing pulls; the barbell sits on the back or hips, plates
+are hugged to the chest, the landmine end lies in an open palm, push-ups are
+on flat palms. Both open with `heal-warmup` (no rower: it is a grip) and close
+with pain-free tendon glides. `heal.test.ts` keeps them free of finger and pull
+capacities and inside 45-90 minutes at every level and energy. The recommender
+treats a HEAL session in the last 10 days with no climb logged since as
+"healing": HEAL every other day, finger-free DAILY between; logging a climb
+ends it. The `added-kg` stepper goes to 200 so a loaded barbell fits (logged
+as the total on the bar).
 
 ### DAILY
 
@@ -491,9 +509,11 @@ keeps all three in sync. Do not hand-edit the PNGs.
 
 ## Handoff Documents
 
-- **`7bit-handover-v18.md`** — **start here.** DAILY 05 LEGS + CORE, the
+- **`7bit-handover-v19.md`** — **start here.** The HEAL tab: two gym
+  sessions for training around an injured finger.
+- **`7bit-handover-v18.md`** — read second. DAILY 05 LEGS + CORE, the
   mat-only morning session for legs and trunk.
-- **`7bit-handover-v17.md`** — read second. Rest shows the next exercise
+- **`7bit-handover-v17.md`** — Rest shows the next exercise
   with its form guide; a set-by-set progress bar on the card and on rest;
   ASSESS tests that need only a bar and a mat; DAILY 01 rebuilt as mat-only
   CORE + OBLIQUES.

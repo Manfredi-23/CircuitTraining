@@ -38,7 +38,8 @@ export function getLoadAxis(exercise: Exercise): LoadAxis | null {
     case 'added-kg':
       // 1kg steps: the smallest increment a plate stack or a belt realistically
       // gives you, and the step size the progression rules are written in.
-      return { unit: 'kg', step: 1, min: 0, max: 80, prefix: '+', label: 'ADDED' };
+      // 200 leaves room for a loaded barbell (HEAL), logged as the total on the bar.
+      return { unit: 'kg', step: 1, min: 0, max: 200, prefix: '+', label: 'ADDED' };
 
     case 'assisted':
       // Logged as the assistance removed, so the number falls as you get
