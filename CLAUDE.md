@@ -10,16 +10,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Working Agreements
 
-Read the newest `7bit-handover-vNN.md` before starting. Then, in every session:
+Read the newest `docs/handovers/7bit-handover-vNN.md` before starting. Then, in every session:
 
-1. **End with a new handover.** Write `7bit-handover-vNN.md` one number up:
+1. **End with a new handover.** Write `docs/handovers/7bit-handover-vNN.md` one number up:
    what changed, repo state, open items, next steps, Mac terminal commands.
    Point the Handoff Documents list below at it. A message that changes the
    repo updates the current handover before it ends.
 2. **End with housekeeping.** Work goes through PRs; merge them once checks
    pass, resolve or close stale PRs, delete merged branches, leave `main`
    building with both checks green. Anything left open is listed in the
-   handover.
+   handover. `main` is the only long-lived branch: every session branches
+   from the latest `main`, and its branch is deleted once merged.
 3. **End every message that changes the app with the Mac terminal commands**
    to pull, build and test it (run from
    `~/Desktop/Manfredi/05_Bit-apps/CircuitTraining`; the standard set is in
@@ -159,7 +160,7 @@ design/          # pixel-grid.svg drawing template; illustrations/<name>/NN.svg 
 
 ## Training Model (v10)
 
-The training content was rewritten in September 2026. See `7bit-handover-v10.md`
+The training content was rewritten in September 2026. See `docs/handovers/7bit-handover-v10.md`
 for the full rationale and evidence base. The short version:
 
 ### Capacities, not muscle groups
@@ -504,10 +505,15 @@ keeps all three in sync. Do not hand-edit the PNGs.
 
 - **Supabase**: Auth + Postgres DB for multi-user. Swap storage adapter, add API routes.
 - **Vercel deployment**: Connect repo, configure build.
-- **The improvement roadmap**: `7bit-roadmap.md`. All seven phases built; the
+- **The improvement roadmap**: `docs/7bit-roadmap.md`. All seven phases built; the
   native ones still need checking on a device.
 
 ## Handoff Documents
+
+All in `docs/handovers/` (the roadmap is `docs/7bit-roadmap.md`).
+Screenshots taken for review go in `docs/screenshots/`, not the repo root
+(root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
+export format.
 
 - **`7bit-handover-v19.md`** — **start here.** The HEAL tab: two gym
   sessions for training around an injured finger.

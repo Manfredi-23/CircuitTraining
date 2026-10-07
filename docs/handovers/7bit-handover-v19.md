@@ -58,7 +58,17 @@ render at 390 x 844.
 
 ## 4. Repo state
 
-PR from `claude/upbeat-archimedes-is1y1e`, merged once its checks pass.
+HEAL merged in PR #29. A second PR from the same branch tidied the repo:
+
+- Handovers v9-v19 moved to `docs/handovers/`, the roadmap to
+  `docs/7bit-roadmap.md`. `CLAUDE.md` and `README.md` point there.
+- The 15 review screenshots that sat in the repo root moved to
+  `docs/screenshots/`; root `*.png` is now git-ignored so new ones do not
+  land there.
+- `backup.json` (a test export) is now `docs/sample-backup.json`.
+- GitHub: `main` is the only branch, no open PRs. `CLAUDE.md` now says so as
+  a rule: every session branches from the latest `main`, merged branches are
+  deleted.
 
 ## 5. Open items
 
