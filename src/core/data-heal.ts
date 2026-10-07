@@ -5,19 +5,20 @@
 // few weeks. HEAL keeps everything else strong in the meantime, and builds the
 // qualities climbing never trains, in the bouldering gym's training area.
 //
-// Equipment: one barbell and plates, a bench, a box, the 45-degree back
-// extension bench, TRX, bands, a mat. No machines.
+// Equipment: one barbell and plates, a box, the 45-degree back extension
+// bench, bands, a mat. No machines, no adjustable bench, no TRX foot cradles.
+// The barbell is for the squat only (the athlete's call).
 //
 // The rule every exercise obeys: the hands only rest on things or press flat.
 // No dumbbell, kettlebell, ring, bar hang or band handle is gripped; plates are
-// hugged to the chest with the forearms, the barbell sits on the back or the
-// hips, the landmine end lies in an open palm. Nothing pulls.
+// hugged to the chest with the forearms, the barbell sits on the back. Nothing
+// pulls.
 //
-// Two sessions, 55-75 minutes NORMAL, alternated, two or three a week:
-//   01 LEGS + TRUNK  — box jumps, the back squat, hip thrust, split squat,
-//                      back extension, then anti-extension and the abs.
-//   02 PUSH + HINGE  — good morning, weighted push-up, landmine press, the
-//                      shoulder blades, then rotation for the obliques.
+// Two sessions, 50-75 minutes NORMAL, alternated, two or three a week:
+//   01 LEGS + TRUNK  — box jumps, the back squat, step-up, split squat,
+//                      back extension, then the hollow body and the abs.
+//   02 PUSH + HINGE  — Nordic curl, weighted push-up, pike push-up, the
+//                      shoulder blades, then rotation and leg raises.
 // Both close with pain-free tendon glides for the injured finger.
 //
 // Order is by neurological cost, as everywhere: power, then the heavy lift,
@@ -43,8 +44,13 @@ const COPENHAGEN = shared(DATA_CAVE, 'home-copenhagen');
 const PLATE_CRUNCH = shared(DATA_CAVE, 'legs-plate-crunch');
 const TOE_DRAG = shared(DATA_CAVE, 'legs-toe-drag');
 const FROGGER = shared(DATA_CAVE, 'feet-frogger');
-const REVERSE_CRUNCH = shared(DATA_DAILY, 'daily-reverse-crunch');
 const BACK_UNWIND = shared(DATA_DAILY, 'daily-back-unwind');
+/** Same id and history as CAVE 02's twist; the plate is hugged, never held by the fingers. */
+const RUSSIAN_TWIST: Exercise = {
+  ...shared(DATA_CAVE, 'addon-russian-twist'),
+  load: { kind: 'added-kg', text: 'A plate hugged to the chest with the forearms, or none to start' },
+  note: 'Left plus right is 2 reps. Plate hugged, fingers open against it. The obliques do the turning, not the arms.',
+};
 
 const HANDS_NOTE = 'Hands: they only rest on the bar or press flat. If closing them on anything hurts the finger, open them.';
 
@@ -121,7 +127,7 @@ export const DATA_HEAL: Circuit[] = [
     recoveryHours: 24,
     note:
       'For the weeks a finger is healing. Nothing here is gripped or pulled: the bar '
-      + 'sits on the back and the hips, plates are hugged to the chest. Power first, then '
+      + 'sits on the back, plates are hugged to the chest. Power first, then '
       + 'the squat while you are fresh, then single-leg and the back, then the trunk. '
       + 'Alternate with 02. Any pain in the finger and that exercise is gone today.',
     exercises: [
@@ -140,7 +146,7 @@ export const DATA_HEAL: Circuit[] = [
         note: 'Step down, never jump down. Arms swing free, hands open.',
         variations: [
           { minLevel: 1, name: 'Box Jump' },
-          { minLevel: 3, name: 'Box Jump - Seated Start', load: 'From sitting on a bench: no countermovement' },
+          { minLevel: 3, name: 'Box Jump - Seated Start', load: 'From sitting on a second box: no countermovement' },
           { minLevel: 5, name: 'Single-Leg Box Jump', load: 'Low box, three a leg' },
         ],
         form: {
@@ -177,25 +183,29 @@ export const DATA_HEAL: Circuit[] = [
         },
       },
       {
-        id: 'heal-hip-thrust',
-        name: 'Barbell Hip Thrust',
-        capacities: ['legs', 'tension'],
+        id: 'heal-step-up',
+        name: 'Box Step-Up',
+        capacities: ['legs'],
         block: 'SECONDARY', intensity: 'HARD',
-        sets: 3, work: 8, unit: 'reps', restSec: 120,
-        load: { kind: 'added-kg', value: 40, text: 'Total on the bar, with a pad. RPE 8.' },
-        progression: 'Three sets of ten with a one-second squeeze at the top, then 5kg more and back to eight.',
+        sets: 3, work: 8, unit: 'reps', restSec: 90,
+        load: { kind: 'added-kg', value: 0, text: 'Bodyweight, then a plate hugged to the chest' },
+        progression:
+          'Eight a leg on a knee-height box with no push from the back foot, then a plate '
+          + 'hugged to the chest in 5kg steps, then a higher box.',
         protocolId: 'heal-strength',
-        note: 'Hands rest flat on the bar to steady it. They do not hold it.',
+        perSide: true,
+        note: 'Per leg. The plate is hugged with the forearms, fingers open against it.',
         variations: [
-          { minLevel: 1, name: 'Barbell Hip Thrust' },
-          { minLevel: 4, name: 'Barbell Hip Thrust - 2s Hold' },
+          { minLevel: 1, name: 'Box Step-Up' },
+          { minLevel: 3, name: 'Box Step-Up - Plate Hug' },
+          { minLevel: 5, name: 'Box Step-Up - High Box, 3s Lower' },
         ],
         form: {
-          setup: 'Upper back against the long side of a bench, just below the shoulder blades. Bar padded across the hip crease, rolled into place. Feet flat, shins vertical at the top.',
-          execution: 'Tuck the chin and the ribs, drive through the heels and lift the hips until the body is a straight line from shoulders to knees. Squeeze one second. Lower under control until the plates nearly touch.',
-          cue: 'Glute strength at full hip extension: the hip pushing into the wall on a steep foothold and on every rockover. The squat cannot load the top of that range; this can.',
-          breathing: 'Exhale at the top.',
-          mistakes: 'Arching the lower back to finish the rep. Feet too far out, which turns it into a hamstring exercise. Gripping the bar.',
+          setup: 'Box at knee height or a little higher. Whole working foot on the box, plate held flat against the chest, forearms crossed over it.',
+          execution: 'Lean the chest over the front foot and stand up onto the box through that heel, the back foot only trailing along. Lower back down slowly under control. All reps on one leg, then the other.',
+          cue: 'This is the high step and the rockover, loaded: one leg pressing the body up over a foot that is already high. Push off the back toes and it stops counting.',
+          breathing: 'Exhale standing up.',
+          mistakes: 'Bouncing off the back foot. Knee caving in on the way up. Dropping down instead of lowering.',
         },
       },
       {
@@ -217,8 +227,8 @@ export const DATA_HEAL: Circuit[] = [
           { minLevel: 5, name: 'Rear-Foot-Elevated Split Squat - 3s Lower' },
         ],
         form: {
-          setup: 'Back foot laces-down on a bench, front foot far enough forward that the front shin stays near vertical at the bottom. Plate held flat against the chest, forearms crossed over it.',
-          execution: 'Lower straight down until the back knee is just off the floor, then drive up through the front heel. All reps on one leg, then the other.',
+          setup: 'Back foot laces-down on the box, front foot far enough forward that the front shin stays near vertical at the bottom. Plate held flat against the chest, forearms crossed over it.',
+          execution: 'Lower straight down until the back knee is just off the floor, then drive up through the front heel. All reps on one leg, then the other. A box too high for the back foot: use the floor, a plate stack, or a split squat with both feet down.',
           cue: 'One leg at a time is how climbing uses the legs, and it stretches the hip flexor of the back leg at the same time: a high step with a long reach.',
           breathing: 'Inhale down, exhale up.',
           mistakes: 'Front foot too close, which drives the knee far over the toes. Bouncing off the bottom. Doing more reps on the strong leg.',
@@ -227,28 +237,29 @@ export const DATA_HEAL: Circuit[] = [
       BACK_EXTENSION,
       COPENHAGEN,
       {
-        id: 'heal-body-saw',
-        name: 'TRX Body Saw',
+        id: 'morn-hollow',
+        name: 'Hollow Body Hold',
         capacities: ['tension'],
         block: 'SECONDARY', intensity: 'HARD',
-        sets: 3, work: 10, unit: 'reps', restSec: 60,
-        load: { kind: 'bodyweight', text: 'Feet in the TRX cradles, forearms on the floor' },
+        sets: 3, work: 30, unit: 'sec', restSec: 60,
+        load: { kind: 'bodyweight', text: 'Mat only. Lower back pressed down the whole time.' },
         progression:
-          'Ten slow saws with a flat back, then a longer reach behind the elbows, then a '
-          + 'two-second hold at the far point.',
+          'Thirty seconds with the lower back flat, then arms overhead, then legs lower, '
+          + 'then hollow rocks.',
         protocolId: 'tension-iso',
-        note: 'On the forearms, fists loose or palms flat. Nothing held.',
+        note: 'Hands open, arms reaching. Nothing held.',
         variations: [
-          { minLevel: 1, name: 'Forearm Plank Body Saw', load: 'Feet on a towel or sliders on a smooth floor' },
-          { minLevel: 3, name: 'TRX Body Saw' },
-          { minLevel: 5, name: 'TRX Body Saw - 2s Hold Out' },
+          { minLevel: 1, name: 'Hollow Body Hold - Tucked', load: 'Knees bent over the hips, arms by the sides' },
+          { minLevel: 3, name: 'Hollow Body Hold' },
+          { minLevel: 5, name: 'Hollow Body Hold - Arms Overhead' },
+          { minLevel: 7, name: 'Hollow Rock', load: '30s of slow rocks in the hollow shape' },
         ],
         form: {
-          setup: 'Toes in the TRX foot cradles at mid-shin height, forearm plank underneath with the elbows under the shoulders. Ribs down, glutes on.',
-          execution: 'Push the body backward from the shoulders so the elbows end up in front of the face, then pull back to the start. The hips stay in line; the shoulders do the travelling.',
-          cue: 'The front lever without the bar: the trunk holding a long body straight against gravity, with the arms reaching overhead. It is the body tension that keeps the feet on in a roof.',
-          breathing: 'Exhale on the way out, short breaths at the far point.',
-          mistakes: 'Hips sagging as the reach gets longer. Piking the hips up to shorten the lever. Rushing.',
+          setup: 'On your back on the mat. Press the lower back into the floor and keep it there; that is the whole exercise.',
+          execution: 'Lift the shoulders and the legs off the floor into a shallow banana, arms long. Hold. When the lower back starts to lift, bend the knees or bring the arms down rather than lose it.',
+          cue: 'The shape the body takes on a steep wall to keep the feet on: ribs down, pelvis tucked, a long body held stiff. The front lever without the bar.',
+          breathing: 'Short breaths, never held.',
+          mistakes: 'Lower back arching off the floor. Legs so high it gets easy. Neck cranked forward.',
         },
       },
       PLATE_CRUNCH,
@@ -259,42 +270,42 @@ export const DATA_HEAL: Circuit[] = [
   },
   {
     id: 'heal-02', circuitNum: '02',
-    title: 'PUSH + HINGE', subtitle: 'injured finger - press - back - obliques',
-    focus: 'The hinge, the pushing climbing never trains, the shoulder blades and the obliques, with no grip.',
+    title: 'PUSH + HINGE', subtitle: 'injured finger - press - hamstrings - abs',
+    focus: 'The hamstrings, the pushing climbing never trains, the shoulder blades and the abs, with no grip.',
     capacities: ['press', 'shoulder'],
     illustration: 'pushups.svg',
     duration: 65,
     recoveryHours: 24,
     note:
-      'For the weeks a finger is healing, alternated with 01. The bar sits on the back '
-      + 'or lies in an open palm, push-ups go on flat hands, and nothing pulls. Hinge '
+      'For the weeks a finger is healing, alternated with 01. No barbell here: the '
+      + 'hamstrings work against bodyweight, push-ups go on flat hands, and nothing pulls. Hinge '
       + 'and press first while fresh, then the shoulder blades, then the obliques. Any '
       + 'pain in the finger and that exercise is gone today.',
     exercises: [
       HEAL_WARMUP,
       {
-        id: 'heal-good-morning',
-        name: 'Barbell Good Morning',
-        capacities: ['legs', 'tension'],
+        id: 'heal-nordic-curl',
+        name: 'Nordic Hamstring Curl',
+        capacities: ['legs'],
         block: 'PRIMARY', intensity: 'HARD',
-        sets: 4, work: 6, unit: 'reps', restSec: 150,
-        load: { kind: 'added-kg', value: 30, text: 'Total on the bar, RPE 7-8. Light: this is a long lever.' },
+        sets: 3, work: 5, unit: 'reps', restSec: 120,
+        load: { kind: 'bodyweight', text: 'Bodyweight, as slow a lowering as you can hold' },
         progression:
-          'Four sets of six with a flat back and the full hamstring stretch, then 2.5kg '
-          + 'more. It stays well under half the squat: range and position before load.',
+          'Lower slower and further before the hands catch you. Once the full lowering '
+          + 'takes five seconds on every rep, add a pull back up from the bottom.',
         protocolId: 'heal-strength',
-        note: HANDS_NOTE,
+        note: 'Heels under the rollers of the back extension bench, or a partner on the ankles. Catch yourself on flat palms.',
         variations: [
-          { minLevel: 1, name: 'Barbell Good Morning', load: 'Empty bar or close to it, RPE 7' },
-          { minLevel: 3, name: 'Barbell Good Morning', load: 'RPE 8, total on the bar' },
-          { minLevel: 5, name: 'Barbell Good Morning - 3s Lower' },
+          { minLevel: 1, name: 'Nordic Curl - Partial', load: 'Lower as far as you control, then catch on flat palms' },
+          { minLevel: 3, name: 'Nordic Curl', load: 'All the way down, 3-5s' },
+          { minLevel: 6, name: 'Nordic Curl - Pull Back Up' },
         ],
         form: {
-          setup: 'Bar on the upper back as for the squat, out of a rack. Hands wide, the injured hand open flat against the bar. Feet hip-width, knees soft.',
-          execution: 'Push the hips back and let the chest come forward with a flat back until the hamstrings stop you, around 45 degrees or a little lower. Drive the hips forward to stand tall.',
-          cue: 'The deadlift without a grip: the hamstrings, glutes and lower back working through a big range while the spine stays still. Your weak back gets loaded here without the hands having a say.',
-          breathing: 'Brace at the top, inhale down, exhale through the top half.',
-          mistakes: 'Rounding the lower back to get lower. Bending the knees until it becomes a squat. Load before range. Letting the bar slide up the neck.',
+          setup: 'Kneel on a folded mat, heels locked under the rollers of the back extension bench (stand it so the pads hold the ankles) or held by a partner. Body straight from knees to head, hips extended.',
+          execution: 'Lean forward from the knees as slowly as possible, hips staying straight, until you can no longer hold it. Catch yourself on flat palms in a push-up, push lightly back up and reset.',
+          cue: 'The hamstrings working while they lengthen, which is exactly what a heel hook asks of them, and the best-supported hamstring injury prevention there is. Expect sore legs the first two sessions.',
+          breathing: 'Breathe out slowly on the way down.',
+          mistakes: 'Bending at the hips to make it easier. Dropping fast past the point you control. Landing on the injured hand with the fingers curled.',
         },
       },
       {
@@ -324,31 +335,54 @@ export const DATA_HEAL: Circuit[] = [
         },
       },
       {
-        id: 'heal-landmine-press',
-        name: 'Half-Kneeling Landmine Press',
+        id: 'heal-pike-pushup',
+        name: 'Pike Push-Up',
         capacities: ['press', 'shoulder'],
         block: 'SECONDARY', intensity: 'HARD',
         sets: 3, work: 8, unit: 'reps', restSec: 90,
-        load: { kind: 'added-kg', value: 5, text: 'Plates on the bar end. RPE 8.' },
-        progression: 'Three sets of ten a side, then the next plate and back to eight.',
+        load: { kind: 'bodyweight', text: 'Bodyweight. Feet on the box makes it heavier.' },
+        progression: 'Three sets of ten on the floor, then feet on the box, then a three-second lowering.',
         protocolId: 'hypertrophy',
-        perSide: true,
-        note: 'Per arm. The bar end lies in the open palm, fingers relaxed: nothing to grip.',
+        note: 'Flat palms, fingers spread. If the injured finger complains flat, let it hang off the edge of a plate.',
         variations: [
-          { minLevel: 1, name: 'Half-Kneeling Landmine Press' },
-          { minLevel: 5, name: 'Standing Landmine Press' },
+          { minLevel: 1, name: 'Pike Push-Up' },
+          { minLevel: 4, name: 'Pike Push-Up - Feet on Box' },
+          { minLevel: 6, name: 'Pike Push-Up - Feet on Box, 3s Lower' },
         ],
         form: {
-          setup: 'Barbell end in a landmine or wedged into a corner on a towel. Kneel on the knee of the pressing side, other foot forward. Bar end in front of the shoulder, resting in the open palm.',
-          execution: 'Press the bar up and forward to a straight arm, letting the shoulder blade reach round the ribs at the top. Lower to the shoulder under control.',
-          cue: 'Overhead pressing on an arc the shoulder likes: the serratus and the lower traps that keep the shoulder blade on the ribs, the thing a pulling-only athlete is missing.',
-          breathing: 'Exhale on the press.',
-          mistakes: 'Leaning back to finish the rep. Shrugging. Closing the hand round the sleeve.',
+          setup: 'Hands flat on the floor shoulder-width apart, hips high so the body makes an upside-down V. Feet on the floor, or on the box for the harder version.',
+          execution: 'Bend the elbows and lower the top of the head toward a point just in front of the hands, then press back up until the arms are straight and the shoulders push toward the ears.',
+          cue: 'Overhead pressing with no bar to hold: the shoulders and triceps the other way round from every pull. It also trains the shoulder blade to rotate up, which a pulling-only athlete is missing.',
+          breathing: 'Inhale down, exhale on the press.',
+          mistakes: 'Elbows flaring straight out. Hips dropping so it turns into a push-up. Head hitting the floor at the bottom.',
+        },
+      },
+      {
+        id: 'heal-calf-raise',
+        name: 'Single-Leg Calf Raise',
+        capacities: ['legs'],
+        block: 'SECONDARY', intensity: 'HARD',
+        sets: 3, work: 12, unit: 'reps', restSec: 60,
+        load: { kind: 'added-kg', value: 0, text: 'Bodyweight on the box edge, then a plate in a backpack' },
+        progression: 'Twelve a leg through the full range with a pause at the top, then plates in a backpack in 2.5kg steps.',
+        protocolId: 'heal-strength',
+        perSide: true,
+        note: 'Per leg. One flat palm on the wall for balance, nothing held.',
+        variations: [
+          { minLevel: 1, name: 'Single-Leg Calf Raise' },
+          { minLevel: 4, name: 'Single-Leg Calf Raise - Backpack' },
+        ],
+        form: {
+          setup: 'Ball of one foot on the edge of the box, heel hanging off, other foot hooked behind. A flat palm on the wall for balance.',
+          execution: 'Lower the heel slowly below the box edge, then rise as high onto the toes as you can and pause one second. All reps on one leg, then the other.',
+          cue: 'Standing on a small foothold is the calf holding the heel up, often for a long time. Full range, slow, and the ankle gets stronger at both ends.',
+          breathing: 'Exhale rising.',
+          mistakes: 'Bouncing at the bottom. Half reps. Leaning on the wall instead of balancing.',
         },
       },
       {
         id: 'heal-prone-ytw',
-        name: 'Incline Prone Y-T-W',
+        name: 'Prone Y-T-W',
         capacities: ['shoulder'],
         block: 'SECONDARY', intensity: 'MODERATE',
         sets: 3, work: 8, unit: 'reps', restSec: 60,
@@ -357,44 +391,47 @@ export const DATA_HEAL: Circuit[] = [
         protocolId: 'prehab',
         note: 'Eight of each letter is one set. Open hands, nothing held.',
         variations: [
-          { minLevel: 1, name: 'Incline Prone Y-T-W' },
-          { minLevel: 3, name: 'Incline Prone Y-T-W - 2s Hold' },
-          { minLevel: 5, name: 'Incline Prone Y-T-W - 5s Hold' },
+          { minLevel: 1, name: 'Prone Y-T-W' },
+          { minLevel: 3, name: 'Prone Y-T-W - 2s Hold' },
+          { minLevel: 5, name: 'Prone Y-T-W - 5s Hold' },
         ],
         form: {
-          setup: 'Chest down on a bench set to about 30 degrees, feet on the floor, arms hanging straight down.',
-          execution: 'Y: raise the straight arms forward and out to ear height, thumbs up. T: raise them out to the sides. W: elbows bent, pull them back and squeeze the shoulder blades down. Slow up, slow down.',
+          setup: 'Face down on the mat, forehead on a folded towel, legs relaxed. Arms on the floor in the letter you are about to make.',
+          execution: 'Y: arms straight overhead and out, thumbs up, lift them a few centimetres off the floor. T: arms straight out to the sides, lift. W: elbows bent at the sides, lift and squeeze the shoulder blades down and together. Slow up, slow down.',
           cue: 'The lower and middle traps that set the shoulder blade before every pull. Not pulling for a few weeks is the time to make them strong, not to lose them.',
           breathing: 'Exhale on each lift.',
-          mistakes: 'Shrugging up into the ears. Swinging. Arching off the bench to get the arms higher.',
+          mistakes: 'Shrugging up into the ears. Lifting the chest off the floor to get the arms higher. Rushing.',
         },
       },
       HEAL_BAND_ER,
+      RUSSIAN_TWIST,
+      SIDE_PLANK_DIP,
       {
-        id: 'heal-landmine-rotation',
-        name: 'Landmine Rotation',
+        id: 'morn-leg-lowers',
+        name: 'Lying Leg Raise',
         capacities: ['tension'],
         block: 'SECONDARY', intensity: 'HARD',
         sets: 3, work: 10, unit: 'reps', restSec: 60,
-        load: { kind: 'added-kg', value: 0, text: 'The bar alone, then plates on the end' },
-        progression: 'Ten slow reps with still hips, then 2.5kg on the end, then a one-second pause at each side.',
+        load: { kind: 'bodyweight', text: 'Mat only. Hands flat under the hips.' },
+        progression:
+          'Ten slow reps with the lower back flat, then straight legs, then a three-second '
+          + 'lowering, then lift the hips off the mat at the top.',
         protocolId: 'trunk-hypertrophy',
-        note: 'Left plus right is 2 reps. Palms pressed flat either side of the bar end, fingers straight.',
+        note: 'Hands flat on the mat under the hips, fingers straight.',
         variations: [
-          { minLevel: 1, name: 'Landmine Rotation' },
-          { minLevel: 4, name: 'Landmine Rotation - Plates' },
-          { minLevel: 6, name: 'Landmine Rotation - 1s Pause' },
+          { minLevel: 1, name: 'Lying Leg Raise - Bent Knees' },
+          { minLevel: 3, name: 'Lying Leg Raise' },
+          { minLevel: 5, name: 'Lying Leg Raise - 3s Lower' },
+          { minLevel: 7, name: 'Lying Leg Raise + Hip Lift' },
         ],
         form: {
-          setup: 'Bar end in a landmine or corner. Stand facing it, feet wide, arms straight with the bar end held overhead between two flat palms.',
-          execution: 'Lower the bar end in an arc to one hip, turning the ribs with it while the hips stay mostly square, then bring it back over the top and down to the other hip.',
-          cue: 'The obliques turning the trunk against a load, with straight arms: the move of turning the hip into the wall and reaching through.',
-          breathing: 'Exhale as the bar comes back up.',
-          mistakes: 'Bending the elbows so the arms do the work. Spinning the hips. Letting the bar drop fast to the side.',
+          setup: 'On your back, legs straight, hands flat under the hips with the fingers straight. Press the lower back into the mat.',
+          execution: 'Lift the legs together to vertical, then lower them slowly, stopping just before the lower back peels off the floor. Bend the knees if it does.',
+          cue: 'Lifting the legs against a still trunk: the hanging leg raise from CAVE, done on the floor while the hands cannot hang. Feet back on the wall in a roof.',
+          breathing: 'Exhale as the legs come up.',
+          mistakes: 'Lower back arching as the legs go down. Dropping the legs fast. Pushing hard through the hands.',
         },
       },
-      SIDE_PLANK_DIP,
-      REVERSE_CRUNCH,
       BACK_UNWIND,
       TENDON_GLIDES,
     ],

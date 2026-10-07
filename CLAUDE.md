@@ -288,18 +288,23 @@ names; they are display-only.
 
 Added in October 2026 when the athlete hurt a finger: no climbing and no
 pulling for a few weeks. Two gym sessions for the bouldering gym's training
-area (one barbell, bench, box, back-extension bench, TRX, bands; no machines),
-alternated two or three times a week. The rule: **the hands only rest on things
-or press flat.** Nothing is gripped (no dumbbell, kettlebell, ring, bar hang or
-band handle) and nothing pulls; the barbell sits on the back or hips, plates
-are hugged to the chest, the landmine end lies in an open palm, push-ups are
-on flat palms. Both open with `heal-warmup` (no rower: it is a grip) and close
-with pain-free tendon glides. `heal.test.ts` keeps them free of finger and pull
-capacities and inside 45-90 minutes at every level and energy. The recommender
-treats a HEAL session in the last 10 days with no climb logged since as
-"healing": HEAL every other day, finger-free DAILY between; logging a climb
-ends it. The `added-kg` stepper goes to 200 so a loaded barbell fits (logged
-as the total on the bar).
+area: one barbell **used for the squat only**, plates, a box, the 45-degree
+back extension bench, bands, a mat. No machines, no adjustable bench, no TRX
+foot cradles. Alternated two or three times a week. The rule: **the hands only
+rest on things or press flat.** Nothing is gripped (no dumbbell, kettlebell,
+ring, bar hang or band handle) and nothing pulls; plates are hugged to the
+chest, push-ups and pike push-ups are on flat palms. 01 LEGS + TRUNK: box jump,
+back squat, step-up, split squat, back extension, Copenhagen, hollow hold,
+plate crunch, toe drag, frogger. 02 PUSH + HINGE: Nordic curl, weighted
+push-up, pike push-up, calf raise, prone Y-T-W on the floor, band ER, Russian
+twist (plate hugged), side plank dip, lying leg raise, cobra + open book. Both
+open with `heal-warmup` (no rower: it is a grip) and close with pain-free
+tendon glides. `heal.test.ts` keeps them free of finger and pull capacities,
+off the barbell except the squat, and inside 45-90 minutes at every level and
+energy. The recommender treats a HEAL session in the last 10 days with no
+climb logged since as "healing": HEAL every other day, finger-free DAILY
+between; logging a climb ends it. The `added-kg` stepper goes to 200 so a
+loaded barbell fits (logged as the total on the bar).
 
 ### DAILY
 
