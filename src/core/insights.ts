@@ -31,7 +31,7 @@ const DAY_PRIORITY: DayKind[] = ['CLIMB', 'CAVE', 'TEST', 'DAILY'];
 
 /** Retired modes still in old logs, mapped onto today's tabs. */
 const LEGACY_MODE: Record<string, DayKind> = {
-  DAILY: 'DAILY', MORN: 'DAILY', HOME: 'DAILY', CAVE: 'CAVE', HANG: 'CAVE', TEST: 'TEST',
+  DAILY: 'DAILY', MORN: 'DAILY', HOME: 'DAILY', CAVE: 'CAVE', HANG: 'CAVE', TEST: 'TEST', HEAL: 'CAVE',
 };
 
 export interface StripDay { date: string; kind: DayKind | null; future: boolean }
@@ -209,16 +209,16 @@ export type CoreGroup = 'abs' | 'obliques' | 'back';
 export const CORE_EXERCISES: Record<CoreGroup, string[]> = {
   abs: [
     'morn-hollow', 'morn-leg-lowers', 'daily-reverse-crunch', 'daily-crunch',
-    'legs-plate-crunch', 'home-leg-raise', 'cave-front-lever', 'daily-plank-climber',
+    'legs-plate-crunch', 'home-leg-raise', 'cave-front-lever', 'daily-plank-climber', 'heal-body-saw',
   ],
   obliques: [
     'daily-side-plank-dip', 'morn-bw-russian-twist', 'addon-russian-twist',
     'addon-hanging-oblique', 'addon-mountain-climber', 'home-copenhagen',
-    'daily-spiderman', 'daily-mountain-climber',
+    'daily-spiderman', 'daily-mountain-climber', 'heal-landmine-rotation',
   ],
   back: [
     'daily-prone-extension', 'daily-band-good-morning', 'legs-back-extension',
-    'legs-sl-rdl', 'home-sl-rdl', 'daily-glute-bridge',
+    'legs-sl-rdl', 'home-sl-rdl', 'daily-glute-bridge', 'heal-good-morning', 'heal-hip-thrust',
   ],
 };
 

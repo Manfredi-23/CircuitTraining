@@ -17,7 +17,7 @@ import type { Config } from './types';
 
 export const CONFIG: Config = {
 
-  modes: ['DAILY', 'CAVE', 'TEST'],
+  modes: ['DAILY', 'CAVE', 'TEST', 'HEAL'],
 
   // ---------------------------------------------------------------------------
   // Energy

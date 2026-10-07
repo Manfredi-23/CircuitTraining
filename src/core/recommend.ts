@@ -3,7 +3,8 @@
 //
 // The week the programme is written for: DAILY most mornings, CAVE 02 or 03
 // straight after bouldering, CAVE 01 only in a week a bouldering day was
-// skipped, ASSESS every six to eight weeks. The rules below read that week
+// skipped, ASSESS every six to eight weeks. While a finger heals, HEAL every
+// other day and finger-free DAILY between. The rules below read that week
 // back out of the logs, in order of what matters most. It recommends; the
 // home screen opens on the recommendation and every other card is a swipe
 // away.
@@ -40,6 +41,9 @@ export const RETEST_WEEKS = 7;
 
 /** Days a pain score of 6+ keeps finger sessions off the recommendation. */
 const PAIN_MEMORY_DAYS = 2;
+
+/** Days after the last HEAL session that the athlete still counts as injured. */
+export const HEAL_MEMORY_DAYS = 10;
 
 /** Last day a circuit was done, or null. */
 export function lastDone(sessionLog: SessionLogEntry[], circuitId: string): string | null {
@@ -94,7 +98,21 @@ export function recommend(input: RecommendInput): Recommendation | null {
     return { mode: 'DAILY', circuitId: pick.id, reason: `Finger pain ${painful.pain}/10 lately. No finger work.` };
   }
 
-  // 2. Climbed today: the after-bouldering session, alternating 02 and 03.
+  // 2. Healing a finger: a HEAL session lately and no climbing logged since.
+  // HEAL every other day, finger-free DAILY between. Logging a climb ends it.
+  const healLog = sessionLog.filter(s => s.mode === 'HEAL');
+  const lastHeal = healLog.length ? dayOf(healLog[healLog.length - 1].date) : null;
+  if (lastHeal && daysBetween(lastHeal, today) <= HEAL_MEMORY_DAYS && !climbLog.some(c => c.date >= lastHeal)) {
+    if (daysBetween(lastHeal, today) >= 2) {
+      const pick = leastRecent(getModeData('HEAL'), sessionLog);
+      return { mode: 'HEAL', circuitId: pick.id, reason: 'Finger healing. Next HEAL session.' };
+    }
+    if (doneToday('DAILY')) return null;
+    const pick = leastRecent(daily.filter(c => !asksPainCheck(c)), sessionLog);
+    return { mode: 'DAILY', circuitId: pick.id, reason: 'Finger healing: no finger work today.' };
+  }
+
+  // 3. Climbed today: the after-bouldering session, alternating 02 and 03.
   const stacking = cave.filter(c => c.stacksOnSession);
   if (climbedToday && !doneToday('CAVE') && stacking.length) {
     const pick = leastRecent(stacking, sessionLog);
@@ -104,7 +122,7 @@ export function recommend(input: RecommendInput): Recommendation | null {
   const strong = cave.find(c => !c.stacksOnSession);
   const fingersReady = strong ? getReadiness(strong, progress).level === 'ready' : false;
 
-  // 3. ASSESS due, fresh fingers, not a deload week, no climbing today, and
+  // 4. ASSESS due, fresh fingers, not a deload week, no climbing today, and
   // not a TIRED day: a test on a bad night measures the night.
   if (test[0] && !input.tired && !climbedToday && !block.deload && fingersReady && !doneToday('TEST')
       && assessDue(benchmarkResults, sessionLog, now)) {
@@ -115,7 +133,7 @@ export function recommend(input: RecommendInput): Recommendation | null {
     };
   }
 
-  // 4. CAVE 01: from Thursday, in a week with fewer than two climbing days.
+  // 5. CAVE 01: from Thursday, in a week with fewer than two climbing days.
   // Only once climbs are being logged: with an empty climb log the app cannot
   // tell a skipped bouldering day from one that was never written down.
   const monday = mondayOf(today);
@@ -129,7 +147,7 @@ export function recommend(input: RecommendInput): Recommendation | null {
     };
   }
 
-  // 5. The morning DAILY, rotating through the five.
+  // 6. The morning DAILY, rotating through the five.
   if (doneToday('DAILY')) return null;
   if (input.tired) {
     const pick = leastRecent(daily, sessionLog);
