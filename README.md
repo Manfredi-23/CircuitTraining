@@ -6,8 +6,8 @@ session tracking.
 
 Built for one athlete: 35, 62kg, 7a+, three sessions a week, home and gym.
 
-**Training model:** see [`7bit-handover-v10.md`](7bit-handover-v10.md).
-**Design system:** see [`7bit-handoff-v9.md`](7bit-handoff-v9.md).
+**Training model:** see [`7bit-handover-v10.md`](docs/handovers/7bit-handover-v10.md).
+**Design system:** see [`7bit-handoff-v9.md`](docs/handovers/7bit-handoff-v9.md).
 
 ## Requirements
 

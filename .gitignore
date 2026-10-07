@@ -30,3 +30,6 @@ ios/DerivedData/
 # Python
 __pycache__/
 *.pyc
+
+# review screenshots belong in docs/screenshots/
+/*.png
