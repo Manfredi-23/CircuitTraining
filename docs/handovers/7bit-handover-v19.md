@@ -71,6 +71,16 @@ Retired ids `morn-hollow` and `morn-leg-lowers` are reused so their old history
 and STATS core-volume counting carry on. Durations now: 01 66-73 min NORMAL
 (55-62 TIRED, 84-87 FRESH); 02 61-71 NORMAL (49-61 TIRED, 77-84 FRESH).
 
+## 2c. No bench at all
+
+There is no back extension bench either. The back extension is done with the
+hips over a stool and the heels hooked under the radiator, and the Nordic curl
+anchors the heels under the same radiator (or a partner). HEAL keeps its own
+copies of the back extension, Copenhagen plank, plate crunch and toe drag
+(same ids and history, set up on the box or the stool, plates hugged); CAVE 03
+is unchanged. The step-up and calf raise cards were rewritten step by step.
+The test now fails if any HEAL setup mentions a bench.
+
 ## 3. Verified
 
 `npx tsc --noEmit`, `npm test` (86 passing), `npm run check:daily`,
@@ -87,7 +97,7 @@ HEAL merged in PR #29. A second PR from the same branch tidied the repo:
   `docs/screenshots/`; root `*.png` is now git-ignored so new ones do not
   land there.
 - `backup.json` (a test export) is now `docs/sample-backup.json`.
-- The exercise swaps in 2b went through a third PR from the same branch.
+- The exercise swaps in 2b and 2c went through two more PRs from the same branch.
 - GitHub: `main` is the only branch once the merged branch is deleted, no open PRs. `CLAUDE.md` now says so as
   a rule: every session branches from the latest `main`, merged branches are
   deleted.

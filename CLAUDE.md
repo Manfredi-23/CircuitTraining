@@ -288,9 +288,10 @@ names; they are display-only.
 
 Added in October 2026 when the athlete hurt a finger: no climbing and no
 pulling for a few weeks. Two gym sessions for the bouldering gym's training
-area: one barbell **used for the squat only**, plates, a box, the 45-degree
-back extension bench, bands, a mat. No machines, no adjustable bench, no TRX
-foot cradles. Alternated two or three times a week. The rule: **the hands only
+area: one barbell **used for the squat only**, plates, a box, a stool, a
+radiator to hook the feet under, bands, a mat. No machines, **no bench of any
+kind** (the back extension is done over a stool, the Nordic curl with the heels
+under the radiator), no TRX foot cradles. Alternated two or three times a week. The rule: **the hands only
 rest on things or press flat.** Nothing is gripped (no dumbbell, kettlebell,
 ring, bar hang or band handle) and nothing pulls; plates are hugged to the
 chest, push-ups and pike push-ups are on flat palms. 01 LEGS + TRUNK: box jump,
@@ -300,7 +301,7 @@ push-up, pike push-up, calf raise, prone Y-T-W on the floor, band ER, Russian
 twist (plate hugged), side plank dip, lying leg raise, cobra + open book. Both
 open with `heal-warmup` (no rower: it is a grip) and close with pain-free
 tendon glides. `heal.test.ts` keeps them free of finger and pull capacities,
-off the barbell except the squat, and inside 45-90 minutes at every level and
+off the barbell except the squat, with no bench in any setup, and inside 45-90 minutes at every level and
 energy. The recommender treats a HEAL session in the last 10 days with no
 climb logged since as "healing": HEAL every other day, finger-free DAILY
 between; logging a climb ends it. The `added-kg` stepper goes to 200 so a
