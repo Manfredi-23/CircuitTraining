@@ -5,8 +5,9 @@
 // few weeks. HEAL keeps everything else strong in the meantime, and builds the
 // qualities climbing never trains, in the bouldering gym's training area.
 //
-// Equipment: one barbell and plates, a box, the 45-degree back extension
-// bench, bands, a mat. No machines, no adjustable bench, no TRX foot cradles.
+// Equipment: one barbell and plates, a box, a stool, a radiator low on the
+// wall to hook the feet under, bands, a mat. No machines, no bench of any kind
+// (flat, adjustable or back extension), no TRX foot cradles.
 // The barbell is for the squat only (the athlete's call).
 //
 // The rule every exercise obeys: the hands only rest on things or press flat.
@@ -39,10 +40,43 @@ function shared(circuits: Circuit[], id: string): Exercise {
   return ex;
 }
 
-const BACK_EXTENSION = shared(DATA_CAVE, 'legs-back-extension');
-const COPENHAGEN = shared(DATA_CAVE, 'home-copenhagen');
-const PLATE_CRUNCH = shared(DATA_CAVE, 'legs-plate-crunch');
-const TOE_DRAG = shared(DATA_CAVE, 'legs-toe-drag');
+/**
+ * Same id and history as CAVE 03's back extension. No bench here: the hips go
+ * over a stool and the heels hook under the radiator.
+ */
+const BACK_EXTENSION: Exercise = {
+  ...shared(DATA_CAVE, 'legs-back-extension'),
+  note: 'No bench: hips over a stool, heels hooked under the radiator. A plate hugged to the chest once bodyweight is easy.',
+  form: {
+    setup: 'Stool a little more than a leg-length from the wall. Lie face down over it with the stool under the hip bones, not the belly, so the hips can fold. Heels hooked under the radiator, legs straight. Arms crossed on the chest, or a plate hugged there. Test that the radiator takes a hard pull before the first rep.',
+    execution: 'Let the torso hang down by folding at the hips with a flat back until the hamstrings stretch. Rise until the body is one straight line from heels to head, squeeze the glutes, hold one second. Do not go past straight.',
+    cue: 'The spine stays rigid and the hips move it: that is what makes a weak lower back strong without bending it under load.',
+    breathing: 'Inhale on the way down, exhale on the way up.',
+    mistakes: 'Stool under the belly, which turns the hinge into a lower-back crunch. Arching past straight at the top. Swinging up.',
+  },
+};
+/** HEAL versions of shared exercises: same ids and history, set up on the box, plates hugged. */
+const COPENHAGEN: Exercise = {
+  ...shared(DATA_CAVE, 'home-copenhagen'),
+  form: {
+    ...shared(DATA_CAVE, 'home-copenhagen').form!,
+    setup: 'Side plank on the forearm, top leg resting on the box: inside of the knee on it for the easier version, inside of the ankle for the full one.',
+  },
+};
+const PLATE_CRUNCH: Exercise = {
+  ...shared(DATA_CAVE, 'legs-plate-crunch'),
+  form: {
+    ...shared(DATA_CAVE, 'legs-plate-crunch').form!,
+    setup: 'On your back, knees bent, feet flat. Plate hugged flat on the chest with the forearms crossed over it, fingers open.',
+  },
+};
+const TOE_DRAG: Exercise = {
+  ...shared(DATA_CAVE, 'legs-toe-drag'),
+  form: {
+    ...shared(DATA_CAVE, 'legs-toe-drag').form!,
+    setup: 'Sit on the box, barefoot or in socks, a plate flat on a smooth floor in front of you. Place the tips of the toes on the far edge of the plate, heel on the floor.',
+  },
+};
 const FROGGER = shared(DATA_CAVE, 'feet-frogger');
 const BACK_UNWIND = shared(DATA_DAILY, 'daily-back-unwind');
 /** Same id and history as CAVE 02's twist; the plate is hugged, never held by the fingers. */
@@ -201,9 +235,9 @@ export const DATA_HEAL: Circuit[] = [
           { minLevel: 5, name: 'Box Step-Up - High Box, 3s Lower' },
         ],
         form: {
-          setup: 'Box at knee height or a little higher. Whole working foot on the box, plate held flat against the chest, forearms crossed over it.',
-          execution: 'Lean the chest over the front foot and stand up onto the box through that heel, the back foot only trailing along. Lower back down slowly under control. All reps on one leg, then the other.',
-          cue: 'This is the high step and the rockover, loaded: one leg pressing the body up over a foot that is already high. Push off the back toes and it stops counting.',
+          setup: 'Stand facing a knee-height box. Put the whole of the working foot on top, heel included, the knee bent about 90 degrees. Other foot on the floor behind. Plate held flat against the chest, forearms crossed over it.',
+          execution: 'Shift your weight forward until your nose is over the front knee. Push through the front heel and stand up straight on top of the box; the back foot only floats up beside it, it never pushes off. Then take three seconds to lower the back foot to the floor, still balanced on the front leg. That is one rep. All reps on one leg, then the other.',
+          cue: 'The rockover: one foot high on the wall, and that one leg lifting the whole body over it. If the back toes bounce off the floor, the box is too high or the rep was a jump.',
           breathing: 'Exhale standing up.',
           mistakes: 'Bouncing off the back foot. Knee caving in on the way up. Dropping down instead of lowering.',
         },
@@ -294,14 +328,14 @@ export const DATA_HEAL: Circuit[] = [
           'Lower slower and further before the hands catch you. Once the full lowering '
           + 'takes five seconds on every rep, add a pull back up from the bottom.',
         protocolId: 'heal-strength',
-        note: 'Heels under the rollers of the back extension bench, or a partner on the ankles. Catch yourself on flat palms.',
+        note: 'Heels hooked under the radiator, the same as the back extension, or a partner on the ankles. Catch yourself on flat palms.',
         variations: [
           { minLevel: 1, name: 'Nordic Curl - Partial', load: 'Lower as far as you control, then catch on flat palms' },
           { minLevel: 3, name: 'Nordic Curl', load: 'All the way down, 3-5s' },
           { minLevel: 6, name: 'Nordic Curl - Pull Back Up' },
         ],
         form: {
-          setup: 'Kneel on a folded mat, heels locked under the rollers of the back extension bench (stand it so the pads hold the ankles) or held by a partner. Body straight from knees to head, hips extended.',
+          setup: 'Kneel on a folded mat facing away from the radiator, heels hooked under it (or a partner kneeling on the ankles). Body straight from knees to head, hips pushed forward, arms ready in front of the chest.',
           execution: 'Lean forward from the knees as slowly as possible, hips staying straight, until you can no longer hold it. Catch yourself on flat palms in a push-up, push lightly back up and reset.',
           cue: 'The hamstrings working while they lengthen, which is exactly what a heel hook asks of them, and the best-supported hamstring injury prevention there is. Expect sore legs the first two sessions.',
           breathing: 'Breathe out slowly on the way down.',
@@ -373,9 +407,9 @@ export const DATA_HEAL: Circuit[] = [
           { minLevel: 4, name: 'Single-Leg Calf Raise - Backpack' },
         ],
         form: {
-          setup: 'Ball of one foot on the edge of the box, heel hanging off, other foot hooked behind. A flat palm on the wall for balance.',
-          execution: 'Lower the heel slowly below the box edge, then rise as high onto the toes as you can and pause one second. All reps on one leg, then the other.',
-          cue: 'Standing on a small foothold is the calf holding the heel up, often for a long time. Full range, slow, and the ankle gets stronger at both ends.',
+          setup: 'Box against the wall. Stand on it on one foot with only the ball of the foot on the edge, so the heel hangs in the air. Other foot hooked behind the working ankle. One flat palm on the wall, just for balance.',
+          execution: 'Take two seconds to lower the heel as far below the edge as it goes, until the calf stretches. Then push up onto the tip of the big toe as high as you can and hold one second. Twelve, then the other foot.',
+          cue: 'Standing on a small foothold is the calf holding the heel up, sometimes for a minute. The stretch at the bottom and the high finish at the top are the two ends a smear and a toe-tip need.',
           breathing: 'Exhale rising.',
           mistakes: 'Bouncing at the bottom. Half reps. Leaning on the wall instead of balancing.',
         },

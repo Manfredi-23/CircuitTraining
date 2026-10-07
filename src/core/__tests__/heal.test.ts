@@ -53,10 +53,12 @@ describe('HEAL', () => {
     }
   });
 
-  it('uses the barbell for the squat only, and no TRX or adjustable bench', () => {
+  it('uses the barbell for the squat only, and no TRX or bench of any kind', () => {
     const banned = /hip thrust|good morning|landmine|trx|incline/i;
+    const text = (e: { form?: { setup: string } }) => e.form?.setup ?? '';
     for (const ex of heal.flatMap(c => c.exercises)) {
       expect(banned.test(ex.name), ex.id).toBe(false);
+      expect(/bench/i.test(text(ex)), ex.id).toBe(false);
       if (ex.id !== 'heal-back-squat') expect(/barbell/i.test(ex.name), ex.id).toBe(false);
     }
   });
@@ -70,7 +72,7 @@ describe('HEAL', () => {
 
   it('shares exercises with CAVE and DAILY as the same objects, so history carries over', () => {
     const others = [...DATA_CAVE, ...DATA_DAILY].flatMap(c => c.exercises);
-    for (const id of ['legs-back-extension', 'legs-plate-crunch', 'daily-back-unwind', 'daily-side-plank-dip']) {
+    for (const id of ['daily-back-unwind', 'daily-side-plank-dip', 'feet-frogger']) {
       const here = heal.flatMap(c => c.exercises).find(e => e.id === id);
       expect(here, id).toBeDefined();
       expect(others.find(e => e.id === id)).toBe(here);
