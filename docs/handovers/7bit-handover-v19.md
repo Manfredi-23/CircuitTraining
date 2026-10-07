@@ -50,9 +50,30 @@ Answers to the questions asked first:
   lifts are logged as the total on the bar.
 - New test `src/core/__tests__/heal.test.ts`.
 
+## 2b. Revised after the athlete read the exercise list
+
+The barbell is for the squat only, there are no TRX foot cradles and no
+adjustable bench, and some exercises were simply not liked. Swapped:
+
+| Was | Now | Why |
+|-----|-----|-----|
+| Barbell hip thrust (01) | Box step-up, plate hugged | disliked; the high step loaded |
+| TRX body saw (01) | Hollow body hold (`morn-hollow`) | no TRX cradles |
+| Barbell good morning (02) | Nordic hamstring curl, PRIMARY 3x5 | barbell for squats only; heel-hook hamstrings |
+| Landmine press (02) | Pike push-up, flat palms | no landmine |
+| Incline prone Y-T-W (02) | Prone Y-T-W on the floor | no bench |
+| Landmine rotation (02) | Russian twist, plate hugged (`addon-russian-twist`) | no landmine |
+| Reverse crunch (02) | Lying leg raise (`morn-leg-lowers`) | disliked |
+| (new, 02) | Single-leg calf raise on the box edge | keeps 02 at 45+ min TIRED |
+
+The split squat's back foot and the Copenhagen plank's top leg go on the box.
+Retired ids `morn-hollow` and `morn-leg-lowers` are reused so their old history
+and STATS core-volume counting carry on. Durations now: 01 66-73 min NORMAL
+(55-62 TIRED, 84-87 FRESH); 02 61-71 NORMAL (49-61 TIRED, 77-84 FRESH).
+
 ## 3. Verified
 
-`npx tsc --noEmit`, `npm test` (85 passing), `npm run check:daily`,
+`npx tsc --noEmit`, `npm test` (86 passing), `npm run check:daily`,
 `npm run check:cave`, `npm run build`. The HEAL tab and the first workout card
 render at 390 x 844.
 
@@ -66,7 +87,8 @@ HEAL merged in PR #29. A second PR from the same branch tidied the repo:
   `docs/screenshots/`; root `*.png` is now git-ignored so new ones do not
   land there.
 - `backup.json` (a test export) is now `docs/sample-backup.json`.
-- GitHub: `main` is the only branch, no open PRs. `CLAUDE.md` now says so as
+- The exercise swaps in 2b went through a third PR from the same branch.
+- GitHub: `main` is the only branch once the merged branch is deleted, no open PRs. `CLAUDE.md` now says so as
   a rule: every session branches from the latest `main`, merged branches are
   deleted.
 
