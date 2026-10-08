@@ -35,11 +35,12 @@ export const createLoadSlice: StateCreator<Store, [], [], LoadSlice> = (set, get
       return;
     }
     // A ramp test opens below the last result, so the first attempt is a
-    // build-up rather than a max; with no history it opens at zero added.
+    // build-up rather than a max; with no history it opens on the
+    // prescription's anchor, or zero added.
     if (exercise.ramp) {
       const axis = getLoadAxis(exercise)!;
       const last = getLastLoad(get().loadLog, exercise.id);
-      const start = last ? last.value - exercise.ramp.startBelow : 0;
+      const start = last ? last.value - exercise.ramp.startBelow : (exercise.load.value ?? 0);
       set({ pendingLoad: clampToAxis(start, axis) });
       return;
     }

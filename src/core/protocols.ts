@@ -594,6 +594,33 @@ export const PROTOCOLS: Record<string, Protocol> = {
       + 'Surg (1985).',
   },
 
+  'ring-rehab': {
+    id: 'ring-rehab',
+    name: 'Graded Loading of an Injured Finger',
+    quality: 'Tendon and muscle capacity in one injured finger, built back step by step',
+    work: '12 slow reps: the finger alone lifts a portable edge with a few kilos on it',
+    rest: '60-90s between sets',
+    sets: '3 sets, every second day',
+    intensity: 'Starts at 1.5-2kg. Up half a kilo once all 36 reps are clean and pain is 2/10 or less, during and the next morning.',
+    frequency: 'Every second day, until the left lifts 80% of what the right lifts for 12',
+    rationale:
+      'The athlete\'s physiotherapist could not tell a flexor tendon strain from a '
+      + 'lumbrical (hand muscle) strain, and prescribed the same thing for both: '
+      + 'isolated, graded loading of the injured finger. Healing tissue remodels along '
+      + 'the load it is given, so slow, light, repeated loading rebuilds it better than '
+      + 'rest alone, and the healthy finger on the other hand is the yardstick for '
+      + 'when it is ready. The other fingers stay closed in a fist so the ring finger '
+      + 'does the work alone. A day between sessions lets the tissue answer the load. '
+      + 'Pain is the guide: up to 2/10 during the set and the next morning is fine, '
+      + 'more means hold the load or drop half a kilo, and a sharp pain or a pop '
+      + 'means stop and call the physio.',
+    source:
+      'The athlete\'s physiotherapist (October 2026). Background: Schoffl et al., '
+      + 'pulley injuries in rock climbers, Wilderness Environ Med (2003, updated 2021); '
+      + 'Schweizer, lumbrical tears in rock climbers, J Hand Surg Br (2003); '
+      + 'Silbernagel et al., pain-monitoring model for tendon loading, Am J Sports Med (2007).',
+  },
+
   'heal-strength': {
     id: 'heal-strength',
     name: 'Barbell Strength for the Legs and Hinge',

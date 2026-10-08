@@ -324,6 +324,21 @@ export const BENCHMARKS: Benchmark[] = [
     source: 'Not a performance standard. Recorded so every % bodyweight result is computed against the weight on the day.',
   },
   {
+    id: 'ring-finger-right',
+    name: 'Ring finger lift, right, 12 reps',
+    capacity: 'forearm',
+    short: 'kg',
+    unit: 'kg on the edge, edge included',
+    protocol:
+      'Right ring finger alone on the portable edge, the other fingers closed in a fist. '
+      + 'The heaviest load lifted for 12 clean, pain-free reps, built up in a ramp.',
+    standards: [],
+    source:
+      'Physiotherapist\'s prescription (October 2026): the healthy finger sets the '
+      + 'reference, and the injured one is cleared at 80% of it.',
+    note: 'Recorded in HEAL 04 RING TEST. Not part of ASSESS.',
+  },
+  {
     id: 'max-pushups',
     name: 'Push-ups to failure',
     capacity: 'press',
@@ -615,6 +630,8 @@ export function benchmarkValueFromEntry(
       return Math.round((((bodyweightKg + entered) * FIVE_RM_TO_ONE_RM) / bodyweightKg) * 100);
     case 'kg-to-pct-bw':
       return Math.round((entered / bodyweightKg) * 100);
+    case 'half-kg':
+      return Math.round(entered * 2) / 2;
     case 'identity':
     default:
       return Math.round(entered);

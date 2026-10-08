@@ -64,7 +64,9 @@ export type LoadKind =
   | 'percent-max'
   | 'edge-mm'
   | 'band'
-  | 'rpe';
+  | 'rpe'
+  // Kilos lifted on a portable edge by one finger, edge included (HEAL ring rehab).
+  | 'finger-kg';
 
 /** How the exercise is loaded, and the human-readable prescription shown in-app. */
 export interface LoadSpec {
@@ -311,6 +313,16 @@ export interface Exercise {
   };
   /** Section heading shown on the card and in the session list, e.g. 'MAX STRENGTH'. */
   section?: string;
+  /**
+   * The stepper also reads the load as a percentage of a benchmark: the
+   * injured ring finger against the healthy one, with the goal that clears it.
+   */
+  comparesTo?: {
+    benchmarkId: string;
+    goalPct: number;
+    /** What the benchmark is called on the card, e.g. 'RIGHT'. */
+    label: string;
+  };
 }
 
 /**
@@ -327,8 +339,9 @@ export interface BenchmarkRecord {
    * added-kg-to-pct-bw   — added kg on a max hang -> (BW + added) / BW x 100
    * five-rm-to-pct-bw    — added kg on a 5RM pull-up -> estimated 1RM as % BW
    * kg-to-pct-bw         — kg lifted one-handed -> kg / BW x 100
+   * half-kg              — kilos kept to the nearest 0.5 (a single finger moves in small steps)
    */
-  convert: 'identity' | 'added-kg-to-pct-bw' | 'five-rm-to-pct-bw' | 'kg-to-pct-bw';
+  convert: 'identity' | 'added-kg-to-pct-bw' | 'five-rm-to-pct-bw' | 'kg-to-pct-bw' | 'half-kg';
 }
 
 export interface ScaledExercise extends Exercise {

@@ -22,6 +22,12 @@
 //                      shoulder blades, then rotation and leg raises.
 // Both close with pain-free tendon glides for the injured finger.
 //
+// Two short home sessions follow the physio's plan for the left ring finger
+// (see rehab.ts), on the portable edge with a few kilos hung from it:
+//   03 RING REHAB    — the left ring finger alone, 3 x 12, every second day.
+//   04 RING TEST     — what the right ring finger lifts for 12: the yardstick.
+// They are the only HEAL sessions that load a finger, so they ask the pain check.
+//
 // Order is by neurological cost, as everywhere: power, then the heavy lift,
 // then the supporting strength, the trunk, and mobility last.
 // =============================================================================
@@ -29,6 +35,8 @@
 import type { Exercise, Circuit } from './types';
 import { DATA_CAVE } from './data-cave';
 import { DATA_DAILY, SIDE_PLANK_DIP } from './data-daily';
+import { FINGER_KG_AXIS } from './load';
+import { RING_GOAL_PCT, RING_LEFT_EXERCISE, RING_RIGHT_BENCHMARK } from './rehab';
 
 /**
  * An exercise already in another tab, taken as the same object so its id,
@@ -117,8 +125,8 @@ export const TENDON_GLIDES: Exercise = {
   load: { kind: 'bodyweight', text: 'No load. Pain free, every position.' },
   fixed: true,
   progression:
-    'Never progressed here. Loading the finger back up is a separate decision, '
-    + 'made with a hand therapist or when it is fully pain free.',
+    'Never progressed here. The finger is loaded back up in HEAL 03 RING REHAB, '
+    + 'on the physio\'s plan.',
   protocolId: 'train-around',
   note: 'Both hands, ten slow rounds. Any position that hurts is left out, not pushed.',
   form: {
@@ -147,6 +155,78 @@ const HEAL_BAND_ER: Exercise = {
     cue: 'Climbing will load the internal rotators again in a few weeks. This is the balance payment, made while the shoulders have time.',
     breathing: 'Exhale rotating out.',
     mistakes: 'Elbow drifting from the ribs. Gripping the band out of habit.',
+  },
+};
+
+// ---- Ring finger rehab --------------------------------------------------------
+
+const HAND_WARMUP: Exercise = {
+  id: 'heal-hand-warmup',
+  name: 'Warm Hands + Tendon Glides',
+  capacities: ['mobility'],
+  block: 'WARMUP', intensity: 'EASY',
+  sets: 1, work: 240, unit: 'sec', restSec: 60,
+  load: { kind: 'bodyweight', text: 'No load. Warm hands before the edge.' },
+  fixed: true,
+  progression: 'Never progressed. Preparation, not training.',
+  protocolId: 'ring-rehab',
+  note: 'Warm water or a hot shower first if the hands are cold.',
+  form: {
+    setup: 'Sitting or standing, both forearms relaxed. The portable edge and the weights ready on the floor.',
+    execution: 'Rub the hands warm for 30 seconds. 10 slow wrist circles each way. 3 slow rounds of tendon glides (straight hand, hook fist, full fist, tabletop, straight fist). 20 easy open-and-close fists. Then one easy set of 8 lifts with the edge alone, or half the working load.',
+    cue: 'Cold tendons are stiff tendons. Five minutes of warmth and movement before the first loaded rep is part of the dose, not a delay.',
+    breathing: 'Relaxed and normal.',
+    mistakes: 'Going straight to the working load. Forcing a fist the finger does not want to make.',
+  },
+};
+
+const RING_LEFT: Exercise = {
+  id: RING_LEFT_EXERCISE,
+  name: 'Ring Finger Lift - Left',
+  capacities: ['forearm'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 3, work: 12, unit: 'reps', restSec: 90,
+  load: { kind: 'finger-kg', value: 2, text: 'Start at 1.5-2kg on the edge, edge included' },
+  fixed: true,
+  progression:
+    'Half a kilo more once all 3 x 12 are clean and the finger stays at 2/10 or less, '
+    + `during and the next morning. Done at ${RING_GOAL_PCT}% of the right.`,
+  protocolId: 'ring-rehab',
+  comparesTo: { benchmarkId: RING_RIGHT_BENCHMARK, goalPct: RING_GOAL_PCT, label: 'RIGHT' },
+  note: 'The physio\'s prescription, taken as written: 3 x 12, 60-90s rest, every second day. Log the total on the edge.',
+  form: {
+    setup: 'Stand tall next to the edge, the weights hung from it and resting on the floor or a step. Close the thumb, index, middle and little fingers into a fist and put only the pad of the left ring finger on the edge, in the position the physio showed you. Arm straight down by your side, shoulder set.',
+    execution: 'Lift the edge a few centimetres off the floor with the ring finger alone, about two seconds up, hold a moment, about two seconds down, and let it touch down. Twelve reps, rest 60-90 seconds, three sets.',
+    cue: `Slow and clean beats heavy: the tissue rebuilds along the load it is given. The stepper shows the left as a percentage of the right. At ${RING_GOAL_PCT}% the physio clears it.`,
+    breathing: 'Exhale on the lift, inhale on the way down.',
+    mistakes: 'Letting the fist open so the other fingers help. Jerking the weight up. Adding load while the finger still aches the next morning. Pushing through a sharp pain: stop, and call the physio.',
+  },
+};
+
+const RING_RIGHT_TEST: Exercise = {
+  id: 'test-ring-right',
+  name: 'TEST — Ring Finger Lift, Right, 12-Rep Ramp',
+  capacities: ['forearm'],
+  block: 'TEST', intensity: 'HARD',
+  sets: 4, work: 12, unit: 'reps', restSec: 180,
+  load: { kind: 'finger-kg', value: 2, text: 'Twelve reps per attempt, heavier each time' },
+  progression:
+    'Enter the load of each attempt, then MADE IT if all 12 were clean. The heaviest '
+    + `clean 12 is saved, and ${RING_GOAL_PCT}% of it is the left finger's goal.`,
+  protocolId: 'ring-rehab',
+  note: 'The healthy hand. A ramp of 3-6 attempts, each 0.5-1kg heavier, 3 minutes apart. Twelve reps, the same as the left does, so the two read like for like. Retest every few weeks.',
+  ramp: { maxAttempts: 6, startBelow: 2 },
+  records: {
+    benchmarkId: RING_RIGHT_BENCHMARK,
+    axis: { ...FINGER_KG_AXIS, label: 'THIS ATTEMPT, ON THE EDGE' },
+    convert: 'half-kg',
+  },
+  form: {
+    setup: 'Exactly as the left: thumb, index, middle and little fingers closed in a fist, only the pad of the right ring finger on the edge, arm straight down by your side.',
+    execution: 'Twelve slow lifts, a few centimetres off the floor and back down. Rest three minutes, add 0.5-1kg, repeat. The first attempt where a rep is jerked, the fist opens or you cannot finish twelve is FAILED: the attempt before it is the result.',
+    cue: 'This sets the yardstick for the left finger, so test it the same way every time: same edge, same finger position, same tempo.',
+    breathing: 'Exhale on the lift.',
+    mistakes: 'Jumping straight to a heavy load. Letting the other fingers help. Testing the right on a day it is tired from climbing.',
   },
 };
 
@@ -469,5 +549,30 @@ export const DATA_HEAL: Circuit[] = [
       BACK_UNWIND,
       TENDON_GLIDES,
     ],
+  },
+  {
+    id: 'heal-03', circuitNum: '03',
+    title: 'RING REHAB', subtitle: 'left ring finger - portable edge',
+    focus: `The physio's plan for the left ring finger: 3 x 12 on the edge, adding half a kilo at a time to ${RING_GOAL_PCT}% of the right.`,
+    capacities: ['forearm'],
+    illustration: 'hangboard.svg',
+    duration: 12,
+    recoveryHours: 40,
+    note:
+      'At home with the portable edge. Every second day, on a gym day or between. '
+      + 'Test the right in 04 first, so the stepper can show how far the left has come. '
+      + 'Pain up to 2/10 during and the next morning is fine; more means hold the load.',
+    exercises: [HAND_WARMUP, RING_LEFT, TENDON_GLIDES],
+  },
+  {
+    id: 'heal-04', circuitNum: '04',
+    title: 'RING TEST', subtitle: 'right ring finger - the yardstick',
+    focus: `What the healthy right ring finger lifts for 12. The left is ready at ${RING_GOAL_PCT}% of it.`,
+    capacities: ['forearm'],
+    illustration: 'hangboard.svg',
+    duration: 20,
+    recoveryHours: 24,
+    note: 'Once before the rehab starts, then every few weeks. Not on a day the right hand is tired.',
+    exercises: [HAND_WARMUP, RING_RIGHT_TEST, TENDON_GLIDES],
   },
 ];

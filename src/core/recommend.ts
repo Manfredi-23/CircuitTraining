@@ -3,8 +3,9 @@
 //
 // The week the programme is written for: DAILY most mornings, CAVE 02 or 03
 // straight after bouldering, CAVE 01 only in a week a bouldering day was
-// skipped, ASSESS every six to eight weeks. While a finger heals, HEAL every
-// other day and finger-free DAILY between. The rules below read that week
+// skipped, ASSESS every six to eight weeks. While a finger heals, a HEAL gym
+// session every other day, the ring finger rehab every second day, and
+// finger-free DAILY between. The rules below read that week
 // back out of the logs, in order of what matters most. It recommends; the
 // home screen opens on the recommendation and every other card is a swipe
 // away.
@@ -14,6 +15,7 @@ import { getModeData } from './data-index';
 import { getReadiness, asksPainCheck } from './engine';
 import { daysBetween, dayOf, localDate, mondayOf } from './dates';
 import { resultHistory } from './benchmarks';
+import { REHAB_BENCHMARKS, RING_RIGHT_BENCHMARK } from './rehab';
 import type { BlockWeek } from './block';
 import type { BenchmarkResult, Circuit, ClimbSession, Mode, Progress, SessionLogEntry } from './types';
 
@@ -62,9 +64,14 @@ function leastRecent(circuits: Circuit[], sessionLog: SessionLogEntry[]): Circui
   })[0];
 }
 
-/** Date of the last ASSESS, read from the test results it saves. */
+/** Days between ring finger rehab sessions: the physio's every second day. */
+export const RING_REHAB_EVERY_DAYS = 2;
+
+/** Date of the last ASSESS, read from the test results it saves. Rehab tests are not an ASSESS. */
 export function lastAssess(results: BenchmarkResult[]): string | null {
-  const dates = results.filter(r => r.benchmarkId !== 'bodyweight').map(r => dayOf(r.date)).sort();
+  const dates = results
+    .filter(r => r.benchmarkId !== 'bodyweight' && !REHAB_BENCHMARKS.includes(r.benchmarkId))
+    .map(r => dayOf(r.date)).sort();
   return dates.length ? dates[dates.length - 1] : null;
 }
 
@@ -99,13 +106,32 @@ export function recommend(input: RecommendInput): Recommendation | null {
   }
 
   // 2. Healing a finger: a HEAL session lately and no climbing logged since.
-  // HEAL every other day, finger-free DAILY between. Logging a climb ends it.
+  // A gym session every other day, then the ring finger rehab when it is due
+  // (the right-hand test first, once), finger-free DAILY between. Logging a
+  // climb ends it.
+  const heal = getModeData('HEAL');
   const healLog = sessionLog.filter(s => s.mode === 'HEAL');
   const lastHeal = healLog.length ? dayOf(healLog[healLog.length - 1].date) : null;
   if (lastHeal && daysBetween(lastHeal, today) <= HEAL_MEMORY_DAYS && !climbLog.some(c => c.date >= lastHeal)) {
-    if (daysBetween(lastHeal, today) >= 2) {
-      const pick = leastRecent(getModeData('HEAL'), sessionLog);
+    // The gym sessions are the ones that never touch the finger.
+    const gym = heal.filter(c => !asksPainCheck(c));
+    const gymIds = new Set(gym.map(c => c.id));
+    const gymLog = healLog.filter(s => gymIds.has(s.circuitId));
+    const lastGym = gymLog.length ? dayOf(gymLog[gymLog.length - 1].date) : null;
+    if (!lastGym || daysBetween(lastGym, today) >= 2) {
+      const pick = leastRecent(gym, sessionLog);
       return { mode: 'HEAL', circuitId: pick.id, reason: 'Finger healing. Next HEAL session.' };
+    }
+    const rehab = heal.find(c => c.id === 'heal-03');
+    const ringTest = heal.find(c => c.id === 'heal-04');
+    const lastRehab = rehab ? lastDone(sessionLog, rehab.id) : null;
+    const rehabDue = !lastRehab || daysBetween(lastRehab, today) >= RING_REHAB_EVERY_DAYS;
+    if (rehab && rehabDue) {
+      const untested = resultHistory(benchmarkResults, RING_RIGHT_BENCHMARK).length === 0;
+      if (ringTest && untested && lastDone(sessionLog, ringTest.id) !== today) {
+        return { mode: 'HEAL', circuitId: ringTest.id, reason: 'Test the right ring finger first.' };
+      }
+      return { mode: 'HEAL', circuitId: rehab.id, reason: 'Ring finger rehab: every second day.' };
     }
     if (doneToday('DAILY')) return null;
     const pick = leastRecent(daily.filter(c => !asksPainCheck(c)), sessionLog);

@@ -2,7 +2,8 @@
 
 import { useStore } from '@/store/store';
 import { getLoadAxis, getLastLoad, formatLoad, formatLoadDate } from '@/core/load';
-import { benchmarkValueFromEntry, currentBodyweight } from '@/core/benchmarks';
+import { benchmarkValueFromEntry, currentBodyweight, latestResult } from '@/core/benchmarks';
+import { goalKg, percentOf } from '@/core/rehab';
 import { hapticTap } from '@/native/native';
 import { suggestLoad } from '@/core/progression';
 import { getBlockWeek, deloads } from '@/core/block';
@@ -42,9 +43,17 @@ export default function LoadLogger({ exercise }: { exercise: ScaledExercise }) {
   // A test entered in kilos is judged in % bodyweight. Show the converted
   // figure, because that is the number the gates and standards read.
   const record = exercise.records;
-  const converted = record && record.convert !== 'identity'
+  const converted = record && record.convert.endsWith('pct-bw')
     ? `= ${benchmarkValueFromEntry(record, pendingLoad, currentBodyweight(benchmarkResults))}% BW`
     : null;
+
+  // The injured finger read against the healthy one: how far, and the goal.
+  const cmp = exercise.comparesTo;
+  const reference = cmp ? latestResult(benchmarkResults, cmp.benchmarkId) : null;
+  const pct = cmp && reference ? percentOf(pendingLoad, reference.value) : null;
+  const compared = !cmp ? null
+    : pct === null ? `No ${cmp.label.toLowerCase()} result yet: run the test first`
+    : `= ${pct}% of ${cmp.label.toLowerCase()} · goal ${cmp.goalPct}% (${formatLoad(goalKg(reference!.value, cmp.goalPct), axis)})`;
 
   // The next load, from how the last session went. One tap to take it.
   const deload = Boolean(circuit && deloads(circuit) && getBlockWeek(blockStart, sessionLog).deload);
@@ -84,6 +93,9 @@ export default function LoadLogger({ exercise }: { exercise: ScaledExercise }) {
             </span>
           )}
           {converted && <span className={styles.deltaDown}>{converted}</span>}
+          {compared && (
+            <span className={pct !== null && cmp && pct >= cmp.goalPct ? styles.deltaUp : styles.deltaDown}>{compared}</span>
+          )}
           {record && (
             <span className={styles.deltaDown}>
               {exercise.ramp ? 'best clean attempt is saved' : 'saved on the last DONE'}
