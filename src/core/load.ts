@@ -20,6 +20,12 @@ import type { BlockType, Exercise, LoadAxis, LoadLogEntry } from './types';
 const UNLOGGED_BLOCKS: BlockType[] = ['WARMUP', 'PREHAB', 'MOBILITY'];
 
 /**
+ * One finger on a portable edge, the edge itself included in the total. Half
+ * a kilo is the step: rehab starts at 1.5-2kg, where a whole kilo is a 50% jump.
+ */
+export const FINGER_KG_AXIS: LoadAxis = { unit: 'kg', step: 0.5, min: 0.5, max: 30, prefix: '', label: 'ON THE EDGE' };
+
+/**
  * The numeric axis this exercise is logged on, or null when load is not its
  * progression axis. Bodyweight and band work progress through the variation
  * ladder instead, and asking for a number there would be noise.
@@ -54,6 +60,9 @@ export function getLoadAxis(exercise: Exercise): LoadAxis | null {
 
     case 'rpe':
       return { unit: 'RPE', step: 0.5, min: 5, max: 10, prefix: '', label: 'RPE' };
+
+    case 'finger-kg':
+      return FINGER_KG_AXIS;
 
     case 'bodyweight':
     case 'band':

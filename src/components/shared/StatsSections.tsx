@@ -11,6 +11,7 @@ import {
 } from '@/core/insights';
 import { loadItems, weeklyLoad, loadRatio, ZONE_TEXT, type LoadSource } from '@/core/training-load';
 import { healthReadiness, type HealthData } from '@/core/health';
+import { getRingRecovery, RING_GOAL_PCT } from '@/core/rehab';
 import type {
   BenchmarkResult, CapacityListItem, ClimbSession, LoadLogEntry, Progress, SessionLogEntry,
 } from '@/core/types';
@@ -436,6 +437,55 @@ export function OneArmSection({ results }: { results: BenchmarkResult[] }) {
       <div className={styles.hint}>
         Weighted pull-up 2RM as % bodyweight{latest ? `, latest ${latest.value}%` : ''}. Dashed: the gates. Kilos are on the belt for two clean reps at your current bodyweight.
         Dates are a straight-line projection from your tests, once they span three weeks.
+      </div>
+    </div>
+  );
+}
+
+// ---- Ring finger rehab ---------------------------------------------------------------------
+
+/** Whether there is anything to show: a right test or a left rehab session. */
+export function hasRingData(loadLog: LoadLogEntry[], results: BenchmarkResult[]): boolean {
+  const r = getRingRecovery(loadLog, results);
+  return Boolean(r.right || r.left);
+}
+
+export function RingSection({ loadLog, results }: { loadLog: LoadLogEntry[]; results: BenchmarkResult[] }) {
+  const r = useMemo(() => getRingRecovery(loadLog, results), [loadLog, results]);
+  const fill = r.pct === null ? 0 : Math.min(100, r.pct);
+  return (
+    <div className={styles.block}>
+      <div className={styles.bench}>
+        <div className={styles.benchHead}>
+          <span className={styles.benchName}>Left as % of right</span>
+          <span className={styles.benchValue}>{r.pct === null ? '--' : `${r.pct}%`} <small>goal {RING_GOAL_PCT}%</small></span>
+        </div>
+        <div className={styles.track}>
+          <span className={styles.fill} style={{ width: `${fill}%` }} />
+          <span className={styles.target} style={{ left: `${RING_GOAL_PCT}%` }} title={`Goal ${RING_GOAL_PCT}%`} />
+        </div>
+      </div>
+      <div className={styles.ratioRow}>
+        <span>Right, 12 reps</span>
+        <span className={styles.ratioTarget}>{r.right ? fmtDate(r.right.date) : 'HEAL 04'}</span>
+        <b>{r.right ? `${fmtNum(r.right.value)} kg` : '--'}</b>
+      </div>
+      <div className={styles.ratioRow}>
+        <span>Left, 3 x 12</span>
+        <span className={styles.ratioTarget}>{r.left ? fmtDate(r.left.date) : 'HEAL 03'}</span>
+        <b>{r.left ? `${fmtNum(r.left.value)} kg` : '--'}</b>
+      </div>
+      {r.goalKg !== null && (
+        <div className={styles.ratioRow}>
+          <span>Left goal</span>
+          <span className={styles.ratioTarget}>{RING_GOAL_PCT}% of right</span>
+          <b className={r.reached ? undefined : styles.down}>{fmtNum(r.goalKg)} kg</b>
+        </div>
+      )}
+      <div className={styles.hint}>
+        {r.reached
+          ? 'The left lifts 80% of the right. That is the physio\'s mark: check with them before climbing.'
+          : 'Kilos on the edge, edge included. The physio clears the left ring finger at 80% of the right.'}
       </div>
     </div>
   );

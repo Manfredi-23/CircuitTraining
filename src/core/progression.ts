@@ -8,6 +8,7 @@
 // =============================================================================
 
 import { getLastLoad, getLoadAxis, getLoadHistory, clampToAxis } from './load';
+import { PAIN_REDUCE_FROM } from './engine';
 import type { Exercise, LoadAxis, LoadLogEntry, SessionLogEntry } from './types';
 
 /** Session effort above which the load holds even when every set was done. */
@@ -57,6 +58,10 @@ export function suggestLoad(
 
   if (done < planned) {
     return { kind: 'hold', value: last.value, reason: `Last time ${done} of ${planned} sets. Hold until all are clean.` };
+  }
+  // A finger that hurt going in is not a finger to add load to, whatever the sets say.
+  if (session?.pain !== undefined && session.pain >= PAIN_REDUCE_FROM) {
+    return { kind: 'hold', value: last.value, reason: `Finger pain ${session.pain}/10 last time. Hold the load.` };
   }
   if (session?.effort !== undefined && session.effort > HOLD_ABOVE_EFFORT) {
     return { kind: 'hold', value: last.value, reason: `All sets done, but the session felt ${session.effort}/10. Hold once more.` };

@@ -11,6 +11,7 @@ import {
   WeekStripSection, CoreVolumeSection, BenchmarkSection, LiftSection,
   CapacityRows, ClimbVsPullSection,
   LoadSection, FingerSection, FreshnessSection, OneArmSection, SkippedSection, RecoverySection,
+  RingSection, hasRingData,
 } from '@/components/shared/StatsSections';
 import type { SortMode, TimeFilter, Capacity } from '@/core/types';
 import styles from './StatsScreen.module.css';
@@ -99,6 +100,14 @@ export default function StatsScreen() {
           <div className={styles.section}>
             <div className={styles.sectionTitle}>RECOVERY</div>
             <RecoverySection health={health} sessionLog={sessionLog} />
+          </div>
+        )}
+
+        {/* The injured ring finger against the healthy one, while it heals */}
+        {hasRingData(loadLog, benchmarkResults) && (
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>RING FINGER</div>
+            <RingSection loadLog={loadLog} results={benchmarkResults} />
           </div>
         )}
 
