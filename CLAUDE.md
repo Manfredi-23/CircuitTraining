@@ -272,7 +272,7 @@ fit that week; HEAL was added as a fourth while a finger heals.
 | DAILY | 01 CORE + OBLIQUES, 02 OBLIQUES + BACK, 03 BAND STRENGTH, 04 FINGERS + MOBILITY, 05 LEGS + CORE |
 | CAVE | 01 STRONG, 02 PULL + PUSH, 03 LEGS + BACK |
 | TEST | 01 ASSESS (five sections, ramps, ~76-88 min) |
-| HEAL | 01 LEGS + TRUNK, 02 PUSH + HINGE (injured finger, gym, ~60-70 min), 03 RING REHAB, 04 RING TEST (home, portable edge) |
+| HEAL | 01 LEGS + TRUNK, 02 PUSH + HINGE (injured finger, gym, ~60-70 min), 03 RING REHAB, 04 RING TEST (home, portable edge), 05 FOOTWORK (gym slabs, ~28 min) |
 
 A typical week: DAILY most mornings, CAVE 02 or 03 straight after each
 bouldering session, CAVE 01 only in a week a bouldering day is skipped.
@@ -312,11 +312,20 @@ right ring finger, saved as benchmark `ring-finger-right` (not an ASSESS:
 `Exercise.comparesTo` shows the left as a % of the right on the stepper, and
 STATS has a RING FINGER section; 80% of the right is the physio's clearance
 (`rehab.ts`). They carry `forearm`, so they ask the pain check, and any
-suggested load holds after a session with pain 3+. `heal.test.ts` keeps the gym sessions free of finger and pull capacities,
+suggested load holds after a session with pain 3+.
+
+05 FOOTWORK is technique on the gym's easy slabs and vertical walls, hands
+flat on the wall or off it: feet/ankle warm-up, silent feet (up and down),
+sticky feet, inside / outside / tip / smear, no-hands slab, foothold balance.
+Every drill is `fixed` (energy changes nothing, level picks the variation),
+bodyweight, `legs` + `tension`, protocol `footwork`, 28 min at every energy;
+no finger capacity, so no pain check. `heal.test.ts` keeps the gym sessions free of finger and pull capacities,
 off the barbell except the squat, with no bench in any setup, and inside 45-90 minutes at every level and
 energy. The recommender treats a HEAL session in the last 10 days with no
-climb logged since as "healing": a gym HEAL every other day, then the ring
-test once and the ring rehab every second day, finger-free DAILY between;
+climb logged since as "healing": every other day is a gym day, run as the
+ring rehab (if due; the ring test once before the first), then FOOTWORK, then
+01 or 02 (`HEAL_GYM_IDS`); between gym days the ring rehab when due,
+otherwise a finger-free DAILY;
 logging a climb ends it. The `added-kg` stepper goes to 200 so a
 loaded barbell fits (logged as the total on the bar).
 
@@ -534,9 +543,11 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v20.md`** — **start here.** HEAL 03 RING REHAB and
+- **`7bit-handover-v21.md`** — **start here.** HEAL 05 FOOTWORK and the
+  gym-day order (rehab, footwork, strength).
+- **`7bit-handover-v20.md`** — read second. HEAL 03 RING REHAB and
   04 RING TEST: the physio's plan for the left ring finger.
-- **`7bit-handover-v19.md`** — read second. The HEAL tab: two gym
+- **`7bit-handover-v19.md`** — The HEAL tab: two gym
   sessions for training around an injured finger.
 - **`7bit-handover-v18.md`** — DAILY 05 LEGS + CORE, the
   mat-only morning session for legs and trunk.

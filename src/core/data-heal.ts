@@ -28,6 +28,11 @@
 //   04 RING TEST     — what the right ring finger lifts for 12: the yardstick.
 // They are the only HEAL sessions that load a finger, so they ask the pain check.
 //
+// 05 FOOTWORK is technique on the gym's easy slabs and vertical walls: the
+// feet do the climbing, the hands only rest flat on the wall or stay off it.
+// On a gym day it comes after the ring rehab and before 01 or 02, while the
+// head and legs are fresh: technique is learned best rested.
+//
 // Order is by neurological cost, as everywhere: power, then the heavy lift,
 // then the supporting strength, the trunk, and mobility last.
 // =============================================================================
@@ -93,6 +98,12 @@ const RUSSIAN_TWIST: Exercise = {
   load: { kind: 'added-kg', text: 'A plate hugged to the chest with the forearms, or none to start' },
   note: 'Left plus right is 2 reps. Plate hugged, fingers open against it. The obliques do the turning, not the arms.',
 };
+
+/** The two strength sessions, alternated every other day. */
+export const HEAL_GYM_IDS = ['heal-01', 'heal-02'];
+export const RING_REHAB_ID = 'heal-03';
+export const RING_TEST_ID = 'heal-04';
+export const FOOTWORK_ID = 'heal-05';
 
 const HANDS_NOTE = 'Hands: they only rest on the bar or press flat. If closing them on anything hurts the finger, open them.';
 
@@ -229,6 +240,157 @@ const RING_RIGHT_TEST: Exercise = {
     mistakes: 'Jumping straight to a heavy load. Letting the other fingers help. Testing the right on a day it is tired from climbing.',
   },
 };
+
+// ---- Footwork ------------------------------------------------------------------
+
+const FOOT_WARMUP: Exercise = {
+  id: 'heal-foot-warmup',
+  name: 'Feet, Ankles + Hips',
+  capacities: ['mobility'],
+  block: 'WARMUP', intensity: 'EASY',
+  sets: 1, work: 240, unit: 'sec', restSec: 30,
+  load: { kind: 'bodyweight', text: 'No load. Shoes off for the first half.' },
+  fixed: true,
+  progression: 'Never progressed. Preparation, not training.',
+  protocolId: 'footwork',
+  note: 'Barefoot on the mat first, then shoes on for the last two minutes.',
+  form: {
+    setup: 'A mat at the foot of the wall. Shoes next to you.',
+    execution: 'Barefoot: 10 ankle circles each way per foot, 10 toe spreads (lift and spread all ten toes, then press them down one by one), 15 slow calf raises, 10 deep squats with the heels down. Shoes on: 10 leg swings each way per leg, 5 world\'s greatest stretches a side, then one lap of the easiest wall with flat palms.',
+    cue: 'Mobile ankles and awake toes are what makes a small foothold usable. The hips decide how close to the wall the body can stand.',
+    breathing: 'Nasal, unhurried.',
+    mistakes: 'Skipping the barefoot part. Rushing onto the wall with stiff ankles.',
+  },
+};
+
+const HANDS_FLAT = 'Hands: flat palms on the wall for balance, or behind the back. Nothing is gripped.';
+
+const SILENT_FEET: Exercise = {
+  id: 'heal-silent-feet',
+  name: 'Silent Feet',
+  capacities: ['legs', 'tension'],
+  block: 'SECONDARY', intensity: 'TECHNIQUE',
+  sets: 2, work: 90, unit: 'sec', restSec: 60,
+  fixed: true,
+  load: { kind: 'bodyweight', text: 'Easiest slab or vertical wall, palms flat' },
+  progression: 'Smaller footholds, then a steeper (still slabby) wall. Never harder hands.',
+  protocolId: 'footwork',
+  note: HANDS_FLAT,
+  variations: [
+    { minLevel: 1, name: 'Silent Feet - Big Holds' },
+    { minLevel: 4, name: 'Silent Feet - Small Footholds' },
+    { minLevel: 6, name: 'Silent Feet - Footholds Only, Vertical Wall' },
+  ],
+  form: {
+    setup: 'An easy slab or vertical wall with plenty of footholds. Palms flat on the wall or on volumes, never curled over a hold.',
+    execution: 'Climb up and back down for the whole interval: going down you cannot place a foot without looking for it. Every foot goes onto its hold without a sound: look at the hold, place the toe exactly, then weight it. Any noise, and that foot goes again.',
+    cue: 'A quiet foot is a placed foot. Noise means the foot hit the hold and slid onto it, and a foot placed that way is a foot that slips on a hard move.',
+    breathing: 'Relaxed, one breath per move.',
+    mistakes: 'Looking up instead of at the foothold. Placing the foot fast and correcting after. Pulling on a hold with a bent finger.',
+  },
+};
+
+const STICKY_FEET: Exercise = {
+  id: 'heal-sticky-feet',
+  name: 'Sticky Feet',
+  capacities: ['legs', 'tension'],
+  block: 'SECONDARY', intensity: 'TECHNIQUE',
+  sets: 2, work: 90, unit: 'sec', restSec: 60,
+  fixed: true,
+  load: { kind: 'bodyweight', text: 'Easy slab or vertical wall, palms flat' },
+  progression: 'Smaller footholds, then choose each foothold before leaving the ground.',
+  protocolId: 'footwork',
+  note: HANDS_FLAT,
+  variations: [
+    { minLevel: 1, name: 'Sticky Feet' },
+    { minLevel: 4, name: 'Sticky Feet - Small Footholds' },
+    { minLevel: 6, name: 'Sticky Feet - Read the Sequence First' },
+  ],
+  form: {
+    setup: 'The same easy wall. Palms flat.',
+    execution: 'Once a foot touches a hold it may not move, slide or readjust until it leaves for the next one. Pick the exact spot on the hold, and the part of the shoe (big-toe edge, outside edge, tip) before the foot moves. Up and down for the whole interval.',
+    cue: 'One placement, no second chances. It forces the decision to happen before the foot moves, which is what precise footwork is.',
+    breathing: 'Relaxed.',
+    mistakes: 'Small shuffles after placing. Choosing the hold but not the spot on it.',
+  },
+};
+
+const EDGE_SMEAR: Exercise = {
+  id: 'heal-edge-smear',
+  name: 'Inside, Outside, Tip, Smear',
+  capacities: ['legs', 'tension'],
+  block: 'SECONDARY', intensity: 'TECHNIQUE',
+  sets: 2, work: 45, unit: 'sec', restSec: 60,
+  fixed: true,
+  load: { kind: 'bodyweight', text: 'One low foothold, palms flat on the wall' },
+  progression: 'Smaller footholds; then smears on blanker, steeper bits of the slab.',
+  protocolId: 'footwork',
+  perSide: true,
+  note: 'Per foot. Stay low, one step off the ground.',
+  variations: [
+    { minLevel: 1, name: 'Inside, Outside, Tip, Smear' },
+    { minLevel: 4, name: 'Inside, Outside, Tip, Smear - Small Holds' },
+  ],
+  form: {
+    setup: 'Face the wall at the bottom of an easy slab, palms flat on it at chest height. Pick one small foothold at knee height.',
+    execution: 'Step up onto it with the big-toe edge, stand, step down. Then the outside edge (hip turned in), then the very tip of the toe, then a smear on the blank wall beside it with the heel low. Around and around for the interval, then the other foot.',
+    cue: 'Four ways to use a foot. Most climbers only ever use the inside edge; the outside edge is what lets the hip turn in on steep ground, and a low heel is what makes a smear stick.',
+    breathing: 'Exhale as you stand up on the foot.',
+    mistakes: 'Using the arch instead of the edge. Heel high on a smear. Pushing off the hands.',
+  },
+};
+
+const NO_HANDS_SLAB: Exercise = {
+  id: 'heal-no-hands-slab',
+  name: 'No-Hands Slab',
+  capacities: ['legs', 'tension'],
+  block: 'SECONDARY', intensity: 'TECHNIQUE',
+  sets: 3, work: 60, unit: 'sec', restSec: 60,
+  fixed: true,
+  load: { kind: 'bodyweight', text: 'The lowest-angle slab, hands off the wall' },
+  progression: 'A steeper slab, then smaller footholds, then smears only.',
+  protocolId: 'footwork',
+  note: 'Hands behind the back or held out to the side. Stay low: one or two moves off the mat, step down rather than fall.',
+  variations: [
+    { minLevel: 1, name: 'No-Hands Slab - Low Angle' },
+    { minLevel: 4, name: 'No-Hands Slab - Steeper' },
+    { minLevel: 6, name: 'No-Hands Slab - Smears Only' },
+  ],
+  form: {
+    setup: 'The lowest-angle slab or a big volume, with good footholds and a mat underneath. Hands behind the back.',
+    execution: 'Walk up two or three moves with no hands, then back down the same way. Hips over the feet, knees soft, eyes on the next foothold.',
+    cue: 'Without hands the only way to stay on is weight straight over the foot. That is the whole of slab technique, felt directly.',
+    breathing: 'Slow and relaxed: tension makes the feet skate.',
+    mistakes: 'Leaning in toward the wall, which pushes the feet off. Going too high. Grabbing a hold by reflex with the bad hand.',
+  },
+};
+
+const STORK: Exercise = {
+  id: 'heal-stork',
+  name: 'Foothold Balance',
+  capacities: ['legs', 'tension'],
+  block: 'SECONDARY', intensity: 'TECHNIQUE',
+  sets: 2, work: 20, unit: 'sec', restSec: 45,
+  fixed: true,
+  load: { kind: 'bodyweight', text: 'One foothold, hands off the wall' },
+  progression: 'A smaller foothold, then eyes closed for the last five seconds.',
+  protocolId: 'footwork',
+  perSide: true,
+  note: 'Per foot. A low foothold, one step off the mat.',
+  variations: [
+    { minLevel: 1, name: 'Foothold Balance' },
+    { minLevel: 4, name: 'Foothold Balance - Small Hold' },
+    { minLevel: 6, name: 'Foothold Balance - Eyes Closed' },
+  ],
+  form: {
+    setup: 'A single foothold at knee height on a vertical wall or slab.',
+    execution: 'Step up onto it with the big-toe edge, then take the hands off the wall and stand on one foot for the time. Free leg hangs straight below or flags out to the side. Step down, other foot.',
+    cue: 'Small corrections at the ankle, hip over the foot. This is the balance a high step or a rockover asks for.',
+    breathing: 'Slow, steady.',
+    mistakes: 'Locking the knee. Leaning the chest into the wall. Letting the heel creep up and roll off the edge.',
+  },
+};
+
 
 export const DATA_HEAL: Circuit[] = [
   {
@@ -574,5 +736,19 @@ export const DATA_HEAL: Circuit[] = [
     recoveryHours: 24,
     note: 'Once before the rehab starts, then every few weeks. Not on a day the right hand is tired.',
     exercises: [HAND_WARMUP, RING_RIGHT_TEST, TENDON_GLIDES],
+  },
+  {
+    id: 'heal-05', circuitNum: '05',
+    title: 'FOOTWORK', subtitle: 'easy slabs - feet only - hands flat',
+    focus: 'Precise, quiet, trusted feet on easy slabs while the fingers cannot pull.',
+    capacities: ['legs', 'tension'],
+    illustration: 'squats.svg',
+    duration: 30,
+    recoveryHours: 0,
+    note:
+      'At the gym, on the easiest slabs and vertical walls. Hands only rest flat on the wall '
+      + 'or stay off it. On a gym day: ring rehab, then this, then 01 or 02. Stay low, '
+      + 'step down rather than fall.',
+    exercises: [FOOT_WARMUP, SILENT_FEET, STICKY_FEET, EDGE_SMEAR, NO_HANDS_SLAB, STORK],
   },
 ];
