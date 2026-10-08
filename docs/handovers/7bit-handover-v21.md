@@ -63,19 +63,39 @@ the only branch, no open PRs.
 
 ## 6. Mac terminal commands
 
-Run from `~/Desktop/Manfredi/05_Bit-apps/CircuitTraining`.
+Run from `~/Desktop/Manfredi/04_Bit-apps/CircuitTraining` (04, not 05: the
+earlier handovers had the folder wrong). Paste as is: no `#` comments,
+because zsh on the Mac does not treat them as comments.
 
 ```bash
+cd ~/Desktop/Manfredi/04_Bit-apps/CircuitTraining
 git checkout main
-git pull
-git branch -d claude/heal-footwork claude/heal-ring-finger-rehab 2>/dev/null
+git pull --ff-only origin main
+git log -1 --oneline
+rm -rf out .next ios/App/App/public
 npm install
 npx tsc --noEmit
 npm test
 npm run check:daily
 npm run check:cave
 npm run build
+grep -rl "FOOTWORK" out/_next/static | head -1
 npx cap sync ios
-npx cap open ios          # Xcode: scheme App, Cmd+R
-npm run dev               # or the browser, http://localhost:3000
+grep -rl "FOOTWORK" ios/App/App/public/_next/static | head -1
+npx cap open ios
 ```
+
+`git log -1` must show the newest merge on GitHub. If `git pull` aborts with
+"local changes would be overwritten", the Mac has edited files: keep them
+with `git stash push -m mac-local-edits` (or drop them with
+`git checkout -- <file>`), then pull again. Both `grep` lines print a file
+name when the new sessions are in the build. In Xcode: Shift+Cmd+K, then
+Cmd+R; if the phone still shows the old app, delete it from the phone and
+run again. For the browser instead: `npm run dev`, then
+http://localhost:3000.
+
+## 7. Why the phone showed only HEAL 01 and 02 (8 October)
+
+The Mac had a local edit to `CLAUDE.md`, so `git pull` aborted and the build
+ran on the old code, 4 commits behind. The commands above stop that from
+going unnoticed: `--ff-only`, `git log -1`, and the two `grep` checks.

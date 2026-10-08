@@ -23,8 +23,10 @@ Read the newest `docs/handovers/7bit-handover-vNN.md` before starting. Then, in 
    from the latest `main`, and its branch is deleted once merged.
 3. **End every message that changes the app with the Mac terminal commands**
    to pull, build and test it (run from
-   `~/Desktop/Manfredi/05_Bit-apps/CircuitTraining`; the standard set is in
-   the current handover).
+   `~/Desktop/Manfredi/04_Bit-apps/CircuitTraining`; the standard set is in
+   the current handover). No inline `#` comments in those blocks: the Mac's
+   zsh does not treat them as comments, so they break the line they sit on.
+   Pull with `--ff-only` and check `git log -1` before building.
 4. Ask questions first when a request is ambiguous; brainstorm before building
    when asked to.
 
