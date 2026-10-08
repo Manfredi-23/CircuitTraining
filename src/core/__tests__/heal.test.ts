@@ -14,7 +14,8 @@ import type { EnergyKey, Progress, SessionLogEntry } from '../types';
 
 const all = getModeData('HEAL');
 /** The gym sessions: everything but the ring finger rehab and its test. */
-const heal = all.filter(c => !['heal-03', 'heal-04'].includes(c.id));
+const heal = all.filter(c => ['heal-01', 'heal-02'].includes(c.id));
+const footwork = all.find(c => c.id === 'heal-05')!;
 const ring = all.filter(c => ['heal-03', 'heal-04'].includes(c.id));
 const NOW = new Date(2026, 9, 8, 9, 0); // Thursday 8 Oct 2026, local
 const iso = (y: number, m: number, d: number, h = 18) => new Date(y, m - 1, d, h).toISOString();
@@ -29,9 +30,9 @@ function progressAt(level: number): Progress {
 }
 
 describe('HEAL', () => {
-  it('is a fourth tab with two gym sessions, the ring rehab and its test', () => {
+  it('is a fourth tab: two gym sessions, the ring rehab and its test, footwork', () => {
     expect(CONFIG.modes).toContain('HEAL');
-    expect(all.map(c => c.id)).toEqual(['heal-01', 'heal-02', 'heal-03', 'heal-04']);
+    expect(all.map(c => c.id)).toEqual(['heal-01', 'heal-02', 'heal-03', 'heal-04', 'heal-05']);
   });
 
   it('never loads the fingers or pulls, so it never asks the pain check', () => {
@@ -68,9 +69,10 @@ describe('HEAL', () => {
     }
   });
 
-  it('links every exercise to a protocol and closes with the tendon glides', () => {
+  it('links every exercise to a protocol, and finger sessions close with the tendon glides', () => {
     for (const circuit of all) {
       for (const ex of circuit.exercises) expect(getProtocol(ex.protocolId), ex.id).not.toBeNull();
+      if (circuit === footwork) continue;
       expect(circuit.exercises[circuit.exercises.length - 1].id).toBe('heal-tendon-glides');
     }
   });
@@ -101,8 +103,13 @@ describe('recommend while a finger heals', () => {
   const block = getBlockWeek(null, [], NOW);
   const base = { progress: {}, benchmarkResults: [], block, now: NOW, climbLog: [] };
 
-  it('recommends the other HEAL session two days after the last one', () => {
-    const r = recommend({ ...base, sessionLog: [session(iso(2026, 10, 6), 'heal-01', 'HEAL')] });
+  it('recommends the other HEAL session two days after the last one, after footwork', () => {
+    const log = [
+      session(iso(2026, 10, 6), 'heal-01', 'HEAL'),
+      session(iso(2026, 10, 7), 'heal-03', 'HEAL'),
+      session(iso(2026, 10, 8, 8), 'heal-05', 'HEAL'),
+    ];
+    const r = recommend({ ...base, sessionLog: log });
     expect(r).toMatchObject({ mode: 'HEAL', circuitId: 'heal-02' });
   });
 
@@ -185,13 +192,45 @@ describe('recommend the ring finger rehab', () => {
     expect(recommend({ ...base, benchmarkResults: [right], sessionLog: yesterday })?.mode).toBe('DAILY');
   });
 
-  it('still puts the gym session first on a gym day', () => {
+  it('runs a gym day as rehab, then footwork, then 01 or 02', () => {
+    const results = [right];
     const log = [session(iso(2026, 10, 6), 'heal-01', 'HEAL'), session(iso(2026, 10, 6, 19), 'heal-03', 'HEAL')];
-    expect(recommend({ ...base, benchmarkResults: [right], sessionLog: log }))
+    expect(recommend({ ...base, benchmarkResults: results, sessionLog: log }))
+      .toMatchObject({ mode: 'HEAL', circuitId: 'heal-03' });
+    log.push(session(iso(2026, 10, 8, 7), 'heal-03', 'HEAL'));
+    expect(recommend({ ...base, benchmarkResults: results, sessionLog: log }))
+      .toMatchObject({ mode: 'HEAL', circuitId: 'heal-05' });
+    log.push(session(iso(2026, 10, 8, 8), 'heal-05', 'HEAL'));
+    expect(recommend({ ...base, benchmarkResults: results, sessionLog: log }))
       .toMatchObject({ mode: 'HEAL', circuitId: 'heal-02' });
+  });
+
+  it('keeps footwork to gym days', () => {
+    const log = [session(iso(2026, 10, 7), 'heal-01', 'HEAL'), session(iso(2026, 10, 7, 19), 'heal-03', 'HEAL')];
+    expect(recommend({ ...base, benchmarkResults: [right], sessionLog: log })?.mode).toBe('DAILY');
   });
 
   it('never counts the ring test as an ASSESS', () => {
     expect(lastAssess([right])).toBeNull();
+  });
+});
+
+describe('HEAL footwork', () => {
+  it('never loads a finger, so it never asks the pain check', () => {
+    expect(asksPainCheck(footwork)).toBe(false);
+    for (const ex of footwork.exercises) {
+      for (const c of ['crimp', 'openhand', 'forearm', 'pull', 'contact'] as const) expect(ex.capacities, ex.id).not.toContain(c);
+      expect(ex.load.kind, ex.id).toBe('bodyweight');
+    }
+  });
+
+  it('fits before a strength session: 15 to 30 minutes at every level and energy', () => {
+    for (const level of CONFIG.levels.map(l => l.level)) {
+      for (const energy of ['TIRED', 'NORMAL', 'FRESH'] as EnergyKey[]) {
+        const min = estimateDuration(buildList(footwork, energy, progressAt(level)));
+        expect(min, `L${level} ${energy}`).toBeGreaterThanOrEqual(15);
+        expect(min, `L${level} ${energy}`).toBeLessThanOrEqual(30);
+      }
+    }
   });
 });

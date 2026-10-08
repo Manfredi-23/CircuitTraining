@@ -621,6 +621,30 @@ export const PROTOCOLS: Record<string, Protocol> = {
       + 'Silbernagel et al., pain-monitoring model for tendon loading, Am J Sports Med (2007).',
   },
 
+  footwork: {
+    id: 'footwork',
+    name: 'Footwork Drills',
+    quality: 'Precise foot placement, edge and smear use, balance over the feet',
+    work: '60-90s of easy climbing per set, each set with one rule (silent, sticky, no hands)',
+    rest: '45-60s: technique, not fatigue',
+    sets: '2-3 per drill, as written: energy changes nothing, level picks the variation',
+    intensity: 'Terrain well below your limit. The difficulty is the rule, never the wall.',
+    frequency: 'Every gym day while the finger heals; afterwards as a warm-up',
+    rationale:
+      'Footwork is a skill, and skills are learned through focused, varied repetitions '
+      + 'on easy terrain with one thing to attend to at a time: hard climbing leaves no '
+      + 'attention for the feet. Constraint drills (no noise, no readjusting, no hands) '
+      + 'force the foot to be placed by looking rather than found by feel, and the '
+      + 'hands-free slab makes weight-over-feet the only way to stay on. Done fresh, '
+      + 'before strength work, because fatigue degrades motor learning. A finger '
+      + 'injury that stops hard pulling is the one time the whole session can go to '
+      + 'the feet. The hands only rest flat on the wall, so the finger is never loaded.',
+    source:
+      'Hague and Hunter, The Self-Coached Climber (2006); Seifert et al., climbing '
+      + 'fluency and skill acquisition, Sports Med (2014) and Front Psychol (2018); '
+      + 'Wulf, attentional focus and motor learning, Int Rev Sport Exerc Psychol (2013).',
+  },
+
   'heal-strength': {
     id: 'heal-strength',
     name: 'Barbell Strength for the Legs and Hinge',
