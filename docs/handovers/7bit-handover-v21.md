@@ -49,8 +49,10 @@ rehab done earlier the same gym day, the home screen opens on FOOTWORK
 
 ## 4. Repo state
 
-Branch `claude/heal-footwork`, merged to `main` via PR and deleted. `main` is
-the only branch, no open PRs.
+Branches `claude/heal-ring-finger-rehab` and `claude/heal-footwork` merged
+(PRs #33, #34) and deleted. PR #35 (docs only: the Mac folder and the clean
+update block) merged; its branch `claude/mac-commands-fix` is deleted from the
+Mac (section 7). Then `main` is the only branch, no open PRs.
 
 ## 5. Open items
 
@@ -61,19 +63,22 @@ the only branch, no open PRs.
 3. Everything open in v20 section 5 still stands (confirm the right-hand test
    method and pain limit with the physio).
 
-## 6. Mac terminal commands
+## 6. Mac clean update
 
-Run from `~/Desktop/Manfredi/04_Bit-apps/CircuitTraining` (04, not 05: the
-earlier handovers had the folder wrong). Paste as is: no `#` comments,
-because zsh on the Mac does not treat them as comments.
+Paste the whole block in Terminal. It stashes any local edits, pulls, deletes
+merged local branches, rebuilds from scratch and checks that the new session
+reached the iOS build.
 
 ```bash
 cd ~/Desktop/Manfredi/04_Bit-apps/CircuitTraining
+git stash push -u -m "mac-local-$(date +%Y%m%d-%H%M)"
 git checkout main
+git fetch origin --prune
 git pull --ff-only origin main
 git log -1 --oneline
+git branch --merged main | grep -v -E '^\*|^ +main$' | while read b; do git branch -d "$b"; done
 rm -rf out .next ios/App/App/public
-npm install
+npm ci
 npx tsc --noEmit
 npm test
 npm run check:daily
@@ -85,17 +90,32 @@ grep -rl "FOOTWORK" ios/App/App/public/_next/static | head -1
 npx cap open ios
 ```
 
-`git log -1` must show the newest merge on GitHub. If `git pull` aborts with
-"local changes would be overwritten", the Mac has edited files: keep them
-with `git stash push -m mac-local-edits` (or drop them with
-`git checkout -- <file>`), then pull again. Both `grep` lines print a file
-name when the new sessions are in the build. In Xcode: Shift+Cmd+K, then
-Cmd+R; if the phone still shows the old app, delete it from the phone and
-run again. For the browser instead: `npm run dev`, then
-http://localhost:3000.
+- `git log -1` shows the merge of PR #35 (docs: Mac commands).
+- Both `grep` lines print a file name.
+- In Xcode: Shift+Cmd+K, then Cmd+R. If the phone still shows the old app,
+  delete it from the phone and run again. HEAL shows 01 to 05.
+- If `git pull` still refuses, `git status` names the file; send it over.
 
-## 7. Why the phone showed only HEAL 01 and 02 (8 October)
+## 7. Mac housekeeping
+
+The cloud session cannot delete branches (the git proxy refuses), so delete
+the merged one from the Mac:
+
+```bash
+cd ~/Desktop/Manfredi/04_Bit-apps/CircuitTraining
+git push origin --delete claude/mac-commands-fix
+git fetch origin --prune
+git branch -a
+```
+
+`git branch -a` should then list only `main` and `remotes/origin/main`.
+Your Mac edits to `CLAUDE.md` from before are kept in `git stash list`
+(look with `git stash show -p`, delete with `git stash drop`).
+
+## 8. Why the phone showed only HEAL 01 and 02 (8 October)
 
 The Mac had a local edit to `CLAUDE.md`, so `git pull` aborted and the build
-ran on the old code, 4 commits behind. The commands above stop that from
-going unnoticed: `--ff-only`, `git log -1`, and the two `grep` checks.
+ran on the old code, 4 commits behind. The folder in the old commands was
+also wrong (05 instead of 04), and inline `#` comments broke lines in zsh.
+The block above fixes all three, and CLAUDE.md now requires it in every
+handover and every message that changes the app.

@@ -13,20 +13,55 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Read the newest `docs/handovers/7bit-handover-vNN.md` before starting. Then, in every session:
 
 1. **End with a new handover.** Write `docs/handovers/7bit-handover-vNN.md` one number up:
-   what changed, repo state, open items, next steps, Mac terminal commands.
+   what changed, repo state, open items, next steps, and the **Mac clean
+   update** block below (filled in) plus any **Mac housekeeping** commands.
    Point the Handoff Documents list below at it. A message that changes the
    repo updates the current handover before it ends.
-2. **End with housekeeping.** Work goes through PRs; merge them once checks
-   pass, resolve or close stale PRs, delete merged branches, leave `main`
-   building with both checks green. Anything left open is listed in the
-   handover. `main` is the only long-lived branch: every session branches
-   from the latest `main`, and its branch is deleted once merged.
-3. **End every message that changes the app with the Mac terminal commands**
-   to pull, build and test it (run from
-   `~/Desktop/Manfredi/04_Bit-apps/CircuitTraining`; the standard set is in
-   the current handover). No inline `#` comments in those blocks: the Mac's
-   zsh does not treat them as comments, so they break the line they sit on.
-   Pull with `--ff-only` and check `git log -1` before building.
+2. **End with housekeeping, done or handed over.** Work goes through PRs;
+   open, check and merge every PR the session needs, resolve or close stale
+   PRs, delete merged branches, leave `main` building with both checks green.
+   `main` is the only long-lived branch: every session branches from the
+   latest `main`, and its branch is deleted once merged. Whatever cannot be
+   done from the cloud session (branch deletes are refused by the git proxy
+   there; a merge without GitHub access) is handed to the athlete as **Mac
+   housekeeping** commands, in the message and in the handover, e.g.
+   `git push origin --delete <branch>` for each stale remote branch. Anything
+   left open is listed in the handover.
+3. **End every message that changes the app with the Mac clean update** block,
+   exactly as below with `<MARKER>` replaced by a string only this session's
+   change puts in the build (a new session title, say), and the Mac
+   housekeeping commands when there are any. Rules for every Mac block: the
+   folder is `~/Desktop/Manfredi/04_Bit-apps/CircuitTraining`; **no `#`
+   comments** (the Mac's zsh runs them as commands); one command per line;
+   safe to paste whole. Local edits on the Mac once blocked `git pull` and an
+   old build went to the phone unnoticed: the block stashes them, pulls
+   `--ff-only`, uses `npm ci` so the lockfile is never rewritten, and greps
+   the build and the iOS copy for the marker.
+
+   ```bash
+   cd ~/Desktop/Manfredi/04_Bit-apps/CircuitTraining
+   git stash push -u -m "mac-local-$(date +%Y%m%d-%H%M)"
+   git checkout main
+   git fetch origin --prune
+   git pull --ff-only origin main
+   git log -1 --oneline
+   git branch --merged main | grep -v -E '^\*|^ +main$' | while read b; do git branch -d "$b"; done
+   rm -rf out .next ios/App/App/public
+   npm ci
+   npx tsc --noEmit
+   npm test
+   npm run check:daily
+   npm run check:cave
+   npm run build
+   grep -rl "<MARKER>" out/_next/static | head -1
+   npx cap sync ios
+   grep -rl "<MARKER>" ios/App/App/public/_next/static | head -1
+   npx cap open ios
+   ```
+
+   Then in Xcode: Shift+Cmd+K, then Cmd+R. The message says what `git log -1`
+   must show and that both `grep` lines must print a file name. `git stash
+   list` keeps any stashed Mac edits; `git stash drop` deletes the newest.
 4. Ask questions first when a request is ambiguous; brainstorm before building
    when asked to.
 
