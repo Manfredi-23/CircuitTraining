@@ -9,13 +9,13 @@
 /** The persisted keys, in one place so a new one cannot be left out of a backup. */
 export const PERSISTED_KEYS = [
   'progress', 'sessionLog', 'benchmarkResults', 'loadLog', 'climbLog',
-  'blockStart', 'settings', 'health',
+  'activityLog', 'blockStart', 'settings', 'health',
 ] as const;
 
 export type PersistedKey = typeof PERSISTED_KEYS[number];
 
 /** Keys that hold arrays; every other persisted key holds a plain object or a string. */
-const ARRAY_KEYS: PersistedKey[] = ['sessionLog', 'benchmarkResults', 'loadLog', 'climbLog'];
+const ARRAY_KEYS: PersistedKey[] = ['sessionLog', 'benchmarkResults', 'loadLog', 'climbLog', 'activityLog'];
 
 export const BACKUP_FORMAT = 1;
 
@@ -48,6 +48,7 @@ export interface BackupSummary {
   tests: number;
   loads: number;
   climbs: number;
+  activities: number;
 }
 
 /**
@@ -92,6 +93,7 @@ export function parseBackup(text: string): ParseResult {
       tests: len('benchmarkResults'),
       loads: len('loadLog'),
       climbs: len('climbLog'),
+      activities: len('activityLog'),
     },
   };
 }

@@ -105,6 +105,7 @@ src/
     stats.ts     # Trend scoring, chart data, capacity list sorting
     load.ts      # Load axes, load history, stepper formatting
     climbing.ts  # Climb log: grade scales, gym colours, pyramid and weekly bests
+    activity.ts  # Activity log: hikes, tours, runs; time/effort estimates, sore legs
     insights.ts  # STATS data: week strip, core volume, test rows, lifts, climb vs pull,
                  #   freshness, one-arm path, finger weeks, cut short
     training-load.ts # session-RPE load (effort x minutes), weekly totals, acute:chronic
@@ -148,7 +149,7 @@ design/          # pixel-grid.svg drawing template; illustrations/<name>/NN.svg 
   `useStore(s => s.screen)`.
 - **Zustand persist**: Only the keys in `PERSISTED_KEYS` (`src/core/backup.ts`)
   are persisted: `progress`, `sessionLog`, `benchmarkResults`, `loadLog`,
-  `climbLog`, `blockStart`, `settings` and `health`. `partialize` reads that list, so a
+  `climbLog`, `activityLog`, `blockStart`, `settings` and `health`. `partialize` reads that list, so a
   new key is persisted and backed up by adding it there. UI state is transient. The blob
   carries `version: 2`, but legacy cleanup runs from `merge`, not `migrate`:
   persist only calls `migrate` when the stored blob has a **numeric** version,
@@ -514,6 +515,38 @@ finger rule sees it, and earns `CLIMB_SESSION_XP` in `contact` and `tension`.
 A roped session earns it in `forearm`. Climbing never earns crimp or open-hand
 XP, because those levels set hangboard loads.
 
+## Activity Log
+
+Everything done outside the app (hike, via ferrata, ski tour, trail run, run,
+bike, swim, yoga, other), from the ACTIVITY LOG button on the home screen.
+`src/core/activity.ts`. The athlete types what they remember, often only the
+type and the metres climbed; every missing field is estimated and the
+assumption is named on the screen:
+
+- **Descent** equals the climb. **Distance** from a km-per-100-m figure per
+  type. **Time** from the DIN 33466 walking-time rule (larger of vertical and
+  horizontal time plus half the smaller), with up / down / flat rates per type.
+- **Effort** (CR10) from a base per type, +1 above 600 m a day, +1 above
+  1200, +1 heavy pack, +1 above 2500 m, capped at 10.
+
+What it changes:
+- **Load**: effort x minutes, spread over the days, in its own lane
+  (`ACTIVITY`). It shows in the weekly bars and the week strip ("outside") but
+  not in the acute:chronic ratio (`climbingLane`): eight easy hours would read
+  as a finger-load spike.
+- **XP**: 2 per day (at most 3 days) to the type's capacities (`legs`; via
+  ferrata also `pull`; swim `shoulder`; yoga `mobility`), once, on first save.
+  Edits and deletes leave XP alone, as in the climb log.
+- **Sore legs**: metres down per day against per-type thresholds open a 24h or
+  48h window from 18:00 on the last day (`legSoreness`). While it is open the
+  recommender skips leg-heavy sessions (`isLegHeavy`: two or more non-fixed
+  working exercises that train legs first: DAILY 03 and 05, CAVE 03, HEAL 01
+  and 02) whenever another one fits, with the reason "Legs sore from the hike.
+  Upper body."
+
+Not imported from Apple Health yet (the Swift plugin reads climbing workouts
+only).
+
 ## iOS
 
 Capacitor 8 with Swift Package Manager. Portrait-only, iPhone-only, light
@@ -580,9 +613,12 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v21.md`** — **start here.** HEAL 05 FOOTWORK and the
+- **`7bit-handover-v22.md`** — **start here.** The activity log (hikes and
+  the rest, estimated from little data) and the plan for in-session controls
+  and the exercise reserve.
+- **`7bit-handover-v21.md`** — read second. HEAL 05 FOOTWORK and the
   gym-day order (rehab, footwork, strength).
-- **`7bit-handover-v20.md`** — read second. HEAL 03 RING REHAB and
+- **`7bit-handover-v20.md`** — HEAL 03 RING REHAB and
   04 RING TEST: the physio's plan for the left ring finger.
 - **`7bit-handover-v19.md`** — The HEAL tab: two gym
   sessions for training around an injured finger.

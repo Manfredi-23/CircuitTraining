@@ -13,6 +13,7 @@ import { asksPainCheck } from './engine';
 import { loadItems, weeklyLoad } from './training-load';
 import { GOOD_SLEEP_MIN, SHORT_SLEEP_MIN, type HealthData } from './health';
 import { getBestPerWeek, localDate, mondayOf, viewFor, type ClimbView } from './climbing';
+import { lastDay, type ActivitySession } from './activity';
 import type {
   Benchmark, BenchmarkResult, Capacity, ClimbSession, LoadLogEntry, Progress, SessionLogEntry,
 } from './types';
@@ -24,10 +25,10 @@ function addDays(date: string, n: number): string {
 
 // ---- 1. Week strip -------------------------------------------------------------
 
-export type DayKind = 'CLIMB' | 'CAVE' | 'TEST' | 'DAILY';
+export type DayKind = 'CLIMB' | 'CAVE' | 'TEST' | 'DAILY' | 'ACTIVITY';
 
 /** What a day shows when several things happened: the biggest load wins. */
-const DAY_PRIORITY: DayKind[] = ['CLIMB', 'CAVE', 'TEST', 'DAILY'];
+const DAY_PRIORITY: DayKind[] = ['CLIMB', 'CAVE', 'TEST', 'ACTIVITY', 'DAILY'];
 
 /** Retired modes still in old logs, mapped onto today's tabs. */
 const LEGACY_MODE: Record<string, DayKind> = {
@@ -46,6 +47,7 @@ export function getWeekStrip(
   climbLog: ClimbSession[],
   weeks = 12,
   now = new Date(),
+  activityLog: ActivitySession[] = [],
 ): WeekStrip {
   const today = localDate(now);
   const kinds = new Map<string, Set<DayKind>>();
@@ -58,9 +60,12 @@ export function getWeekStrip(
     if (kind) mark(localDate(new Date(s.date)), kind);
   }
   for (const c of climbLog) mark(c.date, 'CLIMB');
+  for (const a of activityLog) {
+    for (let d = a.date; d <= lastDay(a); d = addDays(d, 1)) mark(d, 'ACTIVITY');
+  }
 
   const thisMonday = mondayOf(today);
-  const out: WeekStrip = { weeks: [], thisWeek: { CLIMB: 0, CAVE: 0, TEST: 0, DAILY: 0 } };
+  const out: WeekStrip = { weeks: [], thisWeek: { CLIMB: 0, CAVE: 0, TEST: 0, DAILY: 0, ACTIVITY: 0 } };
   for (let w = weeks - 1; w >= 0; w--) {
     const monday = addDays(thisMonday, -7 * w);
     const days: StripDay[] = [];

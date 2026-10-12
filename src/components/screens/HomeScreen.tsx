@@ -21,9 +21,9 @@ import styles from './HomeScreen.module.css';
 export default function HomeScreen() {
   const {
     mode, circuitIndex, energy, humorLine,
-    pendingDecayEvents, progress, benchmarkResults, sessionLog, climbLog, blockStart,
+    pendingDecayEvents, progress, benchmarkResults, sessionLog, climbLog, activityLog, blockStart,
     recommendedOn, showRecommended, health, settings, energySuggestedOn, suggestEnergy,
-    setMode, changeCircuit, setEnergy, setScreen, openClimbLog,
+    setMode, changeCircuit, setEnergy, setScreen, openClimbLog, openActivityLog,
     startWorkout, dismissDecay,
   } = useStore();
 
@@ -44,10 +44,10 @@ export default function HomeScreen() {
   // Where this week sits in the training block, and what today calls for.
   const block = getBlockWeek(blockStart, sessionLog);
   const recommendation = useMemo(
-    () => recommend({ sessionLog, climbLog, progress, benchmarkResults, block, tired: healthDay?.energy === 'TIRED' }),
+    () => recommend({ sessionLog, climbLog, activityLog, progress, benchmarkResults, block, tired: healthDay?.energy === 'TIRED' }),
     // block is derived from blockStart and sessionLog.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [sessionLog, climbLog, progress, benchmarkResults, blockStart, healthDay],
+    [sessionLog, climbLog, activityLog, progress, benchmarkResults, blockStart, healthDay],
   );
   const isRecommended = recommendation?.circuitId === circuit.id;
 
@@ -255,6 +255,13 @@ export default function HomeScreen() {
         onClick={() => openClimbLog()}
       >
         CLIMB LOG <span className={styles.actionBtnArrow}>&rarr;</span>
+      </button>
+
+      <button
+        className={styles.actionBtn}
+        onClick={() => openActivityLog()}
+      >
+        ACTIVITY LOG <span className={styles.actionBtnArrow}>&rarr;</span>
       </button>
 
       <button

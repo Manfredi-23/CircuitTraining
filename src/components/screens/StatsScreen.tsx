@@ -31,7 +31,7 @@ const TIME_OPTIONS: { key: TimeFilter; label: string }[] = [
 
 export default function StatsScreen() {
   const {
-    progress, sessionLog, climbLog, loadLog, benchmarkResults, statsSort, statsTimeFilter, health, settings,
+    progress, sessionLog, climbLog, activityLog, loadLog, benchmarkResults, statsSort, statsTimeFilter, health, settings,
     activeChartMuscles, highlightMuscle,
     setStatsSort, setStatsTimeFilter, toggleChartMuscle,
     setHighlightMuscle, setScreen,
@@ -86,13 +86,13 @@ export default function StatsScreen() {
         {/* Consistency: the last twelve weeks at a glance */}
         <div className={styles.section}>
           <div className={styles.sectionTitle}>WEEKS</div>
-          <WeekStripSection sessionLog={sessionLog} climbLog={climbLog} />
+          <WeekStripSection sessionLog={sessionLog} climbLog={climbLog} activityLog={activityLog} />
         </div>
 
         {/* How much, climbing included, against what the body is used to */}
         <div className={styles.section}>
           <div className={styles.sectionTitle}>LOAD</div>
-          <LoadSection sessionLog={sessionLog} climbLog={climbLog} />
+          <LoadSection sessionLog={sessionLog} climbLog={climbLog} activityLog={activityLog} />
         </div>
 
         {/* Sleep and HRV, once Apple Health is connected */}

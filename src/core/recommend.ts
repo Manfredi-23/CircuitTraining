@@ -18,6 +18,7 @@ import { resultHistory } from './benchmarks';
 import { REHAB_BENCHMARKS, RING_RIGHT_BENCHMARK } from './rehab';
 import { FOOTWORK_ID, HEAL_GYM_IDS, RING_REHAB_ID, RING_TEST_ID } from './data-heal';
 import type { BlockWeek } from './block';
+import { ACTIVITY_SPEC, isLegHeavy, legSoreness, type ActivitySession } from './activity';
 import type { BenchmarkResult, Circuit, ClimbSession, Mode, Progress, SessionLogEntry } from './types';
 
 export interface Recommendation {
@@ -29,6 +30,8 @@ export interface Recommendation {
 export interface RecommendInput {
   sessionLog: SessionLogEntry[];
   climbLog: ClimbSession[];
+  /** Hikes and the like: a long descent keeps leg sessions off the plan. */
+  activityLog?: ActivitySession[];
   progress: Progress;
   benchmarkResults: BenchmarkResult[];
   block: BlockWeek;
@@ -92,6 +95,18 @@ export function recommend(input: RecommendInput): Recommendation | null {
   const cave = getModeData('CAVE');
   const test = getModeData('TEST');
 
+  // Legs sore from a long descent: leg-heavy sessions step aside while another fits.
+  const sore = legSoreness(input.activityLog ?? [], now);
+  const soreReason = sore ? `Legs sore from the ${ACTIVITY_SPEC[sore.activity.type].label.toLowerCase()}. Upper body.` : '';
+  const spare = (circuits: Circuit[]) => {
+    if (!sore) return circuits;
+    const light = circuits.filter(c => !isLegHeavy(c));
+    return light.length ? light : circuits;
+  };
+  /** The reason, or the soreness reason when soreness changed the pick. */
+  const why = (circuits: Circuit[], pick: Circuit, reason: string) =>
+    (sore && leastRecent(circuits, sessionLog).id !== pick.id ? soreReason : reason);
+
   const doneToday = (mode: Mode) => sessionLog.some(s => s.mode === mode && dayOf(s.date) === today);
   const climbedToday = climbLog.some(c => c.date === today);
 
@@ -102,7 +117,7 @@ export function recommend(input: RecommendInput): Recommendation | null {
   if (painful && painful.pain! >= 6) {
     if (doneToday('DAILY')) return null;
     const safe = daily.filter(c => !asksPainCheck(c));
-    const pick = leastRecent(safe.length ? safe : daily, sessionLog);
+    const pick = leastRecent(spare(safe.length ? safe : daily), sessionLog);
     return { mode: 'DAILY', circuitId: pick.id, reason: `Finger pain ${painful.pain}/10 lately. No finger work.` };
   }
 
@@ -136,19 +151,20 @@ export function recommend(input: RecommendInput): Recommendation | null {
       if (footwork && lastDone(sessionLog, footwork.id) !== today) {
         return { mode: 'HEAL', circuitId: footwork.id, reason: 'Gym day: footwork while fresh.' };
       }
-      const pick = leastRecent(gym, sessionLog);
-      return { mode: 'HEAL', circuitId: pick.id, reason: 'Finger healing. Next HEAL session.' };
+      const pick = leastRecent(spare(gym), sessionLog);
+      return { mode: 'HEAL', circuitId: pick.id, reason: why(gym, pick, 'Finger healing. Next HEAL session.') };
     }
     if (doneToday('DAILY')) return null;
-    const pick = leastRecent(daily.filter(c => !asksPainCheck(c)), sessionLog);
-    return { mode: 'DAILY', circuitId: pick.id, reason: 'Finger healing: no finger work today.' };
+    const fingerFree = daily.filter(c => !asksPainCheck(c));
+    const pick = leastRecent(spare(fingerFree), sessionLog);
+    return { mode: 'DAILY', circuitId: pick.id, reason: why(fingerFree, pick, 'Finger healing: no finger work today.') };
   }
 
   // 3. Climbed today: the after-bouldering session, alternating 02 and 03.
   const stacking = cave.filter(c => c.stacksOnSession);
   if (climbedToday && !doneToday('CAVE') && stacking.length) {
-    const pick = leastRecent(stacking, sessionLog);
-    return { mode: 'CAVE', circuitId: pick.id, reason: 'You climbed today. This one stacks on it.' };
+    const pick = leastRecent(spare(stacking), sessionLog);
+    return { mode: 'CAVE', circuitId: pick.id, reason: why(stacking, pick, 'You climbed today. This one stacks on it.') };
   }
 
   const strong = cave.find(c => !c.stacksOnSession);
@@ -182,10 +198,11 @@ export function recommend(input: RecommendInput): Recommendation | null {
   // 6. The morning DAILY, rotating through the five.
   if (doneToday('DAILY')) return null;
   if (input.tired) {
-    const pick = leastRecent(daily, sessionLog);
-    return { mode: 'DAILY', circuitId: pick.id, reason: 'A TIRED day: something light instead.' };
+    const pick = leastRecent(spare(daily), sessionLog);
+    return { mode: 'DAILY', circuitId: pick.id, reason: why(daily, pick, 'A TIRED day: something light instead.') };
   }
-  const pick = leastRecent(daily, sessionLog);
+  const pick = leastRecent(spare(daily), sessionLog);
+  if (why(daily, pick, '')) return { mode: 'DAILY', circuitId: pick.id, reason: soreReason };
   const last = lastDone(sessionLog, pick.id);
   const ago = last ? daysBetween(last, today) : null;
   return {

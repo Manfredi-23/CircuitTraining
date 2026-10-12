@@ -14,6 +14,7 @@ export function useTodayWidget(hydrated: boolean): void {
   const progress = useStore(s => s.progress);
   const sessionLog = useStore(s => s.sessionLog);
   const climbLog = useStore(s => s.climbLog);
+  const activityLog = useStore(s => s.activityLog);
   const benchmarkResults = useStore(s => s.benchmarkResults);
   const blockStart = useStore(s => s.blockStart);
   const health = useStore(s => s.health);
@@ -25,7 +26,7 @@ export function useTodayWidget(hydrated: boolean): void {
       const block = getBlockWeek(s.blockStart, s.sessionLog);
       const tired = s.settings.health.connected && healthReadiness(s.health)?.energy === 'TIRED';
       const rec = recommend({
-        sessionLog: s.sessionLog, climbLog: s.climbLog, progress: s.progress,
+        sessionLog: s.sessionLog, climbLog: s.climbLog, activityLog: s.activityLog, progress: s.progress,
         benchmarkResults: s.benchmarkResults, block, tired,
       });
       void updateTodayWidget(widgetSnapshot(rec, block, s.progress));
@@ -34,5 +35,5 @@ export function useTodayWidget(hydrated: boolean): void {
     const onVisible = () => { if (document.visibilityState === 'visible') push(); };
     document.addEventListener('visibilitychange', onVisible);
     return () => document.removeEventListener('visibilitychange', onVisible);
-  }, [hydrated, progress, sessionLog, climbLog, benchmarkResults, blockStart, health]);
+  }, [hydrated, progress, sessionLog, climbLog, activityLog, benchmarkResults, blockStart, health]);
 }

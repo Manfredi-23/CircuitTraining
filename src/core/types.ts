@@ -10,7 +10,7 @@
 
 export type Mode = 'DAILY' | 'CAVE' | 'TEST' | 'HEAL';
 export type EnergyKey = 'FRESH' | 'NORMAL' | 'TIRED';
-export type ScreenName = 'home' | 'workout' | 'rest' | 'complete' | 'stats' | 'climb';
+export type ScreenName = 'home' | 'workout' | 'rest' | 'complete' | 'stats' | 'climb' | 'activity';
 export type SortMode = 'strongest' | 'weakest' | 'recent';
 export type TimeFilter = '7days' | '30days' | '90days' | 'total';
 export type Trend = 'up' | 'down' | 'stable';
