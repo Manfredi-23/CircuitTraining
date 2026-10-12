@@ -10,18 +10,24 @@
 // the last 28. It is a guide, not a predictor (the research on it is mixed),
 // but a week far above what the tissues are used to is exactly the pattern
 // behind most pulley injuries, so it is worth seeing.
+//
+// Activities outside the app (hikes, ski tours) count in the weekly total in
+// their own lane, ACTIVITY, but not in the ratio: eight easy hours on a trail
+// would otherwise read as a finger-load spike. The ratio is the climbing and
+// training lane.
 // =============================================================================
 
 import { addDays, dayOf, localDate, mondayOf } from './dates';
+import { activityLoadItems, type ActivitySession } from './activity';
 import type { ClimbSession, SessionLogEntry } from './types';
 
-export type LoadSource = 'CLIMB' | 'CAVE' | 'DAILY' | 'TEST';
+export type LoadSource = 'CLIMB' | 'CAVE' | 'DAILY' | 'TEST' | 'ACTIVITY';
 
 /**
  * Effort assumed when a session was not rated: a typical value for the kind of
  * session, so an unrated week is still roughly right rather than empty.
  */
-export const DEFAULT_EFFORT: Record<LoadSource, number> = { CLIMB: 7, CAVE: 7, DAILY: 4, TEST: 8 };
+export const DEFAULT_EFFORT: Record<LoadSource, number> = { CLIMB: 7, CAVE: 7, DAILY: 4, TEST: 8, ACTIVITY: 5 };
 
 /** Minutes assumed for a climbing session logged before duration existed. */
 export const DEFAULT_CLIMB_MINUTES = 120;
@@ -37,7 +43,11 @@ export interface LoadItem {
   estimated: boolean;
 }
 
-export function loadItems(sessionLog: SessionLogEntry[], climbLog: ClimbSession[]): LoadItem[] {
+export function loadItems(
+  sessionLog: SessionLogEntry[],
+  climbLog: ClimbSession[],
+  activityLog: ActivitySession[] = [],
+): LoadItem[] {
   const out: LoadItem[] = [];
   for (const s of sessionLog) {
     const source = MODE_SOURCE[s.mode];
@@ -53,8 +63,12 @@ export function loadItems(sessionLog: SessionLogEntry[], climbLog: ClimbSession[
       estimated: c.effort === undefined || c.durationMin === undefined,
     });
   }
+  for (const a of activityLoadItems(activityLog)) out.push({ ...a, source: 'ACTIVITY' });
   return out;
 }
+
+/** The climbing and training lane: what the acute:chronic ratio reads. */
+export const climbingLane = (items: LoadItem[]) => items.filter(i => i.source !== 'ACTIVITY');
 
 export interface WeekLoad {
   monday: string;
@@ -71,7 +85,7 @@ export function weeklyLoad(items: LoadItem[], weeks = 12, now = new Date()): Wee
   for (let w = weeks - 1; w >= 0; w--) {
     const monday = addDays(thisMonday, -7 * w);
     const end = addDays(monday, 7);
-    const week: WeekLoad = { monday, total: 0, bySource: { CLIMB: 0, CAVE: 0, DAILY: 0, TEST: 0 }, estimatedShare: 0 };
+    const week: WeekLoad = { monday, total: 0, bySource: { CLIMB: 0, CAVE: 0, DAILY: 0, TEST: 0, ACTIVITY: 0 }, estimatedShare: 0 };
     let estimated = 0;
     for (const i of items) {
       if (i.date < monday || i.date >= end) continue;

@@ -1,0 +1,28 @@
+.typeGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.typeBtn {
+  height: 40px; padding: 0 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+  color: var(--ink); background: none; border: 2px solid var(--ink-ghost); border-radius: var(--rad-sm);
+}
+.typeBtnOn { border-color: var(--ink); border-bottom-width: 6px; }
+.typeBtn:active { transform: scale(0.94); }
+
+.hint { font-size: 12px; color: var(--ink-dim); line-height: 1.4; }
+
+.field { display: flex; align-items: center; gap: 8px; }
+.num { width: 110px; text-align: right; }
+.num::placeholder { color: var(--ink-faint); }
+.unit { font-size: 12px; font-weight: 700; color: var(--ink-dim); min-width: 22px; }
+
+.toggles { display: flex; gap: 8px; }
+.toggle {
+  flex: 1; height: 40px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+  color: var(--ink-dim); background: none; border: 2px solid var(--ink-ghost); border-radius: var(--rad-sm);
+}
+.toggleOn { color: var(--accent); border-color: var(--accent); }
+
+.estimate {
+  border-top: 2px solid var(--ink); padding-top: 12px; display: flex; flex-direction: column; gap: 6px;
+}
+.estHead { font-weight: 700; font-size: 14px; line-height: 1.35; }
+.estLine { font-size: 13px; }
+.estNote { font-size: 12px; color: var(--ink-dim); line-height: 1.4; }

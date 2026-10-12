@@ -69,7 +69,7 @@ export default function SettingsOverlay({ open, onClose }: SettingsOverlayProps)
     const s = result.summary;
     const ok = confirm(
       `Replace all data with the backup from ${s.exportedAt || 'an unknown date'}?\n`
-      + `${s.sessions} sessions, ${s.tests} test results, ${s.loads} loads, ${s.climbs} climbing sessions.\n`
+      + `${s.sessions} sessions, ${s.tests} test results, ${s.loads} loads, ${s.climbs} climbing sessions, ${s.activities} activities.\n`
       + 'What is on this device now will be lost.',
     );
     if (!ok) return;

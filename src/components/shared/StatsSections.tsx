@@ -9,7 +9,8 @@ import {
   getLiftSeries, getTrunkRatios, getWeekStrip, primaryClimbView, type CoreGroup, type DayKind,
   getFreshness, getOneArmPath, getFingerWeeks, getSkipped, getRecovery,
 } from '@/core/insights';
-import { loadItems, weeklyLoad, loadRatio, ZONE_TEXT, type LoadSource } from '@/core/training-load';
+import { loadItems, weeklyLoad, loadRatio, climbingLane, ZONE_TEXT, type LoadSource } from '@/core/training-load';
+import type { ActivitySession } from '@/core/activity';
 import { healthReadiness, type HealthData } from '@/core/health';
 import { getRingRecovery, RING_GOAL_PCT } from '@/core/rehab';
 import type {
@@ -27,10 +28,16 @@ const fmtNum = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 
 const KIND_CLASS: Record<DayKind, string> = {
   CLIMB: styles.dayClimb, CAVE: styles.dayCave, TEST: styles.dayTest, DAILY: styles.dayDaily,
+  ACTIVITY: styles.dayActivity,
 };
 
-export function WeekStripSection({ sessionLog, climbLog }: { sessionLog: SessionLogEntry[]; climbLog: ClimbSession[] }) {
-  const strip = useMemo(() => getWeekStrip(sessionLog, climbLog), [sessionLog, climbLog]);
+export function WeekStripSection({ sessionLog, climbLog, activityLog }: {
+  sessionLog: SessionLogEntry[]; climbLog: ClimbSession[]; activityLog: ActivitySession[];
+}) {
+  const strip = useMemo(
+    () => getWeekStrip(sessionLog, climbLog, 12, new Date(), activityLog),
+    [sessionLog, climbLog, activityLog],
+  );
   const t = strip.thisWeek;
   return (
     <div className={styles.block}>
@@ -52,10 +59,12 @@ export function WeekStripSection({ sessionLog, climbLog }: { sessionLog: Session
         <span><i className={styles.dayCave} />cave</span>
         <span><i className={styles.dayDaily} />daily</span>
         <span><i className={styles.dayTest} />test</span>
+        {activityLog.length > 0 && <span><i className={styles.dayActivity} />outside</span>}
       </div>
       <div className={styles.summary}>
         This week: <b>{t.DAILY}</b> daily, <b>{t.CAVE}</b> cave, <b>{t.CLIMB}</b> climbing
         {t.TEST > 0 && <>, <b>{t.TEST}</b> test</>}
+        {t.ACTIVITY > 0 && <>, <b>{t.ACTIVITY}</b> outside</>}
       </div>
     </div>
   );
@@ -287,18 +296,23 @@ export function ClimbVsPullSection({ climbLog, loadLog }: { climbLog: ClimbSessi
 
 // ---- Training load -------------------------------------------------------------------
 
-const SOURCE_ORDER: LoadSource[] = ['CLIMB', 'CAVE', 'TEST', 'DAILY'];
+const SOURCE_ORDER: LoadSource[] = ['CLIMB', 'CAVE', 'TEST', 'DAILY', 'ACTIVITY'];
 const SOURCE_CLASS: Record<LoadSource, string> = {
   CLIMB: styles.segClimb, CAVE: styles.segCave, TEST: styles.segTest, DAILY: styles.segDaily,
+  ACTIVITY: styles.segActivity,
 };
 /** Bar labels: weeks ago every third column, NOW on the current week. */
 const weekTick = (i: number, n: number) => (i === n - 1 ? 'NOW' : (n - 1 - i) % 3 === 0 ? `-${n - 1 - i}W` : '');
 const fmtLoad = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(Math.round(n)));
 
-export function LoadSection({ sessionLog, climbLog }: { sessionLog: SessionLogEntry[]; climbLog: ClimbSession[] }) {
-  const items = useMemo(() => loadItems(sessionLog, climbLog), [sessionLog, climbLog]);
+export function LoadSection({ sessionLog, climbLog, activityLog }: {
+  sessionLog: SessionLogEntry[]; climbLog: ClimbSession[]; activityLog: ActivitySession[];
+}) {
+  const items = useMemo(() => loadItems(sessionLog, climbLog, activityLog), [sessionLog, climbLog, activityLog]);
   const weeks = useMemo(() => weeklyLoad(items), [items]);
-  const ratio = useMemo(() => loadRatio(items), [items]);
+  // The ratio reads climbing and training only: a long easy hike is not a finger-load spike.
+  const ratio = useMemo(() => loadRatio(climbingLane(items)), [items]);
+  const outside = weeks.some(w => w.bySource.ACTIVITY > 0);
   const max = Math.max(...weeks.map(w => w.total));
   if (!max) return <div className={styles.empty}>Rate sessions and log climbs to see the weekly load.</div>;
   const estimated = weeks.some(w => w.estimatedShare > 0.3);
@@ -323,11 +337,12 @@ export function LoadSection({ sessionLog, climbLog }: { sessionLog: SessionLogEn
         <span><i className={styles.dayCave} />cave</span>
         <span><i className={styles.dayDaily} />daily</span>
         <span><i className={styles.dayTest} />test</span>
+        {outside && <span><i className={styles.dayActivity} />outside</span>}
       </div>
       {ratio ? (
         <div className={styles.ratioBox}>
           <div className={styles.ratioHead}>
-            <span>Last 7 days <b>{fmtLoad(ratio.acute)}</b> vs usual week <b>{fmtLoad(ratio.chronic)}</b></span>
+            <span>{outside ? 'Climbing + training, last' : 'Last'} 7 days <b>{fmtLoad(ratio.acute)}</b> vs usual week <b>{fmtLoad(ratio.chronic)}</b></span>
             <b className={ratio.zone === 'high' || ratio.zone === 'spike' ? styles.down : undefined}>{ratio.ratio.toFixed(2)}</b>
           </div>
           <div className={styles.hint}>{ZONE_TEXT[ratio.zone]}</div>
@@ -337,6 +352,7 @@ export function LoadSection({ sessionLog, climbLog }: { sessionLog: SessionLogEn
       )}
       <div className={styles.hint}>
         Load = effort (1-10) x minutes, climbing included.
+        {outside && ' Hikes and other activities count in the bars, not in the ratio.'}
         {estimated && ' Unrated sessions use a typical effort; rate them for a truer picture.'}
       </div>
     </div>
