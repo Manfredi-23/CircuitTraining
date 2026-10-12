@@ -88,6 +88,8 @@ export interface ReminderInput {
   climbLog: ClimbSession[];
   benchmarkResults: BenchmarkResult[];
   settings: ReminderSettings;
+  /** Days marked REST or SICK on the TODAY sheet: nothing nags on them. */
+  offDays?: string[];
   now?: Date;
 }
 
@@ -171,5 +173,6 @@ export function planReminders(input: ReminderInput): Reminder[] {
     }
   }
 
-  return out;
+  const off = new Set(input.offDays ?? []);
+  return out.filter(r => !off.has(localDate(r.at)));
 }

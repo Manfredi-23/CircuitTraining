@@ -9,13 +9,13 @@
 /** The persisted keys, in one place so a new one cannot be left out of a backup. */
 export const PERSISTED_KEYS = [
   'progress', 'sessionLog', 'benchmarkResults', 'loadLog', 'climbLog',
-  'activityLog', 'tweaks', 'blockStart', 'settings', 'health',
+  'activityLog', 'tweaks', 'dayPlan', 'offDays', 'blockStart', 'settings', 'health',
 ] as const;
 
 export type PersistedKey = typeof PERSISTED_KEYS[number];
 
 /** Keys that hold arrays; every other persisted key holds a plain object or a string. */
-const ARRAY_KEYS: PersistedKey[] = ['sessionLog', 'benchmarkResults', 'loadLog', 'climbLog', 'activityLog'];
+const ARRAY_KEYS: PersistedKey[] = ['sessionLog', 'benchmarkResults', 'loadLog', 'climbLog', 'activityLog', 'offDays'];
 
 export const BACKUP_FORMAT = 1;
 
