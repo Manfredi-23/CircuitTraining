@@ -15,6 +15,7 @@ export function useReminders(hydrated: boolean): void {
   const climbLog = useStore(s => s.climbLog);
   const benchmarkResults = useStore(s => s.benchmarkResults);
   const settings = useStore(s => s.settings);
+  const offDays = useStore(s => s.offDays);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -22,12 +23,12 @@ export function useReminders(hydrated: boolean): void {
       const s = useStore.getState();
       void scheduleReminders(planReminders({
         progress: s.progress, sessionLog: s.sessionLog, climbLog: s.climbLog,
-        benchmarkResults: s.benchmarkResults, settings: s.settings.reminders,
+        benchmarkResults: s.benchmarkResults, settings: s.settings.reminders, offDays: s.offDays,
       }), ALL_REMINDER_IDS);
     };
     plan();
     const onVisible = () => { if (document.visibilityState === 'visible') plan(); };
     document.addEventListener('visibilitychange', onVisible);
     return () => document.removeEventListener('visibilitychange', onVisible);
-  }, [hydrated, progress, sessionLog, climbLog, benchmarkResults, settings]);
+  }, [hydrated, progress, sessionLog, climbLog, benchmarkResults, settings, offDays]);
 }

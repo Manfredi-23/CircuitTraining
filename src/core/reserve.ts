@@ -25,6 +25,7 @@ import { getModeData } from './data-index';
 import { EXTRA_EXERCISES } from './data-extras';
 import { PAIN_REDUCE_FROM } from './engine';
 import { dayOf } from './dates';
+import { needsKit } from './today';
 import type { BlockType, Exercise, Mode, ScaledExercise, SessionLogEntry } from './types';
 
 export type ReserveGroup = 'CORE' | 'ARMS' | 'SHOULDERS' | 'LEGS' | 'MOBILITY' | 'FINGERS';
@@ -142,6 +143,8 @@ export interface ReserveContext {
   /** Pain score given before this session, if one was asked. */
   pain: number | null;
   sessionLog: SessionLogEntry[];
+  /** NO KIT on the TODAY sheet: a mat and nothing else. */
+  noKit?: boolean;
 }
 
 /** Why a whole group is missing, for the picker to say so. */
@@ -154,7 +157,7 @@ export function closedGroups(ctx: ReserveContext): Partial<Record<ReserveGroup, 
 
 /** The reserve for this session, by group, least recently done first. */
 export function reserveFor(ctx: ReserveContext): Record<ReserveGroup, ReserveItem[]> {
-  const place = placeOf(ctx.mode, ctx.circuitId);
+  const place = ctx.noKit ? 'HOME' : placeOf(ctx.mode, ctx.circuitId);
   const healing = ctx.mode === 'HEAL';
   const closed = closedGroups(ctx);
   const inSession = new Set(ctx.list.map(e => e.id));
@@ -174,7 +177,7 @@ export function reserveFor(ctx: ReserveContext): Record<ReserveGroup, ReserveIte
     if (healing && entry.grip) continue;
     if (inSession.has(entry.id)) continue;
     const exercise = lib.get(entry.id);
-    if (!exercise || exercise.gate || exercise.records || exercise.block === 'WARMUP' || exercise.block === 'TEST') continue;
+    if (!exercise || (ctx.noKit && (entry.grip || needsKit(exercise))) || exercise.gate || exercise.records || exercise.block === 'WARMUP' || exercise.block === 'TEST') continue;
     out[entry.group].push({ exercise, group: entry.group, curl: Boolean(entry.curl), lastDone: lastDone.get(entry.id) ?? null });
   }
   for (const g of RESERVE_GROUPS) {

@@ -19,6 +19,7 @@ import { REHAB_BENCHMARKS, RING_RIGHT_BENCHMARK } from './rehab';
 import { FOOTWORK_ID, HEAL_GYM_IDS, RING_REHAB_ID, RING_TEST_ID } from './data-heal';
 import type { BlockWeek } from './block';
 import { ACTIVITY_SPEC, isLegHeavy, legSoreness, type ActivitySession } from './activity';
+import { NO_DAY, loadsArea, needsKit, type ActiveDay, type SoreArea } from './today';
 import type { BenchmarkResult, Circuit, ClimbSession, Mode, Progress, SessionLogEntry } from './types';
 
 export interface Recommendation {
@@ -37,6 +38,8 @@ export interface RecommendInput {
   block: BlockWeek;
   /** Apple Health suggested TIRED today: no maximal sessions. */
   tired?: boolean;
+  /** What the athlete said about today on the TODAY sheet. */
+  day?: ActiveDay;
   now?: Date;
 }
 
@@ -95,17 +98,33 @@ export function recommend(input: RecommendInput): Recommendation | null {
   const cave = getModeData('CAVE');
   const test = getModeData('TEST');
 
-  // Legs sore from a long descent: leg-heavy sessions step aside while another fits.
+  const day = input.day ?? NO_DAY;
+  // A rest or sick day: nothing is due.
+  if (day.off) return null;
+
+  // Sore: from a long descent (legs) or as said on the TODAY sheet. Sessions
+  // that load a sore area step aside while another fits.
   const sore = legSoreness(input.activityLog ?? [], now);
-  const soreReason = sore ? `Legs sore from the ${ACTIVITY_SPEC[sore.activity.type].label.toLowerCase()}. Upper body.` : '';
+  const areas: SoreArea[] = day.sore;
+  const AREA_TEXT: Record<SoreArea, string> = {
+    LEGS: 'Legs sore. Something else today.',
+    BACK: 'Back sore. Something else today.',
+    SHOULDERS: 'Shoulders sore. Something else today.',
+    FOREARMS: 'Forearms sore. No finger work today.',
+  };
+  const soreReason = areas.length ? AREA_TEXT[areas[0]]
+    : sore ? `Legs sore from the ${ACTIVITY_SPEC[sore.activity.type].label.toLowerCase()}. Upper body.` : '';
   const spare = (circuits: Circuit[]) => {
-    if (!sore) return circuits;
-    const light = circuits.filter(c => !isLegHeavy(c));
+    if (!sore && !areas.length) return circuits;
+    const light = circuits.filter(c => !(sore && isLegHeavy(c)) && !areas.some(a => loadsArea(c, a)));
     return light.length ? light : circuits;
   };
   /** The reason, or the soreness reason when soreness changed the pick. */
   const why = (circuits: Circuit[], pick: Circuit, reason: string) =>
-    (sore && leastRecent(circuits, sessionLog).id !== pick.id ? soreReason : reason);
+    (soreReason && leastRecent(circuits, sessionLog).id !== pick.id ? soreReason : reason);
+  const forearms = areas.includes('FOREARMS');
+  /** Big sessions do not fit a short day. */
+  const shortDay = day.minutes !== null && day.minutes <= 30;
 
   const doneToday = (mode: Mode) => sessionLog.some(s => s.mode === mode && dayOf(s.date) === today);
   const climbedToday = climbLog.some(c => c.date === today);
@@ -119,6 +138,17 @@ export function recommend(input: RecommendInput): Recommendation | null {
     const safe = daily.filter(c => !asksPainCheck(c));
     const pick = leastRecent(spare(safe.length ? safe : daily), sessionLog);
     return { mode: 'DAILY', circuitId: pick.id, reason: `Finger pain ${painful.pain}/10 lately. No finger work.` };
+  }
+
+  // 1b. No kit: a DAILY that still has its working sets on a bare mat.
+  if (day.noKit) {
+    if (doneToday('DAILY')) return null;
+    const bare = daily.filter(c => c.exercises.filter(e => e.block !== 'WARMUP' && !needsKit(e)).length >= 3);
+    const healing = sessionLog.some(s => s.mode === 'HEAL' && daysBetween(dayOf(s.date), today) <= HEAL_MEMORY_DAYS);
+    const safe = healing || forearms ? bare.filter(c => !asksPainCheck(c)) : bare;
+    const pool = safe.length ? safe : daily;
+    const pick = leastRecent(spare(pool), sessionLog);
+    return { mode: 'DAILY', circuitId: pick.id, reason: why(pool, pick, 'No kit today: a mat-only DAILY.') };
   }
 
   // 2. Healing a finger: a HEAL session lately and no climbing logged since.
@@ -172,7 +202,7 @@ export function recommend(input: RecommendInput): Recommendation | null {
 
   // 4. ASSESS due, fresh fingers, not a deload week, no climbing today, and
   // not a TIRED day: a test on a bad night measures the night.
-  if (test[0] && !input.tired && !climbedToday && !block.deload && fingersReady && !doneToday('TEST')
+  if (test[0] && !input.tired && !forearms && !shortDay && !climbedToday && !block.deload && fingersReady && !doneToday('TEST')
       && assessDue(benchmarkResults, sessionLog, now)) {
     const never = resultHistory(benchmarkResults, 'fs-2arm-20mm').length === 0;
     return {
@@ -188,7 +218,7 @@ export function recommend(input: RecommendInput): Recommendation | null {
   const weekday = daysBetween(monday, today); // 0 = Monday
   const climbsThisWeek = new Set(climbLog.filter(c => c.date >= monday && c.date <= today).map(c => c.date)).size;
   const strongThisWeek = strong ? sessionLog.some(s => s.circuitId === strong.id && dayOf(s.date) >= monday) : true;
-  if (strong && climbLog.length > 0 && !input.tired && weekday >= 3 && climbsThisWeek < 2 && !climbedToday && fingersReady && !strongThisWeek && !doneToday('CAVE')) {
+  if (strong && climbLog.length > 0 && !input.tired && !forearms && !shortDay && weekday >= 3 && climbsThisWeek < 2 && !climbedToday && fingersReady && !strongThisWeek && !doneToday('CAVE')) {
     return {
       mode: 'CAVE', circuitId: strong.id,
       reason: `${climbsThisWeek} climbing day${climbsThisWeek === 1 ? '' : 's'} this week. STRONG instead.`,

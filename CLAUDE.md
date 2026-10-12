@@ -122,6 +122,7 @@ src/
     adjust.ts    # HARDER / EASIER (kept as tweaks), +/- SET today
     reserve.ts   # extra exercises to add mid-session, by area, place and safety
     data-extras.ts # reserve-only exercises: arm extras (no XP), lateral raise, face pull
+    today.ts     # TODAY sheet: time cap, no kit, sore areas, rest / sick days
     data-daily.ts, data-cave.ts, data-assess.ts, data-heal.ts  # Session libraries, one per tab
     data-oap.ts  # One-arm pull-up path, shared by CAVE 01 and CAVE 02
     data-index.ts  # getModeData(mode) helper
@@ -133,7 +134,7 @@ src/
   components/
     screens/     # HomeScreen, WorkoutScreen, RestScreen, CompleteScreen, StatsScreen, ClimbScreen
     shared/      # SettingsOverlay, TimerFlash, LoadLogger, ClimbStats, SessionInfo, StatsSections,
-                 #   FormGuide, SessionProgressBar, AdjustControls, ReservePicker
+                 #   FormGuide, SessionProgressBar, AdjustControls, ReservePicker, DaySheet
   app/           # layout.tsx, page.tsx (screen router), globals.css
 ios/             # Xcode project (Capacitor 8, SPM)
 tools/           # generate-ios-assets.py — icon and splash from logo.svg
@@ -152,7 +153,8 @@ design/          # pixel-grid.svg drawing template; illustrations/<name>/NN.svg 
   `useStore(s => s.screen)`.
 - **Zustand persist**: Only the keys in `PERSISTED_KEYS` (`src/core/backup.ts`)
   are persisted: `progress`, `sessionLog`, `benchmarkResults`, `loadLog`,
-  `climbLog`, `activityLog`, `tweaks`, `blockStart`, `settings` and `health`. `partialize` reads that list, so a
+  `climbLog`, `activityLog`, `tweaks`, `dayPlan`, `offDays`, `blockStart`,
+  `settings` and `health`. `partialize` reads that list, so a
   new key is persisted and backed up by adding it there. UI state is transient. The blob
   carries `version: 2`, but legacy cleanup runs from `merge`, not `migrate`:
   persist only calls `migrate` when the stored blob has a **numeric** version,
@@ -542,6 +544,34 @@ Below the load stepper on the workout card (`AdjustControls`):
   block or heavier (`insertIndex`); in a DAILY before the curls, and an added
   curl closes it. The session log lists picks in `added`.
 - **FINISH NOW** logs the session as it stands (cut short, no XP lost).
+- **ENERGY** (FRESH / NORMAL / TIRED) at the bottom of the card rebuilds what
+  is left of the session at the new energy (`switchEnergy`): same deload,
+  kit, tweaks and pain check, extras kept, the exercise in hand keeps the sets
+  already done. Today's time cap is not reapplied.
+
+## TODAY
+
+The TODAY button on the home screen (`DaySheet`, `today.ts`, `day-slice.ts`)
+takes what the logs cannot know. Stored in `dayPlan`; time, kit and off hold
+for the day they were set, soreness for that day and the next.
+
+- **Time** (10 / 15 / 20 / 30 / 45 min): `fitToMinutes` drops whole exercises,
+  ACCESSORY first, then MOBILITY, PREHAB, SECONDARY, PRIMARY, each from the
+  end, until the estimate fits. Warm-ups and tests stay, at least one working
+  exercise stays, rest and sets are never changed. Applied in
+  `sessionListFor`, so the home card shows the cut duration. A cap of 30 or
+  less keeps ASSESS and STRONG off the recommendation.
+- **No kit**: DAILY drops band, edge and loaded work (`needsKit`); the
+  recommendation is a DAILY with three or more mat-only working exercises
+  ("No kit today: a mat-only DAILY."); the reserve offers bodyweight only.
+- **Sore** legs / back / shoulders / forearms: `loadsArea` (two or more
+  non-fixed working exercises on the area; forearms: any finger session)
+  steers the recommendation away while another session fits, with the reason
+  "Shoulders sore. Something else today." Sore forearms also skip ASSESS and
+  STRONG.
+- **Rest day / sick**: no recommendation, a banner on the home screen, no
+  reminders that day, and the date goes into `offDays`, which `checkDecay`
+  subtracts from the days since a capacity was trained.
 
 ## Activity Log
 
@@ -641,10 +671,12 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v22.md`** — **start here.** The activity log (hikes and
+- **`7bit-handover-v23.md`** — **start here.** TODAY (time cap, no kit,
+  sore areas, rest / sick days) and switching energy mid-session.
+- **`7bit-handover-v22.md`** — read second. The activity log (hikes and
   the rest, estimated from little data), HARDER / EASIER kept for next time,
   the exercise reserve and FINISH NOW.
-- **`7bit-handover-v21.md`** — read second. HEAL 05 FOOTWORK and the
+- **`7bit-handover-v21.md`** — HEAL 05 FOOTWORK and the
   gym-day order (rehab, footwork, strength).
 - **`7bit-handover-v20.md`** — HEAL 03 RING REHAB and
   04 RING TEST: the physio's plan for the left ring finger.

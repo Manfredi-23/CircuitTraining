@@ -39,8 +39,8 @@ export const createProgressSlice: StateCreator<Store, [], [], ProgressSlice> = (
   blockStart: null,
 
   runDecayCheck: () => {
-    const { progress } = get();
-    const { progress: newProgress, decayEvents } = Engine.checkDecay(progress);
+    const { progress, offDays } = get();
+    const { progress: newProgress, decayEvents } = Engine.checkDecay(progress, offDays);
     if (decayEvents.length > 0) {
       set({ progress: newProgress, pendingDecayEvents: decayEvents });
     }
@@ -77,6 +77,8 @@ export const createProgressSlice: StateCreator<Store, [], [], ProgressSlice> = (
     activityLog: [],
     editingActivityId: null,
     tweaks: {},
+    dayPlan: null,
+    offDays: [],
   }),
 
   // A backup replaces, never merges: two histories of the same days would

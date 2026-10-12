@@ -21,6 +21,10 @@ import type {
   BenchmarkResult, Readiness, ExerciseTweak, Tweaks,
 } from './types';
 
+/** Local calendar date, YYYY-MM-DD. */
+const localDay = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
 const INTENSITY_ORDER: Intensity[] = ['TECHNIQUE', 'EASY', 'MODERATE', 'HARD', 'MAX'];
 
 /** Blocks whose rest is protected: quality work is never rushed. */
@@ -566,8 +570,13 @@ export function applyQuitPenalty(progress: Progress, _remaining: Exercise[]): Pr
 // is never punished.
 // ---------------------------------------------------------------------------
 
-export function checkDecay(progress: Progress): DecayResult {
-  const now = Date.now();
+/**
+ * `offDays` are local dates the athlete marked REST or SICK: they do not count
+ * towards the days since a capacity was trained, so planned rest and illness
+ * never cost a level.
+ */
+export function checkDecay(progress: Progress, offDays: string[] = [], now = Date.now()): DecayResult {
+  const today = localDay(new Date(now));
   const cfg = CONFIG.decay;
   const newProgress: Progress = structuredClone(progress);
   const decayEvents: DecayEvent[] = [];
@@ -578,7 +587,9 @@ export function checkDecay(progress: Progress): DecayResult {
     if (!pg.lastTrained) continue;
 
     const rate = cfg.rates[c];
-    const daysSince = Math.floor((now - new Date(pg.lastTrained).getTime()) / (1000 * 60 * 60 * 24));
+    const trainedOn = localDay(new Date(pg.lastTrained));
+    const off = offDays.filter(d => d > trainedOn && d <= today).length;
+    const daysSince = Math.floor((now - new Date(pg.lastTrained).getTime()) / (1000 * 60 * 60 * 24)) - off;
     if (daysSince < rate.graceDays) continue;
 
     const windows = Math.floor((daysSince - rate.graceDays) / cfg.windowDays) + 1;

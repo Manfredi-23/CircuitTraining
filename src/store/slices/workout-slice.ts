@@ -1,6 +1,6 @@
 import type { StateCreator } from 'zustand';
 import type { Store } from '../store';
-import type { Circuit, ScaledExercise, Capacity, LevelUp, Tweaks } from '@/core/types';
+import type { Circuit, ScaledExercise, Capacity, LevelUp, Tweaks, EnergyKey } from '@/core/types';
 import { getModeData } from '@/core/data-index';
 import * as Engine from '@/core/engine';
 import { benchmarkValueFromEntry, currentBodyweight, getBenchmark, latestResult } from '@/core/benchmarks';
@@ -9,6 +9,7 @@ import { isPersonalBest } from '@/core/progression';
 import { getLoadAxis, formatLoad } from '@/core/load';
 import { adjust, setBounds, type AdjustDir } from '@/core/adjust';
 import { exerciseLibrary, insertIndex } from '@/core/reserve';
+import { activeDay, applyDay } from '@/core/today';
 
 /**
  * The session as it will run: level, energy, gates, and the deload week. The
@@ -16,12 +17,14 @@ import { exerciseLibrary, insertIndex } from '@/core/reserve';
  * is the session you get.
  */
 export function sessionListFor(
-  state: Pick<Store, 'energy' | 'progress' | 'benchmarkResults' | 'blockStart' | 'sessionLog' | 'tweaks'>,
+  state: Pick<Store, 'mode' | 'energy' | 'progress' | 'benchmarkResults' | 'blockStart' | 'sessionLog' | 'tweaks' | 'dayPlan'>,
   circuit: Circuit,
   now = new Date(),
 ): ScaledExercise[] {
   const deload = getBlockWeek(state.blockStart, state.sessionLog, now).deload && deloads(circuit);
-  return Engine.buildList(circuit, state.energy, state.progress, state.benchmarkResults, { deload, tweaks: state.tweaks });
+  const list = Engine.buildList(circuit, state.energy, state.progress, state.benchmarkResults, { deload, tweaks: state.tweaks });
+  // Today's time cap and kit, from the TODAY sheet.
+  return applyDay(list, circuit, activeDay(state.dayPlan, now), state.mode);
 }
 
 /**
@@ -83,6 +86,8 @@ export interface WorkoutSlice {
   addExtra: (exerciseId: string) => void;
   /** End here and log the session as cut short. No XP is lost. */
   finishNow: () => void;
+  /** Change energy mid-session: what is left is rebuilt at the new energy. */
+  switchEnergy: (energy: EnergyKey) => void;
 }
 
 /** The exercise in hand rebuilt with the current tweaks: variation and work only, sets as they stand today. */
@@ -431,6 +436,40 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   finishNow: () => {
     if (!get().circuit) return;
     get().completeSession();
+  },
+
+  switchEnergy: (energy) => {
+    const st = get();
+    const { circuit, currentExercise: curr } = st;
+    if (!circuit || !curr || energy === st.energy) return;
+    // The rest of the session as the new energy builds it: same deload, kit,
+    // tweaks and pain check, no time cap (the athlete just chose more or less).
+    const deload = getBlockWeek(st.blockStart, st.sessionLog).deload && deloads(circuit);
+    const day = { ...activeDay(st.dayPlan), minutes: null };
+    const built = Engine.applyPainCheck(
+      applyDay(
+        Engine.buildList(circuit, energy, st.progress, st.benchmarkResults, { deload, tweaks: st.tweaks }),
+        circuit, day, st.mode,
+      ),
+      st.sessionPain,
+    );
+    const head = st.exerciseList.slice(0, st.stepIndex + 1);
+    const seen = new Set(head.map(e => e.id));
+    const list = [...head, ...built.filter(e => !seen.has(e.id))];
+    // Extras added from the reserve stay, at the new energy.
+    for (const extra of st.exerciseList.slice(st.stepIndex + 1).filter(e => st.addedIds.includes(e.id))) {
+      const base = exerciseLibrary().get(extra.id);
+      if (!base || list.some(e => e.id === extra.id)) continue;
+      const scaled = Engine.scaleExercise(base, energy, st.progress, { tweaks: st.tweaks });
+      list.splice(insertIndex(list, st.stepIndex, base, st.mode), 0, scaled);
+    }
+    // The exercise in hand keeps the sets already done.
+    const nb = built.find(e => e.id === curr.id);
+    const current = nb
+      ? { ...curr, scaledSets: Math.max(st.setIndex, nb.scaledSets), scaledRest: nb.scaledRest, scaledWork: nb.scaledWork, appliedIntensity: nb.appliedIntensity }
+      : curr;
+    list[st.stepIndex] = current;
+    set({ energy, exerciseList: list, currentExercise: current });
   },
 });
 

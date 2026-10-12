@@ -107,3 +107,11 @@
   background: none; border: 2px solid var(--accent); border-radius: var(--rad-sm); padding: 10px 14px;
 }
 .btnAdd:active { transform: scale(0.97); }
+
+.energyRow { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.energyLabel { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: var(--ink-dim); margin-right: 4px; }
+.energyBtn {
+  flex: 1; padding: 6px 2px; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+  color: var(--ink); background: none; border: none; border-bottom: 2px solid var(--ink);
+}
+.energyBtnOn { border-bottom-width: 6px; }

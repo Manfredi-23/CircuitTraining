@@ -5,6 +5,7 @@ import { useStore } from '@/store/store';
 import { RESERVE_GROUPS, closedGroups, placeOf, reserveFor, type ReserveGroup } from '@/core/reserve';
 import { daysBetween, localDate } from '@/core/dates';
 import { legSoreness } from '@/core/activity';
+import { activeDay } from '@/core/today';
 import type { Exercise } from '@/core/types';
 import styles from './ReservePicker.module.css';
 
@@ -35,6 +36,7 @@ export default function ReservePicker({ open, onClose }: { open: boolean; onClos
   const sessionLog = useStore(s => s.sessionLog);
   const activityLog = useStore(s => s.activityLog);
   const addExtra = useStore(s => s.addExtra);
+  const noKit = useStore(s => activeDay(s.dayPlan).noKit);
   const [group, setGroup] = useState<ReserveGroup>('CORE');
   const [added, setAdded] = useState<string[]>([]);
   const [entered, setEntered] = useState(false);
@@ -43,12 +45,12 @@ export default function ReservePicker({ open, onClose }: { open: boolean; onClos
     if (open) { setAdded([]); requestAnimationFrame(() => setEntered(true)); } else setEntered(false);
   }, [open]);
 
-  const ctx = circuit ? { mode, circuitId: circuit.id, list: exerciseList, pain: sessionPain, sessionLog } : null;
+  const ctx = circuit ? { mode, circuitId: circuit.id, list: exerciseList, pain: sessionPain, sessionLog, noKit } : null;
   // Keep what was added in this visit on screen, marked ADDED, instead of letting it vanish.
   const reserve = useMemo(
     () => (ctx ? reserveFor({ ...ctx, list: ctx.list.filter(e => !added.includes(e.id)) }) : null),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [open, mode, circuit, sessionPain, sessionLog, added.length],
+    [open, mode, circuit, sessionPain, sessionLog, added.length, noKit],
   );
 
   if (!open || !circuit || !ctx || !reserve) return null;
@@ -68,7 +70,7 @@ export default function ReservePicker({ open, onClose }: { open: boolean; onClos
         <button className="overlay-close" onClick={onClose} aria-label="Close">X</button>
       </div>
       <div className={styles.place}>
-        {placeOf(mode, circuit.id) === 'HOME' ? 'Home: mat, band, portable edge.' : 'Gym: everything.'}
+        {noKit ? 'No kit today: mat only.' : placeOf(mode, circuit.id) === 'HOME' ? 'Home: mat, band, portable edge.' : 'Gym: everything.'}
         {mode === 'HEAL' && ' Nothing gripped while the finger heals.'}
       </div>
 

@@ -13,6 +13,8 @@ import { sessionListFor } from '@/store/slices/workout-slice';
 import { CONFIG } from '@/core/config';
 import { useSwipe } from '@/hooks/use-swipe';
 import SettingsOverlay from '@/components/shared/SettingsOverlay';
+import DaySheet from '@/components/shared/DaySheet';
+import { activeDay, describeDay, isEmptyDay } from '@/core/today';
 import SessionInfo from '@/components/shared/SessionInfo';
 import PainCheck from '@/components/shared/PainCheck';
 import type { Mode, EnergyKey } from '@/core/types';
@@ -21,7 +23,7 @@ import styles from './HomeScreen.module.css';
 export default function HomeScreen() {
   const {
     mode, circuitIndex, energy, humorLine,
-    pendingDecayEvents, progress, benchmarkResults, sessionLog, climbLog, activityLog, blockStart, tweaks,
+    pendingDecayEvents, progress, benchmarkResults, sessionLog, climbLog, activityLog, blockStart, tweaks, dayPlan,
     recommendedOn, showRecommended, health, settings, energySuggestedOn, suggestEnergy,
     setMode, changeCircuit, setEnergy, setScreen, openClimbLog, openActivityLog,
     startWorkout, dismissDecay,
@@ -29,6 +31,7 @@ export default function HomeScreen() {
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
+  const [dayOpen, setDayOpen] = useState(false);
   const [painOpen, setPainOpen] = useState(false);
   const [cardKey, setCardKey] = useState(0);
 
@@ -43,11 +46,12 @@ export default function HomeScreen() {
   );
   // Where this week sits in the training block, and what today calls for.
   const block = getBlockWeek(blockStart, sessionLog);
+  const day = activeDay(dayPlan);
   const recommendation = useMemo(
-    () => recommend({ sessionLog, climbLog, activityLog, progress, benchmarkResults, block, tired: healthDay?.energy === 'TIRED' }),
+    () => recommend({ sessionLog, climbLog, activityLog, progress, benchmarkResults, block, tired: healthDay?.energy === 'TIRED', day }),
     // block is derived from blockStart and sessionLog.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [sessionLog, climbLog, activityLog, progress, benchmarkResults, blockStart, healthDay],
+    [sessionLog, climbLog, activityLog, progress, benchmarkResults, blockStart, healthDay, dayPlan],
   );
   const isRecommended = recommendation?.circuitId === circuit.id;
 
@@ -99,7 +103,7 @@ export default function HomeScreen() {
 
   // Duration is computed from the session as it will actually be prescribed at
   // this level and energy, rather than read off a hardcoded number.
-  const list = sessionListFor({ energy, progress, benchmarkResults, blockStart, sessionLog, tweaks }, circuit);
+  const list = sessionListFor({ mode, energy, progress, benchmarkResults, blockStart, sessionLog, tweaks, dayPlan }, circuit);
   const duration = estimateDuration(list);
 
   // Derank message
@@ -141,6 +145,13 @@ export default function HomeScreen() {
         <div className={styles.derankBanner}>
           <span className={styles.derankText}>{derankMsg}</span>
           <button className={styles.derankDismiss} onClick={dismissDecay}>X</button>
+        </div>
+      )}
+
+      {/* A day off: nothing is due, and decay waits */}
+      {day.off && (
+        <div className={styles.readinessBanner}>
+          {day.off === 'SICK' ? 'Sick day' : 'Rest day'}: nothing is due, and levels do not fade today.
         </div>
       )}
 
@@ -243,6 +254,11 @@ export default function HomeScreen() {
       </div>
 
       {/* Action buttons */}
+      <button className={styles.actionBtn} onClick={() => setDayOpen(true)}>
+        <span className={styles.todayLabel}>TODAY{!isEmptyDay(day) && <span className={styles.todayInfo}>{describeDay(day)}</span>}</span>
+        <span className={styles.actionBtnArrow}>&rarr;</span>
+      </button>
+
       <button
         className={`${styles.actionBtn} ${styles.actionBtnAccent}`}
         onClick={() => setScreen('stats')}
@@ -271,6 +287,7 @@ export default function HomeScreen() {
         Settings <span className={styles.actionBtnArrow}>&rarr;</span>
       </button>
 
+      <DaySheet open={dayOpen} onClose={() => setDayOpen(false)} />
       <SettingsOverlay open={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <PainCheck
         open={painOpen}

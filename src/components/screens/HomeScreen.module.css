@@ -149,3 +149,6 @@
 .blockWeek { margin-left: 10px; font-weight: 500; color: var(--ink-dim); }
 .blockDeload { margin-left: 10px; color: var(--accent); }
 .energyTabSuggested { color: var(--accent); }
+
+.todayLabel { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; min-width: 0; }
+.todayInfo { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: var(--accent); line-height: 1.3; }

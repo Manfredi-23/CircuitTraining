@@ -17,7 +17,7 @@ export default function WorkoutScreen() {
     mode, circuit, stepIndex, setIndex,
     currentExercise, swapActive, formGuideOpen, progress,
     exerciseDone, exerciseSkip, exitWorkout, toggleSwap, toggleFormGuide,
-    rampBest, attemptMade, attemptFailed, finishRamp, finishNow,
+    rampBest, attemptMade, attemptFailed, finishRamp, finishNow, energy, switchEnergy,
   } = useStore();
   const [reserveOpen, setReserveOpen] = useState(false);
 
@@ -113,6 +113,21 @@ export default function WorkoutScreen() {
             onClick={() => { if (window.confirm('Finish here and log the session as it stands?')) finishNow(); }}
           >FINISH NOW</button>
         </div>
+
+        {/* Feeling better or worse than at the start: the rest of the session follows */}
+        {!ramp && (
+          <div className={styles.energyRow} role="group" aria-label="Energy for the rest of the session">
+            <span className={styles.energyLabel}>ENERGY</span>
+            {(['FRESH', 'NORMAL', 'TIRED'] as const).map(e => (
+              <button
+                key={e}
+                aria-pressed={e === energy}
+                className={`${styles.energyBtn}${e === energy ? ` ${styles.energyBtnOn}` : ''}`}
+                onClick={() => switchEnergy(e)}
+              >{e}</button>
+            ))}
+          </div>
+        )}
       </div>
 
       <ReservePicker open={reserveOpen} onClose={() => setReserveOpen(false)} />
