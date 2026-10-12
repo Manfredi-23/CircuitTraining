@@ -1,0 +1,13 @@
+.wrap { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+.row { display: flex; gap: 6px; }
+.btn {
+  flex: 1; height: 36px; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+  color: var(--ink); background: none; border: 2px solid var(--ink); border-radius: var(--rad-sm);
+  transition: transform 80ms ease;
+}
+.btn:active { transform: scale(0.95); }
+.btn:disabled { opacity: 0.25; }
+.message { font-size: 12px; font-weight: 700; color: var(--accent); line-height: 1.4; }
+.tweak { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--ink); }
+.reset { font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--accent); background: none; border: none; padding: 4px 0; }
+.hint { font-size: 11px; color: var(--ink-dim); line-height: 1.4; }

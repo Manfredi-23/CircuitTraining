@@ -54,3 +54,8 @@
 .perSide { font-size: 14px; font-weight: 400; color: var(--ink-dim); }
 .loadLine { font-size: 13px; font-weight: 600; color: var(--accent); line-height: 1.4; }
 .note { font-size: 12px; color: var(--ink-dim); font-style: italic; }
+
+.btnAdd {
+  align-self: flex-start; font-family: inherit; font-weight: 700; font-size: 12px; letter-spacing: 0.06em; color: var(--accent);
+  background: none; border: 2px solid var(--accent); border-radius: var(--rad-sm); padding: 10px 14px; flex-shrink: 0;
+}

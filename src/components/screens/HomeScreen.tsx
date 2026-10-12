@@ -21,7 +21,7 @@ import styles from './HomeScreen.module.css';
 export default function HomeScreen() {
   const {
     mode, circuitIndex, energy, humorLine,
-    pendingDecayEvents, progress, benchmarkResults, sessionLog, climbLog, activityLog, blockStart,
+    pendingDecayEvents, progress, benchmarkResults, sessionLog, climbLog, activityLog, blockStart, tweaks,
     recommendedOn, showRecommended, health, settings, energySuggestedOn, suggestEnergy,
     setMode, changeCircuit, setEnergy, setScreen, openClimbLog, openActivityLog,
     startWorkout, dismissDecay,
@@ -99,7 +99,7 @@ export default function HomeScreen() {
 
   // Duration is computed from the session as it will actually be prescribed at
   // this level and energy, rather than read off a hardcoded number.
-  const list = sessionListFor({ energy, progress, benchmarkResults, blockStart, sessionLog }, circuit);
+  const list = sessionListFor({ energy, progress, benchmarkResults, blockStart, sessionLog, tweaks }, circuit);
   const duration = estimateDuration(list);
 
   // Derank message

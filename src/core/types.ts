@@ -425,7 +425,22 @@ export interface SessionLogEntry {
   effort?: number;
   /** Finger and wrist pain before the session, 0-10. Only asked before finger work. */
   pain?: number;
+  /** Exercises added from the reserve during the session. */
+  added?: string[];
 }
+
+/**
+ * The athlete's own lasting change to an exercise, from HARDER / EASIER on the
+ * card: a step along the variation ladder relative to the one the level picks,
+ * and reps or seconds added to (or taken from) the written work. Applied
+ * wherever the exercise appears, every session, until reset.
+ */
+export interface ExerciseTweak {
+  variation?: number;
+  work?: number;
+}
+
+export type Tweaks = Record<string, ExerciseTweak>;
 
 // ---- Decay -------------------------------------------------------------------
 
