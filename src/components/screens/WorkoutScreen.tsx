@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useStore } from '@/store/store';
 import { getCapacityLevel } from '@/core/engine';
 import { CONFIG } from '@/core/config';
@@ -7,6 +8,8 @@ import { getLoadAxis, formatLoad } from '@/core/load';
 import LoadLogger from '@/components/shared/LoadLogger';
 import FormGuide from '@/components/shared/FormGuide';
 import SessionProgressBar from '@/components/shared/SessionProgressBar';
+import AdjustControls from '@/components/shared/AdjustControls';
+import ReservePicker from '@/components/shared/ReservePicker';
 import styles from './WorkoutScreen.module.css';
 
 export default function WorkoutScreen() {
@@ -14,8 +17,9 @@ export default function WorkoutScreen() {
     mode, circuit, stepIndex, setIndex,
     currentExercise, swapActive, formGuideOpen, progress,
     exerciseDone, exerciseSkip, exitWorkout, toggleSwap, toggleFormGuide,
-    rampBest, attemptMade, attemptFailed, finishRamp,
+    rampBest, attemptMade, attemptFailed, finishRamp, finishNow,
   } = useStore();
+  const [reserveOpen, setReserveOpen] = useState(false);
 
   if (!currentExercise || !circuit) return null;
 
@@ -77,6 +81,9 @@ export default function WorkoutScreen() {
             Recorded when the final set is marked DONE. */}
         <LoadLogger exercise={currentExercise} />
 
+        {/* Harder / easier for good, sets for today */}
+        <AdjustControls />
+
         {currentExercise.note && <div className={styles.note}>{currentExercise.note}</div>}
 
         {/* Variation swap */}
@@ -97,7 +104,18 @@ export default function WorkoutScreen() {
         </div>
 
         <FormGuide exercise={currentExercise} open={formGuideOpen} onToggle={toggleFormGuide} />
+
+        {/* More than written: the reserve, or stop here and keep what was done */}
+        <div className={styles.extraRow}>
+          <button className={styles.btnAdd} onClick={() => setReserveOpen(true)}>+ ADD EXERCISE</button>
+          <button
+            className={styles.linkBtn}
+            onClick={() => { if (window.confirm('Finish here and log the session as it stands?')) finishNow(); }}
+          >FINISH NOW</button>
+        </div>
       </div>
+
+      <ReservePicker open={reserveOpen} onClose={() => setReserveOpen(false)} />
 
       {/* Actions */}
       {ramp ? (

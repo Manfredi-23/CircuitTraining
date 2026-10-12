@@ -76,6 +76,7 @@ export const createProgressSlice: StateCreator<Store, [], [], ProgressSlice> = (
     editingClimbId: null,
     activityLog: [],
     editingActivityId: null,
+    tweaks: {},
   }),
 
   // A backup replaces, never merges: two histories of the same days would

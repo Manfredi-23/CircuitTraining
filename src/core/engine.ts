@@ -18,7 +18,7 @@ import type {
   EnergyKey, Capacity, Progress, CapacityProgress, Exercise,
   Circuit, ScaledExercise, Variation, LevelConfig, Intensity, BlockType,
   DecayResult, DecayEvent, ExerciseAction, SessionLogEntry, Trend,
-  BenchmarkResult, Readiness,
+  BenchmarkResult, Readiness, ExerciseTweak, Tweaks,
 } from './types';
 
 const INTENSITY_ORDER: Intensity[] = ['TECHNIQUE', 'EASY', 'MODERATE', 'HARD', 'MAX'];
@@ -87,6 +87,58 @@ export function getBestVariation(exercise: Exercise, progress: Progress): Variat
   const level = getExerciseLevel(exercise, progress);
   const unlocked = [...exercise.variations].reverse().find(v => v.minLevel <= level);
   return unlocked || exercise.variations[0];
+}
+
+/**
+ * How far above the earned rung HARDER may go: one, so a tap can never jump a
+ * ladder the athlete has not climbed. Extras with no capacity have no level to
+ * earn, so their whole ladder is the athlete's call.
+ */
+const reachAbove = (exercise: Exercise, vars: Variation[], earned: number) =>
+  (exercise.capacities.length === 0 ? vars.length - 1 - earned : 1);
+
+/** The variation after the athlete's own shift. Easier goes down to the first rung. */
+export function tweakedVariation(exercise: Exercise, progress: Progress, shift = 0): Variation | null {
+  const vars = exercise.variations;
+  const best = getBestVariation(exercise, progress);
+  if (!vars || !best) return best;
+  const earned = vars.indexOf(best);
+  const idx = Math.max(0, Math.min(vars.length - 1, earned + reachAbove(exercise, vars, earned), earned + shift));
+  return vars[idx];
+}
+
+/** Rungs reachable from the earned variation: [lowest shift, highest shift]. */
+export function variationShiftRange(exercise: Exercise, progress: Progress): [number, number] {
+  const vars = exercise.variations;
+  const best = getBestVariation(exercise, progress);
+  if (!vars || vars.length < 2 || !best) return [0, 0];
+  const earned = vars.indexOf(best);
+  return [-earned, Math.min(reachAbove(exercise, vars, earned), vars.length - 1 - earned)];
+}
+
+/**
+ * Whether reps or seconds may be changed by hand. Never on fixed protocols,
+ * tests, warm-ups, PRIMARY work or anything maximal: there the work is the
+ * protocol, and harder means more load.
+ */
+export function workAdjustable(exercise: Exercise): boolean {
+  return !exercise.fixed && !exercise.ramp && !exercise.records
+    && exercise.intensity !== 'MAX'
+    && exercise.block !== 'PRIMARY' && exercise.block !== 'TEST' && exercise.block !== 'WARMUP';
+}
+
+/** One tap of HARDER or EASIER on the work: 2 reps or 5 seconds. */
+export const workStep = (exercise: Exercise) => (exercise.unit === 'sec' ? 5 : 2);
+
+/** The range a work tweak may reach: half to double the written work. */
+export function workBounds(base: number): [number, number] {
+  return [Math.max(1, Math.ceil(base / 2)), base * 2];
+}
+
+function tweakedWork(exercise: Exercise, base: number, tweak?: ExerciseTweak): number {
+  if (!tweak?.work || !workAdjustable(exercise)) return base;
+  const [lo, hi] = workBounds(base);
+  return Math.max(lo, Math.min(hi, base + tweak.work));
 }
 
 // ---------------------------------------------------------------------------
@@ -208,6 +260,33 @@ export function resolveLoadText(
 export interface BuildOptions {
   /** Deload week: one working set fewer on PRIMARY and SECONDARY work. */
   deload?: boolean;
+  /** The athlete's lasting changes, by exercise id. */
+  tweaks?: Tweaks;
+}
+
+/** One exercise as it will run: level, energy, deload and the athlete's tweak. */
+export function scaleExercise(
+  exercise: Exercise,
+  energyKey: EnergyKey,
+  progress: Progress,
+  options: BuildOptions & { gated?: boolean; note?: string } = {},
+): ScaledExercise {
+  const level = getExerciseLevel(exercise, progress);
+  const tweak = options.tweaks?.[exercise.id];
+  const variation = tweakedVariation(exercise, progress, exercise.fixed ? 0 : tweak?.variation ?? 0);
+  const sets = scaleSets(exercise, energyKey, level);
+  return {
+    ...exercise,
+    displayName: variation ? variation.name : exercise.name,
+    activeVariation: variation,
+    scaledWork: tweakedWork(exercise, scaleWork(exercise, energyKey), tweak),
+    scaledSets: options.deload ? deloadSets(exercise, sets) : sets,
+    scaledRest: scaleRest(exercise, energyKey, level),
+    loadText: resolveLoadText(exercise, variation, level),
+    appliedIntensity: applyIntensityCap(exercise, energyKey),
+    gated: options.gated ?? false,
+    note: options.note ?? exercise.note,
+  };
 }
 
 /** Working sets on a deload week. Loads are not touched; volume is. */
@@ -250,23 +329,11 @@ export function buildList(
     if (emitted.has(resolved.id)) continue;
     emitted.add(resolved.id);
 
-    const level = getExerciseLevel(resolved, progress);
-    const variation = getBestVariation(resolved, progress);
-
-    out.push({
-      ...resolved,
-      displayName: variation ? variation.name : resolved.name,
-      activeVariation: variation,
-      scaledWork: scaleWork(resolved, energyKey),
-      scaledSets: options.deload
-        ? deloadSets(resolved, scaleSets(resolved, energyKey, level))
-        : scaleSets(resolved, energyKey, level),
-      scaledRest: scaleRest(resolved, energyKey, level),
-      loadText: resolveLoadText(resolved, variation, level),
-      appliedIntensity: applyIntensityCap(resolved, energyKey),
+    out.push(scaleExercise(resolved, energyKey, progress, {
+      ...options,
       gated,
       note: gated ? ex.gate?.reason ?? resolved.note : resolved.note,
-    });
+    }));
   }
 
   return out;

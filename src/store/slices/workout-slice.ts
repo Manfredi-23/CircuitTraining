@@ -1,12 +1,14 @@
 import type { StateCreator } from 'zustand';
 import type { Store } from '../store';
-import type { Circuit, ScaledExercise, Capacity, LevelUp } from '@/core/types';
+import type { Circuit, ScaledExercise, Capacity, LevelUp, Tweaks } from '@/core/types';
 import { getModeData } from '@/core/data-index';
 import * as Engine from '@/core/engine';
 import { benchmarkValueFromEntry, currentBodyweight, getBenchmark, latestResult } from '@/core/benchmarks';
 import { getBlockWeek, deloads } from '@/core/block';
 import { isPersonalBest } from '@/core/progression';
 import { getLoadAxis, formatLoad } from '@/core/load';
+import { adjust, setBounds, type AdjustDir } from '@/core/adjust';
+import { exerciseLibrary, insertIndex } from '@/core/reserve';
 
 /**
  * The session as it will run: level, energy, gates, and the deload week. The
@@ -14,12 +16,12 @@ import { getLoadAxis, formatLoad } from '@/core/load';
  * is the session you get.
  */
 export function sessionListFor(
-  state: Pick<Store, 'energy' | 'progress' | 'benchmarkResults' | 'blockStart' | 'sessionLog'>,
+  state: Pick<Store, 'energy' | 'progress' | 'benchmarkResults' | 'blockStart' | 'sessionLog' | 'tweaks'>,
   circuit: Circuit,
   now = new Date(),
 ): ScaledExercise[] {
   const deload = getBlockWeek(state.blockStart, state.sessionLog, now).deload && deloads(circuit);
-  return Engine.buildList(circuit, state.energy, state.progress, state.benchmarkResults, { deload });
+  return Engine.buildList(circuit, state.energy, state.progress, state.benchmarkResults, { deload, tweaks: state.tweaks });
 }
 
 /**
@@ -49,6 +51,10 @@ export interface WorkoutSlice {
   sessionPain: number | null;
   /** Personal bests set in this session, as display lines. */
   sessionPBs: string[];
+  /** The athlete's lasting HARDER / EASIER changes, by exercise id. Persisted. */
+  tweaks: Tweaks;
+  /** Exercises added from the reserve in this session. */
+  addedIds: string[];
 
   /** Start the selected session. `pain` is the pre-session score, for finger sessions. */
   startWorkout: (pain?: number) => void;
@@ -67,6 +73,22 @@ export interface WorkoutSlice {
   toggleFormGuide: () => void;
   setExerciseTimerActive: (active: boolean) => void;
   completeSession: () => void;
+  /** HARDER or EASIER on the exercise in hand, kept for next time. Returns what changed. */
+  adjustExercise: (dir: AdjustDir) => string;
+  /** Back to the programme as written for the exercise in hand. */
+  resetTweak: () => void;
+  /** One set more or fewer, today only. */
+  changeSets: (delta: number) => void;
+  /** Add an exercise from the reserve to the running session. */
+  addExtra: (exerciseId: string) => void;
+  /** End here and log the session as cut short. No XP is lost. */
+  finishNow: () => void;
+}
+
+/** The exercise in hand rebuilt with the current tweaks: variation and work only, sets as they stand today. */
+function rescale(ex: ScaledExercise, state: Pick<Store, 'energy' | 'progress' | 'tweaks'>): ScaledExercise {
+  const s = Engine.scaleExercise(ex, state.energy, state.progress, { tweaks: state.tweaks, gated: ex.gated, note: ex.note });
+  return { ...ex, displayName: s.displayName, activeVariation: s.activeVariation, loadText: s.loadText, scaledWork: s.scaledWork };
 }
 
 export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (set, get) => ({
@@ -83,6 +105,8 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   rampBest: null,
   sessionPain: null,
   sessionPBs: [],
+  tweaks: {},
+  addedIds: [],
 
   startWorkout: (pain) => {
     const { mode, circuitIndex } = get();
@@ -105,6 +129,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       sessionPain: pain ?? null,
       sessionPBs: [],
       sessionLevelUps: [],
+      addedIds: [],
       screen: 'workout',
     });
 
@@ -319,7 +344,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   setExerciseTimerActive: (active) => set({ exerciseTimerActive: active }),
 
   completeSession: () => {
-    const { circuit, mode, energy, sessionStartTime, progress, exerciseList, doneSets, sessionPain } = get();
+    const { circuit, mode, energy, sessionStartTime, progress, exerciseList, doneSets, sessionPain, addedIds } = get();
     if (!circuit) return;
 
     const duration = sessionStartTime ? Math.round((Date.now() - sessionStartTime) / 60000) : 0;
@@ -340,9 +365,72 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       // Ramp tests end on a failed attempt by design, so they have no plan to fall short of.
       planned: Object.fromEntries(exerciseList.filter(ex => !ex.ramp).map(ex => [ex.id, ex.scaledSets])),
       ...(sessionPain !== null ? { pain: sessionPain } : {}),
+      ...(addedIds.length ? { added: addedIds } : {}),
     }];
 
     set({ progress: newProgress, sessionLog, screen: 'complete' });
+  },
+
+  adjustExercise: (dir) => {
+    const state = get();
+    const ex = state.currentExercise;
+    if (!ex) return '';
+    const result = adjust(ex, state.progress, state.energy, state.tweaks[ex.id], dir);
+    if (!result.ok) return result.text;
+    const tweaks = { ...state.tweaks };
+    if (Object.keys(result.tweak).length) tweaks[ex.id] = result.tweak;
+    else delete tweaks[ex.id];
+    const next = rescale(ex, { ...state, tweaks });
+    set({
+      tweaks,
+      currentExercise: next,
+      exerciseList: state.exerciseList.map((e, i) => (i === state.stepIndex ? next : e)),
+      swapActive: false,
+    });
+    return result.text;
+  },
+
+  resetTweak: () => {
+    const state = get();
+    const ex = state.currentExercise;
+    if (!ex || !state.tweaks[ex.id]) return;
+    const tweaks = { ...state.tweaks };
+    delete tweaks[ex.id];
+    const next = rescale(ex, { ...state, tweaks });
+    set({
+      tweaks,
+      currentExercise: next,
+      exerciseList: state.exerciseList.map((e, i) => (i === state.stepIndex ? next : e)),
+      swapActive: false,
+    });
+  },
+
+  changeSets: (delta) => {
+    const { currentExercise: ex, exerciseList, stepIndex, setIndex } = get();
+    if (!ex) return;
+    // On the rest screen setIndex already points at the set to come; the sets before it are done.
+    const bounds = setBounds(ex, Math.max(1, setIndex));
+    if (!bounds) return;
+    const sets = Math.max(bounds[0], Math.min(bounds[1], ex.scaledSets + delta));
+    if (sets === ex.scaledSets) return;
+    const next = { ...ex, scaledSets: sets };
+    set({ currentExercise: next, exerciseList: exerciseList.map((e, i) => (i === stepIndex ? next : e)) });
+  },
+
+  addExtra: (exerciseId) => {
+    const state = get();
+    const exercise = exerciseLibrary().get(exerciseId);
+    if (!exercise || state.exerciseList.some(e => e.id === exerciseId)) return;
+    const scaled = Engine.scaleExercise(exercise, state.energy, state.progress, { tweaks: state.tweaks });
+    const at = insertIndex(state.exerciseList, state.stepIndex, exercise, state.mode);
+    const list = [...state.exerciseList];
+    list.splice(at, 0, scaled);
+    set({ exerciseList: list, addedIds: [...state.addedIds, exerciseId] });
+  },
+
+  finishNow: () => {
+    if (!get().circuit) return;
+    get().completeSession();
   },
 });
 

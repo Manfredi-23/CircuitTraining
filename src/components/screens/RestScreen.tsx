@@ -6,6 +6,7 @@ import { useTimer, formatTime } from '@/hooks/use-timer';
 import { getLoadAxis, formatLoad } from '@/core/load';
 import FormGuide from '@/components/shared/FormGuide';
 import SessionProgressBar from '@/components/shared/SessionProgressBar';
+import ReservePicker from '@/components/shared/ReservePicker';
 import styles from './RestScreen.module.css';
 
 const CIRCUMFERENCE = 2 * Math.PI * 54; // 339.3
@@ -29,6 +30,7 @@ export default function RestScreen() {
    * it was just read on the card.
    */
   const [formOpen, setFormOpen] = useState(setIndex === 1);
+  const [reserveOpen, setReserveOpen] = useState(false);
 
   // Rest always returns to the workout screen. Completion is decided by the
   // workout slice when the last set of the last exercise is done, so there is
@@ -118,8 +120,12 @@ export default function RestScreen() {
           </div>
 
           <FormGuide exercise={ex} open={formOpen} onToggle={() => setFormOpen(o => !o)} />
+
+          <button className={styles.btnAdd} onClick={() => setReserveOpen(true)}>+ ADD EXERCISE</button>
         </div>
       )}
+
+      <ReservePicker open={reserveOpen} onClose={() => setReserveOpen(false)} />
     </div>
   );
 }

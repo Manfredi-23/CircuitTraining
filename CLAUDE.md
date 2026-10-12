@@ -119,6 +119,9 @@ src/
     backup.ts    # export / import format; PERSISTED_KEYS
     dates.ts     # local-date helpers
     session-progress.ts # the set-by-set progress bar on the workout card and rest
+    adjust.ts    # HARDER / EASIER (kept as tweaks), +/- SET today
+    reserve.ts   # extra exercises to add mid-session, by area, place and safety
+    data-extras.ts # reserve-only exercises: arm extras (no XP), lateral raise, face pull
     data-daily.ts, data-cave.ts, data-assess.ts, data-heal.ts  # Session libraries, one per tab
     data-oap.ts  # One-arm pull-up path, shared by CAVE 01 and CAVE 02
     data-index.ts  # getModeData(mode) helper
@@ -130,7 +133,7 @@ src/
   components/
     screens/     # HomeScreen, WorkoutScreen, RestScreen, CompleteScreen, StatsScreen, ClimbScreen
     shared/      # SettingsOverlay, TimerFlash, LoadLogger, ClimbStats, SessionInfo, StatsSections,
-                 #   FormGuide, SessionProgressBar
+                 #   FormGuide, SessionProgressBar, AdjustControls, ReservePicker
   app/           # layout.tsx, page.tsx (screen router), globals.css
 ios/             # Xcode project (Capacitor 8, SPM)
 tools/           # generate-ios-assets.py — icon and splash from logo.svg
@@ -149,7 +152,7 @@ design/          # pixel-grid.svg drawing template; illustrations/<name>/NN.svg 
   `useStore(s => s.screen)`.
 - **Zustand persist**: Only the keys in `PERSISTED_KEYS` (`src/core/backup.ts`)
   are persisted: `progress`, `sessionLog`, `benchmarkResults`, `loadLog`,
-  `climbLog`, `activityLog`, `blockStart`, `settings` and `health`. `partialize` reads that list, so a
+  `climbLog`, `activityLog`, `tweaks`, `blockStart`, `settings` and `health`. `partialize` reads that list, so a
   new key is persisted and backed up by adding it there. UI state is transient. The blob
   carries `version: 2`, but legacy cleanup runs from `merge`, not `migrate`:
   persist only calls `migrate` when the stored blob has a **numeric** version,
@@ -515,6 +518,31 @@ finger rule sees it, and earns `CLIMB_SESSION_XP` in `contact` and `tension`.
 A roped session earns it in `forearm`. Climbing never earns crimp or open-hand
 XP, because those levels set hangboard loads.
 
+## Changing a session while in it
+
+Below the load stepper on the workout card (`AdjustControls`):
+
+- **HARDER / EASIER** change the exercise **for good** (`adjust.ts`): stored in
+  `tweaks` (persisted, by exercise id) and applied by `buildList` /
+  `scaleExercise` wherever the exercise appears. A tap moves one variation
+  rung (at most one above the level's rung; extras with no capacity may climb
+  their whole ladder) or 2 reps / 5 s, between half and double the written
+  work. Never on fixed protocols, tests, warm-ups, PRIMARY or MAX work; never
+  rest. Loaded work gets harder on the stepper. A tap back undoes the last
+  tap; RESET restores the programme.
+- **-SET / +SET** are today only, between the sets already done and 8.
+- **+ ADD EXERCISE** (workout card and rest screen) opens the reserve
+  (`ReservePicker`, `reserve.ts`): CORE, ARMS, SHOULDERS, LEGS, MOBILITY,
+  FINGERS, least recently done first. Home sessions (DAILY, HEAL 03 / 04) get
+  home kit only; HEAL gets nothing gripped and no finger work; a pain score of
+  3+ closes FINGERS; gated, test and warm-up exercises are never offered. Most
+  entries are programme exercises (same ids, same history and XP); the arm
+  extras in `data-extras.ts` have no capacity and earn no XP. A pick goes
+  after the exercise in hand and after the last remaining exercise of its
+  block or heavier (`insertIndex`); in a DAILY before the curls, and an added
+  curl closes it. The session log lists picks in `added`.
+- **FINISH NOW** logs the session as it stands (cut short, no XP lost).
+
 ## Activity Log
 
 Everything done outside the app (hike, via ferrata, ski tour, trail run, run,
@@ -614,8 +642,8 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 export format.
 
 - **`7bit-handover-v22.md`** — **start here.** The activity log (hikes and
-  the rest, estimated from little data) and the plan for in-session controls
-  and the exercise reserve.
+  the rest, estimated from little data), HARDER / EASIER kept for next time,
+  the exercise reserve and FINISH NOW.
 - **`7bit-handover-v21.md`** — read second. HEAL 05 FOOTWORK and the
   gym-day order (rehab, footwork, strength).
 - **`7bit-handover-v20.md`** — HEAL 03 RING REHAB and

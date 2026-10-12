@@ -99,3 +99,11 @@
 .rampBest { font-weight: 700; font-size: 11px; letter-spacing: 0.08em; color: var(--accent); flex-shrink: 0; }
 .rampLinks { display: flex; justify-content: space-between; gap: 12px; flex-shrink: 0; }
 .linkBtn { font-family: inherit; font-weight: 700; font-size: 11px; letter-spacing: 0.06em; color: var(--ink-dim); background: none; border: none; padding: 4px 0; text-transform: uppercase; }
+
+/* The reserve and finishing early */
+.extraRow { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-shrink: 0; padding-top: 4px; }
+.btnAdd {
+  font-family: inherit; font-weight: 700; font-size: 12px; letter-spacing: 0.06em; color: var(--accent);
+  background: none; border: 2px solid var(--accent); border-radius: var(--rad-sm); padding: 10px 14px;
+}
+.btnAdd:active { transform: scale(0.97); }

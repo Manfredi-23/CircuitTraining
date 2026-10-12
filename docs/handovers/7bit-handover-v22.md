@@ -50,31 +50,60 @@ Agreed in the brainstorm:
   (the import summary counts activities). New screen `activity`
   (`ActivityScreen.tsx`), opened from ACTIVITY LOG on the home screen.
 
-## 3. Verified
+## 3. What changed: changing a session while in it (second PR)
 
-`npx tsc --noEmit`, `npm test` (118 passing), `npm run check:daily`,
-`npm run check:cave`, `npm run build`. In the browser at 390 x 844: the
-weekend hike entered as type + 2 days + 1300 m shows the estimate above,
-saves to RECENT, and STATS shows it as an "outside" bar and dots.
+- **HARDER / EASIER** on the workout card (`AdjustControls`, `adjust.ts`):
+  kept for good as a per-exercise tweak (`tweaks`, persisted and backed up),
+  applied by `buildList` / `scaleExercise` everywhere the exercise appears.
+  One variation rung (at most one above the level's rung) or 2 reps / 5 s,
+  between half and double the written work. Never on fixed protocols, tests,
+  warm-ups, PRIMARY or MAX work, never rest; loaded work uses the stepper.
+  The card says what changed ("Push-Up, 3s Lower. Kept for next time.") and
+  shows YOUR CHANGE with RESET.
+- **-SET / +SET**, today only.
+- **+ ADD EXERCISE** on the card and on rest: the reserve (`reserve.ts`,
+  `ReservePicker`) by area (CORE, ARMS, SHOULDERS, LEGS, MOBILITY, FINGERS),
+  filtered by place (home kit for DAILY and the ring rehab), grip and finger
+  work while healing, pain 3+, never gated / test / warm-up. Arm extras
+  (`data-extras.ts`: band curl, hammer curl, overhead triceps, close-hand
+  push-up, dumbbell curl, chin-up negative) earn no XP; a band lateral raise
+  and a cable face pull train `shoulder`. Picks slot in block order after the
+  exercise in hand; in a DAILY before the curls, and an added curl goes last.
+  Logged in `added` on the session.
+- **FINISH NOW** logs the session as it stands.
 
-## 4. Repo state
+## 4. Verified
 
-Branch `claude/activity-log`, PR to `main`. After merge, delete the branch
-from the Mac (section 7).
+`npx tsc --noEmit`, `npm test` (134 passing; `activity.test.ts`,
+`reserve.test.ts`), `npm run check:daily`, `npm run check:cave`,
+`npm run build`. In the browser at 390 x 844: the weekend hike shows the
+estimate above, saves, and STATS shows it as "outside". A DAILY 01 run:
+HARDER on Push-Up moves to "Push-Up, 3s Lower" and is saved in `tweaks`;
++SET gives 3 sets; ADD > ARMS > Close-Hand Push-Up lands before the reverse
+crunch; FINISH NOW logs the session with `added`.
 
-## 5. Open items
+## 5. Repo state
+
+PR #36 (activity log) merged. Branch `claude/session-controls`, second PR to
+`main`. After merge, delete both branches from the Mac (section 8).
+
+## 6. Open items
 
 1. Apple Health hikes are not imported: `HealthPlugin.swift` reads climbing
    workouts only. Adding hiking / running / skiing workouts with elevation is
    a Swift change to test on the phone.
 2. The sore-legs thresholds (400 / 800 m down a day for a hike) are a first
    guess; tune them against how the legs actually feel.
-3. Next: in-session controls (harder / easier, +/- set, switch energy, add,
-   wrap up) and the exercise reserve (core, arms, shoulders, legs, mobility,
-   light fingers), with "too easy" changing the prescription. Plan in the
-   brainstorm of this session; not started.
+3. Not built from the brainstorm: switching energy mid-session, the
+   day-level actions ("only 10 minutes", "sore here", "away / no kit",
+   "rest day / sick"). Each would be another action for the language model
+   later.
+4. The reserve shows each exercise's written dose; once added it runs at
+   your level and with your tweak, which can differ slightly.
+5. The on-device model itself (llama.cpp plugin, Qwen3.5 2B) is the step after
+   the actions; try PocketPal on the phone first.
 
-## 6. Mac clean update
+## 7. Mac clean update
 
 ```bash
 cd ~/Desktop/Manfredi/04_Bit-apps/CircuitTraining
@@ -91,22 +120,24 @@ npm test
 npm run check:daily
 npm run check:cave
 npm run build
-grep -rl "Hikes, tours, runs" out/_next/static | head -1
+grep -rl "Kept for next time" out/_next/static | head -1
 npx cap sync ios
-grep -rl "Hikes, tours, runs" ios/App/App/public/_next/static | head -1
+grep -rl "Kept for next time" ios/App/App/public/_next/static | head -1
 npx cap open ios
 ```
 
-- `git log -1` shows the merge of the activity log PR.
+- `git log -1` shows the merge of the session controls PR.
 - Both `grep` lines print a file name.
 - In Xcode: Shift+Cmd+K, then Cmd+R. The home screen has ACTIVITY LOG under
-  CLIMB LOG.
+  CLIMB LOG; the workout card has EASIER / HARDER / -SET / +SET and
+  + ADD EXERCISE.
 
-## 7. Mac housekeeping
+## 8. Mac housekeeping
 
 ```bash
 cd ~/Desktop/Manfredi/04_Bit-apps/CircuitTraining
 git push origin --delete claude/activity-log
+git push origin --delete claude/session-controls
 git fetch origin --prune
 git branch -a
 ```
