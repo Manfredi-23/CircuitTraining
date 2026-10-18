@@ -10,7 +10,7 @@ import type { Exercise } from '@/core/types';
 import styles from './ReservePicker.module.css';
 
 const GROUP_LABEL: Record<ReserveGroup, string> = {
-  CORE: 'CORE', ARMS: 'ARMS', SHOULDERS: 'SHLDR', LEGS: 'LEGS', MOBILITY: 'MOBIL', FINGERS: 'FINGR',
+  CORE: 'CORE', PULL: 'PULL', ARMS: 'ARMS', SHOULDERS: 'SHLDR', LEGS: 'LEGS', MOBILITY: 'MOBIL', FINGERS: 'FINGR',
 };
 
 function dose(e: Exercise): string {

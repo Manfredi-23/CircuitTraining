@@ -49,10 +49,18 @@ export const RETEST_WEEKS = 7;
 // Reasons are shown on one line under the logo: keep each under 45 characters.
 
 /** Days a pain score of 6+ keeps finger sessions off the recommendation. */
-const PAIN_MEMORY_DAYS = 2;
+export const PAIN_MEMORY_DAYS = 2;
 
 /** Days after the last HEAL session that the athlete still counts as injured. */
 export const HEAL_MEMORY_DAYS = 10;
+
+/** A finger is healing: a HEAL session in the last ten days and no climb logged since. */
+export function isHealing(sessionLog: SessionLogEntry[], climbLog: ClimbSession[], now = new Date()): boolean {
+  const heal = sessionLog.filter(s => s.mode === 'HEAL');
+  if (!heal.length) return false;
+  const last = dayOf(heal[heal.length - 1].date);
+  return daysBetween(last, localDate(now)) <= HEAL_MEMORY_DAYS && !climbLog.some(c => c.date >= last);
+}
 
 /** Last day a circuit was done, or null. */
 export function lastDone(sessionLog: SessionLogEntry[], circuitId: string): string | null {
@@ -158,8 +166,7 @@ export function recommend(input: RecommendInput): Recommendation | null {
   // Logging a climb ends it.
   const heal = getModeData('HEAL');
   const healLog = sessionLog.filter(s => s.mode === 'HEAL');
-  const lastHeal = healLog.length ? dayOf(healLog[healLog.length - 1].date) : null;
-  if (lastHeal && daysBetween(lastHeal, today) <= HEAL_MEMORY_DAYS && !climbLog.some(c => c.date >= lastHeal)) {
+  if (isHealing(sessionLog, climbLog, now)) {
     const byId = (id: string) => heal.find(c => c.id === id);
     const gym = HEAL_GYM_IDS.map(byId).filter((c): c is Circuit => Boolean(c));
     const gymLog = healLog.filter(s => HEAL_GYM_IDS.includes(s.circuitId));

@@ -28,8 +28,8 @@ import { dayOf } from './dates';
 import { needsKit } from './today';
 import type { BlockType, Exercise, Mode, ScaledExercise, SessionLogEntry } from './types';
 
-export type ReserveGroup = 'CORE' | 'ARMS' | 'SHOULDERS' | 'LEGS' | 'MOBILITY' | 'FINGERS';
-export const RESERVE_GROUPS: ReserveGroup[] = ['CORE', 'ARMS', 'SHOULDERS', 'LEGS', 'MOBILITY', 'FINGERS'];
+export type ReserveGroup = 'CORE' | 'PULL' | 'ARMS' | 'SHOULDERS' | 'LEGS' | 'MOBILITY' | 'FINGERS';
+export const RESERVE_GROUPS: ReserveGroup[] = ['CORE', 'PULL', 'ARMS', 'SHOULDERS', 'LEGS', 'MOBILITY', 'FINGERS'];
 
 export type Place = 'HOME' | 'GYM';
 
@@ -61,6 +61,10 @@ const RESERVE: ReserveEntry[] = [
   { id: 'addon-russian-twist', group: 'CORE', place: 'GYM', grip: false, curl: true },
   { id: 'addon-hanging-oblique', group: 'CORE', place: 'GYM', grip: true },
   { id: 'home-leg-raise', group: 'CORE', place: 'GYM', grip: true },
+
+  // PULL: back and lats. Gym only: there is no bar at home.
+  { id: 'addon-weighted-pullup', group: 'PULL', place: 'GYM', grip: true },
+  { id: 'cave-lockoff', group: 'PULL', place: 'GYM', grip: true },
 
   // ARMS: extras, no XP.
   { id: 'extra-diamond-pushup', group: 'ARMS', place: 'HOME', grip: false },
@@ -133,6 +137,8 @@ export interface ReserveItem {
   curl: boolean;
   /** Last day it was done, from the session log; null if never. */
   lastDone: string | null;
+  /** The least kit it needs: HOME runs anywhere, GYM only at the gym. */
+  place: Place;
 }
 
 export interface ReserveContext {
@@ -145,20 +151,24 @@ export interface ReserveContext {
   sessionLog: SessionLogEntry[];
   /** NO KIT on the TODAY sheet: a mat and nothing else. */
   noKit?: boolean;
+  /** Where, when it is not the session's own place (a custom session). */
+  place?: Place;
+  /** A finger is healing: nothing gripped, no finger work. HEAL sessions always are. */
+  healing?: boolean;
 }
 
 /** Why a whole group is missing, for the picker to say so. */
 export function closedGroups(ctx: ReserveContext): Partial<Record<ReserveGroup, string>> {
   const out: Partial<Record<ReserveGroup, string>> = {};
-  if (ctx.mode === 'HEAL') out.FINGERS = 'Not while a finger heals.';
+  if (ctx.mode === 'HEAL' || ctx.healing) out.FINGERS = 'Not while a finger heals.';
   else if (ctx.pain !== null && ctx.pain >= PAIN_REDUCE_FROM) out.FINGERS = `Finger pain ${ctx.pain}/10 today.`;
   return out;
 }
 
 /** The reserve for this session, by group, least recently done first. */
 export function reserveFor(ctx: ReserveContext): Record<ReserveGroup, ReserveItem[]> {
-  const place = ctx.noKit ? 'HOME' : placeOf(ctx.mode, ctx.circuitId);
-  const healing = ctx.mode === 'HEAL';
+  const place = ctx.noKit ? 'HOME' : ctx.place ?? placeOf(ctx.mode, ctx.circuitId);
+  const healing = ctx.mode === 'HEAL' || Boolean(ctx.healing);
   const closed = closedGroups(ctx);
   const inSession = new Set(ctx.list.map(e => e.id));
   const lib = exerciseLibrary();
@@ -178,7 +188,7 @@ export function reserveFor(ctx: ReserveContext): Record<ReserveGroup, ReserveIte
     if (inSession.has(entry.id)) continue;
     const exercise = lib.get(entry.id);
     if (!exercise || (ctx.noKit && (entry.grip || needsKit(exercise))) || exercise.gate || exercise.records || exercise.block === 'WARMUP' || exercise.block === 'TEST') continue;
-    out[entry.group].push({ exercise, group: entry.group, curl: Boolean(entry.curl), lastDone: lastDone.get(entry.id) ?? null });
+    out[entry.group].push({ exercise, group: entry.group, curl: Boolean(entry.curl), lastDone: lastDone.get(entry.id) ?? null, place: entry.place });
   }
   for (const g of RESERVE_GROUPS) {
     out[g].sort((a, b) => (a.lastDone ?? '').localeCompare(b.lastDone ?? ''));

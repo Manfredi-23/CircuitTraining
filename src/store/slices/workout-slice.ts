@@ -1,6 +1,6 @@
 import type { StateCreator } from 'zustand';
 import type { Store } from '../store';
-import type { Circuit, ScaledExercise, Capacity, LevelUp, Tweaks, EnergyKey } from '@/core/types';
+import type { Circuit, ScaledExercise, Capacity, LevelUp, Tweaks, EnergyKey, Mode } from '@/core/types';
 import { getModeData } from '@/core/data-index';
 import * as Engine from '@/core/engine';
 import { benchmarkValueFromEntry, currentBodyweight, getBenchmark, latestResult } from '@/core/benchmarks';
@@ -61,6 +61,8 @@ export interface WorkoutSlice {
 
   /** Start the selected session. `pain` is the pre-session score, for finger sessions. */
   startWorkout: (pain?: number) => void;
+  /** Start a session built on the BUILD sheet, logged under `mode`. */
+  startCustom: (circuit: Circuit, list: ScaledExercise[], mode: Mode, pain?: number) => void;
   exerciseDone: () => void;
   /** Ramp test: this attempt was clean. Rest, then a harder one. */
   attemptMade: () => void;
@@ -117,9 +119,16 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
     const { mode, circuitIndex } = get();
     const circuits = getModeData(mode);
     const circuit = circuits[circuitIndex];
-    const exerciseList = Engine.applyPainCheck(sessionListFor(get(), circuit), pain);
+    get().startCustom(circuit, sessionListFor(get(), circuit), mode, pain);
+  },
+
+  startCustom: (circuit, list, mode, pain) => {
+    const exerciseList = Engine.applyPainCheck(list, pain);
+    // A custom session has no card of its own: the home tab follows its mode.
+    const tab = mode === get().mode ? {} : { mode, circuitIndex: 0 };
 
     set({
+      ...tab,
       circuit,
       exerciseList,
       stepIndex: 0,
