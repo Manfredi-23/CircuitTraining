@@ -14,6 +14,7 @@ import { CONFIG } from '@/core/config';
 import { useSwipe } from '@/hooks/use-swipe';
 import SettingsOverlay from '@/components/shared/SettingsOverlay';
 import DaySheet from '@/components/shared/DaySheet';
+import BuildSheet from '@/components/shared/BuildSheet';
 import { activeDay, describeDay, isEmptyDay } from '@/core/today';
 import SessionInfo from '@/components/shared/SessionInfo';
 import PainCheck from '@/components/shared/PainCheck';
@@ -32,6 +33,7 @@ export default function HomeScreen() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
   const [dayOpen, setDayOpen] = useState(false);
+  const [buildOpen, setBuildOpen] = useState(false);
   const [painOpen, setPainOpen] = useState(false);
   const [cardKey, setCardKey] = useState(0);
 
@@ -259,6 +261,10 @@ export default function HomeScreen() {
         <span className={styles.actionBtnArrow}>&rarr;</span>
       </button>
 
+      <button className={styles.actionBtn} onClick={() => setBuildOpen(true)}>
+        BUILD A SESSION <span className={styles.actionBtnArrow}>&rarr;</span>
+      </button>
+
       <button
         className={`${styles.actionBtn} ${styles.actionBtnAccent}`}
         onClick={() => setScreen('stats')}
@@ -288,6 +294,7 @@ export default function HomeScreen() {
       </button>
 
       <DaySheet open={dayOpen} onClose={() => setDayOpen(false)} />
+      <BuildSheet open={buildOpen} onClose={() => setBuildOpen(false)} />
       <SettingsOverlay open={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <PainCheck
         open={painOpen}

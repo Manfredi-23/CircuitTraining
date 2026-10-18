@@ -123,6 +123,7 @@ src/
     reserve.ts   # extra exercises to add mid-session, by area, place and safety
     data-extras.ts # reserve-only exercises: arm extras (no XP), lateral raise, face pull
     today.ts     # TODAY sheet: time cap, no kit, sore areas, rest / sick days
+    custom.ts    # BUILD: a session made from place, time and areas; what is not trained enough
     data-daily.ts, data-cave.ts, data-assess.ts, data-heal.ts  # Session libraries, one per tab
     data-oap.ts  # One-arm pull-up path, shared by CAVE 01 and CAVE 02
     data-index.ts  # getModeData(mode) helper
@@ -134,7 +135,8 @@ src/
   components/
     screens/     # HomeScreen, WorkoutScreen, RestScreen, CompleteScreen, StatsScreen, ClimbScreen
     shared/      # SettingsOverlay, TimerFlash, LoadLogger, ClimbStats, SessionInfo, StatsSections,
-                 #   FormGuide, SessionProgressBar, AdjustControls, ReservePicker, DaySheet
+                 #   FormGuide, SessionProgressBar, AdjustControls, ReservePicker, DaySheet,
+                 #   BuildSheet
   app/           # layout.tsx, page.tsx (screen router), globals.css
 ios/             # Xcode project (Capacitor 8, SPM)
 tools/           # generate-ios-assets.py — icon and splash from logo.svg
@@ -534,8 +536,8 @@ Below the load stepper on the workout card (`AdjustControls`):
   tap; RESET restores the programme.
 - **-SET / +SET** are today only, between the sets already done and 8.
 - **+ ADD EXERCISE** (workout card and rest screen) opens the reserve
-  (`ReservePicker`, `reserve.ts`): CORE, ARMS, SHOULDERS, LEGS, MOBILITY,
-  FINGERS, least recently done first. Home sessions (DAILY, HEAL 03 / 04) get
+  (`ReservePicker`, `reserve.ts`): CORE, PULL (gym only), ARMS, SHOULDERS,
+  LEGS, MOBILITY, FINGERS, least recently done first. Home sessions (DAILY, HEAL 03 / 04) get
   home kit only; HEAL gets nothing gripped and no finger work; a pain score of
   3+ closes FINGERS; gated, test and warm-up exercises are never offered. Most
   entries are programme exercises (same ids, same history and XP); the arm
@@ -572,6 +574,36 @@ for the day they were set, soreness for that day and the next.
 - **Rest day / sick**: no recommendation, a banner on the home screen, no
   reminders that day, and the date goes into `offDays`, which `checkDecay`
   subtracts from the days since a capacity was trained.
+
+## BUILD
+
+BUILD A SESSION on the home screen (`BuildSheet`, `custom.ts`) makes a session
+on the spot from four choices: WHERE (HOME: mat, band, portable edge; CAVE:
+the gym), TIME (10 / 15 / 20 / 30 / 45 / 60 min), AREAS (CORE, PULL, ARMS,
+SHOULDERS, LEGS, MOBILITY, FINGERS) and ENERGY. The exercises come from the
+reserve, so its rules hold: home kit at home, nothing gated, tested or warm-up,
+nothing gripped and no finger work while healing (`isHealing` in
+`recommend.ts`) or after pain 3+, NO KIT keeps it on the mat, and a sore area
+on the TODAY sheet (or legs sore from an activity) cannot be picked. PULL is
+gym only.
+
+- **NOT TRAINED ENOUGH** (`areaNeeds`, `suggestAreas`): each area's stalest
+  capacity, days since trained over its decay grace days (never trained counts
+  as due); CORE also counts this week's hard sets against `CORE_TARGETS`, pro
+  rata to the weekday. Due is 0.7 or more; up to three are suggested and
+  preselected until the athlete picks. ARMS has no capacity and is never
+  suggested.
+- **Building** (`buildCustom`): areas take turns, least recently done first
+  (at the gym, gym-only exercises first among equals). An exercise that would
+  run over the time is passed over; rest and sets are never touched. About
+  one working exercise per four minutes at most (mobility and prehab do not
+  count), and the first working exercise always goes in. Gym opens with the
+  pulse raiser, home with cat-cow; heavy blocks first, curls last.
+- The circuit is `custom-home` (mode DAILY, `recoveryHours: 0`) or
+  `custom-cave` (mode CAVE, `recoveryHours: 24`, `stacksOnSession`, follows
+  the deload week). `startCustom` runs it, switching the home tab to that
+  mode; finger work asks the pain check as usual. Custom sessions are logged
+  like any other and never match a programme circuit id.
 
 ## Activity Log
 
@@ -671,9 +703,11 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v23.md`** — **start here.** TODAY (time cap, no kit,
+- **`7bit-handover-v24.md`** — **start here.** BUILD: custom sessions from
+  place, time and areas, with what is not trained enough suggested.
+- **`7bit-handover-v23.md`** — read second. TODAY (time cap, no kit,
   sore areas, rest / sick days) and switching energy mid-session.
-- **`7bit-handover-v22.md`** — read second. The activity log (hikes and
+- **`7bit-handover-v22.md`** — The activity log (hikes and
   the rest, estimated from little data), HARDER / EASIER kept for next time,
   the exercise reserve and FINISH NOW.
 - **`7bit-handover-v21.md`** — HEAL 05 FOOTWORK and the
