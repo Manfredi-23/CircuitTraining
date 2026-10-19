@@ -3,7 +3,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useStore } from '@/store/store';
 import {
-  CUSTOM_GROUPS, CUSTOM_TIMES, areaNeeds, buildCustom, closedAreas, customMode, suggestAreas, type CustomContext,
+  AVOIDS, BUILT_IN_PRESETS, CUSTOM_GROUPS, CUSTOM_TIMES, GOALS,
+  areaNeeds, buildCustom, buildWarnings, closedAreas, customMode, cycleTarget, isGoal, makePreset, presetName,
+  suggestAreas, targetState,
+  type Avoid, type BuildChoice, type BuildPreset, type CustomContext, type Target,
 } from '@/core/custom';
 import { isHealing, PAIN_MEMORY_DAYS } from '@/core/recommend';
 import { legSoreness } from '@/core/activity';
@@ -12,7 +15,7 @@ import { getBlockWeek } from '@/core/block';
 import { asksPainCheck, applyPainCheck } from '@/core/engine';
 import { dayOf, daysBetween, localDate } from '@/core/dates';
 import { CONFIG } from '@/core/config';
-import type { Place, ReserveGroup } from '@/core/reserve';
+import type { Place } from '@/core/reserve';
 import type { EnergyKey, ScaledExercise } from '@/core/types';
 import PainCheck from './PainCheck';
 import styles from './BuildSheet.module.css';
@@ -22,24 +25,37 @@ function dose(ex: ScaledExercise): string {
   return `${ex.scaledSets} x ${work}${ex.perSide ? ' /side' : ''}`;
 }
 
+const AVOID_LABEL: Record<Avoid, string> = { JUMPING: 'NO JUMPING', GRIP: 'NO GRIP', FLOOR: 'NO FLOOR' };
+
+/** The longest slot that fits today's TODAY time cap. */
+const slotFor = (cap: number | null, fallback: number) =>
+  cap === null ? fallback : [...CUSTOM_TIMES].reverse().find(m => m <= cap) ?? CUSTOM_TIMES[0];
+
 /**
- * BUILD: a session made on the spot from where, how long and which areas.
- * SUGGEST picks the areas trained least lately. The preview is the list the
- * workout will run.
+ * BUILD: a session made on the spot from where, how long, goals and areas
+ * (each tapped in, out or off) and what to avoid. SUGGEST picks the areas
+ * trained least lately; a preset fills everything in one tap. The preview is
+ * the list the workout will run.
  */
 export default function BuildSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const {
     progress, sessionLog, climbLog, activityLog, benchmarkResults, tweaks, dayPlan, blockStart, energy, mode,
-    setEnergy, startCustom,
+    buildPresets, setEnergy, startCustom, savePreset, deletePreset,
   } = useStore();
   const [entered, setEntered] = useState(false);
   const [place, setPlace] = useState<Place>('HOME');
-  const [minutes, setMinutes] = useState(20);
-  const [groups, setGroups] = useState<ReserveGroup[] | null>(null);
+  const [minutes, setMinutes] = useState(30);
+  // null: the suggestion stands until the athlete picks.
+  const [include, setInclude] = useState<Target[] | null>(null);
+  const [exclude, setExclude] = useState<Target[]>([]);
+  const [avoid, setAvoid] = useState<Avoid[]>([]);
+  const [preset, setPreset] = useState<BuildPreset | null>(null);
+  const [naming, setNaming] = useState<string | null>(null);
   const [painOpen, setPainOpen] = useState(false);
 
   const today = localDate();
   const day = activeDay(dayPlan);
+  const climbedToday = climbLog.some(c => c.date === today);
   const healing = isHealing(sessionLog, climbLog);
   const recentPain = [...sessionLog].reverse().find(
     s => s.pain !== undefined && daysBetween(dayOf(s.date), today) <= PAIN_MEMORY_DAYS,
@@ -54,38 +70,66 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [progress, sessionLog, place, healing, recentPain, dayPlan, activityLog],
   );
-  const suggested = suggestAreas(needs);
+  const suggested: Target[] = suggestAreas(needs.filter(n => !exclude.includes(n.group)));
 
   // Open on a sensible start: the gym after a climb or from the CAVE tab, today's
   // time cap if one is set, and the suggested areas.
   useEffect(() => {
     if (!open) { setEntered(false); return; }
-    const gym = !day.noKit && (mode === 'CAVE' || climbLog.some(c => c.date === today));
+    const gym = !day.noKit && (mode === 'CAVE' || climbedToday);
     setPlace(gym ? 'GYM' : 'HOME');
-    setMinutes(day.minutes ?? (gym ? 45 : 20));
-    setGroups(null);
+    setMinutes(slotFor(day.minutes, gym ? 45 : 30));
+    setInclude(null);
+    setExclude([]);
+    setAvoid([]);
+    setPreset(null);
+    setNaming(null);
     requestAnimationFrame(() => setEntered(true));
     // Only on opening.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  // Until the athlete picks, the suggestion stands.
-  const chosen = (groups ?? suggested).filter(g => !closed[g]);
+  const chosen = (include ?? suggested).filter(t => !closed[t] && !exclude.includes(t));
+  const choice: BuildChoice = { place, minutes, include: chosen, exclude, avoid };
   const deload = place === 'GYM' && getBlockWeek(blockStart, sessionLog).deload;
   const session = useMemo(
     () => (chosen.length ? buildCustom({
-      ...ctx, minutes, groups: chosen, energy, progress, benchmarkResults, tweaks, deload,
+      ...ctx, minutes, include: chosen, exclude, avoid, energy, progress, benchmarkResults, tweaks, deload,
+      title: preset?.name,
     }) : null),
     // ctx is rebuilt from the same inputs every render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [chosen.join(), place, minutes, energy, progress, benchmarkResults, tweaks, deload, sessionLog, dayPlan, healing, recentPain],
+    [chosen.join(), exclude.join(), avoid.join(), place, minutes, energy, progress, benchmarkResults, tweaks, deload, sessionLog, dayPlan, healing, recentPain, preset],
   );
+  const warnings = buildWarnings(choice, needs, climbedToday);
 
   if (!open) return null;
 
-  const toggle = (g: ReserveGroup) => {
-    const base = groups ?? suggested;
-    setGroups(base.includes(g) ? base.filter(x => x !== g) : [...base, g]);
+  // Any change by hand makes it a custom build again.
+  const edited = () => setPreset(null);
+  const tap = (t: Target) => {
+    // The first tap on a goal starts an empty plan; on an area, from the suggestion.
+    const base = include ?? (isGoal(t) ? [] : suggested);
+    const next = cycleTarget({ include: base, exclude }, t);
+    setInclude(next.include);
+    setExclude(next.exclude);
+    edited();
+  };
+  const toggleAvoid = (a: Avoid) => { setAvoid(v => (v.includes(a) ? v.filter(x => x !== a) : [...v, a])); edited(); };
+  const usePreset = (p: BuildPreset) => {
+    setPlace(day.noKit ? 'HOME' : p.place);
+    setMinutes(p.minutes);
+    setInclude([...p.include]);
+    setExclude([...p.exclude]);
+    setAvoid([...p.avoid]);
+    setPreset(p);
+    setNaming(null);
+  };
+  const save = () => {
+    const p = makePreset(choice, naming ?? '');
+    savePreset(p);
+    setPreset(p);
+    setNaming(null);
   };
   const begin = () => {
     if (!session) return;
@@ -93,32 +137,62 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
     else { onClose(); startCustom(session.circuit, session.list, customMode(place)); }
   };
   const lastPain = [...sessionLog].reverse().find(s => s.pain !== undefined)?.pain ?? null;
+  const userPreset = preset && buildPresets.some(p => p.id === preset.id) ? preset : null;
 
-  const Chip = ({ on, label, onClick, mark, disabled }: { on: boolean; label: string; onClick: () => void; mark?: boolean; disabled?: boolean }) => (
+  const Chip = ({ on, out, label, onClick, mark, disabled }: {
+    on: boolean; out?: boolean; label: string; onClick: () => void; mark?: boolean; disabled?: boolean;
+  }) => (
     <button
-      className={`${styles.chip}${on ? ` ${styles.chipOn}` : ''}${mark ? ` ${styles.chipMark}` : ''}`}
-      aria-pressed={on}
+      className={`${styles.chip}${on ? ` ${styles.chipOn}` : ''}${out ? ` ${styles.chipOut}` : ''}${mark ? ` ${styles.chipMark}` : ''}`}
+      aria-pressed={on || out}
       disabled={disabled}
       onClick={onClick}
     >{label}</button>
   );
+  const TargetChip = ({ t, mark }: { t: Target; mark?: boolean }) => {
+    const state = include === null && suggested.includes(t) && !exclude.includes(t) ? 'in' : targetState({ include: include ?? [], exclude }, t);
+    return (
+      <Chip
+        on={state === 'in'}
+        out={state === 'out'}
+        mark={mark}
+        label={state === 'out' ? `NO ${t}` : t}
+        disabled={Boolean(closed[t]) && state !== 'out'}
+        onClick={() => tap(t)}
+      />
+    );
+  };
 
   return (
     <div className={`overlay-panel ${styles.panel}${entered ? ' overlay-enter' : ''}`} role="dialog" aria-modal="true" aria-label="Build a session">
       <div className="overlay-header">
-        <span className={styles.crumb}>BUILD</span>
+        <span className={styles.crumb}>BUILD{preset ? ` · ${preset.name}` : ''}</span>
         <button className="overlay-close" onClick={onClose} aria-label="Close">X</button>
       </div>
 
       <div className={styles.scroll}>
         <section className={styles.section}>
+          <div className={styles.label}>PRESETS</div>
+          <div className={styles.chips}>
+            {[...BUILT_IN_PRESETS, ...buildPresets].map(p => (
+              <Chip key={p.id} on={preset?.id === p.id} label={p.name} onClick={() => usePreset(p)} />
+            ))}
+          </div>
+          {userPreset && (
+            <button className={styles.link} onClick={() => { deletePreset(userPreset.id); setPreset(null); }}>
+              DELETE {userPreset.name}
+            </button>
+          )}
+        </section>
+
+        <section className={styles.section}>
           <div className={styles.label}>WHERE</div>
           <div className={styles.chips}>
-            <Chip on={place === 'HOME'} label="HOME" onClick={() => setPlace('HOME')} />
-            <Chip on={place === 'GYM'} label="CAVE" onClick={() => setPlace('GYM')} disabled={day.noKit} />
+            <Chip on={place === 'HOME'} label="HOME" onClick={() => { setPlace('HOME'); edited(); }} />
+            <Chip on={place === 'GYM'} label="CAVE" onClick={() => { setPlace('GYM'); edited(); }} disabled={day.noKit} />
           </div>
           <div className={styles.hint}>
-            {day.noKit ? 'No kit today: mat only.' : place === 'HOME' ? 'Mat, band, portable edge.' : 'The gym: everything, home kit included.'}
+            {day.noKit ? 'No kit today: mat only.' : place === 'HOME' ? 'Mat, band, portable edge.' : 'The gym: everything, dumbbells and rings included.'}
             {healing && ' Nothing gripped while the finger heals.'}
           </div>
         </section>
@@ -126,32 +200,30 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
         <section className={styles.section}>
           <div className={styles.label}>TIME</div>
           <div className={styles.chips}>
-            {CUSTOM_TIMES.map(m => <Chip key={m} on={minutes === m} label={`${m} MIN`} onClick={() => setMinutes(m)} />)}
+            {CUSTOM_TIMES.map(m => (
+              <Chip key={m} on={minutes === m} label={m === 90 ? '1H30' : m === 60 ? '1H' : `${m} MIN`} onClick={() => { setMinutes(m); edited(); }} />
+            ))}
           </div>
         </section>
 
         <section className={styles.section}>
+          <div className={styles.label}>GOALS</div>
+          <div className={styles.chips}>
+            {GOALS.map(g => <TargetChip key={g} t={g} />)}
+          </div>
           <div className={styles.label}>AREAS</div>
           <div className={styles.chips}>
-            {CUSTOM_GROUPS.map(g => (
-              <Chip
-                key={g}
-                on={chosen.includes(g)}
-                mark={suggested.includes(g)}
-                label={g}
-                disabled={Boolean(closed[g])}
-                onClick={() => toggle(g)}
-              />
-            ))}
+            {CUSTOM_GROUPS.map(g => <TargetChip key={g} t={g} mark={suggested.includes(g)} />)}
           </div>
+          <div className={styles.hint}>Tap once: in. Twice: out, nothing that touches it. Three times: off.</div>
           <div className={styles.suggest}>
             <div className={styles.suggestHead}>
               <span>NOT TRAINED ENOUGH</span>
               <button
                 className={styles.suggestBtn}
-                disabled={groups === null}
-                onClick={() => setGroups(null)}
-              >{groups ? 'USE SUGGESTION' : 'SUGGESTED'}</button>
+                disabled={include === null}
+                onClick={() => { setInclude(null); edited(); }}
+              >{include ? 'USE SUGGESTION' : 'SUGGESTED'}</button>
             </div>
             {needs.filter(n => suggested.includes(n.group)).map(n => (
               <div key={n.group} className={styles.need}>
@@ -162,6 +234,13 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
           {Object.entries(closed).map(([g, why]) => (
             <div key={g} className={styles.hint}>{g}: {why}</div>
           ))}
+        </section>
+
+        <section className={styles.section}>
+          <div className={styles.label}>AVOID</div>
+          <div className={styles.chips}>
+            {AVOIDS.map(a => <Chip key={a} on={false} out={avoid.includes(a)} label={AVOID_LABEL[a]} onClick={() => toggleAvoid(a)} />)}
+          </div>
         </section>
 
         <section className={styles.section}>
@@ -177,14 +256,31 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
           <div className={styles.label}>
             SESSION{session && <span className={styles.duration}>{session.duration} MIN</span>}
           </div>
-          {!session && <div className={styles.hint}>Pick at least one area.</div>}
+          {warnings.map(w => <div key={w} className={styles.warn}>{w}</div>)}
+          {!session && <div className={styles.hint}>Tap a goal or an area in.</div>}
           {session?.list.map(ex => (
             <div key={ex.id} className={styles.row}>
               <span className={styles.name}>{ex.displayName}</span>
               <span className={styles.meta}>{dose(ex)}</span>
             </div>
           ))}
-          {session && <div className={styles.hint}>Least recently done first. Rest and sets as written: what does not fit is left out.</div>}
+          {session && <div className={styles.hint}>Key lifts first. Rest and sets as written: what does not fit is left out.</div>}
+          {session && naming === null && !preset && (
+            <button className={styles.link} onClick={() => setNaming(presetName(choice))}>SAVE AS PRESET</button>
+          )}
+          {naming !== null && (
+            <div className={styles.saveRow}>
+              <input
+                className={styles.nameInput}
+                value={naming}
+                maxLength={32}
+                aria-label="Preset name"
+                onChange={e => setNaming(e.target.value)}
+              />
+              <button className={styles.saveBtn} onClick={save}>SAVE</button>
+              <button className={styles.link} onClick={() => setNaming(null)}>CANCEL</button>
+            </div>
+          )}
         </section>
       </div>
 

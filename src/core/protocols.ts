@@ -485,6 +485,27 @@ export const PROTOCOLS: Record<string, Protocol> = {
       + 'strength, J Strength Cond Res (2012).',
   },
 
+  'upper-power': {
+    id: 'upper-power',
+    name: 'Upper-Body Power',
+    quality: 'Pressing and pulling force, produced fast',
+    work: '3-6 reps, each as fast as possible',
+    rest: '120-180s',
+    sets: '3-5',
+    intensity: 'Stop the set when a rep slows down: speed is the load',
+    frequency: '1-2x per week, fresh, before any endurance work',
+    rationale:
+      'Power is force times speed, and fatigue costs speed first, so it is trained with '
+      + 'few reps, full rest and the session still fresh. Explosive push-ups and loaded '
+      + 'dips build the pushing a dyno, a mantel or a press-out needs, which climbing '
+      + 'itself barely trains.'
+      + ' Ground contact on explosive push-ups loads the wrists: land soft, and skip them on a sore-wrist day.',
+    source:
+      'Haff and Nimphius, training principles for power, Strength Cond J (2012); '
+      + 'NSCA Essentials of Strength Training and Conditioning, 4th ed., plyometric and '
+      + 'power training guidelines; Garcia-Massó et al., kinetics of push-up variations (2011).',
+  },
+
   'hypertrophy': {
     id: 'hypertrophy',
     name: 'Muscle Size',
