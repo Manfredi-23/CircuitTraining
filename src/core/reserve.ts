@@ -33,7 +33,7 @@ export const RESERVE_GROUPS: ReserveGroup[] = ['CORE', 'PULL', 'ARMS', 'SHOULDER
 
 export type Place = 'HOME' | 'GYM';
 
-interface ReserveEntry {
+export interface ReserveEntry {
   id: string;
   group: ReserveGroup;
   /** HOME: mat, band, portable edge. GYM: everything, home kit included. */
@@ -42,23 +42,30 @@ interface ReserveEntry {
   grip: boolean;
   /** Loaded flexion: closes a DAILY. */
   curl?: boolean;
+  /** Lying, kneeling or in a plank on the floor (BUILD's NO FLOOR). */
+  floor?: boolean;
+  /** Leaves the ground (BUILD's NO JUMPING). */
+  jump?: boolean;
 }
+
+/** Where an exercise sits and what it asks of the body, for the filters in custom.ts. */
+export type EntryFlags = Pick<ReserveEntry, 'place' | 'grip' | 'curl' | 'floor' | 'jump'>;
 
 const RESERVE: ReserveEntry[] = [
   // CORE: abs, obliques, lower back.
-  { id: 'daily-spiderman', group: 'CORE', place: 'HOME', grip: false },
-  { id: 'daily-mountain-climber', group: 'CORE', place: 'HOME', grip: false },
-  { id: 'daily-side-plank-dip', group: 'CORE', place: 'HOME', grip: false },
-  { id: 'daily-prone-extension', group: 'CORE', place: 'HOME', grip: false },
-  { id: 'morn-hollow', group: 'CORE', place: 'HOME', grip: false },
-  { id: 'daily-reverse-crunch', group: 'CORE', place: 'HOME', grip: false, curl: true },
-  { id: 'morn-bw-russian-twist', group: 'CORE', place: 'HOME', grip: false, curl: true },
-  { id: 'morn-leg-lowers', group: 'CORE', place: 'HOME', grip: false, curl: true },
+  { id: 'daily-spiderman', group: 'CORE', place: 'HOME', grip: false, floor: true },
+  { id: 'daily-mountain-climber', group: 'CORE', place: 'HOME', grip: false, floor: true },
+  { id: 'daily-side-plank-dip', group: 'CORE', place: 'HOME', grip: false, floor: true },
+  { id: 'daily-prone-extension', group: 'CORE', place: 'HOME', grip: false, floor: true },
+  { id: 'morn-hollow', group: 'CORE', place: 'HOME', grip: false, floor: true },
+  { id: 'daily-reverse-crunch', group: 'CORE', place: 'HOME', grip: false, curl: true, floor: true },
+  { id: 'morn-bw-russian-twist', group: 'CORE', place: 'HOME', grip: false, curl: true, floor: true },
+  { id: 'morn-leg-lowers', group: 'CORE', place: 'HOME', grip: false, curl: true, floor: true },
   { id: 'daily-band-good-morning', group: 'CORE', place: 'HOME', grip: true },
-  { id: 'home-copenhagen', group: 'CORE', place: 'GYM', grip: false },
+  { id: 'home-copenhagen', group: 'CORE', place: 'GYM', grip: false, floor: true },
   { id: 'legs-back-extension', group: 'CORE', place: 'GYM', grip: false },
-  { id: 'legs-plate-crunch', group: 'CORE', place: 'GYM', grip: false, curl: true },
-  { id: 'addon-russian-twist', group: 'CORE', place: 'GYM', grip: false, curl: true },
+  { id: 'legs-plate-crunch', group: 'CORE', place: 'GYM', grip: false, curl: true, floor: true },
+  { id: 'addon-russian-twist', group: 'CORE', place: 'GYM', grip: false, curl: true, floor: true },
   { id: 'addon-hanging-oblique', group: 'CORE', place: 'GYM', grip: true },
   { id: 'home-leg-raise', group: 'CORE', place: 'GYM', grip: true },
 
@@ -67,7 +74,7 @@ const RESERVE: ReserveEntry[] = [
   { id: 'cave-lockoff', group: 'PULL', place: 'GYM', grip: true },
 
   // ARMS: extras, no XP.
-  { id: 'extra-diamond-pushup', group: 'ARMS', place: 'HOME', grip: false },
+  { id: 'extra-diamond-pushup', group: 'ARMS', place: 'HOME', grip: false, floor: true },
   { id: 'extra-band-curl', group: 'ARMS', place: 'HOME', grip: true },
   { id: 'extra-band-hammer', group: 'ARMS', place: 'HOME', grip: true },
   { id: 'extra-band-triceps', group: 'ARMS', place: 'HOME', grip: true },
@@ -75,9 +82,9 @@ const RESERVE: ReserveEntry[] = [
   { id: 'extra-chinup-negative', group: 'ARMS', place: 'GYM', grip: true },
 
   // SHOULDERS: pressing, the side and back of the shoulder, the cuff.
-  { id: 'daily-pushup', group: 'SHOULDERS', place: 'HOME', grip: false },
-  { id: 'heal-pike-pushup', group: 'SHOULDERS', place: 'HOME', grip: false },
-  { id: 'heal-prone-ytw', group: 'SHOULDERS', place: 'HOME', grip: false },
+  { id: 'daily-pushup', group: 'SHOULDERS', place: 'HOME', grip: false, floor: true },
+  { id: 'heal-pike-pushup', group: 'SHOULDERS', place: 'HOME', grip: false, floor: true },
+  { id: 'heal-prone-ytw', group: 'SHOULDERS', place: 'HOME', grip: false, floor: true },
   { id: 'heal-band-er', group: 'SHOULDERS', place: 'HOME', grip: false },
   { id: 'extra-band-lateral', group: 'SHOULDERS', place: 'HOME', grip: true },
   { id: 'morn-pullapart', group: 'SHOULDERS', place: 'HOME', grip: true },
@@ -86,27 +93,27 @@ const RESERVE: ReserveEntry[] = [
 
   // LEGS.
   { id: 'daily-bw-squat', group: 'LEGS', place: 'HOME', grip: false },
-  { id: 'daily-glute-bridge', group: 'LEGS', place: 'HOME', grip: false },
+  { id: 'daily-glute-bridge', group: 'LEGS', place: 'HOME', grip: false, floor: true },
   { id: 'morn-band-split-squat', group: 'LEGS', place: 'HOME', grip: true },
   { id: 'home-sl-rdl', group: 'LEGS', place: 'HOME', grip: true },
   { id: 'heal-step-up', group: 'LEGS', place: 'GYM', grip: false },
   { id: 'heal-calf-raise', group: 'LEGS', place: 'GYM', grip: false },
-  { id: 'heal-nordic-curl', group: 'LEGS', place: 'GYM', grip: false },
-  { id: 'legs-toe-drag', group: 'LEGS', place: 'GYM', grip: false },
+  { id: 'heal-nordic-curl', group: 'LEGS', place: 'GYM', grip: false, floor: true },
+  { id: 'legs-toe-drag', group: 'LEGS', place: 'GYM', grip: false, floor: true },
   { id: 'addon-goblet-squat', group: 'LEGS', place: 'GYM', grip: true },
 
   // MOBILITY.
-  { id: 'morn-catcow', group: 'MOBILITY', place: 'HOME', grip: false },
-  { id: 'morn-hip-9090', group: 'MOBILITY', place: 'HOME', grip: false },
-  { id: 'home-hip-flow', group: 'MOBILITY', place: 'HOME', grip: false },
-  { id: 'daily-spiderman-lunge', group: 'MOBILITY', place: 'HOME', grip: false },
-  { id: 'daily-cossack-shift', group: 'MOBILITY', place: 'HOME', grip: false },
-  { id: 'daily-back-unwind', group: 'MOBILITY', place: 'HOME', grip: false },
-  { id: 'feet-frogger', group: 'MOBILITY', place: 'HOME', grip: false },
+  { id: 'morn-catcow', group: 'MOBILITY', place: 'HOME', grip: false, floor: true },
+  { id: 'morn-hip-9090', group: 'MOBILITY', place: 'HOME', grip: false, floor: true },
+  { id: 'home-hip-flow', group: 'MOBILITY', place: 'HOME', grip: false, floor: true },
+  { id: 'daily-spiderman-lunge', group: 'MOBILITY', place: 'HOME', grip: false, floor: true },
+  { id: 'daily-cossack-shift', group: 'MOBILITY', place: 'HOME', grip: false, floor: true },
+  { id: 'daily-back-unwind', group: 'MOBILITY', place: 'HOME', grip: false, floor: true },
+  { id: 'feet-frogger', group: 'MOBILITY', place: 'HOME', grip: false, floor: true },
 
   // FINGERS: light only. The density no-hangs do not restart the 48h.
   { id: 'daily-edge-density', group: 'FINGERS', place: 'HOME', grip: true },
-  { id: 'wrists-loaded-extension', group: 'FINGERS', place: 'HOME', grip: false },
+  { id: 'wrists-loaded-extension', group: 'FINGERS', place: 'HOME', grip: false, floor: true },
 ];
 
 const HOME_CIRCUITS = new Set(['heal-03', 'heal-04']);
@@ -194,6 +201,11 @@ export function reserveFor(ctx: ReserveContext): Record<ReserveGroup, ReserveIte
     out[g].sort((a, b) => (a.lastDone ?? '').localeCompare(b.lastDone ?? ''));
   }
   return out;
+}
+
+/** The reserve entry for an exercise, if it is in the reserve. */
+export function reserveEntry(id: string): ReserveEntry | undefined {
+  return RESERVE.find(e => e.id === id);
 }
 
 /** Whether an exercise curls the spine under load (closes a DAILY). */

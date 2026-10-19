@@ -123,7 +123,7 @@ src/
     reserve.ts   # extra exercises to add mid-session, by area, place and safety
     data-extras.ts # reserve-only exercises: arm extras (no XP), lateral raise, face pull
     today.ts     # TODAY sheet: time cap, no kit, sore areas, rest / sick days
-    custom.ts    # BUILD: a session made from place, time and areas; what is not trained enough
+    custom.ts    # BUILD: place, time, goals and areas in/out, avoid, presets; what is not trained enough
     data-daily.ts, data-cave.ts, data-assess.ts, data-heal.ts  # Session libraries, one per tab
     data-oap.ts  # One-arm pull-up path, shared by CAVE 01 and CAVE 02
     data-index.ts  # getModeData(mode) helper
@@ -156,7 +156,7 @@ design/          # pixel-grid.svg drawing template; illustrations/<name>/NN.svg 
 - **Zustand persist**: Only the keys in `PERSISTED_KEYS` (`src/core/backup.ts`)
   are persisted: `progress`, `sessionLog`, `benchmarkResults`, `loadLog`,
   `climbLog`, `activityLog`, `tweaks`, `dayPlan`, `offDays`, `blockStart`,
-  `settings` and `health`. `partialize` reads that list, so a
+  `settings`, `health` and `buildPresets`. `partialize` reads that list, so a
   new key is persisted and backed up by adding it there. UI state is transient. The blob
   carries `version: 2`, but legacy cleanup runs from `merge`, not `migrate`:
   persist only calls `migrate` when the stored blob has a **numeric** version,
@@ -577,33 +577,51 @@ for the day they were set, soreness for that day and the next.
 
 ## BUILD
 
-BUILD A SESSION on the home screen (`BuildSheet`, `custom.ts`) makes a session
-on the spot from four choices: WHERE (HOME: mat, band, portable edge; CAVE:
-the gym), TIME (10 / 15 / 20 / 30 / 45 / 60 min), AREAS (CORE, PULL, ARMS,
-SHOULDERS, LEGS, MOBILITY, FINGERS) and ENERGY. The exercises come from the
-reserve, so its rules hold: home kit at home, nothing gated, tested or warm-up,
-nothing gripped and no finger work while healing (`isHealing` in
-`recommend.ts`) or after pain 3+, NO KIT keeps it on the mat, and a sore area
-on the TODAY sheet (or legs sore from an activity) cannot be picked. PULL is
-gym only.
+BUILD A SESSION on the home screen (`BuildSheet`, `custom.ts`, presets in
+`build-slice.ts`) makes a session on the spot:
 
+- **PRESETS**: one tap fills in everything. Four built in (`BUILT_IN_PRESETS`:
+  PULL DAY, PUSH + CHEST, LEGS + BALANCE, QUICK HOME); SAVE AS PRESET stores
+  the athlete's own in `buildPresets` (persisted, in backups).
+- **WHERE**: HOME (mat, band, portable edge) or CAVE (the gym, with dumbbells
+  and rings / TRX). **TIME**: 15 / 30 / 45 / 60 / 90 min.
+- **GOALS** (PULL POWER, PUSH POWER, CHEST, BALANCE) and **AREAS** (CORE,
+  PULL, ARMS, SHOULDERS, LEGS, MOBILITY, FINGERS), each tapped in, out or off
+  (`cycleTarget`). A goal is an ordered list in `GOAL_ENTRIES`, key lift
+  first; an area comes from the reserve, least recently done first. A target
+  tapped out removes everything that `touches` it, wherever it came from (NO
+  CORE also drops a plank picked for the shoulders).
+- **AVOID**: NO JUMPING, NO GRIP, NO FLOOR, from the `jump`, `grip` and
+  `floor` flags on reserve and goal entries (`flagsOf`). NO GRIP (or healing)
+  swaps the gym warm-up for `heal-warmup`; NO FLOOR drops the cat-cow opener.
 - **NOT TRAINED ENOUGH** (`areaNeeds`, `suggestAreas`): each area's stalest
   capacity, days since trained over its decay grace days (never trained counts
   as due); CORE also counts this week's hard sets against `CORE_TARGETS`, pro
-  rata to the weekday. Due is 0.7 or more; up to three are suggested and
-  preselected until the athlete picks. ARMS has no capacity and is never
-  suggested.
-- **Building** (`buildCustom`): areas take turns, least recently done first
-  (at the gym, gym-only exercises first among equals). An exercise that would
-  run over the time is passed over; rest and sets are never touched. About
-  one working exercise per four minutes at most (mobility and prehab do not
+  rata to the weekday. Due is 0.7 or more; up to three are preselected until
+  the athlete picks. The first tap on a goal starts an empty plan, on an area
+  from the suggestion. `buildWarnings` says when a due area is tapped out, and
+  when an hour or more of power follows a logged climb (a warning, not a block).
+- Safety as everywhere: home kit at home, nothing gripped, no pulling (PULL
+  POWER closed) and no finger work while healing (`isHealing` in
+  `recommend.ts`), no finger work after pain 3+, NO KIT keeps it on the mat, a
+  sore area on the TODAY sheet (or legs sore from an activity) is closed; sore
+  shoulders close every push and pull target. PULL POWER keeps the one-arm
+  gates: assisted rungs substitute the lopsided ladder, negatives stay hidden.
+  The two weighted pull-ups never share a session (`SAME_MOVEMENT`).
+- **Building** (`buildCustom`): targets take turns. An exercise that would run
+  over the time is passed over; rest and sets are never touched. About one
+  working exercise per four minutes (at most 14; mobility and prehab do not
   count), and the first working exercise always goes in. Gym opens with the
   pulse raiser, home with cat-cow; heavy blocks first, curls last.
+- The goal exercises new in `data-extras.ts` (`GOAL_EXERCISES`: ring dip,
+  explosive push-up, dumbbell floor press, ring push-up, ring fly, feet-up
+  push-up, single-leg balance, single-leg star reach) carry no capacity and
+  earn no XP; push power uses the `upper-power` protocol.
 - The circuit is `custom-home` (mode DAILY, `recoveryHours: 0`) or
   `custom-cave` (mode CAVE, `recoveryHours: 24`, `stacksOnSession`, follows
-  the deload week). `startCustom` runs it, switching the home tab to that
-  mode; finger work asks the pain check as usual. Custom sessions are logged
-  like any other and never match a programme circuit id.
+  the deload week), titled with the preset's name when one is used.
+  `startCustom` runs it, switching the home tab to that mode; finger work asks
+  the pain check as usual. Custom sessions never match a programme circuit id.
 
 ## Activity Log
 
@@ -703,9 +721,11 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v24.md`** — **start here.** BUILD: custom sessions from
+- **`7bit-handover-v25.md`** — **start here.** BUILD presets, goals (pull
+  power, push power, chest, balance), targets tapped out, AVOID, 90 minutes.
+- **`7bit-handover-v24.md`** — read second. BUILD: custom sessions from
   place, time and areas, with what is not trained enough suggested.
-- **`7bit-handover-v23.md`** — read second. TODAY (time cap, no kit,
+- **`7bit-handover-v23.md`** — TODAY (time cap, no kit,
   sore areas, rest / sick days) and switching energy mid-session.
 - **`7bit-handover-v22.md`** — The activity log (hikes and
   the rest, estimated from little data), HARDER / EASIER kept for next time,
