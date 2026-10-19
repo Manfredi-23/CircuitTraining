@@ -485,6 +485,50 @@ export const PROTOCOLS: Record<string, Protocol> = {
       + 'strength, J Strength Cond Res (2012).',
   },
 
+  'floor-footwork': {
+    id: 'floor-footwork',
+    name: 'Floor Footwork',
+    quality: 'Placing a foot once, and moving the hips over it before standing',
+    work: '6-10 slow reps or 20-30s holds per side',
+    rest: '20-30s',
+    sets: '2-3',
+    intensity: 'Technique. Stop or reset when reps turn into corrections, hops or speed.',
+    frequency: '2-3x per week, 15-20 minutes; it costs almost no recovery',
+    rationale:
+      'Slab and technical climbing ask for a foot placed once without a second adjustment, '
+      + 'the centre of mass moved over it before the leg extends, and the free leg used as '
+      + 'a counterweight. Off the wall these can be practised as deliberate motor skill on '
+      + 'floor targets: position, balance, then extend. Intrinsic foot-muscle work (the '
+      + 'short foot) improves foot posture, balance and strength in non-climbers. Honest '
+      + 'caveat: a floor has no friction, angle or foothold geometry, and no trial shows '
+      + 'these drills raise a climbing grade on their own; they prepare, the wall teaches.',
+    source:
+      'Sport climbing performance determinants and testing, J Sport Health Sci (2025), '
+      + 'on rock-over and balance tests; Stien et al., system wall bouldering pilot, '
+      + 'Transl Sports Med (2024); climbskill, rock-over technique; intrinsic foot muscle '
+      + 'training reviews, J Athl Train (2023), PLOS ONE (2022), Sports (2026).',
+  },
+
+  'rockover-strength': {
+    id: 'rockover-strength',
+    name: 'Single-Leg Strength for High Steps',
+    quality: 'Standing up through one leg, controlled on the way down',
+    work: '6-12 reps per side, three seconds down',
+    rest: '60-90s',
+    sets: '3',
+    intensity: 'RPE 6-7: clean reps in reserve, never a grind',
+    frequency: '2x per week',
+    rationale:
+      'A rock-over is a single-leg step-up from a high foot with the hips moved over it '
+      + 'first. Unilateral strength, a slow lowering and a pelvis that stays level are the '
+      + 'parts the floor can train; a smooth low step beats a shaky high one. Twice a week '
+      + 'at moderate effort is a reasonable general strength dose, not a climbing-proven one.',
+    source:
+      'ACSM position stand on resistance training prescription (2026); sport climbing '
+      + 'performance determinants review, J Sport Health Sci (2025), on height-adjusted '
+      + 'rock-over performance; climbskill, rock-over technique.',
+  },
+
   'upper-power': {
     id: 'upper-power',
     name: 'Upper-Body Power',

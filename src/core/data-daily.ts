@@ -48,6 +48,7 @@
 // =============================================================================
 
 import type { Circuit, Exercise } from './types';
+import { SL_REACH } from './data-extras';
 
 // ---- Shared ------------------------------------------------------------------
 
@@ -425,6 +426,133 @@ const EDGE_DENSITY: Exercise = {
 };
 
 // ---- Sessions ------------------------------------------------------------------
+
+// ---- DAILY 06 QUIET FEET ------------------------------------------------------------
+// Floor footwork: place a foot once, move the hips over it before standing,
+// use the free leg as a counterweight. Hands free throughout.
+
+export const ANKLE_WALL: Exercise = {
+  id: 'daily-ankle-wall',
+  name: 'Knee-to-Wall Ankle Rock',
+  capacities: ['mobility', 'legs'],
+  block: 'MOBILITY', intensity: 'EASY',
+  sets: 2, work: 10, unit: 'reps', restSec: 15,
+  load: { kind: 'bodyweight', text: 'Heel down, knee to the wall' },
+  progression: 'Move the foot a finger-width further from the wall each week while the heel stays down.',
+  protocolId: 'mobility',
+  perSide: true,
+  note: 'Per foot. Ankle bend is what lets the knee travel over a high foot.',
+  form: {
+    setup: 'Face a wall in a split stance, front toes a hand from the wall. Fingertips may rest on the wall, nothing held.',
+    execution: 'Rock the front knee forward over the middle toes to touch the wall, heel pinned, then back. Slow and even.',
+    cue: 'The heel is the test: the moment it lifts, the range ends there.',
+    breathing: 'Easy, through the nose.',
+    mistakes: 'Heel lifting. Knee caving in toward the big toe. Bouncing into the wall.',
+  },
+};
+
+const SHORT_FOOT: Exercise = {
+  id: 'daily-short-foot',
+  name: 'Short Foot + Toe Control',
+  capacities: ['legs'],
+  block: 'PREHAB', intensity: 'EASY',
+  sets: 2, work: 8, unit: 'reps', restSec: 20,
+  load: { kind: 'bodyweight', text: 'Barefoot, toes relaxed' },
+  progression: 'Seated, then standing on both feet, then standing on one foot, as long as the toes stay relaxed.',
+  protocolId: 'floor-footwork',
+  perSide: true,
+  note: 'Per foot. The small muscles that hold the arch over a foothold.',
+  variations: [
+    { minLevel: 1, name: 'Short Foot - Seated' },
+    { minLevel: 3, name: 'Short Foot - Standing' },
+    { minLevel: 5, name: 'Short Foot - One Leg' },
+  ],
+  form: {
+    setup: 'Barefoot. Weight through the heel, the base of the big toe and the base of the little toe.',
+    execution: 'Draw the ball of the foot toward the heel so the arch lifts, without curling the toes. Hold three seconds, relax. Then lift the big toe alone with the others down, and the others with the big toe down.',
+    cue: 'Make the foot shorter, not the toes. If the toes curl, it is a grip, not a short foot.',
+    breathing: 'Normal.',
+    mistakes: 'Curling the toes. Rolling onto the outside edge. Holding the breath.',
+  },
+};
+
+const TOE_TAPS: Exercise = {
+  id: 'daily-toe-taps',
+  name: 'Precision Toe Taps',
+  capacities: ['legs', 'tension'],
+  block: 'SECONDARY', intensity: 'TECHNIQUE',
+  sets: 3, work: 8, unit: 'reps', restSec: 30,
+  fixed: true,
+  load: { kind: 'bodyweight', text: 'Five or six small tape marks around the standing foot' },
+  progression: 'Smaller marks, then further away, then a one-second hover above each mark before the touch.',
+  protocolId: 'floor-footwork',
+  perSide: true,
+  note: 'Per foot. Score it: clean first touches out of eight. One touch, no slide, no correction.',
+  variations: [
+    { minLevel: 1, name: 'Precision Toe Taps - Large Marks' },
+    { minLevel: 3, name: 'Precision Toe Taps - Small Marks' },
+    { minLevel: 5, name: 'Precision Toe Taps - Hover, Then Touch' },
+  ],
+  form: {
+    setup: 'Tape five or six small marks on the floor at different angles and distances around one foot. Stand on that foot, knee soft.',
+    execution: 'Pick a mark, bring the other toe down onto it slowly, touch once, lift away. Next mark. A touch that slides or needs a second go does not count.',
+    cue: 'Look, place, weight. Quiet feet: you should hear nothing.',
+    breathing: 'Slow and steady.',
+    mistakes: 'Rushing. Sliding the toe onto the mark. Hopping on the standing foot to recover.',
+  },
+};
+
+const ROCKOVER_TRANSFER: Exercise = {
+  id: 'daily-rockover-transfer',
+  name: 'Slow Rock-Over Transfer',
+  capacities: ['legs', 'tension'],
+  block: 'SECONDARY', intensity: 'TECHNIQUE',
+  sets: 2, work: 8, unit: 'reps', restSec: 30,
+  fixed: true,
+  load: { kind: 'bodyweight', text: 'Wide split stance, front foot on a low step or the floor' },
+  progression: 'Both feet on the floor, then the front foot on a low step, then a higher step with a pause before standing.',
+  protocolId: 'floor-footwork',
+  perSide: true,
+  note: 'Per side. Position, balance, extend: never extend and hope to balance.',
+  variations: [
+    { minLevel: 1, name: 'Rock-Over Transfer - Floor' },
+    { minLevel: 3, name: 'Rock-Over Transfer - Low Step' },
+    { minLevel: 5, name: 'Rock-Over Transfer - High Step, Pause' },
+  ],
+  form: {
+    setup: 'A wide split stance, the front foot flat on a low step or the floor, hands on the hips.',
+    execution: 'Slide the pelvis forward until it sits over the front foot, pause in balance, then stand tall on that leg with the back foot trailing light. Reverse the same way.',
+    cue: 'Hips over the foot first. The standing up is the easy part.',
+    breathing: 'Exhale as you stand.',
+    mistakes: 'Pushing off the back foot. Standing before the hips arrive. Knee falling inward.',
+  },
+};
+
+const FLAG_HOLD: Exercise = {
+  id: 'daily-flag-hold',
+  name: 'Standing Flag Hold',
+  capacities: ['legs', 'tension'],
+  block: 'SECONDARY', intensity: 'TECHNIQUE',
+  sets: 3, work: 20, unit: 'sec', restSec: 20,
+  fixed: true,
+  load: { kind: 'bodyweight', text: 'One leg, the free leg as counterweight' },
+  progression: 'Free leg to the side, then behind and across, then a slow turn of the trunk while the standing knee stays still.',
+  protocolId: 'floor-footwork',
+  perSide: true,
+  note: 'Per leg. An off-wall flag: find the leg position where the trunk goes quiet.',
+  variations: [
+    { minLevel: 1, name: 'Flag Hold - Side' },
+    { minLevel: 3, name: 'Flag Hold - Back and Across' },
+    { minLevel: 5, name: 'Flag Hold - Trunk Turn' },
+  ],
+  form: {
+    setup: 'Stand on one leg, knee soft, arms out as if on holds.',
+    execution: 'Reach the free leg out to the side or behind, and move it until you balance with the least trunk movement. Hold, then the other leg.',
+    cue: 'The free leg does the balancing so the arms do not have to.',
+    breathing: 'Slow and steady.',
+    mistakes: 'Leaning the trunk instead of moving the leg. Locking the standing knee.',
+  },
+};
 
 export const DATA_DAILY: Circuit[] = [
   {
@@ -901,6 +1029,29 @@ export const DATA_DAILY: Circuit[] = [
       PUSH_UP,
       PLANK_CLIMBER,
       BACK_UNWIND,
+    ],
+  },
+  {
+    id: 'daily-06', circuitNum: '06',
+    title: 'QUIET FEET', subtitle: 'daily - mat only - feet - 16 min',
+    focus: 'Place a foot once, move the hips over it before standing, flag with the free leg.',
+    capacities: ['legs', 'tension', 'mobility'],
+    illustration: 'squats.svg',
+    duration: 16,
+    recoveryHours: 0,
+    legHeavy: true,
+    note:
+      'Footwork on the floor, hands free all the way. Tape five or six small marks around '
+      + 'one foot first. The ankle and the arch wake up, then toe taps on the marks, star '
+      + 'reaches, slow rock-over transfers and flag holds. Quality over count: reset when a '
+      + 'rep needs a correction. It prepares the feet; the wall still teaches them.',
+    exercises: [
+      ANKLE_WALL,
+      SHORT_FOOT,
+      TOE_TAPS,
+      SL_REACH,
+      ROCKOVER_TRANSFER,
+      FLAG_HOLD,
     ],
   },
 ];

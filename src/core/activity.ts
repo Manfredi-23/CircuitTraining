@@ -211,9 +211,11 @@ const WORKING = new Set(['PRIMARY', 'SECONDARY', 'ACCESSORY']);
 
 /**
  * A session that loads the legs: two or more working exercises that train the
- * legs first. Fixed drills (FOOTWORK) are technique, not load, and do not count.
+ * legs first. Fixed drills (FOOTWORK) are technique, not load, and do not count,
+ * unless the circuit says otherwise (`legHeavy`, DAILY 06 on the floor).
  */
 export function isLegHeavy(circuit: Circuit): boolean {
+  if (circuit.legHeavy) return true;
   return circuit.exercises.filter(e => WORKING.has(e.block) && !e.fixed && e.capacities[0] === 'legs').length >= 2;
 }
 
