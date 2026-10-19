@@ -314,7 +314,7 @@ fit that week; HEAL was added as a fourth while a finger heals.
 
 | Mode | Sessions |
 |------|----------|
-| DAILY | 01 CORE + OBLIQUES, 02 OBLIQUES + BACK, 03 BAND STRENGTH, 04 FINGERS + MOBILITY, 05 LEGS + CORE |
+| DAILY | 01 CORE + OBLIQUES, 02 OBLIQUES + BACK, 03 BAND STRENGTH, 04 FINGERS + MOBILITY, 05 LEGS + CORE, 06 QUIET FEET |
 | CAVE | 01 STRONG, 02 PULL + PUSH, 03 LEGS + BACK |
 | TEST | 01 ASSESS (five sections, ramps, ~76-88 min) |
 | HEAL | 01 LEGS + TRUNK, 02 PUSH + HINGE (injured finger, gym, ~60-70 min), 03 RING REHAB, 04 RING TEST (home, portable edge), 05 FOOTWORK (gym slabs, ~28 min) |
@@ -396,6 +396,16 @@ Short home sessions before breakfast. `npm run check:daily` holds the rules:
   cobra + open book closes it, extension and rotation only. `PUSH_UP` and
   `CAT_COW` are shared constants, so their ids and history are the ones
   DAILY 01 and 04 already use. 13 min NORMAL, 18 FRESH, 9 TIRED.
+- **DAILY 06 QUIET FEET** is floor footwork, hands free, from the October 2026
+  off-wall analysis (`docs/handovers/7bit-handover-v26.md`): knee-to-wall
+  ankle rock (MOBILITY), short foot + toe control (PREHAB, protocol
+  `floor-footwork`), then precision toe taps on tape marks, the single-leg star
+  reach (`extra-sl-reach`, shared with BUILD), slow rock-over transfers and
+  standing flag holds, all `fixed` SECONDARY TECHNIQUE drills that earn `legs`
+  + `tension`. 16 min at every energy (TIRED 13). `legHeavy: true`: fixed
+  drills normally do not count as leg load, but fifteen minutes on one leg is
+  poor practice on legs sore from a descent, so the recommender steps around it
+  then.
 
 ### Core
 
@@ -580,12 +590,15 @@ for the day they were set, soreness for that day and the next.
 BUILD A SESSION on the home screen (`BuildSheet`, `custom.ts`, presets in
 `build-slice.ts`) makes a session on the spot:
 
-- **PRESETS**: one tap fills in everything. Four built in (`BUILT_IN_PRESETS`:
-  PULL DAY, PUSH + CHEST, LEGS + BALANCE, QUICK HOME); SAVE AS PRESET stores
+- **PRESETS**: one tap fills in everything. Six built in (`BUILT_IN_PRESETS`:
+  PULL DAY, PUSH + CHEST, LEGS + BALANCE, QUICK HOME, ROCKOVER ENGINE (home,
+  30: step-up + slow lower, split squat with forward shift, single-leg RDL,
+  calf raise, glute bridge), HIPS + CONTROL (home, 15: 90/90, Cossack,
+  high-knee hold, knee-to-wall ankle, side-lying abduction, dead bug)); SAVE AS PRESET stores
   the athlete's own in `buildPresets` (persisted, in backups).
 - **WHERE**: HOME (mat, band, portable edge) or CAVE (the gym, with dumbbells
   and rings / TRX). **TIME**: 15 / 30 / 45 / 60 / 90 min.
-- **GOALS** (PULL POWER, PUSH POWER, CHEST, BALANCE) and **AREAS** (CORE,
+- **GOALS** (PULL POWER, PUSH POWER, CHEST, BALANCE, ROCKOVER, HIPS) and **AREAS** (CORE,
   PULL, ARMS, SHOULDERS, LEGS, MOBILITY, FINGERS), each tapped in, out or off
   (`cycleTarget`). A goal is an ordered list in `GOAL_ENTRIES`, key lift
   first; an area comes from the reserve, least recently done first. A target
@@ -613,10 +626,14 @@ BUILD A SESSION on the home screen (`BuildSheet`, `custom.ts`, presets in
   working exercise per four minutes (at most 14; mobility and prehab do not
   count), and the first working exercise always goes in. Gym opens with the
   pulse raiser, home with cat-cow; heavy blocks first, curls last.
-- The goal exercises new in `data-extras.ts` (`GOAL_EXERCISES`: ring dip,
-  explosive push-up, dumbbell floor press, ring push-up, ring fly, feet-up
-  push-up, single-leg balance, single-leg star reach) carry no capacity and
-  earn no XP; push power uses the `upper-power` protocol.
+- The goal exercises in `data-extras.ts` (`GOAL_EXERCISES`): ring dip,
+  explosive push-up, dumbbell floor press, ring push-up, ring fly and feet-up
+  push-up carry no capacity and earn no XP (push power uses the `upper-power`
+  protocol); single-leg balance and star reach earn `legs` + `tension`; the
+  rock-over and hip drills (step-up + slow lower, split squat forward shift,
+  high-knee hold, side-lying abduction, dead bug hands on chest) earn `legs`,
+  `mobility` or `tension` (protocols `rockover-strength`, `mobility`,
+  `balance`, `daily-trunk`). Sore legs close ROCKOVER.
 - The circuit is `custom-home` (mode DAILY, `recoveryHours: 0`) or
   `custom-cave` (mode CAVE, `recoveryHours: 24`, `stacksOnSession`, follows
   the deload week), titled with the preset's name when one is used.
@@ -721,9 +738,11 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v25.md`** — **start here.** BUILD presets, goals (pull
+- **`7bit-handover-v26.md`** — **start here.** DAILY 06 QUIET FEET and the
+  ROCKOVER / HIPS goals and presets, from the off-wall footwork analysis.
+- **`7bit-handover-v25.md`** — read second. BUILD presets, goals (pull
   power, push power, chest, balance), targets tapped out, AVOID, 90 minutes.
-- **`7bit-handover-v24.md`** — read second. BUILD: custom sessions from
+- **`7bit-handover-v24.md`** — BUILD: custom sessions from
   place, time and areas, with what is not trained enough suggested.
 - **`7bit-handover-v23.md`** — TODAY (time cap, no kit,
   sore areas, rest / sick days) and switching energy mid-session.

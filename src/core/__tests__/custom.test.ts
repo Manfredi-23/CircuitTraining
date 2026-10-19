@@ -77,7 +77,7 @@ describe('a custom session', () => {
 
   it('closes what is sore, and the pull at home', () => {
     const c = closedAreas({ ...base, day: { ...NO_DAY, sore: ['LEGS', 'SHOULDERS'] }, pain: 4 });
-    expect(Object.keys(c).sort()).toEqual(['CHEST', 'FINGERS', 'LEGS', 'PULL', 'PULL POWER', 'PUSH POWER', 'SHOULDERS']);
+    expect(Object.keys(c).sort()).toEqual(['CHEST', 'FINGERS', 'LEGS', 'PULL', 'PULL POWER', 'PUSH POWER', 'ROCKOVER', 'SHOULDERS']);
     const s = buildCustom({ ...base, include: ['LEGS', 'CORE'], day: { ...NO_DAY, sore: ['LEGS'] } });
     expect(s.list.every(e => e.capacities[0] !== 'legs' || e.block === 'MOBILITY')).toBe(true);
   });
@@ -147,8 +147,8 @@ describe('goals, exclusions and avoid', () => {
     expect(c).toEqual({ include: [], exclude: [] });
   });
 
-  it('ships the four presets, each building a session, and saves new ones', () => {
-    expect(BUILT_IN_PRESETS.map(p => p.name)).toEqual(['PULL DAY', 'PUSH + CHEST', 'LEGS + BALANCE', 'QUICK HOME']);
+  it('ships the six presets, each building a session, and saves new ones', () => {
+    expect(BUILT_IN_PRESETS.map(p => p.name)).toEqual(['PULL DAY', 'PUSH + CHEST', 'LEGS + BALANCE', 'QUICK HOME', 'ROCKOVER ENGINE', 'HIPS + CONTROL']);
     for (const p of BUILT_IN_PRESETS) {
       const s = buildCustom({ ...base, ...p });
       expect(s.list.filter(e => e.block !== 'WARMUP' && e.id !== 'morn-catcow').length).toBeGreaterThan(1);
@@ -159,6 +159,15 @@ describe('goals, exclusions and avoid', () => {
     const mine = makePreset({ place: 'GYM', minutes: 60, include: ['PULL POWER'], exclude: ['CORE'], avoid: [] }, '');
     expect(mine.name).toBe('PULL POWER 60');
     expect(presetName({ place: 'GYM', minutes: 90, include: ['PULL POWER', 'SHOULDERS', 'CHEST'], exclude: [], avoid: [] })).toMatch(/ 90$/);
+  });
+
+  it('builds ROCKOVER ENGINE at home with the step-up first, hands free', () => {
+    const s = buildCustom({ ...base, ...BUILT_IN_PRESETS[4] });
+    expect(s.list[1].id).toBe('extra-step-down');
+    expect(s.list.map(e => e.id)).toEqual(expect.arrayContaining(['extra-shift-split-squat', 'heal-calf-raise', 'daily-glute-bridge']));
+    expect(closedAreas({ ...base, day: { ...NO_DAY, sore: ['LEGS'] } }).ROCKOVER).toBeTruthy();
+    const hips = buildCustom({ ...base, ...BUILT_IN_PRESETS[5] });
+    expect(hips.list.map(e => e.id)).toEqual(expect.arrayContaining(['morn-hip-9090', 'daily-ankle-wall', 'extra-dead-bug']));
   });
 
   it('warns about a due area left out and about power after a climb', () => {

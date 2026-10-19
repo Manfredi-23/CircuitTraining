@@ -41,3 +41,30 @@ describe('DAILY 05 LEGS + CORE', () => {
     expect(CORE_EXERCISES.back).toContain('daily-glute-bridge');
   });
 });
+
+describe('DAILY 06 QUIET FEET', () => {
+  const feet = daily.find(c => c.id === 'daily-06')!;
+
+  it('exists, mat only, hands free: nothing gripped, nothing loaded', () => {
+    expect(feet).toBeDefined();
+    for (const ex of feet.exercises) {
+      expect(ex.load.kind, ex.id).toBe('bodyweight');
+      expect(ex.block, ex.id).not.toBe('ACCESSORY');
+      expect(ex.capacities.some(c => ['crimp', 'openhand', 'forearm', 'pull'].includes(c)), ex.id).toBe(false);
+    }
+  });
+
+  it('runs the footwork drills as written and lets them earn legs and tension XP', () => {
+    for (const id of ['daily-toe-taps', 'daily-rockover-transfer', 'daily-flag-hold']) {
+      const ex = feet.exercises.find(e => e.id === id)!;
+      expect(ex.fixed, id).toBe(true);
+      expect(ex.capacities).toEqual(['legs', 'tension']);
+      expect(ex.protocolId).toBe('floor-footwork');
+    }
+    expect(feet.exercises.find(e => e.id === 'extra-sl-reach')!.capacities).toEqual(['legs', 'tension']);
+  });
+
+  it('is repeatable daily', () => {
+    expect(feet.recoveryHours).toBe(0);
+  });
+});

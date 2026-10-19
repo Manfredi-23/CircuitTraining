@@ -77,7 +77,7 @@ describe('sore legs', () => {
   });
 
   it('marks the leg sessions and leaves footwork alone', () => {
-    const heavy = ['daily-03', 'daily-05', 'cave-06', 'heal-01', 'heal-02'];
+    const heavy = ['daily-03', 'daily-05', 'daily-06', 'cave-06', 'heal-01', 'heal-02'];
     for (const id of heavy) expect(isLegHeavy(circuit(id))).toBe(true);
     for (const id of ['daily-01', 'daily-02', 'daily-04', 'cave-01', 'cave-05', 'heal-05']) {
       expect(isLegHeavy(circuit(id))).toBe(false);
@@ -86,7 +86,7 @@ describe('sore legs', () => {
 
   it('keeps the recommender off leg sessions while the window is open', () => {
     // DAILY 05 would be next: never done, last in rotation after the others were done.
-    const done = ['daily-01', 'daily-02', 'daily-03', 'daily-04'].map((id, i) => ({
+    const done = ['daily-06', 'daily-01', 'daily-02', 'daily-03', 'daily-04'].map((id, i) => ({
       date: new Date(2026, 9, 5 + i, 8).toISOString(), mode: 'DAILY' as const, circuitId: id,
       circuitTitle: id, energy: 'NORMAL' as const, duration: 15,
     }));

@@ -8,8 +8,8 @@
 // - TIME: 15 / 30 / 45 / 60 / 90 minutes; the session is filled up to it,
 //   whole exercises at a time.
 // - TARGETS, each tapped in, out or off:
-//   - GOALS: PULL POWER, PUSH POWER, CHEST, BALANCE. Each is an ordered list
-//     of exercises, the key lift first.
+//   - GOALS: PULL POWER, PUSH POWER, CHEST, BALANCE, ROCKOVER, HIPS. Each is
+//     an ordered list of exercises, the key lift first.
 //   - AREAS: core, pull, arms, shoulders, legs, mobility, fingers, from the
 //     reserve (reserve.ts), least recently done first.
 //   A target tapped out takes every exercise that touches it out of the
@@ -19,7 +19,7 @@
 // - SUGGEST: the areas trained least lately, from how long each capacity has
 //   gone untrained against the days before it starts to fade, and this week's
 //   hard core sets against their targets.
-// - PRESETS: a saved set of these choices, four built in.
+// - PRESETS: a saved set of these choices, six built in.
 //
 // The same rules hold as anywhere else: only the kit the place has, nothing
 // gripped and no finger work or pulling while a finger heals, no finger work
@@ -50,8 +50,8 @@ export const CUSTOM_GROUPS: ReserveGroup[] = ['CORE', 'PULL', 'ARMS', 'SHOULDERS
 export const CUSTOM_TIMES = [15, 30, 45, 60, 90];
 export const CUSTOM_PREFIX = 'custom-';
 
-export type Goal = 'PULL POWER' | 'PUSH POWER' | 'CHEST' | 'BALANCE';
-export const GOALS: Goal[] = ['PULL POWER', 'PUSH POWER', 'CHEST', 'BALANCE'];
+export type Goal = 'PULL POWER' | 'PUSH POWER' | 'CHEST' | 'BALANCE' | 'ROCKOVER' | 'HIPS';
+export const GOALS: Goal[] = ['PULL POWER', 'PUSH POWER', 'CHEST', 'BALANCE', 'ROCKOVER', 'HIPS'];
 export type Target = ReserveGroup | Goal;
 export const isGoal = (t: Target): t is Goal => (GOALS as string[]).includes(t);
 
@@ -97,6 +97,24 @@ const GOAL_ENTRIES: Record<Goal, GoalEntry[]> = {
     { id: 'heal-silent-feet', place: 'GYM', grip: false },
     { id: 'heal-sticky-feet', place: 'GYM', grip: false },
   ],
+  // Single-leg strength for high steps: standing up through one leg, the
+  // hips over the foot first, a slow way down. All home, hands free.
+  ROCKOVER: [
+    { id: 'extra-step-down', place: 'HOME', grip: false },
+    { id: 'extra-shift-split-squat', place: 'HOME', grip: false },
+    { id: 'home-sl-rdl', place: 'HOME', grip: false },
+    { id: 'heal-calf-raise', place: 'HOME', grip: false },
+    { id: 'daily-glute-bridge', place: 'HOME', grip: false, floor: true },
+  ],
+  // Hip and ankle range under control, and the trunk still while the legs move.
+  HIPS: [
+    { id: 'morn-hip-9090', place: 'HOME', grip: false, floor: true },
+    { id: 'daily-cossack-shift', place: 'HOME', grip: false, floor: true },
+    { id: 'extra-high-knee-hold', place: 'HOME', grip: false },
+    { id: 'daily-ankle-wall', place: 'HOME', grip: false },
+    { id: 'extra-side-abduction', place: 'HOME', grip: false, floor: true },
+    { id: 'extra-dead-bug', place: 'HOME', grip: false, floor: true },
+  ],
 };
 
 /** The two weighted pull-ups are one movement: never both in a session. */
@@ -117,6 +135,7 @@ const ILLUSTRATION: Record<Target, string> = {
   CORE: 'core.svg', PULL: 'pullups.svg', ARMS: 'dumbbell.svg', SHOULDERS: 'pushups.svg',
   LEGS: 'squats.svg', MOBILITY: 'morning.svg', FINGERS: 'hangboard.svg',
   'PULL POWER': 'pullups.svg', 'PUSH POWER': 'pushups.svg', CHEST: 'pushups.svg', BALANCE: 'squats.svg',
+  ROCKOVER: 'squats.svg', HIPS: 'morning.svg',
 };
 
 /** The session's mode in the log: home sessions count as DAILY, gym ones as CAVE. */
@@ -179,7 +198,7 @@ export function closedAreas(ctx: CustomContext): Partial<Record<Target, string>>
     out['PULL POWER'] ??= 'No pulling while a finger heals.';
   } else if (ctx.pain !== null && ctx.pain >= PAIN_REDUCE_FROM) out.FINGERS = `Finger pain ${ctx.pain}/10 lately.`;
   else if (ctx.day.sore.includes('FOREARMS')) out.FINGERS = 'Forearms sore today.';
-  if (ctx.day.sore.includes('LEGS') || ctx.legsSore) out.LEGS = 'Legs sore today.';
+  if (ctx.day.sore.includes('LEGS') || ctx.legsSore) { out.LEGS = 'Legs sore today.'; out.ROCKOVER = 'Legs sore today.'; }
   if (ctx.day.sore.includes('SHOULDERS')) {
     for (const t of ['SHOULDERS', 'PULL', 'PULL POWER', 'PUSH POWER', 'CHEST'] as Target[]) out[t] ??= 'Shoulders sore today.';
   }
@@ -420,6 +439,8 @@ export const BUILT_IN_PRESETS: BuildPreset[] = [
   { id: 'push-chest', name: 'PUSH + CHEST', place: 'GYM', minutes: 45, include: ['PUSH POWER', 'CHEST'], exclude: [], avoid: [] },
   { id: 'legs-balance', name: 'LEGS + BALANCE', place: 'GYM', minutes: 45, include: ['LEGS', 'BALANCE'], exclude: [], avoid: [] },
   { id: 'quick-home', name: 'QUICK HOME', place: 'HOME', minutes: 15, include: ['MOBILITY', 'SHOULDERS'], exclude: ['CORE'], avoid: [] },
+  { id: 'rockover-engine', name: 'ROCKOVER ENGINE', place: 'HOME', minutes: 30, include: ['ROCKOVER'], exclude: [], avoid: [] },
+  { id: 'hips-control', name: 'HIPS + CONTROL', place: 'HOME', minutes: 15, include: ['HIPS'], exclude: [], avoid: [] },
 ];
 
 export type TargetState = 'in' | 'out' | 'off';

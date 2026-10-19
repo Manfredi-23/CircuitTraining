@@ -178,9 +178,11 @@ const FACE_PULL: Exercise = {
 };
 
 // ---- BUILD goals: push power, chest, balance -------------------------------------
-// Offered only by the BUILD sheet's goal labels (custom.ts). None carries a
-// capacity: chest and pushing power are the athlete's own extra goals, not
-// climbing axes, so they are recorded with their loads and earn no XP.
+// Offered by the BUILD sheet's goal labels (custom.ts). Chest and pushing
+// power carry no capacity: they are the athlete's own extra goals, not
+// climbing axes, so they are recorded with their loads and earn no XP. The
+// balance, rock-over and hip drills train `legs`, `tension` or `mobility`
+// like the footwork, and earn XP. The star reach is also in DAILY 06.
 
 const RING_DIP: Exercise = {
   id: 'extra-ring-dip',
@@ -330,7 +332,7 @@ const FEET_UP_PUSHUP: Exercise = {
 const SL_BALANCE: Exercise = {
   id: 'extra-sl-balance',
   name: 'Single-Leg Balance',
-  capacities: [],
+  capacities: ['legs', 'tension'],
   block: 'PREHAB', intensity: 'TECHNIQUE',
   sets: 3, work: 30, unit: 'sec', restSec: 30,
   fixed: true,
@@ -338,7 +340,7 @@ const SL_BALANCE: Exercise = {
   progression: 'Eyes open, then eyes closed, then eyes closed on a folded mat.',
   protocolId: 'balance',
   perSide: true,
-  note: 'An extra: no XP. Barefoot so the foot does the work.',
+  note: 'Barefoot so the foot does the work.',
   variations: [
     { minLevel: 1, name: 'Single-Leg Balance' },
     { minLevel: 3, name: 'Single-Leg Balance - Eyes Closed' },
@@ -353,10 +355,10 @@ const SL_BALANCE: Exercise = {
   },
 };
 
-const SL_REACH: Exercise = {
+export const SL_REACH: Exercise = {
   id: 'extra-sl-reach',
   name: 'Single-Leg Star Reach',
-  capacities: [],
+  capacities: ['legs', 'tension'],
   block: 'PREHAB', intensity: 'TECHNIQUE',
   sets: 2, work: 6, unit: 'reps', restSec: 30,
   fixed: true,
@@ -364,7 +366,7 @@ const SL_REACH: Exercise = {
   progression: 'Three directions, then five, then further out with a slower return.',
   protocolId: 'balance',
   perSide: true,
-  note: 'An extra: no XP. The control a high step and a rockover ask for.',
+  note: 'Per leg. The control a high step and a rock-over ask for.',
   variations: [
     { minLevel: 1, name: 'Single-Leg Reach - Three Directions' },
     { minLevel: 3, name: 'Single-Leg Star Reach' },
@@ -379,8 +381,118 @@ const SL_REACH: Exercise = {
   },
 };
 
+const STEP_DOWN: Exercise = {
+  id: 'extra-step-down',
+  name: 'Controlled Step-Up + Slow Lower',
+  capacities: ['legs'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 3, work: 6, unit: 'reps', restSec: 60,
+  load: { kind: 'bodyweight', text: 'A stable step, 15-25 cm to start' },
+  progression: 'Quieter, smoother reps first, then a step a little higher, then a 3-second lowering with a pause at the top.',
+  protocolId: 'rockover-strength',
+  perSide: true,
+  note: 'Per leg. The rock-over on the floor: hips over the foot, then stand.',
+  variations: [
+    { minLevel: 1, name: 'Step-Up + Slow Lower - Low Step' },
+    { minLevel: 3, name: 'Step-Up + Slow Lower - Chair Height' },
+    { minLevel: 5, name: 'Step-Up + Slow Lower - Chair, Pause' },
+  ],
+  form: {
+    setup: 'Whole foot on a secure low step, the other on the floor behind. Hands on the hips.',
+    execution: 'Shift the pelvis over the step foot, then stand by straightening that leg, the trailing foot just along for the ride. Lower over three seconds back to the floor.',
+    cue: 'No push from the back foot. If you need it, the step is too high today.',
+    breathing: 'Exhale up, inhale down.',
+    mistakes: 'Bouncing off the trailing leg. Knee diving inward. Dropping on the way down.',
+  },
+};
+
+const SHIFT_SPLIT_SQUAT: Exercise = {
+  id: 'extra-shift-split-squat',
+  name: 'Split Squat, Forward Shift',
+  capacities: ['legs'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 3, work: 8, unit: 'reps', restSec: 60,
+  load: { kind: 'bodyweight', text: 'Bodyweight, hands on the hips' },
+  progression: 'Deeper only while it stays smooth, then a 3-second lowering.',
+  protocolId: 'rockover-strength',
+  perSide: true,
+  note: 'Per leg. The weight moves onto the front foot, not just down.',
+  variations: [
+    { minLevel: 1, name: 'Split Squat, Forward Shift' },
+    { minLevel: 4, name: 'Split Squat, Forward Shift, 3s Lower' },
+  ],
+  form: {
+    setup: 'A comfortable split stance, the whole front foot on the floor.',
+    execution: 'Bend both knees while moving the trunk and hips forward over the front foot, then rise smoothly through the front leg.',
+    cue: 'Front foot flat and heavy; the back foot only balances.',
+    breathing: 'Inhale down, exhale up.',
+    mistakes: 'Driving from the rear foot. Front knee collapsing in. Heel lifting.',
+  },
+};
+
+const HIGH_KNEE_HOLD: Exercise = {
+  id: 'extra-high-knee-hold',
+  name: 'Standing High-Knee Hold',
+  capacities: ['mobility', 'legs'],
+  block: 'MOBILITY', intensity: 'EASY',
+  sets: 2, work: 8, unit: 'reps', restSec: 15,
+  load: { kind: 'bodyweight', text: 'Three-second hold at the top' },
+  progression: 'A little higher each week, only while the trunk stays tall.',
+  protocolId: 'mobility',
+  perSide: true,
+  note: 'Per leg. The active range a high step needs.',
+  form: {
+    setup: 'Stand tall on one leg, hands on the hips.',
+    execution: 'Raise the other knee toward the chest without leaning back, hold three seconds, lower quietly.',
+    cue: 'The hip lifts the knee; the back does not help.',
+    breathing: 'Exhale as the knee rises.',
+    mistakes: 'Leaning back. Tucking the pelvis. Dropping the leg.',
+  },
+};
+
+const SIDE_ABDUCTION: Exercise = {
+  id: 'extra-side-abduction',
+  name: 'Side-Lying Hip Abduction',
+  capacities: ['legs'],
+  block: 'PREHAB', intensity: 'EASY',
+  sets: 2, work: 12, unit: 'reps', restSec: 30,
+  load: { kind: 'bodyweight', text: 'Top leg straight, a pause at the top' },
+  progression: 'A two-second pause at the top, then slower lowering. Never swing.',
+  protocolId: 'balance',
+  perSide: true,
+  note: 'Per leg. The side of the hip that keeps the pelvis level on one foot. Hands free.',
+  form: {
+    setup: 'Lie on one side, head resting on the lower arm, hips stacked, the bottom knee bent.',
+    execution: 'Raise the top leg, heel leading and slightly back, without rolling the pelvis backward. Lower slowly.',
+    cue: 'Small and strict beats high and rolled back.',
+    breathing: 'Exhale up.',
+    mistakes: 'Rolling the pelvis back. Toes turning up. Swinging.',
+  },
+};
+
+const DEAD_BUG_CHEST: Exercise = {
+  id: 'extra-dead-bug',
+  name: 'Dead Bug, Hands on Chest',
+  capacities: ['tension'],
+  block: 'PREHAB', intensity: 'EASY',
+  sets: 2, work: 8, unit: 'reps', restSec: 30,
+  load: { kind: 'bodyweight', text: 'Legs only, lower back flat' },
+  progression: 'The moving leg further toward straight, as long as the lower back stays down.',
+  protocolId: 'daily-trunk',
+  perSide: true,
+  note: 'Per side. Trunk control while the legs move, without loading the hands.',
+  form: {
+    setup: 'On your back, knees over hips in tabletop, hands resting on the chest.',
+    execution: 'Slowly lower one heel toward the floor and return, then the other.',
+    cue: 'Ribs down, lower back heavy on the mat.',
+    breathing: 'Exhale as the leg lowers.',
+    mistakes: 'Back arching off the mat. Rushing. Holding the breath.',
+  },
+};
+
 export const GOAL_EXERCISES: Exercise[] = [
   RING_DIP, PLYO_PUSHUP, DB_FLOOR_PRESS, RING_PUSHUP, RING_FLY, FEET_UP_PUSHUP, SL_BALANCE, SL_REACH,
+  STEP_DOWN, SHIFT_SPLIT_SQUAT, HIGH_KNEE_HOLD, SIDE_ABDUCTION, DEAD_BUG_CHEST,
 ];
 
 export const EXTRA_EXERCISES: Exercise[] = [

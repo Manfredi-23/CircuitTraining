@@ -376,6 +376,12 @@ export interface Circuit {
    * and still be intended to stack.
    */
   stacksOnSession?: boolean;
+  /**
+   * Counts as a leg session for sore legs even though its drills are fixed
+   * technique: DAILY 06 is fifteen minutes on one leg, poor practice on legs
+   * still sore from a long descent.
+   */
+  legHeavy?: boolean;
   note?: string;
   exercises: Exercise[];
   /**

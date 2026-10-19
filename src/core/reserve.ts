@@ -101,6 +101,9 @@ const RESERVE: ReserveEntry[] = [
   { id: 'heal-nordic-curl', group: 'LEGS', place: 'GYM', grip: false, floor: true },
   { id: 'legs-toe-drag', group: 'LEGS', place: 'GYM', grip: false, floor: true },
   { id: 'addon-goblet-squat', group: 'LEGS', place: 'GYM', grip: true },
+  { id: 'extra-step-down', group: 'LEGS', place: 'HOME', grip: false },
+  { id: 'extra-shift-split-squat', group: 'LEGS', place: 'HOME', grip: false },
+  { id: 'extra-side-abduction', group: 'LEGS', place: 'HOME', grip: false, floor: true },
 
   // MOBILITY.
   { id: 'morn-catcow', group: 'MOBILITY', place: 'HOME', grip: false, floor: true },
@@ -110,6 +113,8 @@ const RESERVE: ReserveEntry[] = [
   { id: 'daily-cossack-shift', group: 'MOBILITY', place: 'HOME', grip: false, floor: true },
   { id: 'daily-back-unwind', group: 'MOBILITY', place: 'HOME', grip: false, floor: true },
   { id: 'feet-frogger', group: 'MOBILITY', place: 'HOME', grip: false, floor: true },
+  { id: 'daily-ankle-wall', group: 'MOBILITY', place: 'HOME', grip: false },
+  { id: 'extra-high-knee-hold', group: 'MOBILITY', place: 'HOME', grip: false },
 
   // FINGERS: light only. The density no-hangs do not restart the 48h.
   { id: 'daily-edge-density', group: 'FINGERS', place: 'HOME', grip: true },
