@@ -76,3 +76,16 @@ describe('recovery stats', () => {
     expect(r.compare.map(c => c.effort)).toEqual([6, 9]);
   });
 });
+
+describe('connecting Apple Health', () => {
+  it('says what went wrong and how to fix it', async () => {
+    const { connectMessage, describeRead } = await import('../health');
+    expect(connectMessage({ ok: true })).toBe('Apple Health connected.');
+    expect(connectMessage({ ok: false, reason: 'missing-plugin' })).toContain('Clean Build Folder');
+    expect(connectMessage({ ok: false, reason: 'error', detail: 'Missing com.apple.developer.healthkit entitlement.' }))
+      .toContain('+ Capability > HealthKit');
+    expect(connectMessage({ ok: false, reason: 'error', detail: 'Something odd' })).toBe('Health did not connect: Something odd');
+    expect(describeRead({ sleep: [1, 2], hrv: [1], restingHR: [], bodyMass: [1], climbs: [] }))
+      .toBe('2 nights of sleep, 1 day of HRV, 0 days of resting HR, 1 weight, 0 climbing workouts');
+  });
+});

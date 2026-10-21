@@ -108,6 +108,8 @@ src/
     activity.ts  # Activity log: hikes, tours, runs; time/effort estimates, sore legs
     insights.ts  # STATS data: week strip, core volume, test rows, lifts, climb vs pull,
                  #   freshness, one-arm path, finger weeks, cut short
+    review.ts    # STATS overview: last 28 days vs the 28 before, work split by area,
+                 #   WHAT STANDS OUT insights
     training-load.ts # session-RPE load (effort x minutes), weekly totals, acute:chronic
     block.ts     # mesocycle: three build weeks, one deload week
     rehab.ts     # injured ring finger vs the healthy one: % of right, the 80% goal
@@ -136,7 +138,7 @@ src/
     screens/     # HomeScreen, WorkoutScreen, RestScreen, CompleteScreen, StatsScreen, ClimbScreen
     shared/      # SettingsOverlay, TimerFlash, LoadLogger, ClimbStats, SessionInfo, StatsSections,
                  #   FormGuide, SessionProgressBar, AdjustControls, ReservePicker, DaySheet,
-                 #   BuildSheet
+                 #   BuildSheet, StatsOverview
   app/           # layout.tsx, page.tsx (screen router), globals.css
 ios/             # Xcode project (Capacitor 8, SPM)
 tools/           # generate-ios-assets.py — icon and splash from logo.svg
@@ -640,6 +642,25 @@ BUILD A SESSION on the home screen (`BuildSheet`, `custom.ts`, presets in
   `startCustom` runs it, switching the home tab to that mode; finger work asks
   the pain check as usual. Custom sessions never match a programme circuit id.
 
+## STATS
+
+Opens on an overview (`StatsOverview`, `review.ts`): the last 28 days against
+the 28 before in four tiles (training days and days a week, hours with
+sessions and climbs, share of planned sets done, mean effort), the level, and
+**WHAT STANDS OUT** (`getInsights`, at most 7, in this order): pulling logged
+while a finger heals, the biggest load gain (from the first non-zero entry),
+one-arm gates a tested pull-up already opens, training days against the
+period before, after-bouldering sessions with no climb logged (healing days
+excluded), completion under 85%, when ASSESS is due, and loads logged as 0
+after a real value (`zeroDrops`). Then WEEKS, **WHERE THE WORK WENT**
+(`getWorkSplit`: working sets by the area each exercise trains first, with
+the period before as a ghost bar; warm-ups, tests and retired ids left out),
+LOAD and RECOVERY, then groups: PROGRESS (lifts, one-arm path, tests), GAPS
+(freshness, core this week, cut short), FINGERS (ring finger, finger load),
+CLIMBING, LEVELS (capacities, level trend). Lift series drop 0 kg entries (a
+stepper left unset) and leave out all-zero bodyweight series; CUT SHORT
+leaves tests out and names retired ids readably (`retiredName`).
+
 ## Activity Log
 
 Everything done outside the app (hike, via ferrata, ski tour, trail run, run,
@@ -711,6 +732,15 @@ Capabilities, added in Xcode under Signing & Capabilities:
 - **App Groups** `group.com.sevenbit.circuittraining` (App and
   RestTimerWidgetExtension). Without it the widget shows its placeholder.
 
+CONNECT APPLE HEALTH reports why it failed (`connectHealth` returns a
+`HealthConnect`, `connectMessage` words it): web, plugin missing from the
+build (Clean Build Folder), Health unavailable, or HealthKit's own error text,
+with a missing capability or entitlement translated into the Xcode step. The
+plugin returns the error from `requestAuthorization`, per-type query errors
+(`errors`) and whether the permission sheet was answered (`sheet` on
+`isAvailable`). READ NOW reads 30 days and says what came back
+(`describeRead`), or where to allow the categories when nothing did.
+
 Apple Health suggests the energy from sleep and HRV / resting HR against the
 athlete's own 7-day baseline (`src/core/health.ts`), applied once a day; on a
 TIRED day the recommender skips STRONG and ASSESS. A newer Health weight is
@@ -738,9 +768,11 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v26.md`** — **start here.** DAILY 06 QUIET FEET and the
+- **`7bit-handover-v27.md`** — **start here.** STATS overview and WHAT
+  STANDS OUT, work split, regrouped sections; Apple Health connect reports why.
+- **`7bit-handover-v26.md`** — read second. DAILY 06 QUIET FEET and the
   ROCKOVER / HIPS goals and presets, from the off-wall footwork analysis.
-- **`7bit-handover-v25.md`** — read second. BUILD presets, goals (pull
+- **`7bit-handover-v25.md`** — BUILD presets, goals (pull
   power, push power, chest, balance), targets tapped out, AVOID, 90 minutes.
 - **`7bit-handover-v24.md`** — BUILD: custom sessions from
   place, time and areas, with what is not trained enough suggested.

@@ -8,6 +8,7 @@
 import { BENCHMARKS, currentBodyweight, latestResult, resultHistory, targetsForBoulderGrade } from './benchmarks';
 import { CONFIG } from './config';
 import { getModeData } from './data-index';
+import { EXTRA_EXERCISES } from './data-extras';
 import { OAP_ASSISTED_GATE, OAP_NEGATIVE_GATE } from './data-oap';
 import { asksPainCheck } from './engine';
 import { loadItems, weeklyLoad } from './training-load';
@@ -188,11 +189,16 @@ export interface LiftSeries {
   points: { date: string; value: number }[];
 }
 
-/** Every logged load, one series per exercise, most recently trained first. Tests excluded. */
+/**
+ * Every logged load, one series per exercise, most recently trained first.
+ * Tests excluded. A 0 is a stepper left unset, not a load: zeros are dropped
+ * from a series that has real values, and a series that is all zeros
+ * (bodyweight work) is left out, so neither reads as a drop or a flat line.
+ */
 export function getLiftSeries(log: LoadLogEntry[]): LiftSeries[] {
   const byId = new Map<string, LiftSeries>();
   for (const e of [...log].sort((a, b) => a.date.localeCompare(b.date))) {
-    if (e.exerciseId.startsWith('test-')) continue;
+    if (e.exerciseId.startsWith('test-') || e.value <= 0) continue;
     const s = byId.get(e.exerciseId)
       ?? { exerciseId: e.exerciseId, name: e.exerciseName, unit: e.unit, points: [] };
     s.points.push({ date: e.date, value: e.value });
@@ -425,19 +431,31 @@ export interface SkipRow {
   skipped: number;
 }
 
-/** Exercises cut short most often over the last `days`, worst first. Needs planned sets, so newer sessions only. */
+/** A readable name for an exercise id no longer in the app, e.g. "Trunk flexor". */
+export function retiredName(id: string): string {
+  const words = id.replace(/^(test|morn|daily|home|extra|addon|legs|cave|heal|feet|wrists)-/, '').replace(/-/g, ' ');
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
+/**
+ * Exercises cut short most often over the last `days`, worst first. Needs
+ * planned sets, so newer sessions only. Tests are left out: each ASSESS test
+ * can be scored alone, so an untested one is not a session cut short.
+ */
 export function getSkipped(sessionLog: SessionLogEntry[], days = 90, now = new Date()): SkipRow[] {
   const since = addDays(localDate(now), -days);
   const names = new Map<string, string>();
   for (const c of CONFIG.modes.flatMap(m => getModeData(m))) {
     for (const e of [...c.exercises, ...(c.substitutes ?? [])]) names.set(e.id, e.name);
   }
+  for (const e of EXTRA_EXERCISES) names.set(e.id, e.name);
   const rows = new Map<string, SkipRow>();
   for (const s of sessionLog) {
     if (!s.planned || localDate(new Date(s.date)) < since) continue;
     for (const [id, planned] of Object.entries(s.planned)) {
+      if (id.startsWith('test-')) continue;
       const done = s.sets?.[id] ?? 0;
-      const row = rows.get(id) ?? { exerciseId: id, name: names.get(id) ?? id, planned: 0, short: 0, skipped: 0 };
+      const row = rows.get(id) ?? { exerciseId: id, name: names.get(id) ?? retiredName(id), planned: 0, short: 0, skipped: 0 };
       row.planned++;
       if (done < planned) row.short++;
       if (done === 0) row.skipped++;

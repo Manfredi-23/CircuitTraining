@@ -6,7 +6,7 @@
  */
 
 import { isNative } from './native';
-import type { BodyMass, DayValue, HealthClimb, SleepNight } from '@/core/health';
+import type { BodyMass, DayValue, HealthClimb, HealthConnect, SleepNight } from '@/core/health';
 
 export interface HealthRead {
   sleep: SleepNight[];
@@ -14,16 +14,18 @@ export interface HealthRead {
   restingHR: DayValue[];
   bodyMass: BodyMass[];
   climbs: HealthClimb[];
+  /** What HealthKit said when a query failed, one line per data type. */
+  errors?: string[];
 }
 
 export type WorkoutActivity = 'strength' | 'core' | 'functional';
 
 interface HealthPluginApi {
-  isAvailable(): Promise<{ available: boolean }>;
-  requestAuthorization(): Promise<{ completed: boolean }>;
+  isAvailable(): Promise<{ available: boolean; sheet?: string }>;
+  requestAuthorization(): Promise<{ completed: boolean; error?: string }>;
   query(options: { days: number }): Promise<{
     sleep: SleepNight[]; hrv: DayValue[]; restingHR: DayValue[];
-    bodyMass: { date: string; kg: number }[]; climbs: HealthClimb[];
+    bodyMass: { date: string; kg: number }[]; climbs: HealthClimb[]; errors?: string[];
   }>;
   saveWorkout(options: { start: number; end: number; activity: WorkoutActivity; title: string }): Promise<{ saved: boolean }>;
 }
@@ -39,26 +41,33 @@ async function getPlugin(): Promise<HealthPluginApi | null> {
   return plugin;
 }
 
-export async function healthAvailable(): Promise<boolean> {
-  try {
-    const p = await getPlugin();
-    return p ? (await p.isAvailable()).available : false;
-  } catch {
-    return false;
-  }
+/** A plugin call Capacitor could not route: the native plugin is not in this build. */
+function isMissingPlugin(e: unknown): boolean {
+  const err = e as { code?: string; message?: string } | null;
+  return err?.code === 'UNIMPLEMENTED' || /not implemented/i.test(err?.message ?? '');
 }
 
 /**
- * Raise the Health permission sheet. HealthKit never reveals whether reading
- * was allowed, so `true` only means the sheet was answered; a refused type
- * simply reads back empty.
+ * Raise the Health permission sheet, and say exactly what went wrong if it
+ * did not open. HealthKit never reveals whether reading was allowed, so `ok`
+ * only means the sheet was answered; a refused type simply reads back empty.
  */
-export async function connectHealth(): Promise<boolean> {
+export async function connectHealth(): Promise<HealthConnect> {
+  const p = await getPlugin().catch(() => null);
+  if (!p) return { ok: false, reason: 'web' };
   try {
-    const p = await getPlugin();
-    return p ? (await p.requestAuthorization()).completed : false;
-  } catch {
-    return false;
+    const a = await p.isAvailable();
+    if (!a.available) return { ok: false, reason: 'unavailable' };
+  } catch (e) {
+    return isMissingPlugin(e)
+      ? { ok: false, reason: 'missing-plugin' }
+      : { ok: false, reason: 'error', detail: (e as Error)?.message ?? String(e) };
+  }
+  try {
+    const r = await p.requestAuthorization();
+    return r.completed ? { ok: true } : { ok: false, reason: 'error', detail: r.error || 'The permission sheet did not complete.' };
+  } catch (e) {
+    return { ok: false, reason: isMissingPlugin(e) ? 'missing-plugin' : 'error', detail: (e as Error)?.message ?? String(e) };
   }
 }
 
@@ -73,6 +82,7 @@ export async function readHealth(days: number): Promise<HealthRead | null> {
       restingHR: (r.restingHR ?? []).map(d => ({ date: d.date, value: Math.round(d.value) })),
       bodyMass: (r.bodyMass ?? []).map(d => ({ date: d.date, kg: Math.round(d.kg * 10) / 10 })),
       climbs: r.climbs ?? [],
+      errors: r.errors ?? [],
     };
   } catch {
     return null;

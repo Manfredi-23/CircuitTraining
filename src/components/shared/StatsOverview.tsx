@@ -1,0 +1,109 @@
+'use client';
+
+import { useMemo } from 'react';
+import {
+  getInsights, getOverview, getWorkSplit, PERIOD_DAYS, WORK_AREA_LABEL,
+  type InsightInput, type PeriodStats,
+} from '@/core/review';
+import type { ActivitySession } from '@/core/activity';
+import type { ClimbSession, SessionLogEntry } from '@/core/types';
+import styles from './StatsOverview.module.css';
+
+const hours = (min: number) => (min >= 600 ? String(Math.round(min / 60)) : (Math.round(min / 6) / 10).toFixed(1));
+
+function Delta({ now, before, unit = '' }: { now: number | null; before: number | null; unit?: string }) {
+  if (now === null || before === null || !before) return <span className={styles.deltaNone}>no earlier data</span>;
+  const d = Math.round((now - before) * 10) / 10;
+  if (d === 0) return <span className={styles.deltaNone}>same as before</span>;
+  return <span className={d > 0 ? styles.deltaUp : styles.deltaDown}>{d > 0 ? '+' : ''}{d}{unit} vs 4 wks before</span>;
+}
+
+function Tile({ label, value, unit, children }: { label: string; value: string; unit?: string; children?: React.ReactNode }) {
+  return (
+    <div className={styles.tile}>
+      <span className={styles.tileLabel}>{label}</span>
+      <span className={styles.tileValue}>{value}{unit && <small> {unit}</small>}</span>
+      {children}
+    </div>
+  );
+}
+
+/**
+ * The top of STATS: the last four weeks in four numbers, each against the four
+ * weeks before, the level, and what stands out in the logs.
+ */
+export function OverviewCard({ level, sessionLog, climbLog, activityLog, insightInput }: {
+  level: number;
+  sessionLog: SessionLogEntry[];
+  climbLog: ClimbSession[];
+  activityLog: ActivitySession[];
+  insightInput: InsightInput;
+}) {
+  const ov = useMemo(() => getOverview(sessionLog, climbLog, activityLog), [sessionLog, climbLog, activityLog]);
+  const insights = useMemo(() => getInsights(insightInput), [insightInput]);
+  const c: PeriodStats = ov.current;
+  const p: PeriodStats = ov.previous;
+  return (
+    <>
+      <div className={styles.card}>
+        <div className={styles.cardHead}>
+          <span>LAST {PERIOD_DAYS} DAYS</span>
+          <span className={styles.level}>LEVEL {String(level).padStart(2, '0')}</span>
+        </div>
+        <div className={styles.tiles}>
+          <Tile label="TRAINING DAYS" value={String(c.trainingDays)} unit={`${ov.daysPerWeek}/wk`}>
+            <Delta now={c.trainingDays} before={p.trainingDays} />
+          </Tile>
+          <Tile label="HOURS" value={hours(c.minutes)} unit="h">
+            <span className={styles.deltaNone}>{c.sessions} sessions{c.climbs ? ` · ${c.climbs} climbs` : ''}</span>
+            <Delta now={Math.round(c.minutes / 6) / 10} before={Math.round(p.minutes / 6) / 10} unit="h" />
+          </Tile>
+          <Tile label="SETS DONE" value={c.completion === null ? '--' : `${c.completion}%`} unit={`${c.setsDone} sets`}>
+            <span className={styles.deltaNone}>of the sets planned</span>
+          </Tile>
+          <Tile label="EFFORT" value={c.effort === null ? '--' : String(c.effort)} unit="/10">
+            <Delta now={c.effort} before={p.effort} />
+          </Tile>
+        </div>
+      </div>
+
+      {insights.length > 0 && (
+        <div className={styles.insights}>
+          <div className={styles.insightsTitle}>WHAT STANDS OUT</div>
+          {insights.map(i => (
+            <div key={i.text} className={`${styles.insight} ${styles[i.tone]}`}>
+              <span className={styles.mark} aria-hidden="true" />
+              <span>{i.text}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
+
+/** Working sets by area over the last four weeks, with the four weeks before as a ghost bar. */
+export function WorkSplitSection({ sessionLog }: { sessionLog: SessionLogEntry[] }) {
+  const split = useMemo(() => getWorkSplit(sessionLog), [sessionLog]);
+  const total = split.reduce((a, s) => a + s.sets, 0);
+  if (!total) return <div className={styles.empty}>Working sets appear here once sessions are logged with sets.</div>;
+  const max = Math.max(...split.map(s => Math.max(s.sets, s.previousSets)), 1);
+  const prevTotal = split.reduce((a, s) => a + s.previousSets, 0);
+  return (
+    <div className={styles.split}>
+      {split.filter(s => s.sets || s.previousSets).map(s => (
+        <div key={s.area} className={styles.splitRow}>
+          <span className={styles.splitLabel}>{WORK_AREA_LABEL[s.area]}</span>
+          <span className={styles.splitTrack}>
+            {prevTotal > 0 && <span className={styles.splitPrev} style={{ width: `${(s.previousSets / max) * 100}%` }} />}
+            <span className={styles.splitFill} style={{ width: `${(s.sets / max) * 100}%` }} />
+          </span>
+          <span className={styles.splitValue}>{s.sets}<small> {s.share}%</small></span>
+        </div>
+      ))}
+      <div className={styles.hint}>
+        {total} working sets in the last {PERIOD_DAYS} days{prevTotal ? `, ${prevTotal} the ${PERIOD_DAYS} before (light bar)` : ''}, by what each exercise trains first. Warm-ups and tests are left out.
+      </div>
+    </div>
+  );
+}
