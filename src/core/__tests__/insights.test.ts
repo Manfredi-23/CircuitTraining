@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getFreshness, getOneArmPath, getFingerWeeks, getSkipped } from '../insights';
+import { getFreshness, getOneArmPath, getFingerWeeks, getSkipped, getLiftSeries, retiredName } from '../insights';
 import type { SessionLogEntry } from '../types';
 
 const NOW = new Date(2026, 9, 8, 9, 0);
@@ -59,5 +59,26 @@ describe('cut short', () => {
       s(new Date(2026, 9, 5), 'cave-05', { planned: { a: 3, b: 3 }, sets: { a: 2 } }),
     ], 90, NOW);
     expect(rows.map(r => [r.exerciseId, r.short, r.skipped])).toEqual([['b', 2, 1], ['a', 1, 0]]);
+  });
+});
+
+describe('lifts and cut short read cleanly', () => {
+  it('drops zeros from a lift series and leaves out all-zero bodyweight work', () => {
+    const e = (exerciseId: string, date: string, value: number) => ({ exerciseId, exerciseName: exerciseId, date, value, unit: 'kg' as const });
+    const series = getLiftSeries([
+      e('addon-russian-twist', '2026-10-12', 12), e('addon-russian-twist', '2026-10-20', 0),
+      e('legs-back-extension', '2026-10-12', 0), e('legs-back-extension', '2026-10-20', 0),
+    ]);
+    expect(series.map(s => s.exerciseId)).toEqual(['addon-russian-twist']);
+    expect(series[0].points.map(p => p.value)).toEqual([12]);
+  });
+
+  it('names retired exercises readably and leaves tests out of cut short', () => {
+    expect(retiredName('test-trunk-flexor')).toBe('Trunk flexor');
+    const rows = getSkipped([{
+      date: new Date().toISOString(), mode: 'TEST', circuitId: 'assess-01', circuitTitle: 'ASSESS', energy: 'NORMAL', duration: 40,
+      sets: {}, planned: { 'test-trunk-flexor': 1, 'extra-diamond-pushup': 2 },
+    }]);
+    expect(rows.map(r => r.name)).toEqual(['Close-Hand Push-Up']);
   });
 });

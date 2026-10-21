@@ -63,3 +63,10 @@
 .timeTabActive { border-bottom-width: 4px; font-weight: 700; }
 
 .chartWrap { width: 100%; height: 150px; position: relative; }
+
+/* Group divider: PROGRESS, GAPS, FINGERS, CLIMBING, LEVELS */
+.group {
+  font-weight: 700; font-size: 11px; letter-spacing: 0.14em; color: var(--accent);
+  border-top: 2px solid var(--ink); padding-top: 10px; margin-top: 6px;
+}
+.hintLine { font-size: 12px; color: var(--ink-dim); line-height: 1.4; }

@@ -155,3 +155,47 @@ export function climbsToImport(
   const seen = new Set(imported);
   return climbs.filter(c => !seen.has(c.id) && !loggedDates.has(c.date) && c.minutes >= 15);
 }
+
+// ---- Connecting, and saying why it did not work -----------------------------------
+
+export type HealthConnect =
+  | { ok: true }
+  | { ok: false; reason: 'web' | 'missing-plugin' | 'unavailable' | 'error'; detail?: string };
+
+/**
+ * What to tell the athlete when CONNECT did not work, with the fix. HealthKit
+ * errors are passed through, translated where the cause is known: a build
+ * without the HealthKit capability is the usual one.
+ */
+export function connectMessage(r: HealthConnect): string {
+  if (r.ok) return 'Apple Health connected.';
+  switch (r.reason) {
+    case 'web': return 'Apple Health works in the iPhone app only.';
+    case 'unavailable': return 'Apple Health is not available on this device.';
+    case 'missing-plugin':
+      return 'This build has no Health plugin. In Xcode: Product > Clean Build Folder (Shift+Cmd+K), then run again (Cmd+R).';
+    case 'error': {
+      const d = r.detail ?? '';
+      if (/entitlement|not authorized to use|capabilit/i.test(d)) {
+        return 'This build is missing the HealthKit capability. In Xcode: App target > Signing & Capabilities > + Capability > HealthKit, then run again.';
+      }
+      return `Health did not connect: ${d || 'no reason given'}`;
+    }
+  }
+}
+
+/** One line on what a read brought back, e.g. "14 nights of sleep, 12 days of HRV, 1 weight, 0 climbing workouts". */
+export function describeRead(r: { sleep: unknown[]; hrv: unknown[]; restingHR: unknown[]; bodyMass: unknown[]; climbs: unknown[] }): string {
+  const n = (count: number, one: string, many = `${one}s`) => `${count} ${count === 1 ? one : many}`;
+  return [
+    n(r.sleep.length, 'night of sleep', 'nights of sleep'),
+    n(r.hrv.length, 'day of HRV', 'days of HRV'),
+    n(r.restingHR.length, 'day of resting HR', 'days of resting HR'),
+    n(r.bodyMass.length, 'weight'),
+    n(r.climbs.length, 'climbing workout'),
+  ].join(', ');
+}
+
+/** Where to allow the categories when a read comes back empty. */
+export const HEALTH_PERMISSIONS_HINT =
+  'Nothing came back. Allow the categories: iPhone Settings > Health > Data Access & Devices > 7Bit > Turn On All. Sleep and HRV need a watch worn at night.';

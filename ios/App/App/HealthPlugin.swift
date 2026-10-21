@@ -41,17 +41,32 @@ public class HealthPlugin: CAPPlugin, CAPBridgedPlugin {
         return [HKObjectType.workoutType()]
     }
 
+    /// Whether Health exists here, and whether the permission sheet has been
+    /// answered: HealthKit only reports that for types the app writes, so the
+    /// workout type stands in for the whole sheet.
     @objc func isAvailable(_ call: CAPPluginCall) {
-        call.resolve(["available": HKHealthStore.isHealthDataAvailable()])
+        let available = HKHealthStore.isHealthDataAvailable()
+        var sheet = "unavailable"
+        if available {
+            switch store.authorizationStatus(for: HKObjectType.workoutType()) {
+            case .notDetermined: sheet = "notDetermined"
+            case .sharingDenied: sheet = "denied"
+            case .sharingAuthorized: sheet = "authorized"
+            @unknown default: sheet = "unknown"
+            }
+        }
+        call.resolve(["available": available, "sheet": sheet])
     }
 
+    /// Raises the permission sheet. The error text goes back to the web side,
+    /// so a missing capability or entitlement shows up on the phone as what it is.
     @objc func requestAuthorization(_ call: CAPPluginCall) {
         guard HKHealthStore.isHealthDataAvailable() else {
-            call.resolve(["completed": false])
+            call.resolve(["completed": false, "error": "Health data is not available on this device."])
             return
         }
-        store.requestAuthorization(toShare: writeTypes, read: readTypes) { success, _ in
-            call.resolve(["completed": success])
+        store.requestAuthorization(toShare: writeTypes, read: readTypes) { success, error in
+            call.resolve(["completed": success, "error": error?.localizedDescription ?? ""])
         }
     }
 
@@ -68,30 +83,38 @@ public class HealthPlugin: CAPPlugin, CAPBridgedPlugin {
         let group = DispatchGroup()
         var result: [String: Any] = [:]
         let lock = NSLock()
+        var errors: [String] = []
         func put(_ key: String, _ value: Any) {
             lock.lock(); result[key] = value; lock.unlock()
         }
+        func fail(_ key: String, _ error: Error?) {
+            guard let error = error else { return }
+            lock.lock(); errors.append("\(key): \(error.localizedDescription)"); lock.unlock()
+        }
 
         group.enter()
-        querySleep(start: start, end: end) { put("sleep", $0); group.leave() }
+        querySleep(start: start, end: end) { put("sleep", $0); fail("sleep", $1); group.leave() }
 
         group.enter()
         dailyAverage(.heartRateVariabilitySDNN, unit: HKUnit.secondUnit(with: .milli), start: start, end: end) {
-            put("hrv", $0); group.leave()
+            put("hrv", $0); fail("hrv", $1); group.leave()
         }
 
         group.enter()
         dailyAverage(.restingHeartRate, unit: HKUnit.count().unitDivided(by: .minute()), start: start, end: end) {
-            put("restingHR", $0); group.leave()
+            put("restingHR", $0); fail("restingHR", $1); group.leave()
         }
 
         group.enter()
-        queryBodyMass(start: start, end: end) { put("bodyMass", $0); group.leave() }
+        queryBodyMass(start: start, end: end) { put("bodyMass", $0); fail("bodyMass", $1); group.leave() }
 
         group.enter()
-        queryClimbs(start: start, end: end) { put("climbs", $0); group.leave() }
+        queryClimbs(start: start, end: end) { put("climbs", $0); fail("climbs", $1); group.leave() }
 
-        group.notify(queue: .main) { call.resolve(result) }
+        group.notify(queue: .main) {
+            result["errors"] = errors
+            call.resolve(result)
+        }
     }
 
     /// A finished session as a workout, so Fitness and the rings count it.
@@ -153,10 +176,10 @@ public class HealthPlugin: CAPPlugin, CAPBridgedPlugin {
     /// Minutes asleep per night. A night belongs to the day you wake up on, so
     /// samples are grouped by the date of their end, shifted back six hours to
     /// keep a nap after noon from opening a new night at midnight.
-    private func querySleep(start: Date, end: Date, done: @escaping ([[String: Any]]) -> Void) {
-        guard let type = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) else { done([]); return }
+    private func querySleep(start: Date, end: Date, done: @escaping ([[String: Any]], Error?) -> Void) {
+        guard let type = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) else { done([], nil); return }
         let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: [])
-        let q = HKSampleQuery(sampleType: type, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { _, samples, _ in
+        let q = HKSampleQuery(sampleType: type, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { _, samples, error in
             var asleep: [String: Double] = [:]
             var deep: [String: Double] = [:]
             var rem: [String: Double] = [:]
@@ -177,7 +200,7 @@ public class HealthPlugin: CAPPlugin, CAPBridgedPlugin {
                 if let r = rem[night] { row["remMin"] = Int(r) }
                 return row
             }
-            done(rows)
+            done(rows, error)
         }
         store.execute(q)
     }
@@ -191,48 +214,48 @@ public class HealthPlugin: CAPPlugin, CAPBridgedPlugin {
 
     private func dailyAverage(
         _ id: HKQuantityTypeIdentifier, unit: HKUnit, start: Date, end: Date,
-        done: @escaping ([[String: Any]]) -> Void
+        done: @escaping ([[String: Any]], Error?) -> Void
     ) {
-        guard let type = HKObjectType.quantityType(forIdentifier: id) else { done([]); return }
+        guard let type = HKObjectType.quantityType(forIdentifier: id) else { done([], nil); return }
         let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: [])
         let anchor = Calendar.current.startOfDay(for: start)
         let q = HKStatisticsCollectionQuery(
             quantityType: type, quantitySamplePredicate: predicate,
             options: .discreteAverage, anchorDate: anchor, intervalComponents: DateComponents(day: 1)
         )
-        q.initialResultsHandler = { _, collection, _ in
+        q.initialResultsHandler = { _, collection, error in
             var rows: [[String: Any]] = []
             collection?.enumerateStatistics(from: start, to: end) { stats, _ in
                 if let avg = stats.averageQuantity() {
                     rows.append(["date": self.day(stats.startDate), "value": avg.doubleValue(for: unit)])
                 }
             }
-            done(rows)
+            done(rows, error)
         }
         store.execute(q)
     }
 
-    private func queryBodyMass(start: Date, end: Date, done: @escaping ([[String: Any]]) -> Void) {
-        guard let type = HKObjectType.quantityType(forIdentifier: .bodyMass) else { done([]); return }
+    private func queryBodyMass(start: Date, end: Date, done: @escaping ([[String: Any]], Error?) -> Void) {
+        guard let type = HKObjectType.quantityType(forIdentifier: .bodyMass) else { done([], nil); return }
         let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: [])
         let sort = [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)]
-        let q = HKSampleQuery(sampleType: type, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: sort) { _, samples, _ in
+        let q = HKSampleQuery(sampleType: type, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: sort) { _, samples, error in
             // Last reading of each day.
             var byDay: [String: Double] = [:]
             for case let s as HKQuantitySample in samples ?? [] {
                 byDay[self.day(s.startDate)] = s.quantity.doubleValue(for: .gramUnit(with: .kilo))
             }
-            done(byDay.keys.sorted().map { ["date": $0, "kg": byDay[$0]!] })
+            done(byDay.keys.sorted().map { ["date": $0, "kg": byDay[$0]!] }, error)
         }
         store.execute(q)
     }
 
-    private func queryClimbs(start: Date, end: Date, done: @escaping ([[String: Any]]) -> Void) {
+    private func queryClimbs(start: Date, end: Date, done: @escaping ([[String: Any]], Error?) -> Void) {
         let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
             HKQuery.predicateForSamples(withStart: start, end: end, options: []),
             HKQuery.predicateForWorkouts(with: .climbing),
         ])
-        let q = HKSampleQuery(sampleType: HKObjectType.workoutType(), predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { _, samples, _ in
+        let q = HKSampleQuery(sampleType: HKObjectType.workoutType(), predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { _, samples, error in
             let rows: [[String: Any]] = (samples ?? []).compactMap { sample in
                 guard let w = sample as? HKWorkout else { return nil }
                 // Our own sessions written back as climbing never exist, but skip
@@ -244,7 +267,7 @@ public class HealthPlugin: CAPPlugin, CAPBridgedPlugin {
                     "minutes": Int(w.duration / 60),
                 ]
             }
-            done(rows)
+            done(rows, error)
         }
         store.execute(q)
     }

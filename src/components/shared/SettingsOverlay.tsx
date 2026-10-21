@@ -7,7 +7,8 @@ import { exportText } from './backup-io';
 import { getBlockWeek, blockLabel } from '@/core/block';
 import { REMINDER_LABELS, type ReminderKind } from '@/core/reminders';
 import { isNative, requestNotifications } from '@/native/native';
-import { connectHealth, healthAvailable, readHealth } from '@/native/health';
+import { connectHealth, readHealth } from '@/native/health';
+import { connectMessage, describeRead, HEALTH_PERMISSIONS_HINT } from '@/core/health';
 
 interface SettingsOverlayProps {
   open: boolean;
@@ -87,22 +88,28 @@ export default function SettingsOverlay({ open, onClose }: SettingsOverlayProps)
   };
 
   const handleConnectHealth = async () => {
-    if (!(await healthAvailable())) {
-      setStatus({ text: 'Apple Health is not available on this device.', warn: true });
-      return;
-    }
-    if (!(await connectHealth())) {
-      setStatus({ text: 'Health did not connect. Check that the app has the HealthKit capability.', warn: true });
+    const result = await connectHealth();
+    if (!result.ok) {
+      setStatus({ text: connectMessage(result), warn: true });
       return;
     }
     setHealthSettings({ connected: true });
+    await handleReadHealth();
+  };
+
+  /** Read now and say what came back, so an empty read is visible rather than silent. */
+  const handleReadHealth = async () => {
     const read = await readHealth(30);
-    if (read) applyHealthRead(read);
+    if (!read) {
+      setStatus({ text: 'Health did not answer. Close the app fully and open it again, then READ NOW.', warn: true });
+      return;
+    }
+    applyHealthRead(read);
+    const empty = !(read.sleep.length || read.hrv.length || read.restingHR.length || read.bodyMass.length || read.climbs.length);
+    const errors = read.errors?.length ? ` HealthKit said: ${read.errors.join('; ')}.` : '';
     setStatus({
-      text: read && (read.sleep.length || read.hrv.length || read.bodyMass.length || read.climbs.length)
-        ? 'Apple Health connected.'
-        : 'Connected, but nothing came back yet. Allow the categories in Health > Sharing > Apps > 7Bit.',
-      warn: false,
+      text: empty ? `${HEALTH_PERMISSIONS_HINT}${errors}` : `Read the last 30 days: ${describeRead(read)}.${errors}`,
+      warn: empty || Boolean(errors),
     });
   };
 
@@ -169,9 +176,12 @@ export default function SettingsOverlay({ open, onClose }: SettingsOverlayProps)
                 {healthSettings.writeWorkouts ? 'ON' : 'OFF'}
               </span>
             </button>
-            <button className="overlay-btn" onClick={() => setHealthSettings({ connected: false })}>
-              DISCONNECT
-            </button>
+            <div className="overlay-row">
+              <button className="overlay-btn" onClick={() => void handleReadHealth()}>READ NOW</button>
+              <button className="overlay-btn" onClick={() => setHealthSettings({ connected: false })}>
+                DISCONNECT
+              </button>
+            </div>
           </>
         )}
       </div>
