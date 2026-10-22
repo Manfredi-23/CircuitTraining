@@ -16,7 +16,7 @@ export default function Led({
 }: {
   text?: string;
   icon?: string;
-  /** Dot diameter in px; the pitch is 1.5 dots. */
+  /** Dot diameter in px; the pitch is 1.3 dots, close enough for strokes to read as lines. */
   dot?: number;
   lit?: string;
   unlit?: string | 'none';
@@ -26,7 +26,7 @@ export default function Led({
   className?: string;
 }) {
   const { dots, cols } = icon ? layoutIcon(icon) : layoutLed(text ?? '');
-  const pitch = dot * 1.5;
+  const pitch = dot * 1.3;
   const r = dot / 2;
   const w = cols * pitch - (pitch - dot);
   const h = 7 * pitch - (pitch - dot);

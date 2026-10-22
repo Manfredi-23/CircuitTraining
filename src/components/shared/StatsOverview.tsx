@@ -29,7 +29,7 @@ function Tile({ label, value, unit, children }: { label: string; value: string; 
     <div className={styles.tile}>
       <span className={styles.tileLabel}>{label}</span>
       <span className={styles.tileValue}>
-        {value ? <Led text={value} dot={4} animate /> : <span className={styles.tileDash}>-</span>}
+        {value ? <Led text={value} dot={5} animate /> : <span className={styles.tileDash}>-</span>}
         {unit && <small>{unit}</small>}
       </span>
       {children}
@@ -77,7 +77,7 @@ export function OverviewCard({ level, sessionLog, climbLog, activityLog, insight
       </div>
 
       {insights.length > 0 && (
-        <div className={styles.insights}>
+        <div className={`${styles.insights} dot-rule`}>
           <div className={styles.insightsTitle}>WHAT STANDS OUT</div>
           {insights.map(i => (
             <div key={i.text} className={`${styles.insight} ${styles[i.tone]}`}>

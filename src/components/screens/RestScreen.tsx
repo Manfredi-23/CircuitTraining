@@ -12,8 +12,8 @@ import styles from './RestScreen.module.css';
 
 /** The rest ring is LEDs: one goes out for each 1/48 of the rest. */
 const RING_DOTS = 48;
-const RING_R = 76;
-const RING_SIZE = 168;
+const RING_R = 90;
+const RING_SIZE = 196;
 
 /**
  * Time added per tap. Rest on maximal work is a floor, never a ceiling: IRCRA
@@ -91,14 +91,14 @@ export default function RestScreen() {
                   key={i}
                   cx={RING_SIZE / 2 + RING_R * Math.cos(a)}
                   cy={RING_SIZE / 2 + RING_R * Math.sin(a)}
-                  r={3}
+                  r={3.4}
                   className={i < litDots ? (timer.isWarning ? styles.dotWarn : styles.dotOn) : styles.dotOff}
                 />
               );
             })}
           </svg>
           <div className={styles.time} aria-live="polite" aria-label={`${formatTime(timer.remaining)} of rest left`}>
-            <Led text={formatTime(timer.remaining)} dot={4} lit={timer.isWarning ? 'var(--accent)' : 'var(--ink)'} unlit="none" label="" />
+            <Led text={formatTime(timer.remaining)} dot={5.4} lit={timer.isWarning ? 'var(--accent)' : 'var(--ink)'} unlit="none" label="" />
           </div>
         </div>
         <div className={styles.timerSide}>
@@ -122,7 +122,7 @@ export default function RestScreen() {
             )}
             <div className={styles.nextName}>{ex.displayName}</div>
             <div className={styles.nextWork}>
-              <Led text={ex.unit === 'sec' ? `${ex.scaledWork}s` : `x${ex.scaledWork}`} dot={4} unlit="none" label={ex.unit === 'sec' ? `${ex.scaledWork} seconds` : `${ex.scaledWork} reps`} />
+              <Led text={ex.unit === 'sec' ? `${ex.scaledWork}s` : `x${ex.scaledWork}`} dot={5} unlit="none" label={ex.unit === 'sec' ? `${ex.scaledWork} seconds` : `${ex.scaledWork} reps`} />
               {ex.perSide ? <span className={styles.perSide}>/ side</span> : null}
             </div>
             <div className={styles.loadLine}>{ex.loadText}</div>

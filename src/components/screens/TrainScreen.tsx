@@ -71,7 +71,7 @@ export default function TrainScreen({ onSettings }: { onSettings: () => void }) 
       <button key={c.id} className={styles.row} onClick={() => launcher.show({ mode: m, circuit: c, extra: extraFor(m, c, routine) })}>
         <Led
           text={routine ? (routine.place === 'HOME' ? 'H' : 'C') : c.circuitNum}
-          dot={3}
+          dot={4}
           lit={recommended ? 'var(--accent)' : 'var(--ink)'}
           unlit="none"
           className={styles.num}
@@ -131,7 +131,7 @@ export default function TrainScreen({ onSettings }: { onSettings: () => void }) 
         <>
           <section className={styles.mine}>
             <div className={styles.mineHead}>
-              <h2 className={styles.h2}>YOUR ROUTINES</h2>
+              <h2 className="section-label">YOUR ROUTINES</h2>
               <button className={styles.newBtn} onClick={() => setEditing({ routine: blankRoutine('MY ROUTINE', 'HOME'), isNew: true })}>+ NEW</button>
             </div>
             {routines.length === 0 ? (
@@ -146,6 +146,7 @@ export default function TrainScreen({ onSettings }: { onSettings: () => void }) 
             )}
           </section>
 
+          <div className="dot-rule">
           <button className={styles.build} onClick={() => setBuildOpen(true)}>
             <span>
               <span className={styles.buildTitle}>BUILD A SESSION</span>
@@ -153,6 +154,7 @@ export default function TrainScreen({ onSettings }: { onSettings: () => void }) 
             </span>
             <span aria-hidden="true">&rarr;</span>
           </button>
+          </div>
 
           <WeekPlanner />
         </>

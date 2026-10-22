@@ -1,4 +1,4 @@
-.screen { gap: 18px; padding-top: calc(28px + env(safe-area-inset-top, 0px)); }
+.screen { gap: 28px; padding-top: calc(28px + env(safe-area-inset-top, 0px)); }
 
 .add { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .addBtn {
@@ -11,8 +11,8 @@
 
 .empty { font-size: 13px; line-height: 1.5; color: var(--ink); border: 2px dashed var(--ink-ghost); border-radius: var(--rad-lg); padding: 20px; }
 
-.day { display: flex; flex-direction: column; gap: 8px; }
-.dayLabel { font-weight: 700; font-size: 12px; letter-spacing: 0.06em; color: var(--ink); }
+.day { display: flex; flex-direction: column; gap: 12px; }
+.dayLabel { font-weight: 700; font-size: 13px; letter-spacing: 0.08em; color: var(--ink); }
 .items { border: 2px solid var(--ink); border-radius: var(--rad-lg); overflow: hidden; }
 .item { width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 16px; min-height: 60px; text-align: left; }
 .item + .item { border-top: 1px solid var(--ink-faint); }

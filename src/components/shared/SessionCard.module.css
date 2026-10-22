@@ -14,7 +14,7 @@
 
 .cardNum { position: absolute; right: 22px; top: 22px; z-index: 0; pointer-events: none; }
 
-.titleBlock { position: relative; z-index: 1; display: flex; flex-direction: column; flex-shrink: 0; padding-right: 96px; min-height: 52px; justify-content: flex-end; }
+.titleBlock { position: relative; z-index: 1; display: flex; flex-direction: column; flex-shrink: 0; padding-right: 108px; min-height: 56px; justify-content: flex-end; }
 .cardTitle { font-weight: 700; font-size: 20px; line-height: 24px; text-transform: uppercase; color: var(--ink); letter-spacing: 0.01em; }
 .titleDivider { display: flex; align-items: center; padding: 4px 0 8px; width: 100%; }
 .cardSubtitle { font-weight: 400; font-size: 12px; line-height: 16px; color: var(--ink-dim); flex: 1; }

@@ -40,9 +40,9 @@ export default function WeekPlanner() {
   ];
 
   return (
-    <section className={styles.box}>
+    <section className={`${styles.box} dot-rule`}>
       <div className={styles.head}>
-        <h2 className={styles.h2}>THIS WEEK</h2>
+        <h2 className="section-label">THIS WEEK</h2>
         <span className={styles.sub}>The plan leads on TODAY</span>
       </div>
       <div className={styles.days}>

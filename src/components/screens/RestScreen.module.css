@@ -10,7 +10,7 @@
 .timerRow { display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
 .timerSide { flex: 1; display: flex; flex-direction: column; gap: 10px; }
 
-.ringWrap { position: relative; width: 168px; height: 168px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.ringWrap { position: relative; width: 196px; height: 196px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 .ring { position: absolute; inset: 0; width: 100%; height: 100%; }
 .dotOn { fill: var(--ink); transition: fill 300ms ease; }
 .dotWarn { fill: var(--accent); }
@@ -40,7 +40,7 @@
 .nextName { font-weight: 700; font-size: 22px; line-height: 1.1; text-transform: uppercase; letter-spacing: -0.02em; color: var(--ink); }
 .nextWork { display: flex; align-items: flex-end; gap: 8px; color: var(--ink); padding: 2px 0; }
 .perSide { font-size: 14px; font-weight: 400; color: var(--ink-dim); }
-.loadLine { font-size: 13px; font-weight: 600; color: var(--accent); line-height: 1.4; }
+.loadLine { font-size: 13px; font-weight: 600; color: var(--ink); line-height: 1.4; }
 .note { font-size: 12px; color: var(--ink-dim); font-style: italic; }
 
 .btnAdd {

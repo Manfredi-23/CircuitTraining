@@ -1,6 +1,6 @@
 .panel { background: var(--dots), #E4E2DD; z-index: 60; }
 .crumb { font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--accent); }
-.scroll { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 20px; border-top: 2px solid var(--ink); padding-top: 16px; }
+.scroll { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 28px; border-top: 2px solid var(--ink); padding-top: 16px; }
 .title { font-weight: 700; font-size: 22px; line-height: 1.15; color: var(--ink); }
 
 .facts { display: grid; grid-template-columns: repeat(3, 1fr); border: 2px solid var(--ink); border-radius: var(--rad-lg); overflow: hidden; }
@@ -27,3 +27,6 @@
 .rowLoad { color: var(--ink-dim); }
 .sets { text-align: right; font-weight: 700; }
 .short { text-align: right; font-weight: 700; color: var(--accent); }
+
+/* Sections after the first: a row of faint LED dots and air above. */
+.block + .block { padding-top: 24px; background-image: var(--rule); background-repeat: repeat-x; background-position: left top; background-size: 6px 2px; }

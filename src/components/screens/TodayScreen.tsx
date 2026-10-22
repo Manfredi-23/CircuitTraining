@@ -96,7 +96,7 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
       {healthDay?.energy === 'TIRED' && <div className={styles.banner}>TIRED suggested by Apple Health: {healthDay.reasons.join(', ')}.</div>}
 
       {rec && recommendation ? (
-        <section className={styles.lead} aria-label="Recommended session">
+        <section className={`${styles.lead} dot-rule`} aria-label="Recommended session">
           <div className={styles.crumb}>
             {recommendation.planned ? 'PLANNED' : 'RECOMMENDED'} &middot; {recommendation.routineId ? 'YOUR ROUTINE' : `${recommendation.mode} ${rec.circuitNum}`}
           </div>
@@ -123,13 +123,13 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
           >
             <span className={styles.startText}>START<span className={styles.startArrow} aria-hidden="true">&rarr;</span></span>
             <span className={styles.startMin}>
-              <Led text={String(estimateDuration(recList))} dot={3} lit="#E4E2DD" unlit="rgba(228,226,221,0.14)" />
+              <Led text={String(estimateDuration(recList))} dot={4} lit="#E4E2DD" unlit="rgba(228,226,221,0.14)" />
               <span>MIN</span>
             </span>
           </button>
         </section>
       ) : (
-        <section className={styles.empty}>
+        <section className={`${styles.emptyWrap} dot-rule`}><div className={styles.empty}>
           <div className={styles.emptyTitle}>
             {day.off ? (day.off === 'SICK' ? 'Sick day.' : 'Rest day.') : doneToday.length ? 'Done for today.' : 'Nothing is due.'}
           </div>
@@ -141,14 +141,14 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
                 : 'Pick anything from TRAIN, or build your own.'}
           </p>
           <button className={styles.secondary} onClick={() => setTab('train')}>OPEN TRAIN</button>
-        </section>
+        </div></section>
       )}
 
       <DayControls />
 
       {alternatives.length > 0 && (
-        <section className={styles.alts}>
-          <h2 className={styles.h2}>ALSO FITS TODAY</h2>
+        <section className={`${styles.alts} dot-rule`}>
+          <h2 className="section-label">ALSO FITS TODAY</h2>
           <div className={styles.altList}>
             {alternatives.map(a => {
               const c = circuitOf(a, routines);
@@ -156,7 +156,7 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
               const minutes = estimateDuration(launcher.listOf({ mode: a.mode, circuit: c }));
               return (
                 <button key={a.circuitId} className={styles.altRow} onClick={() => launcher.show({ mode: a.mode, circuit: c })}>
-                  <Led text={c.circuitNum} dot={3} lit="var(--ink)" unlit="none" className={styles.altNum} label={`${a.mode} ${c.circuitNum}`} />
+                  <Led text={c.circuitNum} dot={4} lit="var(--ink)" unlit="none" className={styles.altNum} label={`${a.mode} ${c.circuitNum}`} />
                   <span className={styles.altBody}>
                     <span className={styles.altTitle}>{a.routineId ? 'ROUTINE' : a.mode} &middot; {c.title}</span>
                     <span className={styles.altWhy}>{a.reason}</span>

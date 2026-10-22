@@ -52,7 +52,7 @@ const TIME_OPTIONS: { key: TimeFilter; label: string }[] = [
 /** A section: its name, the period it covers, the answer in one sentence, then the evidence. */
 function Section({ title, period, lead, children }: { title: string; period?: string; lead?: string | null; children: ReactNode }) {
   return (
-    <section className={styles.section}>
+    <section className={`${styles.section} dot-rule`}>
       <div className={styles.sectionHead}>
         <h2 className={styles.sectionTitle}>{title}</h2>
         {period && <span className={styles.period}>{period}</span>}

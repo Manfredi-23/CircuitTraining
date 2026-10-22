@@ -62,7 +62,7 @@ export default function LogScreen({ onSettings, onSession }: { onSettings: () =>
       )}
 
       {days.slice(0, shown).map(d => (
-        <section key={d.day} className={styles.day}>
+        <section key={d.day} className={`${styles.day} dot-rule`}>
           <h2 className={styles.dayLabel}>{dayLabel(d.day, today)}</h2>
           <div className={styles.items}>
             {d.items.map(it => (

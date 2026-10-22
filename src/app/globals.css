@@ -17,6 +17,10 @@
   --led-off:    rgba(24,22,16,0.09);
   /* The page is an unlit LED panel: a faint dot every 12px over the parchment. */
   --dots:       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Ccircle cx='6' cy='6' r='0.9' fill='rgba(24,22,16,0.07)'/%3E%3C/svg%3E");
+  /* A section divider: one row of faint LED dots. */
+  --rule:       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='2'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(24,22,16,0.3)'/%3E%3C/svg%3E");
+  /* Space between sections, always clearly more than inside one. */
+  --section-gap: 36px;
   /* Type scale: four sizes do the work, display figures are LED. */
   --fs-meta:    11px;
   --fs-body:    13px;
@@ -93,7 +97,11 @@ img { display: block; max-width: 100%; }
 .overlay-btn:active { transform: scale(0.98); }
 .overlay-panel { overflow-y: auto; }
 .overlay-section { display: flex; flex-direction: column; gap: 10px; }
-.overlay-section-title { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--ink-dim); }
+.overlay-section + .overlay-section {
+  padding-top: 24px; margin-top: 8px;
+  background-image: var(--rule); background-repeat: repeat-x; background-position: left top; background-size: 6px 2px;
+}
+.overlay-section-title { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: var(--ink); }
 .overlay-row { display: flex; gap: 10px; }
 .overlay-row > .overlay-btn { flex: 1; padding: 14px 12px; font-size: 13px; }
 .overlay-status { font-size: 12px; line-height: 1.5; color: var(--ink); }
@@ -121,3 +129,15 @@ img { display: block; max-width: 100%; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* A section that follows another: a row of faint LED dots above it and air
+   on both sides, so sections read as sections. */
+.dot-rule {
+  padding-top: 26px;
+  background-image: var(--rule);
+  background-repeat: repeat-x;
+  background-position: left top;
+  background-size: 6px 2px;
+}
+/* The label that opens a section: same everywhere. */
+.section-label { font-weight: 700; font-size: 12px; letter-spacing: 0.12em; color: var(--ink); text-transform: uppercase; }

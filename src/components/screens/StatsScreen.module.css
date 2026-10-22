@@ -1,4 +1,4 @@
-.screen { padding-top: calc(28px + env(safe-area-inset-top, 0px)); gap: 28px; }
+.screen { padding-top: calc(28px + env(safe-area-inset-top, 0px)); gap: var(--section-gap); }
 
 
 .scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 20px; min-height: 0; padding-bottom: env(safe-area-inset-bottom, 16px); }
@@ -20,8 +20,8 @@
 .lastMode { font-weight: 700; color: var(--ink); }
 
 /* Section */
-.section { display: flex; flex-direction: column; gap: 10px; padding-top: 4px; }
-.sectionTitle { font-weight: 700; font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); }
+.section { display: flex; flex-direction: column; gap: 12px; }
+.sectionTitle { font-weight: 700; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); }
 
 /* Sort tabs */
 .sortTabs { display: flex; }
