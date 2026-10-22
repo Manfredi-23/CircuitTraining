@@ -20,3 +20,10 @@ describe('ASSESS', () => {
     expect(ids).toEqual(expect.arrayContaining(['front-lever', 'trunk-flexor-hold', 'back-extension-hold']));
   });
 });
+
+describe('benchmark list', () => {
+  it('has one entry per id, so no test shows twice on STATS', () => {
+    const ids = BENCHMARKS.map(b => b.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+});

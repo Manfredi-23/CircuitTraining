@@ -9,7 +9,7 @@
   --bg:         radial-gradient(433.05% 99.29% at 50% 0.71%, #E4E2DD 0%, #B2AD9F 100%);
   --ink:        #181610;
   --ink-ghost:  rgba(24,22,16,0.22);
-  --ink-dim:    rgba(24,22,16,0.5);
+  --ink-dim:    rgba(24,22,16,0.74);
   --ink-faint:  rgba(24,22,16,0.1);
   --accent:     #E64D19;
   --accent-dim: rgba(230,77,25,0.16);
@@ -18,7 +18,7 @@
   --rad-sm:     6px;
 }
 
-html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+html { font-size: 16px; -webkit-text-size-adjust: 100%; background: #B2AD9F; }
 
 body {
   font-family: var(--font);
@@ -48,9 +48,11 @@ img { display: block; max-width: 100%; }
 }
 
 /* Shared keyframes */
+/* Ends on no transform at all: a transformed screen would become the
+   containing block for the fixed overlays and tab bar inside it. */
 @keyframes screenFadeUp {
   from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: none; }
 }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -93,7 +95,7 @@ img { display: block; max-width: 100%; }
   font-family: inherit; color: var(--ink); text-align: left; cursor: pointer;
 }
 .overlay-toggle-text { display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
-.overlay-toggle-text span { font-size: 10px; color: var(--ink-dim); line-height: 1.4; }
+.overlay-toggle-text span { font-size: 11px; color: var(--ink-dim); line-height: 1.4; }
 .overlay-toggle-mark {
   flex-shrink: 0; width: 48px; padding: 6px 0; text-align: center; font-size: 11px; font-weight: 700;
   border: 2px solid var(--ink-ghost); border-radius: var(--rad-sm); color: var(--ink-dim);

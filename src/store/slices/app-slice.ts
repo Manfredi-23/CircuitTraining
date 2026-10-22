@@ -1,6 +1,6 @@
 import type { StateCreator } from 'zustand';
 import type { Store } from '../store';
-import type { Mode, EnergyKey, ScreenName } from '@/core/types';
+import type { Mode, EnergyKey, ScreenName, TabName } from '@/core/types';
 import { CONFIG } from '@/core/config';
 import { getModeData } from '@/core/data-index';
 
@@ -9,20 +9,21 @@ export interface AppSlice {
   circuitIndex: number;
   energy: EnergyKey;
   screen: ScreenName;
+  /** Which tab the 'home' screen shows; transient. */
+  tab: TabName;
   humorLine: string;
-  /** Day the home screen last jumped to the recommended session; transient. */
-  recommendedOn: string | null;
   /** Day the energy was set from Apple Health; transient. */
   energySuggestedOn: string | null;
 
   setMode: (mode: Mode) => void;
   setCircuitIndex: (index: number) => void;
-  changeCircuit: (dir: number) => void;
   setEnergy: (energy: EnergyKey) => void;
   setScreen: (screen: ScreenName) => void;
+  /** Go to a tab of the home screen. */
+  setTab: (tab: TabName) => void;
+  /** Point the workout at one programme session, wherever it was picked. */
+  selectCircuit: (mode: Mode, circuitId: string) => void;
   pickHumorLine: () => void;
-  /** Open the home screen on a given session, once per day. */
-  showRecommended: (mode: Mode, circuitId: string, day: string) => void;
   /** Apply the Health energy suggestion, once per day. */
   suggestEnergy: (energy: EnergyKey, day: string) => void;
 }
@@ -32,34 +33,29 @@ export const createAppSlice: StateCreator<Store, [], [], AppSlice> = (set, get) 
   circuitIndex: 0,
   energy: 'NORMAL',
   screen: 'home',
+  tab: 'today',
   humorLine: CONFIG.humorLines[Math.floor(Math.random() * CONFIG.humorLines.length)],
-  recommendedOn: null,
   energySuggestedOn: null,
 
   setMode: (mode) => set({ mode, circuitIndex: 0 }),
 
   setCircuitIndex: (index) => set({ circuitIndex: index }),
 
-  changeCircuit: (dir) => {
-    const { mode, circuitIndex } = get();
-    const circuits = getModeData(mode);
-    const total = circuits.length;
-    const next = (circuitIndex + dir + total) % total;
-    set({ circuitIndex: next });
-  },
-
   setEnergy: (energy) => set({ energy }),
 
-  setScreen: (screen) => set({ screen }),
+  // The old STATS screen is now a tab.
+  setScreen: (screen) => set(screen === 'stats' ? { screen: 'home', tab: 'stats' } : { screen }),
+
+  setTab: (tab) => set({ screen: 'home', tab }),
+
+  selectCircuit: (mode, circuitId) => {
+    const index = getModeData(mode).findIndex(c => c.id === circuitId);
+    if (index >= 0) set({ mode, circuitIndex: index });
+  },
 
   pickHumorLine: () => {
     const line = CONFIG.humorLines[Math.floor(Math.random() * CONFIG.humorLines.length)];
     set({ humorLine: line });
-  },
-
-  showRecommended: (mode, circuitId, day) => {
-    const index = getModeData(mode).findIndex(c => c.id === circuitId);
-    set({ recommendedOn: day, ...(index >= 0 ? { mode, circuitIndex: index } : {}) });
   },
 
   suggestEnergy: (energy, day) => set({ energy, energySuggestedOn: day }),

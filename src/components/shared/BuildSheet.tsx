@@ -18,6 +18,7 @@ import { CONFIG } from '@/core/config';
 import type { Place } from '@/core/reserve';
 import type { EnergyKey, ScaledExercise } from '@/core/types';
 import PainCheck from './PainCheck';
+import { routineFromList } from '@/core/routines';
 import styles from './BuildSheet.module.css';
 
 function dose(ex: ScaledExercise): string {
@@ -40,7 +41,7 @@ const slotFor = (cap: number | null, fallback: number) =>
 export default function BuildSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const {
     progress, sessionLog, climbLog, activityLog, benchmarkResults, tweaks, dayPlan, blockStart, energy, mode,
-    buildPresets, setEnergy, startCustom, savePreset, deletePreset,
+    buildPresets, setEnergy, startCustom, savePreset, deletePreset, saveRoutine,
   } = useStore();
   const [entered, setEntered] = useState(false);
   const [place, setPlace] = useState<Place>('HOME');
@@ -51,6 +52,10 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
   const [avoid, setAvoid] = useState<Avoid[]>([]);
   const [preset, setPreset] = useState<BuildPreset | null>(null);
   const [naming, setNaming] = useState<string | null>(null);
+  /** Naming a routine to freeze the list as it stands, or renaming the preset in use. */
+  const [routineName, setRoutineName] = useState<string | null>(null);
+  const [renaming, setRenaming] = useState<string | null>(null);
+  const [savedRoutine, setSavedRoutine] = useState<string | null>(null);
   const [painOpen, setPainOpen] = useState(false);
 
   const today = localDate();
@@ -84,6 +89,9 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
     setAvoid([]);
     setPreset(null);
     setNaming(null);
+    setRoutineName(null);
+    setRenaming(null);
+    setSavedRoutine(null);
     requestAnimationFrame(() => setEntered(true));
     // Only on opening.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -178,10 +186,33 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
               <Chip key={p.id} on={preset?.id === p.id} label={p.name} onClick={() => usePreset(p)} />
             ))}
           </div>
-          {userPreset && (
-            <button className={styles.link} onClick={() => { deletePreset(userPreset.id); setPreset(null); }}>
-              DELETE {userPreset.name}
-            </button>
+          {userPreset && renaming === null && (
+            <div className={styles.linkRow}>
+              <button className={styles.link} onClick={() => setRenaming(userPreset.name)}>RENAME</button>
+              <button className={styles.link} onClick={() => { deletePreset(userPreset.id); setPreset(null); }}>
+                DELETE {userPreset.name}
+              </button>
+            </div>
+          )}
+          {userPreset && renaming !== null && (
+            <div className={styles.saveRow}>
+              <input
+                className={styles.nameInput}
+                value={renaming}
+                maxLength={32}
+                aria-label="Preset name"
+                onChange={e => setRenaming(e.target.value)}
+              />
+              <button
+                className={styles.saveBtn}
+                onClick={() => {
+                  const name = renaming.trim().toUpperCase();
+                  if (name) { const p = { ...userPreset, name }; savePreset(p); setPreset(p); }
+                  setRenaming(null);
+                }}
+              >SAVE</button>
+              <button className={styles.link} onClick={() => setRenaming(null)}>CANCEL</button>
+            </div>
           )}
         </section>
 
@@ -264,9 +295,34 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
               <span className={styles.meta}>{dose(ex)}</span>
             </div>
           ))}
-          {session && <div className={styles.hint}>Key lifts first. Rest and sets as written: what does not fit is left out.</div>}
-          {session && naming === null && !preset && (
-            <button className={styles.link} onClick={() => setNaming(presetName(choice))}>SAVE AS PRESET</button>
+          {session && <div className={styles.hint}>Key lifts first. Rest and sets as written: what does not fit is left out. A preset picks again next time; a routine keeps this exact list.</div>}
+          {session && naming === null && routineName === null && (
+            <div className={styles.linkRow}>
+              {!preset && <button className={styles.link} onClick={() => setNaming(presetName(choice))}>SAVE AS PRESET</button>}
+              <button className={styles.link} onClick={() => setRoutineName(preset?.name ?? presetName(choice))}>SAVE THIS LIST AS A ROUTINE</button>
+            </div>
+          )}
+          {savedRoutine && <div className={styles.hint}>Saved as the routine {savedRoutine}: TRAIN, MINE.</div>}
+          {session && routineName !== null && (
+            <div className={styles.saveRow}>
+              <input
+                className={styles.nameInput}
+                value={routineName}
+                maxLength={32}
+                aria-label="Routine name"
+                onChange={e => setRoutineName(e.target.value)}
+              />
+              <button
+                className={styles.saveBtn}
+                onClick={() => {
+                  const name = routineName.trim().toUpperCase() || 'MY ROUTINE';
+                  saveRoutine(routineFromList(session.list, name, place));
+                  setSavedRoutine(name);
+                  setRoutineName(null);
+                }}
+              >SAVE</button>
+              <button className={styles.link} onClick={() => setRoutineName(null)}>CANCEL</button>
+            </div>
           )}
           {naming !== null && (
             <div className={styles.saveRow}>

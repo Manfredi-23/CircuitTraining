@@ -60,7 +60,17 @@ describe('reminders', () => {
   });
 
   it('switched off means nothing', () => {
-    const off = { ...DEFAULT_REMINDER_SETTINGS, enabled: { daily: false, fingers: false, fading: false, core: false, assess: false, climb: false } };
+    const off = { ...DEFAULT_REMINDER_SETTINGS, enabled: { daily: false, fingers: false, fading: false, core: false, assess: false, climb: false, weekly: false } };
     expect(planReminders({ ...base, settings: off })).toHaveLength(0);
+  });
+});
+
+describe('Monday summary', () => {
+  it('lands on the coming Monday at 08:30 with last week in one line', () => {
+    const now = new Date(2026, 9, 22, 9); // Thursday
+    const r = planReminders({ progress: {}, sessionLog: [], climbLog: [], benchmarkResults: [], settings: only('weekly'), now });
+    expect(r).toHaveLength(1);
+    expect(r[0].at).toEqual(new Date(2026, 9, 26, 8, 30));
+    expect(r[0].body).toMatch(/Nothing logged last week/);
   });
 });

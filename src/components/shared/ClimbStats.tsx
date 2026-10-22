@@ -105,7 +105,7 @@ export default function ClimbStats({ sessions }: { sessions: ClimbSession[] }) {
                       allowDecimals={false}
                       tickCount={yMax - yMin + 1}
                       width={48}
-                      tick={{ fontSize: 10, fill: '#181610' }}
+                      tick={{ fontSize: 11, fill: '#181610' }}
                       axisLine={false}
                       tickLine={false}
                       tickFormatter={(i: number) => gradeLabel(grades[i] ?? '')}

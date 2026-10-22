@@ -183,7 +183,7 @@ function Sparkline({ values }: { values: number[] }) {
   );
 }
 
-export function LiftSection({ loadLog }: { loadLog: LoadLogEntry[] }) {
+export function LiftSection({ loadLog, onPick }: { loadLog: LoadLogEntry[]; onPick?: (exerciseId: string) => void }) {
   const series = useMemo(() => getLiftSeries(loadLog), [loadLog]);
   if (!series.length) {
     return <div className={styles.empty}>Loads appear here once you log them on the workout stepper.</div>;
@@ -195,14 +195,14 @@ export function LiftSection({ loadLog }: { loadLog: LoadLogEntry[] }) {
         const last = s.points[s.points.length - 1].value;
         const change = last - first;
         return (
-          <div key={s.exerciseId} className={styles.lift}>
+          <button key={s.exerciseId} className={styles.lift} onClick={() => onPick?.(s.exerciseId)} disabled={!onPick}>
             <span className={styles.liftName}>{s.name}</span>
             <Sparkline values={s.points.map(p => p.value)} />
             <span className={styles.liftValue}>
               {fmtNum(last)}<small> {s.unit}</small>
               {change !== 0 && <span className={change > 0 ? styles.up : styles.down}> {change > 0 ? '+' : ''}{fmtNum(change)}</span>}
             </span>
-          </div>
+          </button>
         );
       })}
     </div>
@@ -269,7 +269,7 @@ export function ClimbVsPullSection({ climbLog, loadLog }: { climbLog: ClimbSessi
             <YAxis
               width={48} allowDecimals={false} axisLine={false} tickLine={false}
               domain={sendIdx.length ? [Math.max(0, Math.min(...sendIdx) - 1), Math.max(...sendIdx) + 1] : [0, 1]}
-              tick={{ fontSize: 10, fill: '#181610' }}
+              tick={{ fontSize: 11, fill: '#181610' }}
               tickFormatter={(i: number) => gradeLabel(grades[i] ?? '')}
             />
             <Line type="stepAfter" dataKey="bestSend" stroke="#181610" strokeWidth={2} dot={{ r: 2 }} connectNulls isAnimationActive={false} />
@@ -282,7 +282,7 @@ export function ClimbVsPullSection({ climbLog, loadLog }: { climbLog: ClimbSessi
           <LineChart data={data} margin={{ top: 4, right: 6, bottom: 0, left: 0 }} syncId="climbpull">
             <XAxis dataKey="week" hide />
             <YAxis
-              width={48} axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#181610' }}
+              width={48} axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#181610' }}
               domain={pulls.length ? [Math.floor(Math.min(...pulls) - 2), Math.ceil(Math.max(...pulls) + 2)] : [0, 1]}
             />
             <Line type="stepAfter" dataKey="pullKg" stroke="#E64D19" strokeWidth={2} dot={{ r: 2 }} connectNulls isAnimationActive={false} />
@@ -432,7 +432,7 @@ export function OneArmSection({ results }: { results: BenchmarkResult[] }) {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={path.points} margin={{ top: 6, right: 6, bottom: 0, left: 0 }}>
               <XAxis dataKey="date" hide />
-              <YAxis width={36} domain={[bottom, top]} axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#181610' }} />
+              <YAxis width={36} domain={[bottom, top]} axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#181610' }} />
               {path.gates.map(g => (
                 <ReferenceLine key={g.value} y={g.value} stroke="#E64D19" strokeDasharray="3 4" />
               ))}
@@ -548,7 +548,7 @@ export function RecoverySection({ health, sessionLog }: { health: HealthData; se
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={rec.nights} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
             <XAxis dataKey="date" hide />
-            <YAxis yAxisId="h" width={24} domain={[0, 10]} ticks={[0, 6, 8]} axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#181610' }} />
+            <YAxis yAxisId="h" width={24} domain={[0, 10]} ticks={[0, 6, 8]} axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#181610' }} />
             <YAxis yAxisId="v" orientation="right" hide domain={['dataMin - 10', 'dataMax + 10']} />
             <ReferenceLine yAxisId="h" y={7} stroke="rgba(24,22,16,0.25)" strokeDasharray="3 4" />
             <Bar yAxisId="h" dataKey="sleepH" isAnimationActive={false}>

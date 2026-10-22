@@ -56,10 +56,14 @@ export const createActivitySlice: StateCreator<Store, [], [], ActivitySlice> = (
     });
   },
 
-  deleteActivity: (id) => set(s => ({
-    activityLog: s.activityLog.filter(a => a.id !== id),
-    editingActivityId: s.editingActivityId === id ? null : s.editingActivityId,
-  })),
+  deleteActivity: (id) => {
+    const { activityLog } = get();
+    set(s => ({
+      activityLog: s.activityLog.filter(a => a.id !== id),
+      editingActivityId: s.editingActivityId === id ? null : s.editingActivityId,
+    }));
+    get().offerUndo('Activity deleted.', { activityLog });
+  },
 
   openActivityLog: (editId = null) => set({ editingActivityId: editId, screen: 'activity' }),
 });

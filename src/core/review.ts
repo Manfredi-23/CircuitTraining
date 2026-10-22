@@ -24,6 +24,7 @@ import { gateResult } from './benchmarks';
 import { OAP_ASSISTED_GATE, OAP_NEGATIVE_GATE } from './data-oap';
 import { addDays, dayOf, daysBetween, localDate } from './dates';
 import { estimateActivity, type ActivitySession } from './activity';
+import { plateaus } from './adapt';
 import { exerciseLibrary } from './reserve';
 import { isHealing, lastAssess, RETEST_WEEKS } from './recommend';
 import type { BenchmarkResult, Capacity, ClimbSession, Exercise, LoadLogEntry, SessionLogEntry } from './types';
@@ -190,7 +191,7 @@ export interface InsightInput {
 }
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const fmtDay = (day: string) => {
+export const fmtDay = (day: string) => {
   const [, m, d] = day.split('-').map(Number);
   return `${d} ${MONTHS[m - 1]}`;
 };
@@ -203,7 +204,7 @@ const STACKING = new Set(['cave-05', 'cave-06']);
  * The biggest gain on a logged load, from its first real value to its latest:
  * zeros are a stepper left unset, not a load, so they are skipped.
  */
-function bestGain(loadLog: LoadLogEntry[]): { name: string; from: number; to: number; since: string } | null {
+export function bestGain(loadLog: LoadLogEntry[]): { name: string; from: number; to: number; since: string } | null {
   const byId = new Map<string, LoadLogEntry[]>();
   for (const e of loadLog) {
     if (e.exerciseId.startsWith('test-') || e.unit !== 'kg' || e.value <= 0) continue;
@@ -273,6 +274,12 @@ export function getInsights(input: InsightInput, max = 7): Insight[] {
   const gain = bestGain(input.loadLog);
   if (gain) {
     out.push({ tone: 'good', text: `${gain.name}: ${kg(gain.from)} to ${kg(gain.to)} since ${fmtDay(gain.since)}.` });
+  }
+
+  // A lift stuck at one load: more of the same rarely moves it.
+  const stuck = plateaus(input.loadLog, now)[0];
+  if (stuck) {
+    out.push({ tone: 'warn', text: `${stuck.name} at ${stuck.value} ${stuck.unit} for ${stuck.sessions} sessions. Change the variation, add a set lighter, or retest.` });
   }
 
   // One-arm gates that a tested pull-up already opens.

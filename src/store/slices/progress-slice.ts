@@ -1,6 +1,7 @@
 import type { StateCreator } from 'zustand';
 import type { Store } from '../store';
-import type { Progress, SessionLogEntry, DecayEvent, LevelUp, BenchmarkResult } from '@/core/types';
+import type { Progress, SessionLogEntry, DecayEvent, LevelUp, BenchmarkResult, ExerciseFeel } from '@/core/types';
+import { deloadNowStart } from '@/core/adapt';
 import * as Engine from '@/core/engine';
 import { addResult } from '@/core/benchmarks';
 import type { PersistedKey } from '@/core/backup';
@@ -24,8 +25,12 @@ export interface ProgressSlice {
   resetAllData: () => void;
   /** Session effort for the session just finished. */
   rateLastSession: (effort: number) => void;
+  /** How one exercise of the session just finished felt. Tapping the same word again clears it. */
+  rateExercise: (exerciseId: string, feel: ExerciseFeel) => void;
   /** Start a new build block this week. */
   restartBlock: () => void;
+  /** Make this week the deload week, when the logs say the block is grinding. */
+  deloadNow: () => void;
   /** Replace everything persisted with a backup's contents. */
   importBackup: (data: Partial<Record<PersistedKey, unknown>>) => void;
 }
@@ -59,7 +64,20 @@ export const createProgressSlice: StateCreator<Store, [], [], ProgressSlice> = (
     return { sessionLog: log };
   }),
 
+  rateExercise: (exerciseId, feel) => set(state => {
+    if (state.sessionLog.length === 0) return {};
+    const log = [...state.sessionLog];
+    const last = log[log.length - 1];
+    const next = { ...(last.feel ?? {}) };
+    if (next[exerciseId] === feel) delete next[exerciseId];
+    else next[exerciseId] = feel;
+    log[log.length - 1] = { ...last, feel: next };
+    return { sessionLog: log };
+  }),
+
   restartBlock: () => set({ blockStart: mondayOf(localDate()) }),
+
+  deloadNow: () => set({ blockStart: deloadNowStart() }),
 
   resetAllData: () => set({
     blockStart: null,
@@ -79,6 +97,9 @@ export const createProgressSlice: StateCreator<Store, [], [], ProgressSlice> = (
     tweaks: {},
     dayPlan: null,
     offDays: [],
+    buildPresets: [],
+    routines: [],
+    weekPlan: {},
   }),
 
   // A backup replaces, never merges: two histories of the same days would

@@ -1,0 +1,29 @@
+.box { display: flex; flex-direction: column; gap: 10px; }
+.head { display: flex; justify-content: space-between; align-items: baseline; }
+.h2 { font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--ink); }
+.sub { font-size: 11px; color: var(--ink-dim); }
+.days { border: 2px solid var(--ink); border-radius: var(--rad-lg); overflow: hidden; }
+.day { width: 100%; display: flex; align-items: center; gap: 12px; padding: 0 16px; min-height: 48px; text-align: left; }
+.day + .day { border-top: 1px solid var(--ink-faint); }
+.day:active { background: rgba(24,22,16,0.04); }
+.dayName, .dayNameToday { width: 36px; flex-shrink: 0; font-weight: 700; font-size: 12px; letter-spacing: 0.08em; color: var(--ink); }
+.dayNameToday { color: var(--accent); }
+.dayItems { flex: 1; min-width: 0; font-weight: 700; font-size: 12px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dayEmpty { flex: 1; font-size: 12px; color: var(--ink-dim); }
+.chev { font-size: 14px; color: var(--ink-dim); }
+
+.panel { background: #E4E2DD; z-index: 55; }
+.crumb { font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--accent); }
+.note { font-size: 12px; line-height: 1.45; color: var(--ink); }
+.scroll { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; border-top: 2px solid var(--ink); padding-top: 14px; }
+.group { display: flex; flex-direction: column; gap: 8px; }
+.groupLabel { font-weight: 700; font-size: 11px; letter-spacing: 0.1em; color: var(--ink); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  min-height: 40px; padding: 0 10px; font-weight: 700; font-size: 11px; letter-spacing: 0.04em; color: var(--ink-dim);
+  border: 2px solid var(--ink-ghost); border-radius: var(--rad-sm); text-align: left;
+}
+.chipOn { color: var(--ink); border-color: var(--ink); border-bottom-width: 5px; }
+.actions { display: flex; gap: 10px; flex-shrink: 0; }
+.clear { flex: 1; height: 56px; font-weight: 700; font-size: 13px; letter-spacing: 0.06em; color: var(--ink); border: 2px solid var(--ink); border-radius: var(--rad-lg); }
+.done { flex: 2; height: 56px; border-radius: var(--rad-lg); background: var(--ink); color: #E4E2DD; font-weight: 700; font-size: 15px; letter-spacing: 0.06em; }

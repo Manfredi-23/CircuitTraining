@@ -81,14 +81,20 @@ npx serve out    # Serve the production build (static export: `npm run start` do
 npm run check:daily     # DAILY: 20-minute ceiling, TIRED drops nothing, curling last
 npm run check:cave      # CAVE 02 and 03 budgets, and the one-arm gates
 npm test                # Vitest around src/core/ (src/core/__tests__)
+npm run test:e2e        # Playwright smoke tests on the built out/ (run npm run build first)
+npm run seed            # Rewrite e2e/fixtures/athlete.json, an eight-week sample history
 ```
 
 The automated checks are `check:daily`, which guards the promises DAILY
 makes, `check:cave`, which keeps CAVE 02 and 03 inside 45 minutes NORMAL at
 every level and proves the one-arm rungs open on a tested weighted pull-up and
 never on XP, and `npm test`. Every new core module gets a test file in
-`src/core/__tests__/` in the same commit. UI is still tested by hand in the
-browser.
+`src/core/__tests__/` in the same commit. The screens have Playwright smoke
+tests in `e2e/smoke.spec.ts` (TODAY, a session from TRAIN to LOG, MAKE IT
+MINE, the weekly plan, STATS, UNDO), run against the static build with the
+seed history; `e2e/serve.mjs` serves `out/`. In the cloud session set
+`PW_CHROMIUM=/opt/pw-browsers/chromium-1194/chrome-linux/chrome`; on the Mac
+run `npx playwright install chromium` once.
 
 ## Architecture
 
@@ -124,21 +130,32 @@ src/
     adjust.ts    # HARDER / EASIER (kept as tweaks), +/- SET today
     reserve.ts   # extra exercises to add mid-session, by area, place and safety
     data-extras.ts # reserve-only exercises: arm extras (no XP), lateral raise, face pull
-    today.ts     # TODAY sheet: time cap, no kit, sore areas, rest / sick days
+    today.ts     # ADJUST TODAY: time cap, no kit, sore areas, rest / sick days
     custom.ts    # BUILD: place, time, goals and areas in/out, avoid, presets; what is not trained enough
+    routines.ts  # the athlete's own routines: fixed lists, copy a session, freeze a build, warnings
+    plan.ts      # the weekly plan, and how it leads TODAY unless a safety rule stops it
+    also-fits.ts # TODAY: up to two more sessions that pass the same safety rules
+    history.ts   # LOG: everything done as one stream; delete or correct a past session
+    stats-headlines.ts # the one-sentence answer on top of each STATS section
+    adapt.ts     # deload early / skip a deload, stalled lifts, the Monday summary line
     data-daily.ts, data-cave.ts, data-assess.ts, data-heal.ts  # Session libraries, one per tab
     data-oap.ts  # One-arm pull-up path, shared by CAVE 01 and CAVE 02
     data-index.ts  # getModeData(mode) helper
   storage/       # Async storage abstraction (swap localStorage for Supabase later)
-  store/         # Zustand store (app / workout / progress / stats / load / climb slices)
-  hooks/         # use-timer, use-swipe, use-hydration, use-audio-init, use-wake-lock
+  store/         # Zustand store (app / workout / progress / stats / load / climb / routine / history slices)
+  hooks/         # use-timer, use-swipe, use-hydration, use-audio-init, use-wake-lock,
+                 #   use-today (recommendation, plan, alternatives), use-launcher (open or start any session)
   native/        # native.ts — Capacitor bridge: status bar, splash, haptics, notifications
                  # health.ts, widget.ts — bridges to the local Health and TodayWidget plugins
   components/
-    screens/     # HomeScreen, WorkoutScreen, RestScreen, CompleteScreen, StatsScreen, ClimbScreen
+    shell/       # AppShell (the four tabs), TabBar, ScreenHeader, UndoToast
+    screens/     # TodayScreen, TrainScreen, StatsScreen, LogScreen (the tabs); WorkoutScreen,
+                 #   RestScreen, CompleteScreen, ClimbScreen, ActivityScreen
     shared/      # SettingsOverlay, TimerFlash, LoadLogger, ClimbStats, SessionInfo, StatsSections,
-                 #   FormGuide, SessionProgressBar, AdjustControls, ReservePicker, DaySheet,
-                 #   BuildSheet, StatsOverview
+                 #   FormGuide, SessionProgressBar, AdjustControls, ReservePicker, DayControls,
+                 #   BuildSheet, StatsOverview, SessionCard, RoutineEditor, ExercisePicker,
+                 #   WeekPlanner, SessionDetail, ExerciseDetail
+e2e/             # Playwright smoke tests, the seed history (fixtures/athlete.json), serve.mjs
   app/           # layout.tsx, page.tsx (screen router), globals.css
 ios/             # Xcode project (Capacitor 8, SPM)
 tools/           # generate-ios-assets.py — icon and splash from logo.svg
@@ -154,11 +171,15 @@ design/          # pixel-grid.svg drawing template; illustrations/<name>/NN.svg 
 - **Storage abstraction**: All methods are async. Implement `IStorageAdapter` and
   call `setStorageAdapter()` to move to Supabase.
 - **Single-page app**: No Next.js routes. All screens render in `page.tsx` based on
-  `useStore(s => s.screen)`.
+  `useStore(s => s.screen)`. The `'home'` screen is `AppShell`: four tabs
+  (`tab`: TODAY, TRAIN, STATS, LOG) and a bottom bar. Full-screen panels
+  (`.overlay-panel`) hide the bar while open (`body:has(.overlay-panel)`), and
+  the screen entrance animation ends on `transform: none` so a screen never
+  becomes the containing block for its fixed panels.
 - **Zustand persist**: Only the keys in `PERSISTED_KEYS` (`src/core/backup.ts`)
   are persisted: `progress`, `sessionLog`, `benchmarkResults`, `loadLog`,
   `climbLog`, `activityLog`, `tweaks`, `dayPlan`, `offDays`, `blockStart`,
-  `settings`, `health` and `buildPresets`. `partialize` reads that list, so a
+  `settings`, `health`, `buildPresets`, `routines` and `weekPlan`. `partialize` reads that list, so a
   new key is persisted and backed up by adding it there. UI state is transient. The blob
   carries `version: 2`, but legacy cleanup runs from `merge`, not `migrate`:
   persist only calls `migrate` when the stored blob has a **numeric** version,
@@ -510,8 +531,8 @@ repeating a session the same day overwrites rather than stacking.
 
 ## Climb Log
 
-The athlete's own climbing, logged by hand after the session from the CLIMB LOG
-button on the home screen (and from the complete screen after any
+The athlete's own climbing, logged by hand after the session from + CLIMB on
+the LOG tab (and from the complete screen after any
 `stacksOnSession` session, since those follow a climbing day). No board app
 integration: Kilter and Tension have no public API, and typing a grade is faster
 than keeping a scraper alive.
@@ -565,15 +586,25 @@ Below the load stepper on the workout card (`AdjustControls`):
 
 ## TODAY
 
-The TODAY button on the home screen (`DaySheet`, `today.ts`, `day-slice.ts`)
-takes what the logs cannot know. Stored in `dayPlan`; time, kit and off hold
-for the day they were set, soreness for that day and the next.
+The first tab (`TodayScreen`, `use-today.ts`) answers one question: what do
+I train now? The pick leads, large: PLANNED when the weekly plan holds
+(`applyPlan`), otherwise RECOMMENDED, with the reason in words, the session
+card (energy tabs, duration, info), and one START. Under it ADJUST TODAY,
+then ALSO FITS TODAY: up to two more sessions (`alsoFits`) that pass the same
+safety rules, each with why it is second (the recommender's own pick first
+when the plan led). A banner offers a deload now, or skipping one, when the
+logs say so (`deloadAdvice`). With nothing due it says why (rest day, done
+for today) and points to TRAIN.
+
+**ADJUST TODAY** (`DayControls`, `today.ts`, `day-slice.ts`) takes what the
+logs cannot know. Stored in `dayPlan`; time, kit and off hold for the day
+they were set, soreness for that day and the next.
 
 - **Time** (10 / 15 / 20 / 30 / 45 min): `fitToMinutes` drops whole exercises,
   ACCESSORY first, then MOBILITY, PREHAB, SECONDARY, PRIMARY, each from the
   end, until the estimate fits. Warm-ups and tests stay, at least one working
   exercise stays, rest and sets are never changed. Applied in
-  `sessionListFor`, so the home card shows the cut duration. A cap of 30 or
+  `sessionListFor`, so the card shows the cut duration. A cap of 30 or
   less keeps ASSESS and STRONG off the recommendation.
 - **No kit**: DAILY drops band, edge and loaded work (`needsKit`); the
   recommendation is a DAILY with three or more mat-only working exercises
@@ -583,13 +614,73 @@ for the day they were set, soreness for that day and the next.
   steers the recommendation away while another session fits, with the reason
   "Shoulders sore. Something else today." Sore forearms also skip ASSESS and
   STRONG.
-- **Rest day / sick**: no recommendation, a banner on the home screen, no
-  reminders that day, and the date goes into `offDays`, which `checkDecay`
-  subtracts from the days since a capacity was trained.
+- **Rest day / sick**: no recommendation, a banner, no reminders that day,
+  and the date goes into `offDays`, which `checkDecay` subtracts from the
+  days since a capacity was trained.
+
+## TRAIN
+
+The library (`TrainScreen`): DAILY, CAVE, TEST, HEAL and MINE as tabs. Each
+programme session is a row with its minutes at the chosen energy, recovery
+or when it was last done, and TODAY on the pick. A row opens the session
+(`SessionInfo` through `use-launcher`): every exercise as it will run, energy
+tabs, START, and MAKE IT MINE. Every session, programme, routine or built,
+starts through `startCustom` with the list built by `sessionListFor`, so
+what is shown is what runs.
+
+MINE holds the athlete's routines, BUILD A SESSION, and THIS WEEK.
+
+## Routines
+
+A routine (`routines.ts`, `routine-slice.ts`, `RoutineEditor`) is a fixed
+list: these exercises, in this order. It is turned into a circuit
+(`routineCircuit`, id `routine-<id>`, circuit number R) and runs through
+`buildList` like any session, so level picks the variation, energy and the
+deload week scale sets, gates substitute (one-arm rungs stay closed until
+tested), the pain check asks, and load history and XP follow the exercise id.
+HOME routines log as DAILY (`recoveryHours: 0`), CAVE routines as CAVE (24h,
+`stacksOnSession`), as BUILD sessions do.
+
+- Made from blank (+ NEW), from any programme session (MAKE IT MINE copies
+  `circuit.exercises`), or frozen from a BUILD preview (SAVE THIS LIST AS A
+  ROUTINE: a preset picks again each time, a routine keeps the list).
+- The editor: name, HOME / CAVE, move up and down, SWAP, remove, + ADD
+  EXERCISE (`ExercisePicker`: the whole library allowed by the place's kit,
+  by area and search, one row per name, tests left out). Sets 1-8 and reps
+  or seconds between half and double the written work; fixed protocols,
+  tests, ramps and warm-ups are taken as written. **Rest is never on the
+  screen.** At most 16 exercises.
+- Warnings, never blocks (`routineWarnings`): gym kit in a home routine,
+  curling work before the end of a morning session, maximal work after
+  lighter work, two hard finger exercises, no warm-up before hard work.
+- Deleting a routine also takes it off the weekly plan, with UNDO.
+
+## Weekly plan
+
+THIS WEEK in TRAIN MINE (`WeekPlanner`, `plan.ts`, `weekPlan`, Monday 0 to
+Sunday 6): up to three items a day from BOULDERING, REST, routines and every
+programme session; an empty day is left to the recommender. On TODAY the
+first planned session not done today leads, unless `blockedBecause` says
+otherwise (healing finger or pain 6+ on a finger session, sore forearms, no
+kit for a gym session, a sore area it loads, sore legs on a leg-heavy one,
+not recovered): then the recommendation leads and says "CAVE 01 was planned,
+but finger pain 7/10 lately." REST planned leaves no pick and offers the
+recommendation; BOULDERING planned adds a note.
+
+## LOG
+
+The LOG tab (`LogScreen`, `history.ts`): + CLIMB and + ACTIVITY, then every
+session, climb and activity as one stream, newest day first, 14 days at a
+time. A climb or activity opens its editor; a session opens `SessionDetail`
+(sets done of planned per exercise, the load logged that day, effort to
+correct, DELETE). Deleting a session also removes that day's loads for its
+exercises unless another session that day shares them; XP stays. Every
+delete (session, climb, activity, routine) offers UNDO for six seconds
+(`UndoToast`, `history-slice.ts`).
 
 ## BUILD
 
-BUILD A SESSION on the home screen (`BuildSheet`, `custom.ts`, presets in
+BUILD A SESSION in TRAIN MINE (`BuildSheet`, `custom.ts`, presets in
 `build-slice.ts`) makes a session on the spot:
 
 - **PRESETS**: one tap fills in everything. Six built in (`BUILT_IN_PRESETS`:
@@ -597,7 +688,8 @@ BUILD A SESSION on the home screen (`BuildSheet`, `custom.ts`, presets in
   30: step-up + slow lower, split squat with forward shift, single-leg RDL,
   calf raise, glute bridge), HIPS + CONTROL (home, 15: 90/90, Cossack,
   high-knee hold, knee-to-wall ankle, side-lying abduction, dead bug)); SAVE AS PRESET stores
-  the athlete's own in `buildPresets` (persisted, in backups).
+  the athlete's own in `buildPresets` (persisted, in backups); an own preset
+  can be renamed or deleted. SAVE THIS LIST AS A ROUTINE freezes the preview.
 - **WHERE**: HOME (mat, band, portable edge) or CAVE (the gym, with dumbbells
   and rings / TRX). **TIME**: 15 / 30 / 45 / 60 / 90 min.
 - **GOALS** (PULL POWER, PUSH POWER, CHEST, BALANCE, ROCKOVER, HIPS) and **AREAS** (CORE,
@@ -619,7 +711,7 @@ BUILD A SESSION on the home screen (`BuildSheet`, `custom.ts`, presets in
 - Safety as everywhere: home kit at home, nothing gripped, no pulling (PULL
   POWER closed) and no finger work while healing (`isHealing` in
   `recommend.ts`), no finger work after pain 3+, NO KIT keeps it on the mat, a
-  sore area on the TODAY sheet (or legs sore from an activity) is closed; sore
+  sore area under ADJUST TODAY (or legs sore from an activity) is closed; sore
   shoulders close every push and pull target. PULL POWER keeps the one-arm
   gates: assisted rungs substitute the lopsided ladder, negatives stay hidden.
   The two weighted pull-ups never share a session (`SAME_MOVEMENT`).
@@ -644,27 +736,52 @@ BUILD A SESSION on the home screen (`BuildSheet`, `custom.ts`, presets in
 
 ## STATS
 
-Opens on an overview (`StatsOverview`, `review.ts`): the last 28 days against
-the 28 before in four tiles (training days and days a week, hours with
-sessions and climbs, share of planned sets done, mean effort), the level, and
-**WHAT STANDS OUT** (`getInsights`, at most 7, in this order): pulling logged
-while a finger heals, the biggest load gain (from the first non-zero entry),
-one-arm gates a tested pull-up already opens, training days against the
-period before, after-bouldering sessions with no climb logged (healing days
-excluded), completion under 85%, when ASSESS is due, and loads logged as 0
-after a real value (`zeroDrops`). Then WEEKS, **WHERE THE WORK WENT**
-(`getWorkSplit`: working sets by the area each exercise trains first, with
-the period before as a ghost bar; warm-ups, tests and retired ids left out),
-LOAD and RECOVERY, then groups: PROGRESS (lifts, one-arm path, tests), GAPS
-(freshness, core this week, cut short), FINGERS (ring finger, finger load),
-CLIMBING, LEVELS (capacities, level trend). Lift series drop 0 kg entries (a
-stepper left unset) and leave out all-zero bodyweight series; CUT SHORT
-leaves tests out and names retired ids readably (`retiredName`).
+Four tabs, each answering its own question. Every section names its period
+on the right and opens with its answer in one sentence (`stats-headlines.ts`).
+
+- **OVERVIEW** (`StatsOverview`, `review.ts`): the last 28 days against the
+  28 before in four tiles (training days and days a week, hours with sessions
+  and climbs, share of planned sets done, mean effort; effort changes are not
+  coloured good or bad), the level, **WHAT STANDS OUT** (`getInsights`, at
+  most 7, in this order: pulling logged while a finger heals, the biggest load
+  gain, a lift stalled four sessions (`plateaus`), one-arm gates a tested
+  pull-up already opens, training days against the period before,
+  after-bouldering sessions with no climb logged, completion under 85%, when
+  ASSESS is due, loads logged as 0 after a real value), then WEEKS.
+- **PROGRESS**: LIFTS (a row opens `ExerciseDetail`: every load on a scaled
+  chart, latest and best, NEXT TIME with the reason from `suggestLoad`, a
+  stall, how it progresses, recent sessions), ONE-ARM PATH, TESTS.
+- **BODY**: WHERE THE WORK WENT (`getWorkSplit`), LOAD, RECOVERY, FRESHNESS,
+  CORE THIS WEEK, CUT SHORT, RING FINGER, FINGER LOAD, LEVELS (capacities and
+  the level trend, straight segments).
+- **CLIMBING**: CLIMBS, CLIMBING VS PULLING.
+
+Lift series drop 0 kg entries (a stepper left unset) and leave out all-zero
+bodyweight series; CUT SHORT leaves tests out and names retired ids readably
+(`retiredName`).
+
+## Adapting the block
+
+`adapt.ts`, all suggestions with their reason:
+
+- **Deload now** (week 2 or later): a load spike (acute:chronic over 1.5),
+  the last rated sessions averaging 8.5/10 or more, or finger pain of 3+ in
+  two sessions within a week. TODAY offers MAKE THIS THE DELOAD WEEK
+  (`deloadNow` moves `blockStart` so this week is the deload).
+- **Skip the deload**: on a deload week after fewer than three hard sessions
+  or climbs in the build weeks. TODAY offers a new block (`restartBlock`).
+- **How each lift felt**: the complete screen asks EASY / RIGHT / HARD for
+  each loaded exercise done (`feel` on the session entry). `suggestLoad`
+  reads it before the session effort: easy or right steps on, hard holds.
+- **Stalled lifts**: the same load four sessions running, the last within
+  four weeks.
+- **Monday summary**: a Monday 08:30 local notification (reminder kind
+  `weekly`) with last week in one line.
 
 ## Activity Log
 
 Everything done outside the app (hike, via ferrata, ski tour, trail run, run,
-bike, swim, yoga, other), from the ACTIVITY LOG button on the home screen.
+bike, swim, yoga, other), from + ACTIVITY on the LOG tab.
 `src/core/activity.ts`. The athlete types what they remember, often only the
 type and the metres climbed; every missing field is estimated and the
 assumption is named on the screen:
@@ -690,8 +807,10 @@ What it changes:
   and 02) whenever another one fits, with the reason "Legs sore from the hike.
   Upper body."
 
-Not imported from Apple Health yet (the Swift plugin reads climbing workouts
-only).
+Apple Health hikes, runs, rides, swims, yoga and ski tours become activity
+entries on a read (`activitiesToImport`): a run that climbs over 300 m is a
+trail run, a day with a hand-logged activity of the same type is left alone,
+under 15 minutes is skipped, ids go into `health.importedActivities`.
 
 ## iOS
 
@@ -706,7 +825,7 @@ rewritten.
 Three local plugins in `ios/App/App/`, each with a bridge in `src/native/`:
 `RestActivity` (`RestActivityPlugin.swift`) starts and ends the rest Live
 Activity; `Health` (`HealthPlugin.swift`, `src/native/health.ts`) reads sleep,
-HRV, resting HR, body mass and climbing workouts and saves sessions as
+HRV, resting HR, body mass, climbing workouts and outdoor workouts and saves sessions as
 workouts; `TodayWidget` (`TodayWidgetPlugin.swift`, `src/native/widget.ts`)
 hands the home-screen widget its snapshot. Local plugins are not
 auto-discovered, so `MainViewController` registers them in
@@ -768,9 +887,13 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v27.md`** — **start here.** STATS overview and WHAT
+- **`7bit-handover-v28.md`** — **start here.** The tab bar (TODAY, TRAIN,
+  STATS, LOG), routines and the weekly plan, STATS in four tabs, the session
+  and exercise pages, deload advice, how each lift felt, UNDO, Playwright, and
+  the taste-skill UI review.
+- **`7bit-handover-v27.md`** — read second. STATS overview and WHAT
   STANDS OUT, work split, regrouped sections; Apple Health connect reports why.
-- **`7bit-handover-v26.md`** — read second. DAILY 06 QUIET FEET and the
+- **`7bit-handover-v26.md`** — DAILY 06 QUIET FEET and the
   ROCKOVER / HIPS goals and presets, from the off-wall footwork analysis.
 - **`7bit-handover-v25.md`** — BUILD presets, goals (pull
   power, push power, chest, balance), targets tapped out, AVOID, 90 minutes.

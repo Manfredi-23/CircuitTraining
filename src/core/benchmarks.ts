@@ -368,13 +368,14 @@ export const BENCHMARKS: Benchmark[] = [
     capacity: 'tension',
     short: 's',
     unit: 'seconds',
-    protocol: 'Arms overhead, legs straight and low, lower back pressed flat. Time ends when the lower back lifts.',
+    protocol: 'On the back, arms overhead, shoulders and feet off the floor, lower back pressed into the mat. Time ends when the lower back lifts or a limb touches down.',
     standards: [
       { label: 'Developing', value: 30 },
       { label: 'Solid',      value: 60 },
       { label: 'Strong',     value: 90 },
     ],
     source: 'Approximate gymnastics conditioning benchmarks; no climbing dataset exists.',
+    note: 'Replaced the McGill flexor hold in ASSESS, which needs a wedge or a partner.',
   },
   {
     id: 'side-plank',
@@ -480,17 +481,6 @@ export const BENCHMARKS: Benchmark[] = [
     standards: [],
     source: 'No published climbing standard. Tracked against your own previous results.',
     note: 'Replaced the front lever ramp in ASSESS: scored alone without judging a body line.',
-  },
-  {
-    id: 'hollow-hold',
-    name: 'Hollow body hold',
-    capacity: 'tension',
-    short: 's',
-    unit: 'seconds',
-    protocol: 'On the back, arms overhead, shoulders and feet off the floor, lower back pressed into the mat. Time ends when the lower back lifts or a limb touches down.',
-    standards: [],
-    source: 'Gymnastics conditioning hold; no published norm. Tracked against your own previous results.',
-    note: 'Replaced the McGill flexor hold in ASSESS, which needs a wedge or a partner.',
   },
   {
     id: 'prone-extension-hold',

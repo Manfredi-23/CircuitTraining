@@ -11,11 +11,16 @@ import styles from './StatsOverview.module.css';
 
 const hours = (min: number) => (min >= 600 ? String(Math.round(min / 60)) : (Math.round(min / 6) / 10).toFixed(1));
 
-function Delta({ now, before, unit = '' }: { now: number | null; before: number | null; unit?: string }) {
+/**
+ * A change against the four weeks before. Colour says good or bad, never up
+ * or down: more training days is good, a change in effort is neither.
+ */
+function Delta({ now, before, unit = '', neutral = false }: { now: number | null; before: number | null; unit?: string; neutral?: boolean }) {
   if (now === null || before === null || !before) return <span className={styles.deltaNone}>no earlier data</span>;
   const d = Math.round((now - before) * 10) / 10;
   if (d === 0) return <span className={styles.deltaNone}>same as before</span>;
-  return <span className={d > 0 ? styles.deltaUp : styles.deltaDown}>{d > 0 ? '+' : ''}{d}{unit} vs 4 wks before</span>;
+  const cls = neutral ? styles.deltaNeutral : d > 0 ? styles.deltaUp : styles.deltaDown;
+  return <span className={cls}>{d > 0 ? '+' : ''}{d}{unit} vs 4 wks before</span>;
 }
 
 function Tile({ label, value, unit, children }: { label: string; value: string; unit?: string; children?: React.ReactNode }) {
@@ -58,11 +63,11 @@ export function OverviewCard({ level, sessionLog, climbLog, activityLog, insight
             <span className={styles.deltaNone}>{c.sessions} sessions{c.climbs ? ` · ${c.climbs} climbs` : ''}</span>
             <Delta now={Math.round(c.minutes / 6) / 10} before={Math.round(p.minutes / 6) / 10} unit="h" />
           </Tile>
-          <Tile label="SETS DONE" value={c.completion === null ? '--' : `${c.completion}%`} unit={`${c.setsDone} sets`}>
+          <Tile label="SETS DONE" value={c.completion === null ? '' : `${c.completion}%`} unit={c.completion === null ? 'none planned' : `${c.setsDone} sets`}>
             <span className={styles.deltaNone}>of the sets planned</span>
           </Tile>
-          <Tile label="EFFORT" value={c.effort === null ? '--' : String(c.effort)} unit="/10">
-            <Delta now={c.effort} before={p.effort} />
+          <Tile label="EFFORT" value={c.effort === null ? '' : String(c.effort)} unit={c.effort === null ? 'not rated' : '/10'}>
+            <Delta now={c.effort} before={p.effort} neutral />
           </Tile>
         </div>
       </div>
