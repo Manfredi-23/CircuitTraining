@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useStore } from '@/store/store';
 import TabBar from './TabBar';
+import UndoToast from './UndoToast';
 import TodayScreen from '@/components/screens/TodayScreen';
 import TrainScreen from '@/components/screens/TrainScreen';
 import StatsScreen from '@/components/screens/StatsScreen';
@@ -29,6 +30,7 @@ export default function AppShell() {
       {tab === 'train' && <TrainScreen onSettings={openSettings} />}
       {tab === 'stats' && <StatsScreen onSettings={openSettings} />}
       {tab === 'log' && <LogScreen onSettings={openSettings} onSession={setSession} />}
+      <UndoToast />
       <TabBar tab={tab} onTab={t => { setTab(t); window.scrollTo(0, 0); }} />
       <SettingsOverlay open={settingsOpen} onClose={() => setSettingsOpen(false)} />
       {session !== null && <SessionDetail index={session} onClose={() => setSession(null)} onExercise={setExercise} />}

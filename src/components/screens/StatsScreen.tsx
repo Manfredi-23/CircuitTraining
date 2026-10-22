@@ -2,6 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from 'react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { useShallow } from 'zustand/react/shallow';
 import { useStore } from '@/store/store';
 import { getOverallLevel } from '@/core/engine';
 import { getSortedCapacities, getOverallTrendData, getCapacityTrendData, timeFilterToDays } from '@/core/stats';
@@ -73,7 +74,13 @@ export default function StatsScreen({ onSettings }: { onSettings: () => void }) 
     activeChartMuscles, highlightMuscle,
     setStatsSort, setStatsTimeFilter, toggleChartMuscle,
     setHighlightMuscle,
-  } = useStore();
+  } = useStore(useShallow(s => ({
+    progress: s.progress, sessionLog: s.sessionLog, climbLog: s.climbLog, activityLog: s.activityLog, loadLog: s.loadLog,
+    benchmarkResults: s.benchmarkResults, statsSort: s.statsSort, statsTimeFilter: s.statsTimeFilter, health: s.health,
+    settings: s.settings, activeChartMuscles: s.activeChartMuscles, highlightMuscle: s.highlightMuscle,
+    setStatsSort: s.setStatsSort, setStatsTimeFilter: s.setStatsTimeFilter, toggleChartMuscle: s.toggleChartMuscle,
+    setHighlightMuscle: s.setHighlightMuscle,
+  })));
   const [tab, setTab] = useState<StatsTab>('OVERVIEW');
   const [exercise, setExercise] = useState<string | null>(null);
 

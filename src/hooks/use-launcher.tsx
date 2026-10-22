@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useStore } from '@/store/store';
 import { sessionListFor } from '@/store/slices/workout-slice';
 import { asksPainCheck, applyPainCheck, estimateDuration } from '@/core/engine';
@@ -23,7 +24,13 @@ export interface LaunchTarget {
  * same way, so the session shown is the session run.
  */
 export function useLauncher() {
-  const state = useStore();
+  // Only what the session list and the pain check read: a rerender on any
+  // other change (a timer tick, a stats filter) would rebuild every list.
+  const state = useStore(useShallow(s => ({
+    energy: s.energy, progress: s.progress, benchmarkResults: s.benchmarkResults, blockStart: s.blockStart,
+    sessionLog: s.sessionLog, tweaks: s.tweaks, dayPlan: s.dayPlan,
+    setEnergy: s.setEnergy, selectCircuit: s.selectCircuit, startCustom: s.startCustom,
+  })));
   const [info, setInfo] = useState<LaunchTarget | null>(null);
   const [pain, setPain] = useState<LaunchTarget | null>(null);
 

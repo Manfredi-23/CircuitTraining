@@ -68,10 +68,14 @@ export const createClimbSlice: StateCreator<Store, [], [], ClimbSlice> = (set, g
     });
   },
 
-  deleteClimbSession: (id) => set(s => ({
-    climbLog: s.climbLog.filter(c => c.id !== id),
-    editingClimbId: s.editingClimbId === id ? null : s.editingClimbId,
-  })),
+  deleteClimbSession: (id) => {
+    const { climbLog } = get();
+    set(s => ({
+      climbLog: s.climbLog.filter(c => c.id !== id),
+      editingClimbId: s.editingClimbId === id ? null : s.editingClimbId,
+    }));
+    get().offerUndo('Climb deleted.', { climbLog });
+  },
 
   openClimbLog: (editId = null) => set({ editingClimbId: editId, screen: 'climb' }),
 });
