@@ -14,13 +14,15 @@ const hours = (min: number) => (min >= 600 ? String(Math.round(min / 60)) : (Mat
 
 /**
  * A change against the four weeks before. Colour says good or bad, never up
- * or down: more training days is good, a change in effort is neither.
+ * or down: more training days is good, a change in effort is neither. Only a
+ * drop of 15% or more is marked: one day fewer of 23 is noise, not news.
  */
 function Delta({ now, before, unit = '', neutral = false }: { now: number | null; before: number | null; unit?: string; neutral?: boolean }) {
   if (now === null || before === null || !before) return <span className={styles.deltaNone}>no earlier data</span>;
   const d = Math.round((now - before) * 10) / 10;
   if (d === 0) return <span className={styles.deltaNone}>same as before</span>;
-  const cls = neutral ? styles.deltaNeutral : d > 0 ? styles.deltaUp : styles.deltaDown;
+  const material = Math.abs(now - before) / before >= 0.15;
+  const cls = neutral ? styles.deltaNeutral : d > 0 ? styles.deltaUp : material ? styles.deltaDown : styles.deltaNone;
   return <span className={cls}>{d > 0 ? '+' : ''}{d}{unit} vs 4 wks before</span>;
 }
 

@@ -13,6 +13,13 @@ import ReservePicker from '@/components/shared/ReservePicker';
 import Led from '@/components/shared/Led';
 import styles from './WorkoutScreen.module.css';
 
+/** Long names step down so the name stays on two lines and the reps lead. */
+function nameSize(name: string): string {
+  if (name.length > 40) return ` ${styles.exNameLong}`;
+  if (name.length > 19) return ` ${styles.exNameMid}`;
+  return '';
+}
+
 export default function WorkoutScreen() {
   const {
     mode, circuit, stepIndex, setIndex,
@@ -56,7 +63,10 @@ export default function WorkoutScreen() {
           </div>
         )}
 
-        <div key={`name-${stepIndex}`} className={`${styles.exName} ${styles.exNameEnter}`}>
+        <div
+          key={`name-${stepIndex}`}
+          className={`${styles.exName} ${styles.exNameEnter}${nameSize(currentExercise.displayName)}`}
+        >
           {currentExercise.displayName}
         </div>
 

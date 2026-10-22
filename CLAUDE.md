@@ -923,9 +923,12 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v30.md`** — **start here.** Polish: larger LED dots,
+- **`7bit-handover-v31.md`** — **start here.** A second taste-skill pass:
+  long exercise names on two lines, the complete screen from the top, deltas
+  orange only on a real drop, the session page's doubled minutes and rules.
+- **`7bit-handover-v30.md`** — read second. Polish: larger LED dots,
   dotted section rules and more space between sections.
-- **`7bit-handover-v29.md`** — read second. The LED redesign: LED
+- **`7bit-handover-v29.md`** — The LED redesign: LED
   numerals, the week rail on TODAY, pixel tab icons, the LED rest ring, the
   dot-grid paper.
 - **`7bit-handover-v28.md`** — The tab bar (TODAY, TRAIN,

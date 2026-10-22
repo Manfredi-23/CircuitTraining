@@ -46,7 +46,6 @@ export default function CompleteScreen() {
 
   return (
     <div className={`screen screen-enter ${styles.screen}`}>
-      <div className={styles.spacer} />
 
       <div className={styles.top}>
         <div className={styles.check}>[OK]</div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from 'react';
 import { CONFIG } from '@/core/config';
+import { displaySubtitle } from '@/core/data-index';
 import type { Circuit, EnergyKey, ScaledExercise } from '@/core/types';
 import styles from './SessionInfo.module.css';
 
@@ -68,7 +69,7 @@ export default function SessionInfo({
 
       <div className={styles.head}>
         <div className={styles.title}>{circuit.title}</div>
-        <div className={styles.subtitle}>{circuit.subtitle}</div>
+        <div className={styles.subtitle}>{displaySubtitle(circuit)}</div>
         <div className={styles.meta}>{duration} min &middot; {energy} &middot; {list.length} exercises</div>
         <div className={styles.focus}>{circuit.focus}</div>
         {onEnergy && (

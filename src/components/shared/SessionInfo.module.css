@@ -7,6 +7,8 @@
   display: flex; flex-direction: column; gap: 16px;
   border-top: 2px solid var(--ink);
 }
+/* The energy tabs already draw the line between the head and the list. */
+.head:has(.energy) + .scroll { border-top: none; }
 
 .crumb { font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--accent); }
 
