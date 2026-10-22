@@ -7,6 +7,7 @@ import {
 } from '@/core/review';
 import type { ActivitySession } from '@/core/activity';
 import type { ClimbSession, SessionLogEntry } from '@/core/types';
+import Led from './Led';
 import styles from './StatsOverview.module.css';
 
 const hours = (min: number) => (min >= 600 ? String(Math.round(min / 60)) : (Math.round(min / 6) / 10).toFixed(1));
@@ -27,7 +28,10 @@ function Tile({ label, value, unit, children }: { label: string; value: string; 
   return (
     <div className={styles.tile}>
       <span className={styles.tileLabel}>{label}</span>
-      <span className={styles.tileValue}>{value}{unit && <small> {unit}</small>}</span>
+      <span className={styles.tileValue}>
+        {value ? <Led text={value} dot={4} animate /> : <span className={styles.tileDash}>-</span>}
+        {unit && <small>{unit}</small>}
+      </span>
       {children}
     </div>
   );

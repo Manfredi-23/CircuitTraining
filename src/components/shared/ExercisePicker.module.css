@@ -1,4 +1,4 @@
-.panel { background: #E4E2DD; z-index: 60; gap: 12px; }
+.panel { background: var(--dots), #E4E2DD; z-index: 60; gap: 12px; }
 .crumb { font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--accent); }
 .search {
   height: 44px; padding: 0 14px; font-family: inherit; font-size: 14px; color: var(--ink);

@@ -1,5 +1,5 @@
 .card {
-  position: relative; width: 100%; height: 342px;
+  position: relative; width: 100%; height: 360px;
   border: 2px solid var(--ink); border-radius: var(--rad-lg);
   overflow: hidden;
   display: flex; flex-direction: column; justify-content: space-between;
@@ -12,17 +12,12 @@
 .card:active { transform: scale(0.985); background: rgba(24,22,16,0.04); }
 @keyframes cardIn { from { opacity: 0.4; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
 
-.cardNum {
-  position: absolute; right: 14px; top: -2px;
-  font-weight: 600; font-size: 98px; line-height: 1.28;
-  letter-spacing: -0.05em; color: var(--ink-ghost);
-  pointer-events: none; z-index: 0; user-select: none;
-}
+.cardNum { position: absolute; right: 22px; top: 22px; z-index: 0; pointer-events: none; }
 
-.titleBlock { position: relative; z-index: 1; display: flex; flex-direction: column; flex-shrink: 0; }
-.cardTitle { font-weight: 700; font-size: 16px; line-height: 20px; text-transform: uppercase; color: var(--ink); margin-bottom: -4px; }
-.titleDivider { display: flex; align-items: center; padding: 4px 0; border-bottom: 2px solid var(--ink); width: 100%; }
-.cardSubtitle { font-weight: 400; font-size: 12px; line-height: 15px; color: var(--ink); flex: 1; }
+.titleBlock { position: relative; z-index: 1; display: flex; flex-direction: column; flex-shrink: 0; padding-right: 96px; min-height: 52px; justify-content: flex-end; }
+.cardTitle { font-weight: 700; font-size: 20px; line-height: 24px; text-transform: uppercase; color: var(--ink); letter-spacing: 0.01em; }
+.titleDivider { display: flex; align-items: center; padding: 4px 0 8px; width: 100%; }
+.cardSubtitle { font-weight: 400; font-size: 12px; line-height: 16px; color: var(--ink-dim); flex: 1; }
 
 .illustrationWrap {
   position: relative; z-index: 1; flex: 1;

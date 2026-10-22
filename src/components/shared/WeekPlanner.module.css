@@ -12,7 +12,7 @@
 .dayEmpty { flex: 1; font-size: 12px; color: var(--ink-dim); }
 .chev { font-size: 14px; color: var(--ink-dim); }
 
-.panel { background: #E4E2DD; z-index: 55; }
+.panel { background: var(--dots), #E4E2DD; z-index: 55; }
 .crumb { font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--accent); }
 .note { font-size: 12px; line-height: 1.45; color: var(--ink); }
 .scroll { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; border-top: 2px solid var(--ink); padding-top: 14px; }

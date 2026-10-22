@@ -1,4 +1,4 @@
-.panel { background: #E4E2DD; }
+.panel { background: var(--dots), #E4E2DD; }
 .crumb { font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--accent); }
 .place { font-size: 12px; color: var(--ink-dim); line-height: 1.4; flex-shrink: 0; }
 

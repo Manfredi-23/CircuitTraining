@@ -7,9 +7,13 @@ import { getLoadAxis, formatLoad } from '@/core/load';
 import FormGuide from '@/components/shared/FormGuide';
 import SessionProgressBar from '@/components/shared/SessionProgressBar';
 import ReservePicker from '@/components/shared/ReservePicker';
+import Led from '@/components/shared/Led';
 import styles from './RestScreen.module.css';
 
-const CIRCUMFERENCE = 2 * Math.PI * 54; // 339.3
+/** The rest ring is LEDs: one goes out for each 1/48 of the rest. */
+const RING_DOTS = 48;
+const RING_R = 76;
+const RING_SIZE = 168;
 
 /**
  * Time added per tap. Rest on maximal work is a floor, never a ceiling: IRCRA
@@ -60,7 +64,7 @@ export default function RestScreen() {
   };
 
   const progress = timer.remaining / total;
-  const dashOffset = CIRCUMFERENCE * (1 - progress);
+  const litDots = Math.ceil(Math.max(0, Math.min(1, progress)) * RING_DOTS);
 
   const ex = currentExercise;
   const newExercise = setIndex === 1;
@@ -79,16 +83,22 @@ export default function RestScreen() {
 
       <div className={styles.timerRow}>
         <div className={styles.ringWrap}>
-          <svg className={styles.ring} viewBox="0 0 120 120">
-            <circle className={styles.ringBg} cx="60" cy="60" r="54" />
-            <circle
-              className={`${styles.ringFill}${timer.isWarning ? ` ${styles.ringWarning}` : ''}`}
-              cx="60" cy="60" r="54"
-              style={{ strokeDashoffset: dashOffset }}
-            />
+          <svg className={styles.ring} viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`} aria-hidden="true">
+            {Array.from({ length: RING_DOTS }, (_, i) => {
+              const a = (i / RING_DOTS) * 2 * Math.PI - Math.PI / 2;
+              return (
+                <circle
+                  key={i}
+                  cx={RING_SIZE / 2 + RING_R * Math.cos(a)}
+                  cy={RING_SIZE / 2 + RING_R * Math.sin(a)}
+                  r={3}
+                  className={i < litDots ? (timer.isWarning ? styles.dotWarn : styles.dotOn) : styles.dotOff}
+                />
+              );
+            })}
           </svg>
-          <div className={`${styles.time}${timer.isWarning ? ` ${styles.timeWarning}` : ''}`} aria-live="polite">
-            {formatTime(timer.remaining)}
+          <div className={styles.time} aria-live="polite" aria-label={`${formatTime(timer.remaining)} of rest left`}>
+            <Led text={formatTime(timer.remaining)} dot={4} lit={timer.isWarning ? 'var(--accent)' : 'var(--ink)'} unlit="none" label="" />
           </div>
         </div>
         <div className={styles.timerSide}>
@@ -112,8 +122,8 @@ export default function RestScreen() {
             )}
             <div className={styles.nextName}>{ex.displayName}</div>
             <div className={styles.nextWork}>
-              {ex.unit === 'sec' ? `${ex.scaledWork}s` : `x${ex.scaledWork}`}
-              {ex.perSide ? <span className={styles.perSide}> / side</span> : null}
+              <Led text={ex.unit === 'sec' ? `${ex.scaledWork}s` : `x${ex.scaledWork}`} dot={4} unlit="none" label={ex.unit === 'sec' ? `${ex.scaledWork} seconds` : `${ex.scaledWork} reps`} />
+              {ex.perSide ? <span className={styles.perSide}>/ side</span> : null}
             </div>
             <div className={styles.loadLine}>{ex.loadText}</div>
             {ex.note && <div className={styles.note}>{ex.note}</div>}

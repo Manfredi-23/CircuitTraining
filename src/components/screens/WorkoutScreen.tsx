@@ -10,6 +10,7 @@ import FormGuide from '@/components/shared/FormGuide';
 import SessionProgressBar from '@/components/shared/SessionProgressBar';
 import AdjustControls from '@/components/shared/AdjustControls';
 import ReservePicker from '@/components/shared/ReservePicker';
+import Led from '@/components/shared/Led';
 import styles from './WorkoutScreen.module.css';
 
 export default function WorkoutScreen() {
@@ -67,11 +68,15 @@ export default function WorkoutScreen() {
           ))}
         </div>
 
-        <div key={`reps-${stepIndex}`} className={`${styles.repsDisplay} ${styles.repsPop}`}>
-          {currentExercise.unit === 'sec'
-            ? `${currentExercise.scaledWork}s`
-            : `x${currentExercise.scaledWork}`}
-          {currentExercise.perSide ? <span className={styles.perSide}> / side</span> : null}
+        <div key={`reps-${stepIndex}`} className={styles.repsDisplay}>
+          <Led
+            text={currentExercise.unit === 'sec' ? `${currentExercise.scaledWork}s` : `x${currentExercise.scaledWork}`}
+            dot={7}
+            unlit="none"
+            animate
+            label={currentExercise.unit === 'sec' ? `${currentExercise.scaledWork} seconds` : `${currentExercise.scaledWork} reps`}
+          />
+          {currentExercise.perSide ? <span className={styles.perSide}>/ side</span> : null}
         </div>
 
         {/* Load prescription — where progression actually lives */}

@@ -1,4 +1,4 @@
-.panel { background: #E4E2DD; }
+.panel { background: var(--dots), #E4E2DD; }
 .crumb { font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--accent); }
 .scroll { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 20px; border-top: 2px solid var(--ink); padding-top: 16px; }
 .head { display: flex; flex-direction: column; gap: 4px; }

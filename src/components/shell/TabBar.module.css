@@ -8,16 +8,17 @@
 }
 .inner { display: flex; max-width: 390px; margin: 0 auto; padding: 0 24px; }
 .tab {
-  flex: 1; height: 56px; display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 13px; letter-spacing: 0.1em; color: var(--ink);
+  flex: 1; height: 66px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  color: var(--ink-dim);
   border-bottom: 2px solid var(--ink-ghost);
-  transition: border-bottom-width 150ms ease;
+  transition: border-bottom-width 150ms ease, color 150ms ease;
 }
-.active { border-bottom: 6px solid var(--ink); padding-top: 4px; }
+.label { font-weight: 700; font-size: 11px; letter-spacing: 0.12em; }
+.active { border-bottom: 6px solid var(--ink); padding-top: 4px; color: var(--ink); }
 .tab:active { opacity: 0.6; }
 
 /* Room for the bar under every tab's content. */
-:global(.tab-screen) { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+:global(.tab-screen) { padding-bottom: calc(108px + env(safe-area-inset-bottom, 0px)); }
 
 /* A full-screen panel (session, editor, settings) owns the screen: the bar
    steps away rather than sitting over its bottom action. */

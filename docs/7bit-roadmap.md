@@ -111,3 +111,11 @@ make it smarter, and review the UI with the taste skill.
 | 8.7 | [x] Health outdoor workouts into the activity log | Swift written, not compiled in the cloud session. |
 | 8.8 | [x] Playwright smoke tests | `npm run test:e2e`. |
 | 8.9 | [x] Taste-skill review: contrast, text size, accent on data and one action | |
+
+## Phase 9 — The LED redesign (handover v29)
+
+| # | Chunk | Notes |
+|---|-------|-------|
+| 9.1 | [x] LED numerals and pixel tab icons | `led-font.ts`, `Led`. |
+| 9.2 | [x] The week rail on TODAY | `week-rail.ts`, `WeekRail`. |
+| 9.3 | [x] The LED rest ring; dot-grid paper; type scale | |

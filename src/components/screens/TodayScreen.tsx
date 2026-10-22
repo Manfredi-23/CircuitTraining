@@ -12,6 +12,8 @@ import { useLauncher } from '@/hooks/use-launcher';
 import ScreenHeader from '@/components/shell/ScreenHeader';
 import SessionCard from '@/components/shared/SessionCard';
 import DayControls from '@/components/shared/DayControls';
+import WeekRail from '@/components/shared/WeekRail';
+import Led from '@/components/shared/Led';
 import { routineCircuit } from '@/core/routines';
 import type { TodayPick } from '@/core/plan';
 import type { Routine } from '@/core/routines';
@@ -74,6 +76,8 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
         <Image src="/images/logo.svg" alt="7Bit" width={80} height={32} className={styles.logo} priority />
       </ScreenHeader>
 
+      <WeekRail />
+
       {derank && (
         <div className={styles.banner}>
           <span>{derank}</span>
@@ -110,9 +114,18 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
             block={block}
             onEnergy={setEnergy}
             onOpen={() => launcher.show({ mode: recommendation.mode, circuit: rec })}
+            highlight
           />
-          <button className={styles.start} onClick={() => launcher.start({ mode: recommendation.mode, circuit: rec })}>
-            START {rec.title} &middot; {estimateDuration(recList)} MIN
+          <button
+            className={styles.start}
+            onClick={() => launcher.start({ mode: recommendation.mode, circuit: rec })}
+            aria-label={`Start ${rec.title}, ${estimateDuration(recList)} minutes`}
+          >
+            <span className={styles.startText}>START<span className={styles.startArrow} aria-hidden="true">&rarr;</span></span>
+            <span className={styles.startMin}>
+              <Led text={String(estimateDuration(recList))} dot={3} lit="#E4E2DD" unlit="rgba(228,226,221,0.14)" />
+              <span>MIN</span>
+            </span>
           </button>
         </section>
       ) : (
@@ -143,7 +156,7 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
               const minutes = estimateDuration(launcher.listOf({ mode: a.mode, circuit: c }));
               return (
                 <button key={a.circuitId} className={styles.altRow} onClick={() => launcher.show({ mode: a.mode, circuit: c })}>
-                  <span className={styles.altNum}>{c.circuitNum}</span>
+                  <Led text={c.circuitNum} dot={3} lit="var(--ink)" unlit="none" className={styles.altNum} label={`${a.mode} ${c.circuitNum}`} />
                   <span className={styles.altBody}>
                     <span className={styles.altTitle}>{a.routineId ? 'ROUTINE' : a.mode} &middot; {c.title}</span>
                     <span className={styles.altWhy}>{a.reason}</span>

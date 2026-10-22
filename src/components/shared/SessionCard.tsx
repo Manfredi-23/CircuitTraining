@@ -2,7 +2,9 @@
 
 import Image from 'next/image';
 import { CONFIG } from '@/core/config';
+import { displaySubtitle } from '@/core/data-index';
 import { getCapacityLevel } from '@/core/engine';
+import Led from './Led';
 import type { BlockWeek } from '@/core/block';
 import type { Circuit, EnergyKey, Progress } from '@/core/types';
 import styles from './SessionCard.module.css';
@@ -13,8 +15,10 @@ import styles from './SessionCard.module.css';
  * tabs and the info button do their own thing.
  */
 export default function SessionCard({
-  circuit, progress, energy, suggested, suggestedWhy, duration, block, onEnergy, onOpen,
+  circuit, progress, energy, suggested, suggestedWhy, duration, block, onEnergy, onOpen, highlight = false,
 }: {
+  /** Today's pick: its number lights in the one orange. */
+  highlight?: boolean;
   circuit: Circuit;
   progress: Progress;
   energy: EnergyKey;
@@ -42,12 +46,20 @@ export default function SessionCard({
       tabIndex={0}
       aria-label={`What is in ${circuit.title}`}
     >
-      <span className={styles.cardNum} aria-hidden="true">{circuit.circuitNum}</span>
+      <Led
+        text={circuit.circuitNum}
+        dot={5}
+        lit={highlight ? 'var(--accent)' : 'var(--ink)'}
+        unlit="var(--led-off)"
+        animate
+        className={styles.cardNum}
+        label={`Session ${circuit.circuitNum}`}
+      />
 
       <div className={styles.titleBlock}>
         <div className={styles.cardTitle}>{circuit.title}</div>
         <div className={styles.titleDivider}>
-          <span className={styles.cardSubtitle}>{circuit.subtitle}</span>
+          <span className={styles.cardSubtitle}>{displaySubtitle(circuit)}</span>
         </div>
       </div>
 
