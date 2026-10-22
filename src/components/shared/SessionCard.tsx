@@ -48,7 +48,7 @@ export default function SessionCard({
     >
       <Led
         text={circuit.circuitNum}
-        dot={5}
+        dot={6}
         lit={highlight ? 'var(--accent)' : 'var(--ink)'}
         unlit="var(--led-off)"
         animate

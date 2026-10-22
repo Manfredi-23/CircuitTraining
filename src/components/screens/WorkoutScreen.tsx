@@ -71,7 +71,7 @@ export default function WorkoutScreen() {
         <div key={`reps-${stepIndex}`} className={styles.repsDisplay}>
           <Led
             text={currentExercise.unit === 'sec' ? `${currentExercise.scaledWork}s` : `x${currentExercise.scaledWork}`}
-            dot={7}
+            dot={8}
             unlit="none"
             animate
             label={currentExercise.unit === 'sec' ? `${currentExercise.scaledWork} seconds` : `${currentExercise.scaledWork} reps`}

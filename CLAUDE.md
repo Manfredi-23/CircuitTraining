@@ -501,6 +501,10 @@ illustrations:
   back to a space: add it to `LED_GLYPHS` (7 rows, one width).
 - Unlit dots (`--led-off`) only on large displays (the card number, the rest
   ring); small LEDs draw lit dots only.
+- Sizes (v30, made larger for readability): the pitch is 1.3 dots so strokes
+  read as lines; list numbers and the START minutes 4px, STATS figures and the
+  next reps on rest 5px, the rest countdown 5.4px, the card number 6px, the
+  workout reps 8px, tab icons 3.6px. Nothing smaller than 3.6px.
 - The one orange lights the screen's main figure (today's pick, a rest in its
   last seconds), never chrome.
 - The tab bar icons are 7 x 7 LED icons (`LED_ICONS`).
@@ -510,6 +514,13 @@ illustrations:
 - TODAY opens with the week rail (`WeekRail`, `week-rail.ts`): seven LED
   columns filled from the bottom (a climb in orange, a session in ink, an
   outside day in grey), a ring on a planned day ahead, today underlined.
+- **Sections**: a section that follows another opens with `.dot-rule` (a
+  row of faint LED dots, `--rule`, and 26px of air) or, in a panel's CSS, the
+  same rule on `.section + .section`; settings sections get it from
+  `.overlay-section + .overlay-section`. The gap between sections
+  (`--section-gap`, 28-36px) is always clearly larger than the gap inside one
+  (12-14px). Section labels are 12-13px, bold, tracked 0.12em
+  (`.section-label`).
 - Type: `--fs-h1` 30px page titles, 16-20px titles, 13px body, 11px meta;
   nothing under 11px; secondary text in `--ink-dim` (74%, 4.5:1 on the
   parchment).
@@ -912,10 +923,12 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v29.md`** — **start here.** The LED redesign: LED
+- **`7bit-handover-v30.md`** — **start here.** Polish: larger LED dots,
+  dotted section rules and more space between sections.
+- **`7bit-handover-v29.md`** — read second. The LED redesign: LED
   numerals, the week rail on TODAY, pixel tab icons, the LED rest ring, the
   dot-grid paper.
-- **`7bit-handover-v28.md`** — read second. The tab bar (TODAY, TRAIN,
+- **`7bit-handover-v28.md`** — The tab bar (TODAY, TRAIN,
   STATS, LOG), routines and the weekly plan, STATS in four tabs, the session
   and exercise pages, deload advice, how each lift felt, UNDO, Playwright, and
   the taste-skill UI review.

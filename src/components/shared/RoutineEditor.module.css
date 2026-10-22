@@ -1,9 +1,9 @@
 .panel { background: var(--dots), #E4E2DD; z-index: 55; }
 .crumb { font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--accent); }
-.scroll { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 20px; border-top: 2px solid var(--ink); padding-top: 16px; }
+.scroll { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 28px; border-top: 2px solid var(--ink); padding-top: 16px; }
 
 .field { display: flex; flex-direction: column; gap: 8px; }
-.label { font-weight: 700; font-size: 11px; letter-spacing: 0.1em; color: var(--ink); }
+.label { font-weight: 700; font-size: 12px; letter-spacing: 0.12em; color: var(--ink); }
 .hint { font-size: 11px; color: var(--ink-dim); line-height: 1.4; }
 .input {
   height: 48px; padding: 0 14px; font-family: inherit; font-weight: 700; font-size: 16px; letter-spacing: 0.04em; color: var(--ink);
@@ -57,3 +57,6 @@
   font-weight: 700; font-size: 15px; letter-spacing: 0.06em;
 }
 .save:disabled { opacity: 0.35; }
+
+/* Sections after the first: a row of faint LED dots and air above. */
+.field + .field { padding-top: 24px; background-image: var(--rule); background-repeat: repeat-x; background-position: left top; background-size: 6px 2px; }

@@ -1,8 +1,8 @@
 .panel { background: var(--dots), #E4E2DD; }
 .crumb { font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--accent); }
-.scroll { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 18px; border-top: 2px solid var(--ink); padding-top: 14px; }
+.scroll { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 28px; border-top: 2px solid var(--ink); padding-top: 14px; }
 .section { display: flex; flex-direction: column; gap: 8px; }
-.label { display: flex; justify-content: space-between; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; color: var(--ink); }
+.label { display: flex; justify-content: space-between; font-weight: 700; font-size: 12px; letter-spacing: 0.12em; color: var(--ink); }
 .duration { color: var(--accent); }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip {
@@ -52,3 +52,6 @@
 }
 
 .linkRow { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+
+/* Sections after the first: a row of faint LED dots and air above. */
+.section + .section { padding-top: 24px; background-image: var(--rule); background-repeat: repeat-x; background-position: left top; background-size: 6px 2px; }

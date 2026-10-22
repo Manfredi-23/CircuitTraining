@@ -17,9 +17,9 @@
 .deltaNone { color: var(--ink-dim); }
 .deltaNeutral { color: var(--ink); }
 
-.insights { display: flex; flex-direction: column; gap: 8px; }
-.insightsTitle { font-weight: 700; font-size: 14px; letter-spacing: 0.06em; color: var(--ink); }
-.insight { display: flex; gap: 10px; align-items: flex-start; font-size: 12px; line-height: 1.45; color: var(--ink); }
+.insights { display: flex; flex-direction: column; gap: 12px; }
+.insightsTitle { font-weight: 700; font-size: 13px; letter-spacing: 0.12em; color: var(--ink); }
+.insight { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.5; color: var(--ink); }
 .mark { flex-shrink: 0; width: 8px; height: 8px; margin-top: 5px; border-radius: 2px; border: 2px solid var(--ink); }
 .good .mark { background: var(--ink); }
 .warn .mark { background: var(--accent); border-color: var(--accent); }

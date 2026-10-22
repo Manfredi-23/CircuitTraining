@@ -30,7 +30,7 @@ export default function TabBar({ tab, onTab }: { tab: TabName; onTab: (t: TabNam
               className={`${styles.tab}${on ? ` ${styles.active}` : ''}`}
               onClick={() => onTab(t.key)}
             >
-              <Led icon={t.key} dot={3} lit={on ? 'var(--ink)' : 'var(--ink-dim)'} unlit={on ? 'var(--led-off)' : 'none'} animate={on} />
+              <Led icon={t.key} dot={3.6} lit={on ? 'var(--ink)' : 'var(--ink-dim)'} unlit={on ? 'var(--led-off)' : 'none'} animate={on} />
               <span className={styles.label}>{t.label}</span>
             </button>
           );

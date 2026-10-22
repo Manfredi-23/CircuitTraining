@@ -1,4 +1,4 @@
-.screen { gap: 18px; padding-top: calc(28px + env(safe-area-inset-top, 0px)); }
+.screen { gap: 24px; padding-top: calc(28px + env(safe-area-inset-top, 0px)); }
 
 .shelves { display: flex; width: 100%; flex-shrink: 0; }
 .shelf {
@@ -22,7 +22,7 @@
 }
 .row + .row { border-top: 1px solid var(--ink-faint); }
 .row:active { background: rgba(24,22,16,0.04); }
-.num { flex-shrink: 0; width: 44px; }
+.num { flex-shrink: 0; width: 58px; }
 .body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
 .title { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; color: var(--ink); letter-spacing: 0.01em; }
 .tag {
@@ -48,7 +48,7 @@
   flex-shrink: 0; height: 48px; border: 2px solid var(--ink); border-radius: var(--rad-lg);
   font-weight: 700; font-size: 12px; letter-spacing: 0.06em; color: var(--ink);
 }
-.mine { display: flex; flex-direction: column; gap: 10px; }
+.mine { display: flex; flex-direction: column; gap: 14px; }
 .mineHead { display: flex; justify-content: space-between; align-items: center; }
 .h2 { font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--ink); }
 .newBtn { height: 36px; padding: 0 12px; font-weight: 700; font-size: 12px; letter-spacing: 0.08em; border: 2px solid var(--ink); border-radius: var(--rad-sm); }

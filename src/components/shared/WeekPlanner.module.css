@@ -1,4 +1,4 @@
-.box { display: flex; flex-direction: column; gap: 10px; }
+.box { display: flex; flex-direction: column; gap: 14px; }
 .head { display: flex; justify-content: space-between; align-items: baseline; }
 .h2 { font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--ink); }
 .sub { font-size: 11px; color: var(--ink-dim); }

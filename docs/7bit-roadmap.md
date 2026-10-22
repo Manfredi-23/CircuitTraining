@@ -119,3 +119,4 @@ make it smarter, and review the UI with the taste skill.
 | 9.1 | [x] LED numerals and pixel tab icons | `led-font.ts`, `Led`. |
 | 9.2 | [x] The week rail on TODAY | `week-rail.ts`, `WeekRail`. |
 | 9.3 | [x] The LED rest ring; dot-grid paper; type scale | |
+| 9.4 | [x] Polish: larger LED dots, dotted section rules, more space between sections | Handover v30. |
