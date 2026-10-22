@@ -11,6 +11,9 @@ import { useToday } from '@/hooks/use-today';
 import { useLauncher } from '@/hooks/use-launcher';
 import ScreenHeader from '@/components/shell/ScreenHeader';
 import BuildSheet from '@/components/shared/BuildSheet';
+import RoutineEditor from '@/components/shared/RoutineEditor';
+import WeekPlanner from '@/components/shared/WeekPlanner';
+import { blankRoutine, routineCircuit, routineFromCircuit, routineMode, type Routine } from '@/core/routines';
 import type { Circuit, Mode } from '@/core/types';
 import styles from './TrainScreen.module.css';
 
@@ -41,20 +44,34 @@ export default function TrainScreen({ onSettings }: { onSettings: () => void }) 
   const setEnergy = useStore(s => s.setEnergy);
   const progress = useStore(s => s.progress);
   const sessionLog = useStore(s => s.sessionLog);
+  const routines = useStore(s => s.routines);
   const { recommendation } = useToday();
+  const [editing, setEditing] = useState<{ routine: Routine; isNew: boolean } | null>(null);
   const launcher = useLauncher();
   const [shelf, setShelf] = useState<Shelf>(mode);
   const [buildOpen, setBuildOpen] = useState(false);
   const today = localDate();
 
-  const row = (m: Mode, c: Circuit) => {
+  const extraFor = (m: Mode, c: Circuit, routine?: Routine) => (
+    <button
+      className={styles.extra}
+      onClick={() => {
+        launcher.show(null);
+        setEditing(routine ? { routine, isNew: false } : { routine: routineFromCircuit(c, m), isNew: true });
+      }}
+    >
+      {routine ? 'EDIT ROUTINE' : 'MAKE IT MINE: COPY AS A ROUTINE'}
+    </button>
+  );
+
+  const row = (m: Mode, c: Circuit, routine?: Routine) => {
     const minutes = estimateDuration(launcher.listOf({ mode: m, circuit: c }));
     const readiness = getReadiness(c, progress);
     const last = lastDone(sessionLog, c.id);
     const recommended = recommendation?.circuitId === c.id;
     return (
-      <button key={c.id} className={styles.row} onClick={() => launcher.show({ mode: m, circuit: c })}>
-        <span className={styles.num}>{c.circuitNum}</span>
+      <button key={c.id} className={styles.row} onClick={() => launcher.show({ mode: m, circuit: c, extra: extraFor(m, c, routine) })}>
+        <span className={styles.num}>{routine ? (routine.place === 'HOME' ? 'H' : 'C') : c.circuitNum}</span>
         <span className={styles.body}>
           <span className={styles.title}>
             {c.title}
@@ -107,18 +124,38 @@ export default function TrainScreen({ onSettings }: { onSettings: () => void }) 
 
       {shelf === 'MINE' && (
         <>
+          <section className={styles.mine}>
+            <div className={styles.mineHead}>
+              <h2 className={styles.h2}>YOUR ROUTINES</h2>
+              <button className={styles.newBtn} onClick={() => setEditing({ routine: blankRoutine('MY ROUTINE', 'HOME'), isNew: true })}>+ NEW</button>
+            </div>
+            {routines.length === 0 ? (
+              <div className={styles.emptyMine}>
+                Fixed lists you keep: these exercises, in this order. Start one with + NEW, copy any programme
+                session with MAKE IT MINE, or save a built session as a routine.
+              </div>
+            ) : (
+              <div className={styles.list}>
+                {routines.map(r => row(routineMode(r), routineCircuit(r), r))}
+              </div>
+            )}
+          </section>
+
           <button className={styles.build} onClick={() => setBuildOpen(true)}>
             <span>
               <span className={styles.buildTitle}>BUILD A SESSION</span>
-              <span className={styles.buildSub}>From where, how long and what to train. Presets in one tap.</span>
+              <span className={styles.buildSub}>Picked for you from where, how long and what to train. Different every time; save the one you like as a routine.</span>
             </span>
             <span aria-hidden="true">&rarr;</span>
           </button>
+
+          <WeekPlanner />
         </>
       )}
 
       <BuildSheet open={buildOpen} onClose={() => setBuildOpen(false)} />
       {launcher.element}
+      {editing && <RoutineEditor routine={editing.routine} isNew={editing.isNew} onClose={() => setEditing(null)} />}
     </div>
   );
 }

@@ -69,5 +69,5 @@ export function useLauncher() {
     </>
   );
 
-  return { show: setInfo, start, listOf, element };
+  return { show: (t: LaunchTarget | null) => setInfo(t), start, listOf, element };
 }

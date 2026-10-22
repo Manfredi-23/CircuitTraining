@@ -12,10 +12,20 @@ import { useLauncher } from '@/hooks/use-launcher';
 import ScreenHeader from '@/components/shell/ScreenHeader';
 import SessionCard from '@/components/shared/SessionCard';
 import DayControls from '@/components/shared/DayControls';
+import { routineCircuit } from '@/core/routines';
+import type { TodayPick } from '@/core/plan';
+import type { Routine } from '@/core/routines';
 import type { Circuit, Mode } from '@/core/types';
 import styles from './TodayScreen.module.css';
 
-const circuitOf = (mode: Mode, id: string): Circuit | undefined => getModeData(mode).find(c => c.id === id);
+/** The circuit a pick runs: a programme session, or one of the athlete's routines. */
+function circuitOf(pick: TodayPick, routines: Routine[]): Circuit | undefined {
+  if (pick.routineId) {
+    const r = routines.find(x => x.id === pick.routineId);
+    return r ? routineCircuit(r) : undefined;
+  }
+  return getModeData(pick.mode as Mode).find(c => c.id === pick.circuitId);
+}
 
 const DATE_FMT = new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
 
@@ -34,12 +44,13 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
   const pendingDecayEvents = useStore(s => s.pendingDecayEvents);
   const dismissDecay = useStore(s => s.dismissDecay);
   const setTab = useStore(s => s.setTab);
-  const { block, day, healthDay, recommendation, alternatives } = useToday();
+  const routines = useStore(s => s.routines);
+  const { block, day, healthDay, recommendation, alternatives, planNote } = useToday();
   const launcher = useLauncher();
 
   const today = localDate();
   const doneToday = sessionLog.filter(s => dayOf(s.date) === today);
-  const rec = recommendation ? circuitOf(recommendation.mode, recommendation.circuitId) : undefined;
+  const rec = recommendation ? circuitOf(recommendation, routines) : undefined;
   const recList = rec && recommendation ? launcher.listOf({ mode: recommendation.mode, circuit: rec }) : [];
   const readiness = rec ? getReadiness(rec, progress) : null;
 
@@ -67,11 +78,14 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
           <button className={styles.bannerX} onClick={dismissDecay} aria-label="Dismiss">X</button>
         </div>
       )}
+      {planNote && <div className={styles.banner}>{planNote}</div>}
       {healthDay?.energy === 'TIRED' && <div className={styles.banner}>TIRED suggested by Apple Health: {healthDay.reasons.join(', ')}.</div>}
 
       {rec && recommendation ? (
         <section className={styles.lead} aria-label="Recommended session">
-          <div className={styles.crumb}>RECOMMENDED &middot; {recommendation.mode} {rec.circuitNum}</div>
+          <div className={styles.crumb}>
+            {recommendation.planned ? 'PLANNED' : 'RECOMMENDED'} &middot; {recommendation.routineId ? 'YOUR ROUTINE' : `${recommendation.mode} ${rec.circuitNum}`}
+          </div>
           <p className={styles.reason}>{recommendation.reason}</p>
           {readiness && readiness.level !== 'ready' && (
             <div className={`${styles.banner}${readiness.level === 'rest' ? ` ${styles.bannerWarn}` : ''}`}>{readiness.message}</div>
@@ -114,14 +128,14 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
           <h2 className={styles.h2}>ALSO FITS TODAY</h2>
           <div className={styles.altList}>
             {alternatives.map(a => {
-              const c = circuitOf(a.mode, a.circuitId);
+              const c = circuitOf(a, routines);
               if (!c) return null;
               const minutes = estimateDuration(launcher.listOf({ mode: a.mode, circuit: c }));
               return (
                 <button key={a.circuitId} className={styles.altRow} onClick={() => launcher.show({ mode: a.mode, circuit: c })}>
                   <span className={styles.altNum}>{c.circuitNum}</span>
                   <span className={styles.altBody}>
-                    <span className={styles.altTitle}>{a.mode} &middot; {c.title}</span>
+                    <span className={styles.altTitle}>{a.routineId ? 'ROUTINE' : a.mode} &middot; {c.title}</span>
                     <span className={styles.altWhy}>{a.reason}</span>
                   </span>
                   <span className={styles.altMin}>{minutes}<small> min</small></span>

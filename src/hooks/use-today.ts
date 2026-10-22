@@ -5,6 +5,7 @@ import { useStore } from '@/store/store';
 import { getBlockWeek } from '@/core/block';
 import { recommend } from '@/core/recommend';
 import { alsoFits } from '@/core/also-fits';
+import { applyPlan, type TodayPick } from '@/core/plan';
 import { healthReadiness } from '@/core/health';
 import { activeDay } from '@/core/today';
 import { localDate } from '@/core/dates';
@@ -26,6 +27,8 @@ export function useToday() {
   const connected = useStore(s => s.settings.health.connected);
   const energySuggestedOn = useStore(s => s.energySuggestedOn);
   const suggestEnergy = useStore(s => s.suggestEnergy);
+  const weekPlan = useStore(s => s.weekPlan);
+  const routines = useStore(s => s.routines);
 
   // Apple Health: sleep and HRV against the athlete's own week suggest an
   // energy. Applied once a day; any tap on the energy tabs overrides it.
@@ -44,8 +47,15 @@ export function useToday() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [sessionLog, climbLog, activityLog, progress, benchmarkResults, block, healthDay, dayPlan],
   );
-  const recommendation = useMemo(() => recommend(input), [input]);
-  const alternatives = useMemo(() => alsoFits(input, recommendation), [input, recommendation]);
+  const recommended = useMemo(() => recommend(input), [input]);
+  // The athlete's weekly plan leads unless a safety rule stops it.
+  const outcome = useMemo(() => applyPlan(weekPlan, routines, input, recommended), [weekPlan, routines, input, recommended]);
+  const recommendation: TodayPick | null = outcome.pick;
+  const alternatives: TodayPick[] = useMemo(() => {
+    const fits = alsoFits(input, recommendation);
+    const all = outcome.also ? [outcome.also, ...fits] : fits;
+    return all.filter((a, i) => a.circuitId !== recommendation?.circuitId && all.findIndex(b => b.circuitId === a.circuitId) === i).slice(0, 2);
+  }, [input, recommendation, outcome]);
 
-  return { block, day, healthDay, recommendation, alternatives };
+  return { block, day, healthDay, recommendation, alternatives, planNote: outcome.note };
 }

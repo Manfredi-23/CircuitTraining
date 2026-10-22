@@ -39,7 +39,7 @@
 .warn { font-size: 11px; color: var(--accent); line-height: 1.4; }
 .link {
   align-self: flex-start; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
-  color: var(--ink-dim); background: none; border: none; padding: 4px 0; text-decoration: underline;
+  color: var(--ink); background: none; border: none; padding: 10px 0; text-decoration: underline; text-underline-offset: 3px;
 }
 .saveRow { display: flex; gap: 8px; align-items: center; }
 .nameInput {
@@ -50,3 +50,5 @@
   font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #E4E2DD;
   background: var(--ink); border: none; border-radius: var(--rad-sm); padding: 10px 12px;
 }
+
+.linkRow { display: flex; flex-wrap: wrap; gap: 4px 16px; }

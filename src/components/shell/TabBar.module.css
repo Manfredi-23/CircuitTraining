@@ -18,3 +18,7 @@
 
 /* Room for the bar under every tab's content. */
 :global(.tab-screen) { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+
+/* A full-screen panel (session, editor, settings) owns the screen: the bar
+   steps away rather than sitting over its bottom action. */
+:global(body:has(.overlay-panel)) .bar { display: none; }
