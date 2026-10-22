@@ -17,9 +17,10 @@ import { fingersReadyAt } from './engine';
 import { addDays, dayOf, localDate, mondayOf } from './dates';
 import { getCoreVolume, CORE_TARGETS, type CoreGroup } from './insights';
 import { assessDue, lastAssess, RETEST_WEEKS } from './recommend';
+import { weekSummary } from './adapt';
 import type { BenchmarkResult, ClimbSession, Progress, SessionLogEntry } from './types';
 
-export type ReminderKind = 'fingers' | 'fading' | 'core' | 'daily' | 'assess' | 'climb';
+export type ReminderKind = 'fingers' | 'fading' | 'core' | 'daily' | 'assess' | 'climb' | 'weekly';
 
 export const REMINDER_LABELS: Record<ReminderKind, { title: string; hint: string }> = {
   daily:   { title: 'DAILY morning', hint: 'At the time below, unless a DAILY is already done.' },
@@ -28,6 +29,7 @@ export const REMINDER_LABELS: Record<ReminderKind, { title: string; hint: string
   core:    { title: 'Core behind', hint: 'Thursday evening, when under half the week\'s hard core sets are done.' },
   assess:  { title: 'ASSESS due', hint: `Saturday morning, ${RETEST_WEEKS} weeks after the last test.` },
   climb:   { title: 'Log your climbs', hint: 'Evening after a CAVE 02 or 03 with no climb logged.' },
+  weekly:  { title: 'Monday summary', hint: 'Monday 08:30: last week in one line.' },
 };
 
 export interface ReminderSettings {
@@ -37,7 +39,7 @@ export interface ReminderSettings {
 }
 
 export const DEFAULT_REMINDER_SETTINGS: ReminderSettings = {
-  enabled: { daily: true, fingers: true, fading: true, core: true, assess: true, climb: true },
+  enabled: { daily: true, fingers: true, fading: true, core: true, assess: true, climb: true, weekly: true },
   dailyTime: '07:30',
 };
 
@@ -55,7 +57,8 @@ export interface Reminder {
  * block of ten per kind, so a rebuild can cancel exactly what it scheduled.
  */
 export const REMINDER_ID_BASE = 1000;
-const KIND_ORDER: ReminderKind[] = ['daily', 'fingers', 'fading', 'core', 'assess', 'climb'];
+// New kinds go on the end, so the ids already scheduled keep their meaning.
+const KIND_ORDER: ReminderKind[] = ['daily', 'fingers', 'fading', 'core', 'assess', 'climb', 'weekly'];
 export const ALL_REMINDER_IDS: number[] = KIND_ORDER.flatMap((_, k) =>
   Array.from({ length: 10 }, (__, i) => REMINDER_ID_BASE + k * 10 + i));
 const idFor = (kind: ReminderKind, n = 0) => REMINDER_ID_BASE + KIND_ORDER.indexOf(kind) * 10 + n;
@@ -171,6 +174,14 @@ export function planReminders(input: ReminderInput): Reminder[] {
     if (stackedToday && !loggedToday) {
       push({ kind: 'climb', id: idFor('climb'), at: at(today, 21 * 60), title: 'Log your climbs', body: 'Grades, goes and how hard it felt. Thirty seconds.' });
     }
+  }
+
+  // Monday 08:30: last week in one line. Rebuilt with every change, so a
+  // Sunday session still makes it in.
+  if (on.weekly) {
+    const monday = addDays(mondayOf(today), 7);
+    const when = at(mondayOf(today), MORNING + 30).getTime() > now.getTime() ? at(mondayOf(today), MORNING + 30) : at(monday, MORNING + 30);
+    push({ kind: 'weekly', id: idFor('weekly'), at: when, title: 'Your week', body: `${weekSummary(sessionLog, climbLog, when)} TODAY has this week's first session.` });
   }
 
   const off = new Set(input.offDays ?? []);

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { useStore } from '@/store/store';
+import { getLoadAxis } from '@/core/load';
 import { saveWorkout } from '@/native/health';
 import { CONFIG } from '@/core/config';
 import { getBenchmark } from '@/core/benchmarks';
@@ -12,9 +13,12 @@ export default function CompleteScreen() {
   const {
     mode, energy, circuit, sessionStartTime, sessionLevelUps,
     setTab, pickHumorLine, openClimbLog, benchmarkResults,
-    sessionLog, rateLastSession, sessionPBs,
+    sessionLog, rateLastSession, rateExercise, sessionPBs, exerciseList,
   } = useStore();
-  const effort = sessionLog[sessionLog.length - 1]?.effort;
+  const last = sessionLog[sessionLog.length - 1];
+  const effort = last?.effort;
+  // Loaded work that was actually done: the load suggestion reads how each felt.
+  const loaded = exerciseList.filter(ex => !ex.records && !ex.ramp && getLoadAxis(ex) && (last?.sets?.[ex.id] ?? 0) > 0);
   const health = useStore(s => s.settings.health);
 
   // Saved to Apple Health once, when the screen first shows. DAILY is core
@@ -78,6 +82,28 @@ export default function CompleteScreen() {
           highText="MAXIMAL"
         />
       </div>
+
+      {loaded.length > 0 && (
+        <div className={styles.feel}>
+          <div className={styles.effortTitle}>HOW DID EACH ONE FEEL?</div>
+          {loaded.map(ex => (
+            <div key={ex.id} className={styles.feelRow}>
+              <span className={styles.feelName}>{ex.displayName}</span>
+              <span className={styles.feelChips}>
+                {(['EASY', 'RIGHT', 'HARD'] as const).map(f => (
+                  <button
+                    key={f}
+                    className={`${styles.feelChip}${last?.feel?.[ex.id] === f ? ` ${styles.feelChipOn}` : ''}`}
+                    aria-pressed={last?.feel?.[ex.id] === f}
+                    onClick={() => rateExercise(ex.id, f)}
+                  >{f}</button>
+                ))}
+              </span>
+            </div>
+          ))}
+          <div className={styles.feelHint}>Easy or right: next time one step on. Hard: hold. Skip it and the session effort decides.</div>
+        </div>
+      )}
 
       {sessionLevelUps.length > 0 && (
         <div className={styles.levelupList}>

@@ -6,6 +6,7 @@ import { getBlockWeek } from '@/core/block';
 import { recommend } from '@/core/recommend';
 import { alsoFits } from '@/core/also-fits';
 import { applyPlan, type TodayPick } from '@/core/plan';
+import { deloadAdvice } from '@/core/adapt';
 import { healthReadiness } from '@/core/health';
 import { activeDay } from '@/core/today';
 import { localDate } from '@/core/dates';
@@ -57,5 +58,10 @@ export function useToday() {
     return all.filter((a, i) => a.circuitId !== recommendation?.circuitId && all.findIndex(b => b.circuitId === a.circuitId) === i).slice(0, 2);
   }, [input, recommendation, outcome]);
 
-  return { block, day, healthDay, recommendation, alternatives, planNote: outcome.note };
+  const deload = useMemo(
+    () => deloadAdvice({ block, sessionLog, climbLog, activityLog }),
+    [block, sessionLog, climbLog, activityLog],
+  );
+
+  return { block, day, healthDay, recommendation, alternatives, planNote: outcome.note, deload };
 }

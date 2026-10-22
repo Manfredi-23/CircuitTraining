@@ -63,6 +63,16 @@ export function suggestLoad(
   if (session?.pain !== undefined && session.pain >= PAIN_REDUCE_FROM) {
     return { kind: 'hold', value: last.value, reason: `Finger pain ${session.pain}/10 last time. Hold the load.` };
   }
+  // How this exercise felt beats how the whole session felt.
+  const feel = session?.feel?.[exercise.id];
+  if (feel === 'HARD') {
+    return { kind: 'hold', value: last.value, reason: 'All sets done, but it felt hard. Hold once more.' };
+  }
+  if (feel === 'EASY' || feel === 'RIGHT') {
+    const up = clampToAxis(last.value + sign * axis.step, axis);
+    if (up === last.value) return null;
+    return { kind: 'up', value: up, reason: feel === 'EASY' ? 'All sets done and it felt easy. One step on.' : 'All sets done and it felt right. One step on.' };
+  }
   if (session?.effort !== undefined && session.effort > HOLD_ABOVE_EFFORT) {
     return { kind: 'hold', value: last.value, reason: `All sets done, but the session felt ${session.effort}/10. Hold once more.` };
   }

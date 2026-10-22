@@ -9,6 +9,7 @@ import { suggestLoad, progressSign } from '@/core/progression';
 import { getLoadAxis } from '@/core/load';
 import { retiredName } from '@/core/insights';
 import { dayOf } from '@/core/dates';
+import { plateaus, PLATEAU_TEXT } from '@/core/adapt';
 import styles from './ExerciseDetail.module.css';
 
 const n1 = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(1));
@@ -49,6 +50,7 @@ export default function ExerciseDetail({ exerciseId, onClose }: { exerciseId: st
   const name = ex?.name ?? entries[0]?.exerciseName ?? retiredName(exerciseId);
   const area = ex ? areaOf(ex) : null;
   const ticks = values.length ? ticksFor(values) : [];
+  const stuck = plateaus(loadLog).find(p => p.exerciseId === exerciseId);
 
   return (
     <div className={`overlay-panel overlay-enter ${styles.panel}`} role="dialog" aria-modal="true" aria-label={name}>
@@ -82,6 +84,13 @@ export default function ExerciseDetail({ exerciseId, onClose }: { exerciseId: st
           <div className={styles.next}>
             <span className={styles.nextValue}>NEXT TIME {n1(suggestion.value)} {unit}</span>
             <span className={styles.nextWhy}>{suggestion.reason}</span>
+          </div>
+        )}
+
+        {stuck && (
+          <div className={styles.next}>
+            <span className={styles.nextValue}>STUCK AT {n1(stuck.value)} {unit} FOR {stuck.sessions} SESSIONS</span>
+            <span className={styles.nextWhy}>{PLATEAU_TEXT}</span>
           </div>
         )}
 

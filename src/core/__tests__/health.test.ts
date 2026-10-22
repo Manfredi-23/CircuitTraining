@@ -89,3 +89,23 @@ describe('connecting Apple Health', () => {
       .toBe('2 nights of sleep, 1 day of HRV, 0 days of resting HR, 1 weight, 0 climbing workouts');
   });
 });
+
+describe('outdoor workouts from Health', () => {
+  it('become activity entries once, a climbing run as a trail run, hand-logged days left alone', async () => {
+    const { activitiesToImport } = await import('../health');
+    const outdoor = [
+      { id: 'a', date: '2026-10-17', type: 'HIKE', minutes: 300, km: 14.26, upM: 1105.4 },
+      { id: 'b', date: '2026-10-18', type: 'RUN', minutes: 70, km: 12, upM: 450 },
+      { id: 'c', date: '2026-10-19', type: 'BIKE', minutes: 10 },
+      { id: 'd', date: '2026-10-20', type: 'HIKE', minutes: 120 },
+      { id: 'e', date: '2026-10-21', type: 'TENNIS', minutes: 60 },
+    ];
+    const logged = [{ id: 'x', date: '2026-10-20', type: 'HIKE' as const }];
+    const out = activitiesToImport(outdoor, ['zzz'], logged);
+    expect(out).toEqual([
+      { id: 'hk-a', date: '2026-10-17', type: 'HIKE', durationMin: 300, distanceKm: 14.3, upM: 1105 },
+      { id: 'hk-b', date: '2026-10-18', type: 'TRAILRUN', durationMin: 70, distanceKm: 12, upM: 450 },
+    ]);
+    expect(activitiesToImport(outdoor, ['a', 'b'], logged)).toEqual([]);
+  });
+});

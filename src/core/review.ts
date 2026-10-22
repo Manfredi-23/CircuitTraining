@@ -24,6 +24,7 @@ import { gateResult } from './benchmarks';
 import { OAP_ASSISTED_GATE, OAP_NEGATIVE_GATE } from './data-oap';
 import { addDays, dayOf, daysBetween, localDate } from './dates';
 import { estimateActivity, type ActivitySession } from './activity';
+import { plateaus } from './adapt';
 import { exerciseLibrary } from './reserve';
 import { isHealing, lastAssess, RETEST_WEEKS } from './recommend';
 import type { BenchmarkResult, Capacity, ClimbSession, Exercise, LoadLogEntry, SessionLogEntry } from './types';
@@ -273,6 +274,12 @@ export function getInsights(input: InsightInput, max = 7): Insight[] {
   const gain = bestGain(input.loadLog);
   if (gain) {
     out.push({ tone: 'good', text: `${gain.name}: ${kg(gain.from)} to ${kg(gain.to)} since ${fmtDay(gain.since)}.` });
+  }
+
+  // A lift stuck at one load: more of the same rarely moves it.
+  const stuck = plateaus(input.loadLog, now)[0];
+  if (stuck) {
+    out.push({ tone: 'warn', text: `${stuck.name} at ${stuck.value} ${stuck.unit} for ${stuck.sessions} sessions. Change the variation, add a set lighter, or retest.` });
   }
 
   // One-arm gates that a tested pull-up already opens.

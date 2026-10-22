@@ -6,7 +6,7 @@
  */
 
 import { isNative } from './native';
-import type { BodyMass, DayValue, HealthClimb, HealthConnect, SleepNight } from '@/core/health';
+import type { BodyMass, DayValue, HealthClimb, HealthConnect, HealthOutdoor, SleepNight } from '@/core/health';
 
 export interface HealthRead {
   sleep: SleepNight[];
@@ -14,6 +14,8 @@ export interface HealthRead {
   restingHR: DayValue[];
   bodyMass: BodyMass[];
   climbs: HealthClimb[];
+  /** Hikes, runs, rides and the like. Empty from a build older than the Swift that reads them. */
+  outdoor: HealthOutdoor[];
   /** What HealthKit said when a query failed, one line per data type. */
   errors?: string[];
 }
@@ -25,7 +27,7 @@ interface HealthPluginApi {
   requestAuthorization(): Promise<{ completed: boolean; error?: string }>;
   query(options: { days: number }): Promise<{
     sleep: SleepNight[]; hrv: DayValue[]; restingHR: DayValue[];
-    bodyMass: { date: string; kg: number }[]; climbs: HealthClimb[]; errors?: string[];
+    bodyMass: { date: string; kg: number }[]; climbs: HealthClimb[]; outdoor?: HealthOutdoor[]; errors?: string[];
   }>;
   saveWorkout(options: { start: number; end: number; activity: WorkoutActivity; title: string }): Promise<{ saved: boolean }>;
 }
@@ -82,6 +84,7 @@ export async function readHealth(days: number): Promise<HealthRead | null> {
       restingHR: (r.restingHR ?? []).map(d => ({ date: d.date, value: Math.round(d.value) })),
       bodyMass: (r.bodyMass ?? []).map(d => ({ date: d.date, kg: Math.round(d.kg * 10) / 10 })),
       climbs: r.climbs ?? [],
+      outdoor: r.outdoor ?? [],
       errors: r.errors ?? [],
     };
   } catch {

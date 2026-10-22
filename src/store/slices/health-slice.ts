@@ -1,6 +1,6 @@
 import type { StateCreator } from 'zustand';
 import type { Store } from '../store';
-import { EMPTY_HEALTH, mergeHealth, newBodyMass, climbsToImport, type HealthData } from '@/core/health';
+import { EMPTY_HEALTH, mergeHealth, newBodyMass, climbsToImport, activitiesToImport, type HealthData } from '@/core/health';
 import { latestResult } from '@/core/benchmarks';
 import type { ClimbSession } from '@/core/types';
 import type { HealthRead } from '@/native/health';
@@ -48,9 +48,19 @@ export const createHealthSlice: StateCreator<Store, [], [], HealthSlice> = (set,
     const climbLog = get().climbLog.map(c =>
       c.durationMin === undefined && durations.has(c.date) ? { ...c, durationMin: durations.get(c.date) } : c);
 
+    // Hikes, runs and rides become activity entries: their load, XP and sore
+    // legs count at once, and anything missing is estimated as for a hand entry.
+    const outdoor = read.outdoor ?? [];
+    const imported = health.importedActivities ?? [];
+    for (const a of activitiesToImport(outdoor, imported, get().activityLog)) get().saveActivity(a);
+
     set({
       climbLog,
-      health: { ...health, importedClimbs: [...health.importedClimbs, ...read.climbs.map(c => c.id)].filter((v, i, a) => a.indexOf(v) === i) },
+      health: {
+        ...health,
+        importedClimbs: [...health.importedClimbs, ...read.climbs.map(c => c.id)].filter((v, i, a) => a.indexOf(v) === i),
+        importedActivities: [...imported, ...outdoor.map(w => w.id)].filter((v, i, a) => a.indexOf(v) === i),
+      },
     });
   },
 });

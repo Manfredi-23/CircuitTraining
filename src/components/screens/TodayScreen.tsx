@@ -45,7 +45,9 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
   const dismissDecay = useStore(s => s.dismissDecay);
   const setTab = useStore(s => s.setTab);
   const routines = useStore(s => s.routines);
-  const { block, day, healthDay, recommendation, alternatives, planNote } = useToday();
+  const deloadNow = useStore(s => s.deloadNow);
+  const restartBlock = useStore(s => s.restartBlock);
+  const { block, day, healthDay, recommendation, alternatives, planNote, deload } = useToday();
   const launcher = useLauncher();
 
   const today = localDate();
@@ -79,6 +81,14 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
         </div>
       )}
       {planNote && <div className={styles.banner}>{planNote}</div>}
+      {deload && (
+        <div className={styles.advice}>
+          <p>{deload.reason}</p>
+          <button className={styles.adviceBtn} onClick={deload.kind === 'early' ? deloadNow : restartBlock}>
+            {deload.kind === 'early' ? 'MAKE THIS THE DELOAD WEEK' : 'SKIP THE DELOAD, START A NEW BLOCK'}
+          </button>
+        </div>
+      )}
       {healthDay?.energy === 'TIRED' && <div className={styles.banner}>TIRED suggested by Apple Health: {healthDay.reasons.join(', ')}.</div>}
 
       {rec && recommendation ? (

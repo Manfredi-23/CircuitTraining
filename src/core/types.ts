@@ -435,7 +435,12 @@ export interface SessionLogEntry {
   pain?: number;
   /** Exercises added from the reserve during the session. */
   added?: string[];
+  /** How each loaded exercise felt, asked on the complete screen. Read by the next load suggestion. */
+  feel?: Record<string, ExerciseFeel>;
 }
+
+/** One word per exercise, after the session: the load suggestion follows it before the session effort. */
+export type ExerciseFeel = 'EASY' | 'RIGHT' | 'HARD';
 
 /**
  * The athlete's own lasting change to an exercise, from HARDER / EASIER on the

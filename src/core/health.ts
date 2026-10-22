@@ -11,11 +11,14 @@
 
 import { addDays, localDate } from './dates';
 import type { EnergyKey } from './types';
+import type { ActivitySession, ActivityType } from './activity';
 
 export interface DayValue { date: string; value: number }
 export interface SleepNight { date: string; asleepMin: number; deepMin?: number; remMin?: number }
 export interface BodyMass { date: string; kg: number }
 export interface HealthClimb { id: string; date: string; minutes: number }
+/** A Health workout the activity log knows: hike, run, ride, swim, yoga, ski tour. */
+export interface HealthOutdoor { id: string; date: string; type: string; minutes: number; km?: number; upM?: number }
 
 /** What the app keeps from Health. Persisted, capped to HEALTH_KEEP_DAYS. */
 export interface HealthData {
@@ -26,6 +29,8 @@ export interface HealthData {
   bodyMass: BodyMass[];
   /** Health workout ids already turned into climb log entries. */
   importedClimbs: string[];
+  /** Health workout ids already turned into activity log entries. Absent on data from before it existed. */
+  importedActivities?: string[];
 }
 
 export const EMPTY_HEALTH: HealthData = {
@@ -53,6 +58,7 @@ export function mergeHealth(
     restingHR: merge(stored.restingHR, fresh.restingHR),
     bodyMass: merge(stored.bodyMass, fresh.bodyMass),
     importedClimbs: stored.importedClimbs,
+    importedActivities: stored.importedActivities ?? [],
   };
 }
 
@@ -156,6 +162,37 @@ export function climbsToImport(
   return climbs.filter(c => !seen.has(c.id) && !loggedDates.has(c.date) && c.minutes >= 15);
 }
 
+const OUTDOOR_TYPES: Record<string, ActivityType> = {
+  HIKE: 'HIKE', RUN: 'RUN', BIKE: 'BIKE', SWIM: 'SWIM', YOGA: 'YOGA', SKITOUR: 'SKITOUR',
+};
+
+/**
+ * Health outdoor workouts not yet in the activity log, as activity entries.
+ * A run that climbs more than 300 m is a trail run. A day that already has
+ * an activity of the same type is left alone: it was logged by hand. Under
+ * 15 minutes is a warm-up, not an outing.
+ */
+export function activitiesToImport(
+  outdoor: HealthOutdoor[],
+  imported: string[],
+  logged: ActivitySession[],
+): ActivitySession[] {
+  const seen = new Set(imported);
+  const out: ActivitySession[] = [];
+  for (const w of outdoor) {
+    let type = OUTDOOR_TYPES[w.type];
+    if (!type || seen.has(w.id) || w.minutes < 15) continue;
+    if (type === 'RUN' && (w.upM ?? 0) > 300) type = 'TRAILRUN';
+    if (logged.some(a => a.date === w.date && a.type === type)) continue;
+    out.push({
+      id: `hk-${w.id}`, date: w.date, type, durationMin: w.minutes,
+      ...(w.km ? { distanceKm: Math.round(w.km * 10) / 10 } : {}),
+      ...(w.upM ? { upM: Math.round(w.upM) } : {}),
+    });
+  }
+  return out;
+}
+
 // ---- Connecting, and saying why it did not work -----------------------------------
 
 export type HealthConnect =
@@ -185,7 +222,7 @@ export function connectMessage(r: HealthConnect): string {
 }
 
 /** One line on what a read brought back, e.g. "14 nights of sleep, 12 days of HRV, 1 weight, 0 climbing workouts". */
-export function describeRead(r: { sleep: unknown[]; hrv: unknown[]; restingHR: unknown[]; bodyMass: unknown[]; climbs: unknown[] }): string {
+export function describeRead(r: { sleep: unknown[]; hrv: unknown[]; restingHR: unknown[]; bodyMass: unknown[]; climbs: unknown[]; outdoor?: unknown[] }): string {
   const n = (count: number, one: string, many = `${one}s`) => `${count} ${count === 1 ? one : many}`;
   return [
     n(r.sleep.length, 'night of sleep', 'nights of sleep'),
@@ -193,6 +230,7 @@ export function describeRead(r: { sleep: unknown[]; hrv: unknown[]; restingHR: u
     n(r.restingHR.length, 'day of resting HR', 'days of resting HR'),
     n(r.bodyMass.length, 'weight'),
     n(r.climbs.length, 'climbing workout'),
+    ...(r.outdoor ? [n(r.outdoor.length, 'outdoor workout')] : []),
   ].join(', ');
 }
 

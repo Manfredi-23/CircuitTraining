@@ -2,8 +2,9 @@ import Foundation
 import HealthKit
 import Capacitor
 
-// HealthPlugin — reads sleep, HRV, resting heart rate, body mass and climbing
-// workouts from Apple Health, and writes finished sessions back as workouts.
+// HealthPlugin — reads sleep, HRV, resting heart rate, body mass, climbing
+// workouts and outdoor workouts (hikes, runs, rides, swims, yoga, ski tours)
+// from Apple Health, and writes finished sessions back as workouts.
 //
 // A local plugin like RestActivityPlugin, registered by MainViewController.
 // The web side calls it through registerPlugin('Health') in
@@ -73,7 +74,7 @@ public class HealthPlugin: CAPPlugin, CAPBridgedPlugin {
     /// Everything the app reads, for the last `days` days, in one call.
     @objc func query(_ call: CAPPluginCall) {
         guard HKHealthStore.isHealthDataAvailable() else {
-            call.resolve(["sleep": [], "hrv": [], "restingHR": [], "bodyMass": [], "climbs": []])
+            call.resolve(["sleep": [], "hrv": [], "restingHR": [], "bodyMass": [], "climbs": [], "outdoor": []])
             return
         }
         let days = call.getInt("days") ?? 30
@@ -110,6 +111,9 @@ public class HealthPlugin: CAPPlugin, CAPBridgedPlugin {
 
         group.enter()
         queryClimbs(start: start, end: end) { put("climbs", $0); fail("climbs", $1); group.leave() }
+
+        group.enter()
+        queryOutdoor(start: start, end: end) { put("outdoor", $0); fail("outdoor", $1); group.leave() }
 
         group.notify(queue: .main) {
             result["errors"] = errors
@@ -266,6 +270,36 @@ public class HealthPlugin: CAPPlugin, CAPBridgedPlugin {
                     "date": self.day(w.startDate),
                     "minutes": Int(w.duration / 60),
                 ]
+            }
+            done(rows, error)
+        }
+        store.execute(q)
+    }
+
+    /// Outdoor workouts the activity log knows, as the web side names them.
+    /// Elevation comes from the workout's metadata when the watch recorded it.
+    private func queryOutdoor(start: Date, end: Date, done: @escaping ([[String: Any]], Error?) -> Void) {
+        let kinds: [HKWorkoutActivityType: String] = [
+            .hiking: "HIKE", .running: "RUN", .cycling: "BIKE", .swimming: "SWIM", .yoga: "YOGA",
+            .crossCountrySkiing: "SKITOUR", .snowSports: "SKITOUR",
+        ]
+        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            HKQuery.predicateForSamples(withStart: start, end: end, options: []),
+            NSCompoundPredicate(orPredicateWithSubpredicates: kinds.keys.map { HKQuery.predicateForWorkouts(with: $0) }),
+        ])
+        let q = HKSampleQuery(sampleType: HKObjectType.workoutType(), predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { _, samples, error in
+            let rows: [[String: Any]] = (samples ?? []).compactMap { sample in
+                guard let w = sample as? HKWorkout, let type = kinds[w.workoutActivityType] else { return nil }
+                if w.sourceRevision.source.bundleIdentifier == Bundle.main.bundleIdentifier { return nil }
+                var row: [String: Any] = [
+                    "id": w.uuid.uuidString,
+                    "date": self.day(w.startDate),
+                    "type": type,
+                    "minutes": Int(w.duration / 60),
+                ]
+                if let km = w.totalDistance?.doubleValue(for: .meterUnit(with: .kilo)) { row["km"] = km }
+                if let up = w.metadata?[HKMetadataKeyElevationAscended] as? HKQuantity { row["upM"] = up.doubleValue(for: .meter()) }
+                return row
             }
             done(rows, error)
         }
