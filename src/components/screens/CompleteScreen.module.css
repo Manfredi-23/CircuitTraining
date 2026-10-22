@@ -1,7 +1,7 @@
 .screen { justify-content: flex-start; align-items: flex-start; gap: 20px; }
 .spacer { flex: 1; min-height: 0; }
 
-.top { display: flex; flex-direction: column; gap: 6px; animation: screenFadeUp 400ms cubic-bezier(0.22,1,0.36,1) 100ms both; }
+.top { margin-top: 24px; display: flex; flex-direction: column; gap: 6px; animation: screenFadeUp 400ms cubic-bezier(0.22,1,0.36,1) 100ms both; }
 .check { font-size: 14px; font-weight: 700; letter-spacing: 0.06em; color: var(--accent); }
 .title { font-weight: 700; font-size: 32px; text-transform: uppercase; letter-spacing: -0.03em; color: var(--ink); }
 
