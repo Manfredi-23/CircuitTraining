@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
+import { CONFIG } from '@/core/config';
 import type { Circuit, EnergyKey, ScaledExercise } from '@/core/types';
 import styles from './SessionInfo.module.css';
 
@@ -14,6 +15,10 @@ interface SessionInfoProps {
   duration: number;
   onClose: () => void;
   onStart: () => void;
+  /** Change energy here: the list and the duration follow. */
+  onEnergy?: (energy: EnergyKey) => void;
+  /** Further actions above START, e.g. making it a routine. */
+  extra?: ReactNode;
 }
 
 const formatRest = (s: number) =>
@@ -31,7 +36,7 @@ function dose(ex: ScaledExercise): string {
  * stand-ins.
  */
 export default function SessionInfo({
-  open, mode, circuit, list, energy, duration, onClose, onStart,
+  open, mode, circuit, list, energy, duration, onClose, onStart, onEnergy, extra,
 }: SessionInfoProps) {
   const [entered, setEntered] = useState(false);
 
@@ -66,6 +71,19 @@ export default function SessionInfo({
         <div className={styles.subtitle}>{circuit.subtitle}</div>
         <div className={styles.meta}>{duration} min &middot; {energy} &middot; {list.length} exercises</div>
         <div className={styles.focus}>{circuit.focus}</div>
+        {onEnergy && (
+          <div className={styles.energy} role="tablist" aria-label="Energy">
+            {(Object.keys(CONFIG.energy) as EnergyKey[]).map(e => (
+              <button
+                key={e}
+                role="tab"
+                aria-selected={e === energy}
+                className={`${styles.energyTab}${e === energy ? ` ${styles.energyTabOn}` : ''}`}
+                onClick={() => onEnergy(e)}
+              >{e}</button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className={styles.scroll}>
@@ -97,7 +115,8 @@ export default function SessionInfo({
       {circuit.note && <div className={styles.note}>{circuit.note}</div>}
       </div>
 
-      <button className={styles.start} onClick={onStart}>START {circuit.title}</button>
+      {extra}
+      <button className={styles.start} onClick={onStart}>START {circuit.title} &middot; {duration} MIN</button>
     </div>
   );
 }

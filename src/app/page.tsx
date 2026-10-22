@@ -8,11 +8,10 @@ import { useReminders } from '@/hooks/use-reminders';
 import { useHealthSync } from '@/hooks/use-health';
 import { useTodayWidget } from '@/hooks/use-widget';
 import { initNativeShell } from '@/native/native';
-import HomeScreen from '@/components/screens/HomeScreen';
+import AppShell from '@/components/shell/AppShell';
 import WorkoutScreen from '@/components/screens/WorkoutScreen';
 import RestScreen from '@/components/screens/RestScreen';
 import CompleteScreen from '@/components/screens/CompleteScreen';
-import StatsScreen from '@/components/screens/StatsScreen';
 import ClimbScreen from '@/components/screens/ClimbScreen';
 import ActivityScreen from '@/components/screens/ActivityScreen';
 
@@ -44,14 +43,13 @@ export default function Page() {
 
   const renderScreen = () => {
     switch (screen) {
-      case 'home': return <HomeScreen />;
+      case 'home': return <AppShell />;
       case 'workout': return <WorkoutScreen />;
       case 'rest': return <RestScreen />;
       case 'complete': return <CompleteScreen />;
-      case 'stats': return <StatsScreen />;
       case 'climb': return <ClimbScreen />;
       case 'activity': return <ActivityScreen />;
-      default: return <HomeScreen />;
+      default: return <AppShell />;
     }
   };
 

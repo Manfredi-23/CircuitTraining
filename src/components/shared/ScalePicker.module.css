@@ -7,4 +7,4 @@
 }
 .btn:active { transform: scale(0.94); }
 .btnOn { background: var(--ink); color: #E4E2DD; }
-.ends { display: flex; justify-content: space-between; font-size: 10px; color: var(--ink-dim); letter-spacing: 0.04em; }
+.ends { display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-dim); letter-spacing: 0.04em; }

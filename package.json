@@ -26,6 +26,7 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@playwright/test": "^1.56.1",
     "@types/node": "^22.20.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",

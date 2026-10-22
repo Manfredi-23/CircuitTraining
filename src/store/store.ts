@@ -13,9 +13,10 @@ import { createActivitySlice, type ActivitySlice } from './slices/activity-slice
 import { createDaySlice, type DaySlice } from './slices/day-slice';
 import { createHealthSlice, type HealthSlice } from './slices/health-slice';
 import { createBuildSlice, type BuildSlice } from './slices/build-slice';
+import { createHistorySlice, type HistorySlice } from './slices/history-slice';
 import { createSettingsSlice, withDefaults, type SettingsSlice, type AppSettings } from './slices/settings-slice';
 
-export type Store = AppSlice & WorkoutSlice & ProgressSlice & StatsSlice & LoadSlice & ClimbSlice & ActivitySlice & DaySlice & SettingsSlice & HealthSlice & BuildSlice;
+export type Store = AppSlice & WorkoutSlice & ProgressSlice & StatsSlice & LoadSlice & ClimbSlice & ActivitySlice & DaySlice & SettingsSlice & HealthSlice & BuildSlice & HistorySlice;
 
 /** Bumped when the persisted shape changes. 2 = the v10 capacity model. */
 const PERSIST_VERSION = 2;
@@ -101,6 +102,7 @@ export const useStore = create<Store>()(
       ...createSettingsSlice(...a),
       ...createHealthSlice(...a),
       ...createBuildSlice(...a),
+      ...createHistorySlice(...a),
     }),
     {
       name: '7bit_store',

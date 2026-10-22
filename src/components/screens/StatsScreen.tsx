@@ -1,11 +1,11 @@
 'use client';
 
-import { useMemo, useCallback } from 'react';
+import { useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { useStore } from '@/store/store';
 import { getOverallLevel } from '@/core/engine';
 import { getSortedCapacities, getOverallTrendData, getCapacityTrendData, timeFilterToDays } from '@/core/stats';
-import { useSwipe } from '@/hooks/use-swipe';
+import ScreenHeader from '@/components/shell/ScreenHeader';
 import { isNative } from '@/native/native';
 import ClimbStats from '@/components/shared/ClimbStats';
 import { OverviewCard, WorkSplitSection } from '@/components/shared/StatsOverview';
@@ -31,12 +31,12 @@ const TIME_OPTIONS: { key: TimeFilter; label: string }[] = [
   { key: 'total', label: 'total' },
 ];
 
-export default function StatsScreen() {
+export default function StatsScreen({ onSettings }: { onSettings: () => void }) {
   const {
     progress, sessionLog, climbLog, activityLog, loadLog, benchmarkResults, statsSort, statsTimeFilter, health, settings,
     activeChartMuscles, highlightMuscle,
     setStatsSort, setStatsTimeFilter, toggleChartMuscle,
-    setHighlightMuscle, setScreen,
+    setHighlightMuscle,
   } = useStore();
 
   const overallLevel = getOverallLevel(progress);
@@ -63,17 +63,10 @@ export default function StatsScreen() {
     return result;
   }, [progress, days, activeChartMuscles]);
 
-  const goBack = useCallback(() => setScreen('home'), [setScreen]);
-  const { bind } = useSwipe({ onSwipeRight: goBack, onSwipeLeft: () => {} });
 
   return (
-    <div {...bind()} className={`screen screen-enter ${styles.screen}`}>
-      {/* Header */}
-      <div className={styles.header}>
-        <button className={styles.btnBack} onClick={goBack}>&larr;</button>
-        <span className={styles.title}>STATS</span>
-        <span className={styles.subtitle}>The last four weeks, and what to do about them</span>
-      </div>
+    <div className={`screen screen-enter tab-screen ${styles.screen}`}>
+      <ScreenHeader title="STATS" sub="The last four weeks, and what to do about them." onSettings={onSettings} />
 
       <div className={styles.scroll}>
         {/* The last four weeks against the four before, and what stands out */}

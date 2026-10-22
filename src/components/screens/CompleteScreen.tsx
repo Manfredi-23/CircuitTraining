@@ -11,7 +11,7 @@ import styles from './CompleteScreen.module.css';
 export default function CompleteScreen() {
   const {
     mode, energy, circuit, sessionStartTime, sessionLevelUps,
-    setScreen, pickHumorLine, openClimbLog, benchmarkResults,
+    setTab, pickHumorLine, openClimbLog, benchmarkResults,
     sessionLog, rateLastSession, sessionPBs,
   } = useStore();
   const effort = sessionLog[sessionLog.length - 1]?.effort;
@@ -37,7 +37,7 @@ export default function CompleteScreen() {
 
   const handleDone = () => {
     pickHumorLine();
-    setScreen('home');
+    setTab('today');
   };
 
   return (

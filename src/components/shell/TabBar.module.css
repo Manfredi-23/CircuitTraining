@@ -1,0 +1,20 @@
+/* Opaque, a tone step below the bottom of the parchment, so content scrolling
+   under it never shows through. */
+.bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+  background: #BCB7AA;
+  border-top: 2px solid var(--ink);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.inner { display: flex; max-width: 390px; margin: 0 auto; padding: 0 24px; }
+.tab {
+  flex: 1; height: 56px; display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px; letter-spacing: 0.1em; color: var(--ink);
+  border-bottom: 2px solid var(--ink-ghost);
+  transition: border-bottom-width 150ms ease;
+}
+.active { border-bottom: 6px solid var(--ink); padding-top: 4px; }
+.tab:active { opacity: 0.6; }
+
+/* Room for the bar under every tab's content. */
+:global(.tab-screen) { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }

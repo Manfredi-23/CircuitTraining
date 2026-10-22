@@ -1,10 +1,5 @@
-.screen { padding-top: calc(24px + env(safe-area-inset-top, 0px)); gap: 16px; }
+.screen { padding-top: calc(28px + env(safe-area-inset-top, 0px)); gap: 16px; }
 
-.header { display: flex; align-items: center; flex-shrink: 0; }
-.title { font-weight: 700; font-size: 16px; color: var(--accent); letter-spacing: 0.04em; }
-.subtitle { font-weight: 400; font-size: 12px; color: var(--ink-dim); flex: 1; padding: 0 12px; }
-.btnBack { font-size: 18px; font-weight: 700; color: var(--accent); padding: 8px; margin: -8px; line-height: 1; transition: transform 150ms ease; }
-.btnBack:hover { transform: translateX(-3px); }
 
 .scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 20px; min-height: 0; padding-bottom: env(safe-area-inset-bottom, 16px); }
 
