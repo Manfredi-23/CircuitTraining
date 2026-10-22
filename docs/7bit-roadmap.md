@@ -93,3 +93,21 @@ simply leaves that feature quiet.
 | # | Chunk | Notes |
 |---|-------|-------|
 | 7.1 | [x] Home and lock screen widget: today's recommended session, finger recovery countdown | App Group shared with `RestTimerWidget`. |
+
+## Phase 8 — Usability (October 2026, handover v28)
+
+Asked for by the athlete: separate the recommended session from the
+programme and from their own, make building their own easy, split STATS,
+make it smarter, and review the UI with the taste skill.
+
+| # | Chunk | Notes |
+|---|-------|-------|
+| 8.1 | [x] Tab bar: TODAY, TRAIN, STATS, LOG | TODAY leads with one session; TRAIN is the library; LOG is history. |
+| 8.2 | [x] Routines: fixed lists, MAKE IT MINE, a BUILD preview saved as a routine | Same engine, gates and pain check; rest never editable. |
+| 8.3 | [x] Weekly plan | Leads TODAY unless a safety rule stops it, and says which. |
+| 8.4 | [x] STATS in four tabs, a sentence on each section, an exercise page | |
+| 8.5 | [x] Session history: read back, correct effort, delete, UNDO | |
+| 8.6 | [x] How each lift felt; deload now / skip a deload; stalled lifts; Monday summary | `adapt.ts`. |
+| 8.7 | [x] Health outdoor workouts into the activity log | Swift written, not compiled in the cloud session. |
+| 8.8 | [x] Playwright smoke tests | `npm run test:e2e`. |
+| 8.9 | [x] Taste-skill review: contrast, text size, accent on data and one action | |
