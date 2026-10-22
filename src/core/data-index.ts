@@ -18,3 +18,8 @@ const MODE_DATA: Record<Mode, Circuit[]> = {
 export function getModeData(mode: Mode): Circuit[] {
   return MODE_DATA[mode];
 }
+
+/** The subtitle without the minutes some sessions write at its end: cards show today's own. */
+export function displaySubtitle(c: Circuit): string {
+  return c.subtitle.replace(/\s*-\s*\d+\s*min$/, '');
+}

@@ -13,6 +13,15 @@
   --ink-faint:  rgba(24,22,16,0.1);
   --accent:     #E64D19;
   --accent-dim: rgba(230,77,25,0.16);
+  /* An unlit LED: the dot grid of the illustrations, behind the LED figures. */
+  --led-off:    rgba(24,22,16,0.09);
+  /* The page is an unlit LED panel: a faint dot every 12px over the parchment. */
+  --dots:       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Ccircle cx='6' cy='6' r='0.9' fill='rgba(24,22,16,0.07)'/%3E%3C/svg%3E");
+  /* Type scale: four sizes do the work, display figures are LED. */
+  --fs-meta:    11px;
+  --fs-body:    13px;
+  --fs-title:   16px;
+  --fs-h1:      30px;
   --font:       'Kode Mono', monospace;
   --rad-lg:     12px;
   --rad-sm:     6px;
@@ -22,7 +31,7 @@ html { font-size: 16px; -webkit-text-size-adjust: 100%; background: #B2AD9F; }
 
 body {
   font-family: var(--font);
-  background: var(--bg);
+  background: var(--dots), var(--bg);
   background-attachment: fixed;
   color: var(--ink);
   min-height: 100vh; min-height: 100dvh;
@@ -63,7 +72,7 @@ img { display: block; max-width: 100%; }
 
 /* Settings overlay */
 .overlay-panel {
-  position: fixed; inset: 0; background: rgba(228,226,221,0.97);
+  position: fixed; inset: 0; background: var(--dots), #E4E2DD;
   z-index: 50; display: flex; flex-direction: column;
   padding: 52px 24px 32px; gap: 20px;
   font-family: var(--font);

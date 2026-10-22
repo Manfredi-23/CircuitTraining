@@ -19,7 +19,7 @@ const tab = (page: Page, name: string) => page.getByRole('tab', { name, exact: t
 test('TODAY leads with one session and a START', async ({ page }) => {
   const errors = await open(page);
   await expect(page.getByText(/RECOMMENDED|PLANNED/).first()).toBeVisible();
-  await expect(page.getByRole('button', { name: /^START / })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Start / })).toBeVisible();
   await page.getByRole('button', { name: /ADJUST TODAY/ }).click();
   await page.getByRole('button', { name: 'REST DAY', exact: true }).click();
   await expect(page.getByText('Rest day.')).toBeVisible();

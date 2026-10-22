@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useStore } from '@/store/store';
-import { getModeData } from '@/core/data-index';
+import { displaySubtitle, getModeData } from '@/core/data-index';
 import { estimateDuration, getReadiness } from '@/core/engine';
 import { lastDone } from '@/core/recommend';
 import { daysBetween, localDate } from '@/core/dates';
@@ -10,6 +10,7 @@ import { CONFIG } from '@/core/config';
 import { useToday } from '@/hooks/use-today';
 import { useLauncher } from '@/hooks/use-launcher';
 import ScreenHeader from '@/components/shell/ScreenHeader';
+import Led from '@/components/shared/Led';
 import BuildSheet from '@/components/shared/BuildSheet';
 import RoutineEditor from '@/components/shared/RoutineEditor';
 import WeekPlanner from '@/components/shared/WeekPlanner';
@@ -27,9 +28,6 @@ const SHELF_LINE: Record<Shelf, string> = {
   HEAL: 'Training around an injured finger: nothing gripped, nothing pulled.',
   MINE: 'Sessions you build or keep.',
 };
-
-/** Subtitles in the data end in their written minutes; the row shows today's own. */
-const subtitleOf = (c: Circuit) => c.subtitle.replace(/\s*-\s*\d+\s*min$/, '');
 
 const ago = (n: number | null) => (n === null ? 'not done yet' : n === 0 ? 'done today' : n === 1 ? 'yesterday' : `${n} days ago`);
 
@@ -71,13 +69,20 @@ export default function TrainScreen({ onSettings }: { onSettings: () => void }) 
     const recommended = recommendation?.circuitId === c.id;
     return (
       <button key={c.id} className={styles.row} onClick={() => launcher.show({ mode: m, circuit: c, extra: extraFor(m, c, routine) })}>
-        <span className={styles.num}>{routine ? (routine.place === 'HOME' ? 'H' : 'C') : c.circuitNum}</span>
+        <Led
+          text={routine ? (routine.place === 'HOME' ? 'H' : 'C') : c.circuitNum}
+          dot={3}
+          lit={recommended ? 'var(--accent)' : 'var(--ink)'}
+          unlit="none"
+          className={styles.num}
+          label={routine ? 'Routine' : `${m} ${c.circuitNum}`}
+        />
         <span className={styles.body}>
           <span className={styles.title}>
             {c.title}
             {recommended && <span className={styles.tag}>TODAY</span>}
           </span>
-          <span className={styles.sub}>{subtitleOf(c)}</span>
+          <span className={styles.sub}>{displaySubtitle(c)}</span>
           <span className={readiness.level === 'ready' ? styles.meta : styles.metaWarn}>
             {readiness.level === 'ready' ? `Last ${ago(last === null ? null : daysBetween(last, today))}` : readiness.message}
           </span>

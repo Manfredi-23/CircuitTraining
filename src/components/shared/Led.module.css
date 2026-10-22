@@ -1,0 +1,4 @@
+.led { display: block; flex-shrink: 0; overflow: visible; }
+.on { animation: ledOn 260ms steps(3, end) both; }
+@keyframes ledOn { from { opacity: 0.12; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .on { animation: none; } }

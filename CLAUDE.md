@@ -138,6 +138,8 @@ src/
     history.ts   # LOG: everything done as one stream; delete or correct a past session
     stats-headlines.ts # the one-sentence answer on top of each STATS section
     adapt.ts     # deload early / skip a deload, stalled lifts, the Monday summary line
+    led-font.ts  # the 5 x 7 LED glyphs and 7 x 7 icons behind the LED numerals
+    week-rail.ts # this week Monday to Sunday for the rail on TODAY
     data-daily.ts, data-cave.ts, data-assess.ts, data-heal.ts  # Session libraries, one per tab
     data-oap.ts  # One-arm pull-up path, shared by CAVE 01 and CAVE 02
     data-index.ts  # getModeData(mode) helper
@@ -154,7 +156,7 @@ src/
     shared/      # SettingsOverlay, TimerFlash, LoadLogger, ClimbStats, SessionInfo, StatsSections,
                  #   FormGuide, SessionProgressBar, AdjustControls, ReservePicker, DayControls,
                  #   BuildSheet, StatsOverview, SessionCard, RoutineEditor, ExercisePicker,
-                 #   WeekPlanner, SessionDetail, ExerciseDetail
+                 #   WeekPlanner, SessionDetail, ExerciseDetail, Led, WeekRail
 e2e/             # Playwright smoke tests, the seed history (fixtures/athlete.json), serve.mjs
   app/           # layout.tsx, page.tsx (screen router), globals.css
 ios/             # Xcode project (Capacitor 8, SPM)
@@ -488,6 +490,29 @@ Kode Mono monospace font. Mobile-first, max-width 390px. CSS Modules per compone
 **Color tokens:** `--ink` (#181610), `--accent` (#E64D19), `--bg` (parchment gradient), `--ink-ghost`/`--ink-dim`/`--ink-faint` for opacity variants.
 
 **Design rules:** No glassmorphism. No dark theme. Cards outlined (2px solid), not filled. Tab indicators use bottom-border style (6px active, 2px inactive).
+
+**The LED language** (v29). The interface speaks the dot-matrix of the
+illustrations:
+
+- Big figures are LED numerals (`Led`, glyphs in `src/core/led-font.ts`, a
+  5 x 7 grid): the session number on the card, the rest countdown, the reps
+  on the workout card and on rest, the four STATS overview figures, the
+  minutes on TODAY's START bar, list numbers. A glyph the font lacks falls
+  back to a space: add it to `LED_GLYPHS` (7 rows, one width).
+- Unlit dots (`--led-off`) only on large displays (the card number, the rest
+  ring); small LEDs draw lit dots only.
+- The one orange lights the screen's main figure (today's pick, a rest in its
+  last seconds), never chrome.
+- The tab bar icons are 7 x 7 LED icons (`LED_ICONS`).
+- The page and every full-screen panel sit on `--dots`: an unlit LED every
+  12px over the parchment.
+- The rest timer is a ring of 48 dots that go out as the rest runs down.
+- TODAY opens with the week rail (`WeekRail`, `week-rail.ts`): seven LED
+  columns filled from the bottom (a climb in orange, a session in ink, an
+  outside day in grey), a ring on a planned day ahead, today underlined.
+- Type: `--fs-h1` 30px page titles, 16-20px titles, 13px body, 11px meta;
+  nothing under 11px; secondary text in `--ink-dim` (74%, 4.5:1 on the
+  parchment).
 
 ## Session illustrations
 
@@ -887,11 +912,14 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v28.md`** — **start here.** The tab bar (TODAY, TRAIN,
+- **`7bit-handover-v29.md`** — **start here.** The LED redesign: LED
+  numerals, the week rail on TODAY, pixel tab icons, the LED rest ring, the
+  dot-grid paper.
+- **`7bit-handover-v28.md`** — read second. The tab bar (TODAY, TRAIN,
   STATS, LOG), routines and the weekly plan, STATS in four tabs, the session
   and exercise pages, deload advice, how each lift felt, UNDO, Playwright, and
   the taste-skill UI review.
-- **`7bit-handover-v27.md`** — read second. STATS overview and WHAT
+- **`7bit-handover-v27.md`** — STATS overview and WHAT
   STANDS OUT, work split, regrouped sections; Apple Health connect reports why.
 - **`7bit-handover-v26.md`** — DAILY 06 QUIET FEET and the
   ROCKOVER / HIPS goals and presets, from the off-wall footwork analysis.
