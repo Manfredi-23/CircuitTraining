@@ -183,7 +183,7 @@ function Sparkline({ values }: { values: number[] }) {
   );
 }
 
-export function LiftSection({ loadLog }: { loadLog: LoadLogEntry[] }) {
+export function LiftSection({ loadLog, onPick }: { loadLog: LoadLogEntry[]; onPick?: (exerciseId: string) => void }) {
   const series = useMemo(() => getLiftSeries(loadLog), [loadLog]);
   if (!series.length) {
     return <div className={styles.empty}>Loads appear here once you log them on the workout stepper.</div>;
@@ -195,14 +195,14 @@ export function LiftSection({ loadLog }: { loadLog: LoadLogEntry[] }) {
         const last = s.points[s.points.length - 1].value;
         const change = last - first;
         return (
-          <div key={s.exerciseId} className={styles.lift}>
+          <button key={s.exerciseId} className={styles.lift} onClick={() => onPick?.(s.exerciseId)} disabled={!onPick}>
             <span className={styles.liftName}>{s.name}</span>
             <Sparkline values={s.points.map(p => p.value)} />
             <span className={styles.liftValue}>
               {fmtNum(last)}<small> {s.unit}</small>
               {change !== 0 && <span className={change > 0 ? styles.up : styles.down}> {change > 0 ? '+' : ''}{fmtNum(change)}</span>}
             </span>
-          </div>
+          </button>
         );
       })}
     </div>

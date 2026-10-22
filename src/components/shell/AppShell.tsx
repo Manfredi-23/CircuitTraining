@@ -9,6 +9,7 @@ import StatsScreen from '@/components/screens/StatsScreen';
 import LogScreen from '@/components/screens/LogScreen';
 import SettingsOverlay from '@/components/shared/SettingsOverlay';
 import SessionDetail from '@/components/shared/SessionDetail';
+import ExerciseDetail from '@/components/shared/ExerciseDetail';
 
 /**
  * The home screen: four tabs and the bar to move between them. Settings and a
@@ -19,6 +20,7 @@ export default function AppShell() {
   const setTab = useStore(s => s.setTab);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [session, setSession] = useState<number | null>(null);
+  const [exercise, setExercise] = useState<string | null>(null);
   const openSettings = () => setSettingsOpen(true);
 
   return (
@@ -29,7 +31,8 @@ export default function AppShell() {
       {tab === 'log' && <LogScreen onSettings={openSettings} onSession={setSession} />}
       <TabBar tab={tab} onTab={t => { setTab(t); window.scrollTo(0, 0); }} />
       <SettingsOverlay open={settingsOpen} onClose={() => setSettingsOpen(false)} />
-      {session !== null && <SessionDetail index={session} onClose={() => setSession(null)} />}
+      {session !== null && <SessionDetail index={session} onClose={() => setSession(null)} onExercise={setExercise} />}
+      {exercise && <ExerciseDetail exerciseId={exercise} onClose={() => setExercise(null)} />}
     </>
   );
 }

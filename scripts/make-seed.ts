@@ -58,7 +58,7 @@ function log(mode: Mode, id: string, daysAgo: number, hour: number, effort: numb
     }
     for (const cap of e.capacities) {
       xp[cap] = (xp[cap] ?? 0) + sets[e.id];
-      last[cap] = date.toISOString();
+      if (!last[cap] || last[cap]! < date.toISOString()) last[cap] = date.toISOString();
     }
   });
   sessionLog.push({

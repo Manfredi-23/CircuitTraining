@@ -190,7 +190,7 @@ export interface InsightInput {
 }
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const fmtDay = (day: string) => {
+export const fmtDay = (day: string) => {
   const [, m, d] = day.split('-').map(Number);
   return `${d} ${MONTHS[m - 1]}`;
 };
@@ -203,7 +203,7 @@ const STACKING = new Set(['cave-05', 'cave-06']);
  * The biggest gain on a logged load, from its first real value to its latest:
  * zeros are a stepper left unset, not a load, so they are skipped.
  */
-function bestGain(loadLog: LoadLogEntry[]): { name: string; from: number; to: number; since: string } | null {
+export function bestGain(loadLog: LoadLogEntry[]): { name: string; from: number; to: number; since: string } | null {
   const byId = new Map<string, LoadLogEntry[]>();
   for (const e of loadLog) {
     if (e.exerciseId.startsWith('test-') || e.unit !== 'kg' || e.value <= 0) continue;

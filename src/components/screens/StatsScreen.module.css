@@ -1,4 +1,4 @@
-.screen { padding-top: calc(28px + env(safe-area-inset-top, 0px)); gap: 16px; }
+.screen { padding-top: calc(28px + env(safe-area-inset-top, 0px)); gap: 28px; }
 
 
 .scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 20px; min-height: 0; padding-bottom: env(safe-area-inset-bottom, 16px); }
@@ -20,7 +20,7 @@
 .lastMode { font-weight: 700; color: var(--ink); }
 
 /* Section */
-.section { display: flex; flex-direction: column; gap: 10px; }
+.section { display: flex; flex-direction: column; gap: 10px; padding-top: 4px; }
 .sectionTitle { font-weight: 700; font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); }
 
 /* Sort tabs */
@@ -65,3 +65,13 @@
   border-top: 2px solid var(--ink); padding-top: 10px; margin-top: 6px;
 }
 .hintLine { font-size: 12px; color: var(--ink-dim); line-height: 1.4; }
+
+.tabs { display: flex; width: 100%; flex-shrink: 0; }
+.tab {
+  flex: 1; height: 44px; font-weight: 700; font-size: 12px; letter-spacing: 0.06em; color: var(--ink);
+  border-bottom: 2px solid var(--ink); transition: border-bottom-width 150ms ease;
+}
+.tabOn { border-bottom-width: 6px; }
+.sectionHead { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.period { font-size: 11px; color: var(--ink-dim); white-space: nowrap; }
+.lead { font-weight: 700; font-size: 14px; line-height: 1.4; color: var(--ink); }
