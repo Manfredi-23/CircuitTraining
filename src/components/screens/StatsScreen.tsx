@@ -5,6 +5,7 @@ import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { useShallow } from 'zustand/react/shallow';
 import { useStore } from '@/store/store';
 import { getOverallLevel } from '@/core/engine';
+import { CONFIG } from '@/core/config';
 import { getSortedCapacities, getOverallTrendData, getCapacityTrendData, timeFilterToDays } from '@/core/stats';
 import { getWorkSplit } from '@/core/review';
 import { getCoreVolume, getFreshness, getOneArmPath, getSkipped, primaryClimbView } from '@/core/insights';
@@ -24,7 +25,7 @@ import {
   LoadSection, FingerSection, FreshnessSection, OneArmSection, SkippedSection, RecoverySection,
   RingSection, hasRingData,
 } from '@/components/shared/StatsSections';
-import type { SortMode, TimeFilter, Capacity } from '@/core/types';
+import type { SortMode, TimeFilter } from '@/core/types';
 import styles from './StatsScreen.module.css';
 
 type StatsTab = 'OVERVIEW' | 'PROGRESS' | 'BODY' | 'CLIMBING';
@@ -49,16 +50,34 @@ const TIME_OPTIONS: { key: TimeFilter; label: string }[] = [
   { key: 'total', label: 'all' },
 ];
 
-/** A section: its name, the period it covers, the answer in one sentence, then the evidence. */
-function Section({ title, period, lead, children }: { title: string; period?: string; lead?: string | null; children: ReactNode }) {
+/**
+ * A section: its name, the period it covers, the answer in one sentence, then
+ * the evidence. With `fold`, the evidence waits behind a tap: a long tab reads
+ * as a list of answers.
+ */
+function Section({ title, period, lead, children, fold }: {
+  title: string; period?: string; lead?: string | null; children: ReactNode;
+  fold?: { open: boolean; onToggle: () => void };
+}) {
+  const shown = !fold || fold.open;
+  const head = (
+    <>
+      <span className={styles.sectionHead}>
+        <h2 className={styles.sectionTitle}>{title}</h2>
+        <span className={styles.headRight}>
+          {period && <span className={styles.period}>{period}</span>}
+          {fold && <span className={styles.foldMark} aria-hidden="true">{fold.open ? '-' : '+'}</span>}
+        </span>
+      </span>
+      {lead && <p className={styles.lead}>{lead}</p>}
+    </>
+  );
   return (
     <section className={`${styles.section} dot-rule`}>
-      <div className={styles.sectionHead}>
-        <h2 className={styles.sectionTitle}>{title}</h2>
-        {period && <span className={styles.period}>{period}</span>}
-      </div>
-      {lead && <p className={styles.lead}>{lead}</p>}
-      {children}
+      {fold
+        ? <button className={styles.foldBtn} aria-expanded={fold.open} onClick={fold.onToggle}>{head}</button>
+        : head}
+      {shown && children}
     </section>
   );
 }
@@ -71,18 +90,28 @@ function Section({ title, period, lead, children }: { title: string; period?: st
 export default function StatsScreen({ onSettings }: { onSettings: () => void }) {
   const {
     progress, sessionLog, climbLog, activityLog, loadLog, benchmarkResults, statsSort, statsTimeFilter, health, settings,
-    activeChartMuscles, highlightMuscle,
-    setStatsSort, setStatsTimeFilter, toggleChartMuscle,
+    highlightMuscle,
+    setStatsSort, setStatsTimeFilter,
     setHighlightMuscle,
   } = useStore(useShallow(s => ({
     progress: s.progress, sessionLog: s.sessionLog, climbLog: s.climbLog, activityLog: s.activityLog, loadLog: s.loadLog,
     benchmarkResults: s.benchmarkResults, statsSort: s.statsSort, statsTimeFilter: s.statsTimeFilter, health: s.health,
-    settings: s.settings, activeChartMuscles: s.activeChartMuscles, highlightMuscle: s.highlightMuscle,
-    setStatsSort: s.setStatsSort, setStatsTimeFilter: s.setStatsTimeFilter, toggleChartMuscle: s.toggleChartMuscle,
+    settings: s.settings, highlightMuscle: s.highlightMuscle,
+    setStatsSort: s.setStatsSort, setStatsTimeFilter: s.setStatsTimeFilter,
     setHighlightMuscle: s.setHighlightMuscle,
   })));
   const [tab, setTab] = useState<StatsTab>('OVERVIEW');
   const [exercise, setExercise] = useState<string | null>(null);
+  // BODY's sections open one at a time, by tap; they stay as left across tabs.
+  const [open, setOpen] = useState<Set<string>>(() => new Set());
+  const fold = (key: string) => ({
+    open: open.has(key),
+    onToggle: () => setOpen(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      return next;
+    }),
+  });
 
   const overallLevel = getOverallLevel(progress);
   const insightInput = useMemo(
@@ -109,12 +138,12 @@ export default function StatsScreen({ onSettings }: { onSettings: () => void }) 
     const overall = getOverallTrendData(progress, days);
     return overall.map((pt, i) => {
       const point: Record<string, string | number> = { date: pt.date, overall: pt.score };
-      for (const m of activeChartMuscles) {
-        if (m !== 'overall') point[m] = getCapacityTrendData(progress[m as Capacity], days)[i]?.score ?? 0;
+      for (const c of CONFIG.capacities) {
+        point[c] = getCapacityTrendData(progress[c], days)[i]?.score ?? 0;
       }
       return point;
     });
-  }, [progress, days, activeChartMuscles]);
+  }, [progress, days]);
 
   return (
     <div className={`screen screen-enter tab-screen ${styles.screen}`}>
@@ -157,14 +186,14 @@ export default function StatsScreen({ onSettings }: { onSettings: () => void }) 
 
       {tab === 'BODY' && (
         <>
-          <Section title="WHERE THE WORK WENT" period="28 days" lead={heads.split}>
+          <Section title="WHERE THE WORK WENT" period="28 days" lead={heads.split} fold={fold("WHERE THE WORK WENT")}>
             <WorkSplitSection sessionLog={sessionLog} />
           </Section>
-          <Section title="LOAD" period="12 weeks" lead={heads.load}>
+          <Section title="LOAD" period="12 weeks" lead={heads.load} fold={fold("LOAD")}>
             <LoadSection sessionLog={sessionLog} climbLog={climbLog} activityLog={activityLog} />
           </Section>
           {settings.health.connected ? (
-            <Section title="RECOVERY" period="14 days">
+            <Section title="RECOVERY" period="14 days" fold={fold("RECOVERY")}>
               <RecoverySection health={health} sessionLog={sessionLog} />
             </Section>
           ) : isNative() && (
@@ -172,25 +201,25 @@ export default function StatsScreen({ onSettings }: { onSettings: () => void }) 
               {null}
             </Section>
           )}
-          <Section title="FRESHNESS" lead={heads.fresh}>
+          <Section title="FRESHNESS" lead={heads.fresh} fold={fold("FRESHNESS")}>
             <FreshnessSection progress={progress} />
           </Section>
-          <Section title="CORE THIS WEEK" period="since Monday" lead={heads.core}>
+          <Section title="CORE THIS WEEK" period="since Monday" lead={heads.core} fold={fold("CORE THIS WEEK")}>
             <CoreVolumeSection sessionLog={sessionLog} />
           </Section>
-          <Section title="CUT SHORT" period="90 days" lead={heads.skipped}>
+          <Section title="CUT SHORT" period="90 days" lead={heads.skipped} fold={fold("CUT SHORT")}>
             <SkippedSection sessionLog={sessionLog} />
           </Section>
           {hasRingData(loadLog, benchmarkResults) && (
-            <Section title="RING FINGER">
+            <Section title="RING FINGER" fold={fold("RING FINGER")}>
               <RingSection loadLog={loadLog} results={benchmarkResults} />
             </Section>
           )}
-          <Section title="FINGER LOAD" period="12 weeks">
+          <Section title="FINGER LOAD" period="12 weeks" fold={fold("FINGER LOAD")}>
             <FingerSection sessionLog={sessionLog} climbLog={climbLog} />
           </Section>
 
-          <Section title="LEVELS" lead="Levels move loads and open variations. They fade when a capacity goes untrained.">
+          <Section title="LEVELS" lead="Levels move loads and open variations. They fade when a capacity goes untrained." fold={fold("LEVELS")}>
             <div className={styles.sortTabs} role="tablist" aria-label="Sort">
               {SORT_OPTIONS.map(s => (
                 <button
@@ -205,7 +234,7 @@ export default function StatsScreen({ onSettings }: { onSettings: () => void }) 
             <CapacityRows
               items={capacities}
               highlight={highlightMuscle}
-              onPick={c => { toggleChartMuscle(c); setHighlightMuscle(highlightMuscle === c ? null : c); }}
+              onPick={c => setHighlightMuscle(highlightMuscle === c ? null : c)}
             />
             <div className={styles.timeTabs} role="tablist" aria-label="Period">
               {TIME_OPTIONS.map(t => (
@@ -223,12 +252,13 @@ export default function StatsScreen({ onSettings }: { onSettings: () => void }) 
                 <LineChart data={chartData}>
                   <XAxis dataKey="date" hide />
                   <YAxis domain={[0, 100]} hide />
-                  {activeChartMuscles.filter(m => m !== 'overall').map(m => (
+                  {/* Every capacity faint, the picked one on top in orange */}
+                  {[...CONFIG.capacities.filter(c => c !== highlightMuscle), ...CONFIG.capacities.filter(c => c === highlightMuscle)].map(m => (
                     <Line
                       key={m}
                       type="linear"
                       dataKey={m}
-                      stroke={m === highlightMuscle ? '#E64D19' : 'rgba(24,22,16,0.25)'}
+                      stroke={m === highlightMuscle ? '#E64D19' : 'rgba(24,22,16,0.18)'}
                       strokeWidth={m === highlightMuscle ? 2 : 1}
                       dot={false}
                       isAnimationActive={false}
@@ -238,7 +268,7 @@ export default function StatsScreen({ onSettings }: { onSettings: () => void }) 
                 </LineChart>
               </ResponsiveContainer>
             </div>
-            <p className={styles.hintLine}>Overall in black. Tap a capacity to draw it in orange.</p>
+            <p className={styles.hintLine}>Overall in black, each capacity in grey. Tap one to draw it in orange.</p>
           </Section>
         </>
       )}

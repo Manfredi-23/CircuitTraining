@@ -19,7 +19,14 @@ export function getModeData(mode: Mode): Circuit[] {
   return MODE_DATA[mode];
 }
 
-/** The subtitle without the minutes some sessions write at its end: cards show today's own. */
+/**
+ * The subtitle as shown: without the minutes some sessions write at its end
+ * (cards show today's own), without a leading "daily" the tab or crumb
+ * already says, and with the middle dot the rest of the app separates with.
+ */
 export function displaySubtitle(c: Circuit): string {
-  return c.subtitle.replace(/\s*-\s*\d+\s*min$/, '');
+  return c.subtitle
+    .replace(/\s*-\s*\d+\s*min$/, '')
+    .replace(/^daily\s*-\s*/, '')
+    .replace(/\s+-\s+/g, ' · ');
 }

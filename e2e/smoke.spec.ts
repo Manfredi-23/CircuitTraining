@@ -35,12 +35,20 @@ test('a session runs from TRAIN, finishes, and lands in LOG', async ({ page }) =
   await page.getByRole('button', { name: 'DONE', exact: true }).click();
   const skip = page.getByRole('button', { name: 'SKIP REST' });
   if (await skip.isVisible().catch(() => false)) await skip.click();
-  page.once('dialog', d => d.accept());
+  await page.getByRole('button', { name: /^ADJUST/ }).click();
+  await page.getByRole('button', { name: 'FINISH NOW' }).click();
+  await expect(page.getByText('SESSION COMPLETE')).toBeVisible();
+  // No confirm dialog: UNDO goes back to the set in hand.
+  await page.getByRole('button', { name: 'UNDO' }).click();
+  await expect(page.getByRole('button', { name: 'DONE', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: /^ADJUST/ }).click();
   await page.getByRole('button', { name: 'FINISH NOW' }).click();
   await expect(page.getByText('SESSION COMPLETE')).toBeVisible();
   await page.getByRole('button', { name: 'DONE', exact: true }).click();
   await tab(page, 'LOG');
   await expect(page.getByText('DAILY · LEGS + CORE')).toBeVisible();
+  await page.getByRole('button', { name: 'CLIMBS', exact: true }).click();
+  await expect(page.getByText('DAILY · LEGS + CORE')).toHaveCount(0);
 });
 
 test('MAKE IT MINE copies a session into a routine that runs', async ({ page }) => {

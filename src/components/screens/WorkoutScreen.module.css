@@ -1,4 +1,5 @@
-.screen { padding-top: calc(24px + env(safe-area-inset-top, 0px)); gap: 14px; }
+/* One screen tall: the card scrolls inside, SKIP and DONE stay in thumb reach. */
+.screen { padding-top: calc(24px + env(safe-area-inset-top, 0px)); gap: 14px; height: 100vh; height: 100dvh; min-height: 0; padding-bottom: 20px; }
 
 .header { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .exitBtn { font-weight: 700; font-size: 12px; letter-spacing: 0.08em; color: var(--ink); padding: 8px; margin: -8px -4px -8px -8px; }
@@ -78,7 +79,6 @@
   border: 2px solid var(--ink);
   border-radius: 6px;
   padding: 10px 12px;
-  margin-bottom: 16px;
 }
 
 .progressionLabel {
@@ -117,3 +117,16 @@
   color: var(--ink); background: none; border: none; border-bottom: 2px solid var(--ink);
 }
 .energyBtnOn { border-bottom-width: 6px; }
+
+/* ADJUST: the controls that change the session, folded while a set is on */
+.adjustToggle {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-shrink: 0;
+  width: 100%; padding: 12px 0; text-align: left; color: var(--ink);
+  border-top: 1px solid var(--ink-faint); border-bottom: 1px solid var(--ink-faint);
+}
+.adjustText { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.adjustTitle { font-weight: 700; font-size: 12px; letter-spacing: 0.1em; }
+.adjustSub { font-size: 11px; color: var(--ink-dim); line-height: 1.4; }
+.adjustMark { font-weight: 700; font-size: 14px; }
+.adjustBody { display: flex; flex-direction: column; gap: 14px; flex-shrink: 0; }
+.overrun { flex-shrink: 0; padding: 8px 12px; border: 2px solid var(--ink); border-radius: var(--rad-sm); font-weight: 700; font-size: 11px; letter-spacing: 0.1em; color: var(--ink); }

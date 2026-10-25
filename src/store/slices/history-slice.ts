@@ -2,10 +2,10 @@ import type { StateCreator } from 'zustand';
 import type { Store } from '../store';
 import { patchSession, removeSession, type SessionPatch } from '@/core/history';
 
-/** What a delete took away, put back by UNDO. */
+/** What a delete (or FINISH NOW) took away, put back by UNDO. */
 export interface UndoOffer {
   text: string;
-  restore: Partial<Pick<Store, 'sessionLog' | 'loadLog' | 'climbLog' | 'activityLog' | 'routines' | 'weekPlan'>>;
+  restore: Partial<Pick<Store, 'sessionLog' | 'loadLog' | 'climbLog' | 'activityLog' | 'routines' | 'weekPlan' | 'progress' | 'screen'>>;
   /** For keying the toast, so a second delete restarts its timer. */
   at: number;
 }

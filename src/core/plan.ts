@@ -136,3 +136,26 @@ export function applyPlan(
   if (rest) return { pick: null, also: recommendation, note };
   return { pick: recommendation, also: null, note };
 }
+
+/**
+ * Whether TODAY should offer to log a climb: bouldering is planned today, or
+ * a session built to follow a climbing session (CAVE 02 and 03, a CAVE routine
+ * or build) was done today, and no climb is logged yet. CAVE 01 replaces a
+ * bouldering day, so it does not ask.
+ */
+export function climbToLog(
+  plan: WeekPlan,
+  sessionLog: { date: string; mode: Mode; circuitId: string }[],
+  climbLog: { date: string }[],
+  now = new Date(),
+): 'planned' | 'after' | null {
+  const today = localDate(now);
+  if (climbLog.some(c => c.date === today)) return null;
+  const stacked = sessionLog.some(s => {
+    if (dayOf(s.date) !== today || s.mode !== 'CAVE') return false;
+    const programme = getModeData('CAVE').find(c => c.id === s.circuitId);
+    return programme ? !!programme.stacksOnSession : true;
+  });
+  if (stacked) return 'after';
+  return plannedOn(plan, now).some(i => i.kind === 'CLIMB') ? 'planned' : null;
+}

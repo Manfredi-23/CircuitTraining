@@ -8,3 +8,5 @@
 .label { font-weight: 700; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
 .text { font-weight: 400; font-size: 13px; line-height: 1.55; color: var(--ink); }
 .source { font-size: 11px; line-height: 1.5; color: var(--ink-dim); margin: 6px 0 0; }
+.clamp { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.more { align-self: flex-start; min-height: 36px; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }

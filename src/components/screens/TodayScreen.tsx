@@ -15,7 +15,7 @@ import DayControls from '@/components/shared/DayControls';
 import WeekRail from '@/components/shared/WeekRail';
 import Led from '@/components/shared/Led';
 import { routineCircuit } from '@/core/routines';
-import type { TodayPick } from '@/core/plan';
+import { climbToLog, type TodayPick } from '@/core/plan';
 import type { Routine } from '@/core/routines';
 import type { Circuit, Mode } from '@/core/types';
 import styles from './TodayScreen.module.css';
@@ -49,6 +49,9 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
   const routines = useStore(s => s.routines);
   const deloadNow = useStore(s => s.deloadNow);
   const restartBlock = useStore(s => s.restartBlock);
+  const climbLog = useStore(s => s.climbLog);
+  const weekPlan = useStore(s => s.weekPlan);
+  const openClimbLog = useStore(s => s.openClimbLog);
   const { block, day, healthDay, recommendation, alternatives, planNote, deload } = useToday();
   const launcher = useLauncher();
 
@@ -57,6 +60,8 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
   const rec = recommendation ? circuitOf(recommendation, routines) : undefined;
   const recList = rec && recommendation ? launcher.listOf({ mode: recommendation.mode, circuit: rec }) : [];
   const readiness = rec ? getReadiness(rec, progress) : null;
+  // The climb is the athlete's own training: offered here on the day it happens.
+  const climbAsk = climbToLog(weekPlan, sessionLog, climbLog);
 
   const derank = useMemo(() => {
     const e = pendingDecayEvents[0];
@@ -84,7 +89,17 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
           <button className={styles.bannerX} onClick={dismissDecay} aria-label="Dismiss">X</button>
         </div>
       )}
-      {planNote && <div className={styles.banner}>{planNote}</div>}
+      {climbAsk ? (
+        <button className={styles.climbAsk} onClick={() => openClimbLog()}>
+          <span className={styles.climbAskBody}>
+            <span className={styles.climbAskTitle}>+ LOG TODAY&apos;S CLIMBS</span>
+            <span className={styles.climbAskWhy}>
+              {climbAsk === 'after' ? 'Done after bouldering. The climbs count too.' : 'Bouldering is planned today. Log it after.'}
+            </span>
+          </span>
+          <span aria-hidden="true">&rarr;</span>
+        </button>
+      ) : planNote && <div className={styles.banner}>{planNote}</div>}
       {deload && (
         <div className={styles.advice}>
           <p>{deload.reason}</p>
@@ -115,6 +130,7 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
             onEnergy={setEnergy}
             onOpen={() => launcher.show({ mode: recommendation.mode, circuit: rec })}
             highlight
+            compact
           />
           <button
             className={styles.start}

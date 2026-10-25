@@ -30,6 +30,14 @@ export interface HistoryDay {
   items: HistoryItem[];
 }
 
+/** Only the days, and the entries within them, of one kind; null keeps everything. */
+export function filterDays(days: HistoryDay[], kind: HistoryKind | null): HistoryDay[] {
+  if (!kind) return days;
+  return days
+    .map(d => ({ ...d, items: d.items.filter(it => it.kind === kind) }))
+    .filter(d => d.items.length > 0);
+}
+
 /** Sets done against sets planned, for "all sets" or "cut short". */
 export function setsLine(s: SessionLogEntry): string | null {
   if (!s.planned) return null;

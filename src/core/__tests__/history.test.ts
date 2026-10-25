@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { historyDays, patchSession, removeSession, setsLine } from '../history';
+import { filterDays, historyDays, patchSession, removeSession, setsLine } from '../history';
 import type { ClimbSession, SessionLogEntry } from '../types';
 import type { ActivitySession } from '../activity';
 
@@ -54,5 +54,24 @@ describe('removeSession', () => {
   it('patches only the named fields', () => {
     const log = [session('2026-10-20T07:00:00.000Z', { effort: 5 })];
     expect(patchSession(log, 0, { effort: 8 })[0]).toMatchObject({ effort: 8, duration: 14 });
+  });
+});
+
+describe('filterDays', () => {
+  const item = (kind: 'SESSION' | 'CLIMB' | 'ACTIVITY', ref: string) => ({ kind, day: '2026-10-20', at: '', ref, title: '', detail: '' });
+  const days = [
+    { day: '2026-10-21', items: [item('SESSION', '1')] },
+    { day: '2026-10-20', items: [item('SESSION', '0'), item('CLIMB', 'c1')] },
+  ];
+
+  it('keeps everything with no filter', () => {
+    expect(filterDays(days, null)).toBe(days);
+  });
+
+  it('keeps one kind and drops the days left empty', () => {
+    const climbs = filterDays(days, 'CLIMB');
+    expect(climbs).toHaveLength(1);
+    expect(climbs[0].items.map(i => i.ref)).toEqual(['c1']);
+    expect(filterDays(days, 'ACTIVITY')).toEqual([]);
   });
 });
