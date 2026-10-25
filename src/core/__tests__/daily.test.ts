@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getModeData } from '../data-index';
+import { displaySubtitle, getModeData } from '../data-index';
 import { CORE_EXERCISES } from '../insights';
 
 const daily = getModeData('DAILY');
@@ -66,5 +66,15 @@ describe('DAILY 06 QUIET FEET', () => {
 
   it('is repeatable daily', () => {
     expect(feet.recoveryHours).toBe(0);
+  });
+});
+
+describe('displaySubtitle', () => {
+  it('drops the minutes and the leading mode word, and separates with a middle dot', () => {
+    const c = getModeData('DAILY').find(x => x.id === 'daily-01')!;
+    expect(c.subtitle).toMatch(/^daily - .* - 13 min$/);
+    expect(displaySubtitle(c)).toBe('mat only · abs · obliques');
+    const assess = getModeData('TEST')[0];
+    expect(displaySubtitle(assess)).toBe('warm-up · range · strength · endurance · trunk');
   });
 });

@@ -29,3 +29,10 @@
   height: 48px; border: 2px solid var(--ink); border-radius: var(--rad-lg);
   font-weight: 700; font-size: 12px; letter-spacing: 0.08em;
 }
+
+.filters { display: flex; width: 100%; }
+.filter {
+  flex: 1; height: 40px; font-weight: 700; font-size: 11px; letter-spacing: 0.08em; color: var(--ink-dim);
+  border-bottom: 2px solid var(--ink-ghost); transition: border-bottom-width 150ms ease;
+}
+.filterOn { color: var(--ink); border-bottom: 6px solid var(--ink); }

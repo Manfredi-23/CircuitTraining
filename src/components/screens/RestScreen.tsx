@@ -23,7 +23,7 @@ const RING_SIZE = 196;
 const EXTRA_REST_SEC = 60;
 
 export default function RestScreen() {
-  const { currentExercise, setIndex, rampBest, setScreen } = useStore();
+  const { currentExercise, setIndex, rampBest, endRest } = useStore();
   const startedRef = useRef(false);
   const nextRef = useRef('');
   /** Rest as written plus any time added, so the ring stays in proportion. */
@@ -39,7 +39,7 @@ export default function RestScreen() {
   // Rest always returns to the workout screen. Completion is decided by the
   // workout slice when the last set of the last exercise is done, so there is
   // never a rest period hanging off the end of a session.
-  const timer = useTimer(() => setScreen('workout'));
+  const timer = useTimer(endRest);
 
   // Start timer on mount. The alert body names what is waiting, so the lock
   // screen alone is enough to get you back on the mat. During rest the store
@@ -113,7 +113,7 @@ export default function RestScreen() {
         <div className={styles.scroll}>
           <div className={styles.nextCard}>
             <div className={styles.nextTag}>
-              {newExercise ? 'UP NEXT' : 'NEXT SET'} - {ex.section ?? ex.block} - {nextTag}
+              {newExercise ? 'UP NEXT' : 'NEXT SET'} &middot; {ex.section ?? ex.block} &middot; {nextTag}
             </div>
             {ex.ramp && (
               <div className={styles.rampBest}>
@@ -129,7 +129,7 @@ export default function RestScreen() {
             {ex.note && <div className={styles.note}>{ex.note}</div>}
           </div>
 
-          <FormGuide exercise={ex} open={formOpen} onToggle={() => setFormOpen(o => !o)} />
+          <FormGuide exercise={ex} open={formOpen} onToggle={() => setFormOpen(o => !o)} brief />
 
           <button className={styles.btnAdd} onClick={() => setReserveOpen(true)}>+ ADD EXERCISE</button>
         </div>

@@ -547,6 +547,11 @@ export function applyBonusXP(progress: Progress, capacities: Capacity[], amount:
 }
 
 /** XP for a heavier logged load than ever before. */
+/** XP across every capacity: the complete screen shows what a session added. */
+export function totalXP(progress: Progress): number {
+  return Object.values(progress).reduce((sum, p) => sum + (p?.xp ?? 0), 0);
+}
+
 export const PB_LOAD_XP = 1;
 /** XP for a better test result than the last one. */
 export const PB_TEST_XP = 2;

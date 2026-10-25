@@ -58,12 +58,18 @@ export interface WorkoutSlice {
   tweaks: Tweaks;
   /** Exercises added from the reserve in this session. */
   addedIds: string[];
+  /** XP across all capacities when the session started, for what it earned. */
+  startXP: number;
+  /** Seconds the last rest ran past its end while the app slept; 0 when it did not. */
+  restOverrun: number;
 
   /** Start the selected session. `pain` is the pre-session score, for finger sessions. */
   startWorkout: (pain?: number) => void;
   /** Start a session built on the BUILD sheet, logged under `mode`. */
   startCustom: (circuit: Circuit, list: ScaledExercise[], mode: Mode, pain?: number) => void;
   exerciseDone: () => void;
+  /** Rest is over: back to the card, noting how long ago it ended when the app slept through it. */
+  endRest: (overrunSec: number) => void;
   /** Ramp test: this attempt was clean. Rest, then a harder one. */
   attemptMade: () => void;
   /** Ramp test: this attempt failed. The test ends on the best clean attempt. */
@@ -86,7 +92,7 @@ export interface WorkoutSlice {
   changeSets: (delta: number) => void;
   /** Add an exercise from the reserve to the running session. */
   addExtra: (exerciseId: string) => void;
-  /** End here and log the session as cut short. No XP is lost. */
+  /** End here and log the session as cut short. No XP is lost. UNDO goes back to the set in hand. */
   finishNow: () => void;
   /** Change energy mid-session: what is left is rebuilt at the new energy. */
   switchEnergy: (energy: EnergyKey) => void;
@@ -114,6 +120,8 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   sessionPBs: [],
   tweaks: {},
   addedIds: [],
+  startXP: 0,
+  restOverrun: 0,
 
   startWorkout: (pain) => {
     const { mode, circuitIndex } = get();
@@ -144,16 +152,20 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       sessionPBs: [],
       sessionLevelUps: [],
       addedIds: [],
+      startXP: Engine.totalXP(get().progress),
+      restOverrun: 0,
       screen: 'workout',
     });
 
     get().primeLoad(exerciseList[0] || null);
   },
 
+  endRest: (overrunSec) => set({ restOverrun: overrunSec, screen: 'workout' }),
+
   exerciseDone: () => {
     const { setIndex, currentExercise, doneSets } = get();
     if (!currentExercise) return;
-    set({ doneSets: { ...doneSets, [currentExercise.id]: (doneSets[currentExercise.id] ?? 0) + 1 } });
+    set({ restOverrun: 0, doneSets: { ...doneSets, [currentExercise.id]: (doneSets[currentExercise.id] ?? 0) + 1 } });
 
     // More sets of this exercise still to do: rest, then repeat.
     if (setIndex < currentExercise.scaledSets) {
@@ -167,7 +179,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   attemptMade: () => {
     const { currentExercise, pendingLoad, rampBest, setIndex, doneSets } = get();
     if (!currentExercise?.ramp) return;
-    set({ doneSets: { ...doneSets, [currentExercise.id]: (doneSets[currentExercise.id] ?? 0) + 1 } });
+    set({ restOverrun: 0, doneSets: { ...doneSets, [currentExercise.id]: (doneSets[currentExercise.id] ?? 0) + 1 } });
     const lower = getBenchmark(currentExercise.records?.benchmarkId ?? '')?.better === 'lower';
     const best = pendingLoad === null ? rampBest
       : rampBest === null ? pendingLoad
@@ -183,7 +195,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   attemptFailed: () => {
     const { currentExercise, doneSets } = get();
     if (!currentExercise?.ramp) return;
-    set({ doneSets: { ...doneSets, [currentExercise.id]: (doneSets[currentExercise.id] ?? 0) + 1 } });
+    set({ restOverrun: 0, doneSets: { ...doneSets, [currentExercise.id]: (doneSets[currentExercise.id] ?? 0) + 1 } });
     get().finishExercise(get().rampBest);
   },
 
@@ -286,6 +298,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
 
     const newProgress = Engine.applyXP(progress, currentExercise, 'skip');
     const nextStep = stepIndex + 1;
+    set({ restOverrun: 0 });
 
     if (nextStep >= exerciseList.length) {
       set({ progress: newProgress });
@@ -443,8 +456,11 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   },
 
   finishNow: () => {
-    if (!get().circuit) return;
+    const { circuit, sessionLog, progress } = get();
+    if (!circuit) return;
     get().completeSession();
+    // No confirm dialog: six seconds to go back to the set in hand instead.
+    get().offerUndo('Finished early.', { sessionLog, progress, screen: 'workout' });
   },
 
   switchEnergy: (energy) => {

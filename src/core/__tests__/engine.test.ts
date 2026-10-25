@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { CONFIG } from '../config';
-import { scaleRest, buildList, checkDecay } from '../engine';
+import { scaleRest, buildList, checkDecay, totalXP } from '../engine';
 import { getLoadAxis } from '../load';
 import { getModeData } from '../data-index';
 import type { BlockType, EnergyKey, Exercise, Progress } from '../types';
@@ -86,5 +86,13 @@ describe('getLoadAxis', () => {
     for (const ex of ALL_EXERCISES.filter(e => ['WARMUP', 'PREHAB', 'MOBILITY'].includes(e.block) && !e.records)) {
       expect(getLoadAxis(ex), ex.id).toBeNull();
     }
+  });
+});
+
+describe('totalXP', () => {
+  it('adds XP across capacities, an empty progress is 0', () => {
+    expect(totalXP({})).toBe(0);
+    const p: Progress = { pull: { xp: 12, lastTrained: null, history: [] }, legs: { xp: 5, lastTrained: null, history: [] } };
+    expect(totalXP(p)).toBe(17);
   });
 });

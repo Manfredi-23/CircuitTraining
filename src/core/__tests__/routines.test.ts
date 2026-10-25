@@ -4,7 +4,7 @@ import {
   routineCircuit, routineFromCircuit, routineFromList, routineMode, routineWarnings, stepItem, swapItem,
   MAX_ITEMS, MAX_SETS, NAME_MAX, ROUTINE_PREFIX,
 } from '../routines';
-import { applyPlan, blockedBecause, plannedOn, resolveItem, weekdayOf, type WeekPlan } from '../plan';
+import { applyPlan, blockedBecause, climbToLog, plannedOn, resolveItem, weekdayOf, type WeekPlan } from '../plan';
 import { getModeData } from '../data-index';
 import { buildList } from '../engine';
 import { getBlockWeek } from '../block';
@@ -192,5 +192,27 @@ describe('library', () => {
       const pick = twins[twins.length - 1];
       expect(libraryFor('GYM', '', null, [pick.id]).some(e => e.exercise.id === pick.id)).toBe(true);
     }
+  });
+});
+
+describe('climb to log on TODAY', () => {
+  const at = new Date(2026, 9, 21, 18, 0);
+  const iso = at.toISOString();
+  const session = (mode: 'CAVE' | 'DAILY', circuitId: string) => ({ date: iso, mode, circuitId });
+
+  it('asks after a session that follows bouldering, until a climb is logged', () => {
+    expect(climbToLog({}, [session('CAVE', 'cave-05')], [], at)).toBe('after');
+    expect(climbToLog({}, [session('CAVE', 'custom-cave')], [], at)).toBe('after');
+    expect(climbToLog({}, [session('CAVE', 'cave-05')], [{ date: '2026-10-21' }], at)).toBeNull();
+  });
+
+  it('does not ask after STRONG, which replaces a bouldering day, or a DAILY', () => {
+    expect(climbToLog({}, [session('CAVE', 'cave-01')], [], at)).toBeNull();
+    expect(climbToLog({}, [session('DAILY', 'daily-01')], [], at)).toBeNull();
+  });
+
+  it('asks when bouldering is planned today', () => {
+    expect(climbToLog({ [weekdayOf(at)]: [{ kind: 'CLIMB' }] }, [], [], at)).toBe('planned');
+    expect(climbToLog({ [(weekdayOf(at) + 1) % 7]: [{ kind: 'CLIMB' }] }, [], [], at)).toBeNull();
   });
 });

@@ -2,13 +2,19 @@
 
 import { useMemo, useState } from 'react';
 import { useStore } from '@/store/store';
-import { historyDays, type HistoryItem } from '@/core/history';
+import { filterDays, historyDays, type HistoryItem, type HistoryKind } from '@/core/history';
 import { addDays, localDate } from '@/core/dates';
 import ScreenHeader from '@/components/shell/ScreenHeader';
 import styles from './LogScreen.module.css';
 
 const DAY_FMT = new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
 const PAGE = 14;
+const FILTERS: { kind: HistoryKind | null; label: string }[] = [
+  { kind: null, label: 'ALL' },
+  { kind: 'SESSION', label: 'SESSIONS' },
+  { kind: 'CLIMB', label: 'CLIMBS' },
+  { kind: 'ACTIVITY', label: 'OUTSIDE' },
+];
 
 function dayLabel(day: string, today: string): string {
   if (day === today) return 'Today';
@@ -28,7 +34,9 @@ export default function LogScreen({ onSettings, onSession }: { onSettings: () =>
   const openClimbLog = useStore(s => s.openClimbLog);
   const openActivityLog = useStore(s => s.openActivityLog);
   const [shown, setShown] = useState(PAGE);
-  const days = useMemo(() => historyDays(sessionLog, climbLog, activityLog), [sessionLog, climbLog, activityLog]);
+  const [filter, setFilter] = useState<HistoryKind | null>(null);
+  const all = useMemo(() => historyDays(sessionLog, climbLog, activityLog), [sessionLog, climbLog, activityLog]);
+  const days = useMemo(() => filterDays(all, filter), [all, filter]);
   const today = localDate();
   const total = sessionLog.length + climbLog.length + activityLog.length;
 
@@ -57,7 +65,24 @@ export default function LogScreen({ onSettings, onSession }: { onSettings: () =>
         </button>
       </div>
 
-      {days.length === 0 && (
+      {all.length > 0 && (
+        <div className={styles.filters} role="group" aria-label="Show">
+          {FILTERS.map(f => (
+            <button
+              key={f.label}
+              aria-pressed={f.kind === filter}
+              className={`${styles.filter}${f.kind === filter ? ` ${styles.filterOn}` : ''}`}
+              onClick={() => { setFilter(f.kind); setShown(PAGE); }}
+            >{f.label}</button>
+          ))}
+        </div>
+      )}
+
+      {all.length > 0 && days.length === 0 && (
+        <div className={styles.empty}>Nothing of that kind logged yet.</div>
+      )}
+
+      {all.length === 0 && (
         <div className={styles.empty}>Nothing logged yet. Sessions from TODAY and TRAIN land here on their own; climbs and outside days are added above.</div>
       )}
 

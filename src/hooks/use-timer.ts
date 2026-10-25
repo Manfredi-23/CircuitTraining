@@ -66,9 +66,10 @@ interface UseTimerReturn {
  * for the deadline, so rest ending reaches you in another app or on the lock
  * screen, and starts a Live Activity counting down to it. The alert is
  * cancelled the moment it would be redundant; the countdown ends with the rest
- * screen.
+ * screen. `onDone` gets how long ago the deadline passed, which is more than
+ * a tick only when the app was suspended through it.
  */
-export function useTimer(onDone?: () => void): UseTimerReturn {
+export function useTimer(onDone?: (overrunSec: number) => void): UseTimerReturn {
   const [remaining, setRemaining] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [isWarning, setIsWarning] = useState(false);
@@ -151,7 +152,8 @@ export function useTimer(onDone?: () => void): UseTimerReturn {
         doneBeep();
         void hapticDone();
         flash();
-        onDoneRef.current?.();
+        // Past zero only when the app was asleep at the deadline: how long ago it ran out.
+        onDoneRef.current?.(Math.max(0, Math.round((Date.now() - deadlineRef.current) / 1000)));
       }
     };
 
@@ -179,7 +181,7 @@ export function useTimer(onDone?: () => void): UseTimerReturn {
     alertCancelledRef.current = true;
     stop();
     setRemaining(0);
-    onDoneRef.current?.();
+    onDoneRef.current?.(0);
   }, [stop]);
 
   // Cleanup on unmount. Leaving the rest screen at all — skipping, quitting the

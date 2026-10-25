@@ -93,7 +93,7 @@ never on XP, and `npm test`. Every new core module gets a test file in
 tests in `e2e/smoke.spec.ts` (TODAY, a session from TRAIN to LOG, MAKE IT
 MINE, the weekly plan, STATS, UNDO), run against the static build with the
 seed history; `e2e/serve.mjs` serves `out/`. In the cloud session set
-`PW_CHROMIUM=/opt/pw-browsers/chromium-1194/chrome-linux/chrome`; on the Mac
+`PW_CHROMIUM=/opt/pw-browsers/chromium-1243/chrome-linux64/chrome`; on the Mac
 run `npx playwright install chromium` once.
 
 ## Architecture
@@ -197,7 +197,9 @@ design/          # pixel-grid.svg drawing template; illustrations/<name>/NN.svg 
   plugin, and so works in both shells.
 - **Rest is for getting ready**: the rest screen previews the next piece of
   work (the store already points at it when rest starts) with its form guide
-  open for a new exercise, and both screens carry the set-by-set progress bar.
+  open on three lines for a new exercise, and both screens carry the
+  set-by-set progress bar. When the app slept through the end of a rest, the
+  workout card says how long ago it ended (`restOverrun`).
 - **Timers count against the clock**: `use-timer` reads a `Date.now()` deadline
   rather than decrementing per tick. iOS suspends timers when the app
   backgrounds or the screen locks, and a decrementing counter silently loses
@@ -593,7 +595,10 @@ XP, because those levels set hangboard loads.
 
 ## Changing a session while in it
 
-Below the load stepper on the workout card (`AdjustControls`):
+The workout screen is one screen tall: the card scrolls inside and SKIP /
+DONE never leave thumb reach. Reps, load, the stepper, the note and FORM
+GUIDE are always shown; everything that changes the session sits in one
+**ADJUST** row, closed by default (its line shows a lasting tweak):
 
 - **HARDER / EASIER** change the exercise **for good** (`adjust.ts`): stored in
   `tweaks` (persisted, by exercise id) and applied by `buildList` /
@@ -604,6 +609,8 @@ Below the load stepper on the workout card (`AdjustControls`):
   rest. Loaded work gets harder on the stepper. A tap back undoes the last
   tap; RESET restores the programme.
 - **-SET / +SET** are today only, between the sets already done and 8.
+- **NEXT STEP**, the exercise's progression rule, and **SWAP** are in ADJUST
+  too.
 - **+ ADD EXERCISE** (workout card and rest screen) opens the reserve
   (`ReservePicker`, `reserve.ts`): CORE, PULL (gym only), ARMS, SHOULDERS,
   LEGS, MOBILITY, FINGERS, least recently done first. Home sessions (DAILY, HEAL 03 / 04) get
@@ -614,7 +621,9 @@ Below the load stepper on the workout card (`AdjustControls`):
   after the exercise in hand and after the last remaining exercise of its
   block or heavier (`insertIndex`); in a DAILY before the curls, and an added
   curl closes it. The session log lists picks in `added`.
-- **FINISH NOW** logs the session as it stands (cut short, no XP lost).
+- **FINISH NOW** logs the session as it stands (cut short, no XP lost). No
+  dialog: the complete screen offers UNDO for six seconds, which goes back to
+  the set in hand.
 - **ENERGY** (FRESH / NORMAL / TIRED) at the bottom of the card rebuilds what
   is left of the session at the new energy (`switchEnergy`): same deload,
   kit, tweaks and pain check, extras kept, the exercise in hand keeps the sets
@@ -653,6 +662,11 @@ they were set, soreness for that day and the next.
 - **Rest day / sick**: no recommendation, a banner, no reminders that day,
   and the date goes into `offDays`, which `checkDecay` subtracts from the
   days since a capacity was trained.
+
+**+ LOG TODAY'S CLIMBS** shows on TODAY while no climb is logged today and
+either a CAVE session that follows bouldering was done today or bouldering is
+planned (`climbToLog` in `plan.ts`); STRONG does not ask. START is sticky
+just above the tab bar, and the card is the shorter `compact` one.
 
 ## TRAIN
 
@@ -707,7 +721,7 @@ recommendation; BOULDERING planned adds a note.
 
 The LOG tab (`LogScreen`, `history.ts`): + CLIMB and + ACTIVITY, then every
 session, climb and activity as one stream, newest day first, 14 days at a
-time. A climb or activity opens its editor; a session opens `SessionDetail`
+time, filtered ALL / SESSIONS / CLIMBS / OUTSIDE (`filterDays`). A climb or activity opens its editor; a session opens `SessionDetail`
 (sets done of planned per exercise, the load logged that day, effort to
 correct, DELETE). Deleting a session also removes that day's loads for its
 exercises unless another session that day shares them; XP stays. Every
@@ -787,9 +801,11 @@ on the right and opens with its answer in one sentence (`stats-headlines.ts`).
 - **PROGRESS**: LIFTS (a row opens `ExerciseDetail`: every load on a scaled
   chart, latest and best, NEXT TIME with the reason from `suggestLoad`, a
   stall, how it progresses, recent sessions), ONE-ARM PATH, TESTS.
-- **BODY**: WHERE THE WORK WENT (`getWorkSplit`), LOAD, RECOVERY, FRESHNESS,
+- **BODY** (each section folds to its title and headline; a tap opens it):
+  WHERE THE WORK WENT (`getWorkSplit`), LOAD, RECOVERY, FRESHNESS,
   CORE THIS WEEK, CUT SHORT, RING FINGER, FINGER LOAD, LEVELS (capacities and
-  the level trend, straight segments).
+  the level trend, straight segments: every capacity in grey, overall in
+  black, a tapped one in orange).
 - **CLIMBING**: CLIMBS, CLIMBING VS PULLING.
 
 Lift series drop 0 kg entries (a stepper left unset) and leave out all-zero
@@ -923,10 +939,14 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v31.md`** — **start here.** A second taste-skill pass:
+- **`7bit-handover-v32.md`** — **start here.** The UI and use review:
+  START and DONE always in reach, the workout card's ADJUST row, FINISH NOW
+  with UNDO, the complete screen summary, folded BODY sections, LOG filters,
+  + LOG TODAY'S CLIMBS on TODAY, the rest overrun.
+- **`7bit-handover-v31.md`** — read second. A second taste-skill pass:
   long exercise names on two lines, the complete screen from the top, deltas
   orange only on a real drop, the session page's doubled minutes and rules.
-- **`7bit-handover-v30.md`** — read second. Polish: larger LED dots,
+- **`7bit-handover-v30.md`** — Polish: larger LED dots,
   dotted section rules and more space between sections.
 - **`7bit-handover-v29.md`** — The LED redesign: LED
   numerals, the week rail on TODAY, pixel tab icons, the LED rest ring, the

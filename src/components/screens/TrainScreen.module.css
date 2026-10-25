@@ -8,12 +8,14 @@
 .shelfOn { border-bottom-width: 6px; }
 
 .energyRow { display: flex; align-items: center; gap: 6px; }
-.energyLabel { font-weight: 700; font-size: 11px; letter-spacing: 0.1em; color: var(--ink-dim); margin-right: 4px; }
+.energyLabel { font-weight: 700; font-size: 11px; letter-spacing: 0.1em; color: var(--ink-dim); margin-right: 6px; }
+/* The same energy control as the workout card: underlines, the label in front
+   so it does not read as a second row of programme tabs. */
 .energyChip {
-  height: 36px; padding: 0 10px; font-weight: 700; font-size: 11px; letter-spacing: 0.08em; color: var(--ink-dim);
-  border: 2px solid var(--ink-ghost); border-radius: var(--rad-sm);
+  flex: 1; height: 34px; font-weight: 700; font-size: 11px; letter-spacing: 0.08em; color: var(--ink-dim);
+  border-bottom: 2px solid var(--ink-ghost); transition: border-bottom-width 150ms ease;
 }
-.energyChipOn { color: var(--ink); border-color: var(--ink); }
+.energyChipOn { color: var(--ink); border-bottom: 6px solid var(--ink); }
 
 .list { border: 2px solid var(--ink); border-radius: var(--rad-lg); overflow: hidden; }
 .row {
@@ -45,8 +47,9 @@
 .buildSub { font-weight: 400; font-size: 12px; color: var(--ink-dim); line-height: 1.4; }
 
 .extra {
-  flex-shrink: 0; height: 48px; border: 2px solid var(--ink); border-radius: var(--rad-lg);
+  flex-shrink: 0; align-self: center; min-height: 44px; padding: 0 8px;
   font-weight: 700; font-size: 12px; letter-spacing: 0.06em; color: var(--ink);
+  text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px;
 }
 .mine { display: flex; flex-direction: column; gap: 14px; }
 .mineHead { display: flex; justify-content: space-between; align-items: center; }

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { getProtocol } from '@/core/protocols';
 import type { Exercise, FormGuide as FormGuideData } from '@/core/types';
 import styles from './FormGuide.module.css';
@@ -16,12 +17,17 @@ interface Props {
   exercise: Exercise;
   open: boolean;
   onToggle: () => void;
+  /** Rest: open on three lines of how it is done, the rest one tap away. */
+  brief?: boolean;
 }
 
-/** The collapsible FORM GUIDE: the exercise's form notes, then the protocol's WHY. */
-export default function FormGuide({ exercise, open, onToggle }: Props) {
+/** The collapsible FORM GUIDE: the exercise's form notes, then the protocol's WHY; `brief` opens on a summary. */
+export default function FormGuide({ exercise, open, onToggle, brief = false }: Props) {
+  const [fullFor, setFullFor] = useState<string | null>(null);
   if (!exercise.form) return null;
   const protocol = getProtocol(exercise.protocolId);
+  const lead = exercise.form.execution ?? exercise.form.setup;
+  const short = brief && fullFor !== exercise.id && lead;
 
   return (
     <>
@@ -29,7 +35,13 @@ export default function FormGuide({ exercise, open, onToggle }: Props) {
         <span className={styles.toggleText}>FORM GUIDE</span>
         <span className={styles.toggleText}>{open ? '-' : '+'}</span>
       </div>
-      {open && (
+      {open && short && (
+        <div className={styles.content}>
+          <p className={`${styles.text} ${styles.clamp}`}>{lead}</p>
+          <button className={styles.more} onClick={() => setFullFor(exercise.id)}>THE WHOLE GUIDE +</button>
+        </div>
+      )}
+      {open && !short && (
         <div className={styles.content}>
           {FORM_SECTIONS.map(({ key, label }) => (
             exercise.form?.[key] ? (

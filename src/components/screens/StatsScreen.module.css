@@ -74,4 +74,7 @@
 .tabOn { border-bottom-width: 6px; }
 .sectionHead { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
 .period { font-size: 11px; color: var(--ink-dim); white-space: nowrap; }
+.headRight { display: flex; align-items: baseline; gap: 12px; }
+.foldBtn { display: flex; flex-direction: column; gap: 12px; width: 100%; text-align: left; color: var(--ink); }
+.foldMark { font-weight: 700; font-size: 14px; color: var(--ink); width: 10px; text-align: right; }
 .lead { font-weight: 700; font-size: 14px; line-height: 1.4; color: var(--ink); }

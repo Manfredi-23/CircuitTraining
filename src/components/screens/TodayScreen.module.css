@@ -13,7 +13,9 @@
 .bannerWarn { border-color: var(--accent); color: var(--accent); }
 .bannerX { font-weight: 700; font-size: 14px; padding: 6px 8px; margin: -6px -8px; }
 
+/* Held just above the tab bar while the card scrolls, so START is always in reach. */
 .start {
+  position: sticky; z-index: 30; bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   height: 64px; border-radius: var(--rad-lg); background: var(--ink); color: #E4E2DD;
   display: flex; align-items: center; justify-content: space-between; padding: 0 24px;
   transition: transform 80ms ease;
@@ -55,3 +57,12 @@
 .adviceBtn { align-self: flex-start; min-height: 40px; padding: 0 12px; border: 2px solid var(--ink); border-radius: var(--rad-sm); font-weight: 700; font-size: 11px; letter-spacing: 0.08em; }
 
 .emptyWrap { display: flex; flex-direction: column; }
+.climbAsk {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left;
+  border: 2px solid var(--accent); border-radius: var(--rad-sm); padding: 12px 14px; color: var(--ink);
+  font-weight: 700; font-size: 16px;
+}
+.climbAsk:active { background: var(--accent-dim); }
+.climbAskBody { display: flex; flex-direction: column; gap: 3px; }
+.climbAskTitle { font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--accent); }
+.climbAskWhy { font-weight: 400; font-size: 12px; color: var(--ink-dim); line-height: 1.4; }

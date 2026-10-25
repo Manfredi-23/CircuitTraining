@@ -15,8 +15,10 @@ import styles from './SessionCard.module.css';
  * tabs and the info button do their own thing.
  */
 export default function SessionCard({
-  circuit, progress, energy, suggested, suggestedWhy, duration, block, onEnergy, onOpen, highlight = false,
+  circuit, progress, energy, suggested, suggestedWhy, duration, block, onEnergy, onOpen, highlight = false, compact = false,
 }: {
+  /** TODAY: a shorter card with a smaller figure, so START stays in view. */
+  compact?: boolean;
   /** Today's pick: its number lights in the one orange. */
   highlight?: boolean;
   circuit: Circuit;
@@ -39,7 +41,7 @@ export default function SessionCard({
 
   return (
     <div
-      className={styles.card}
+      className={`${styles.card}${compact ? ` ${styles.compact}` : ''}`}
       onClick={onOpen}
       onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') onOpen(); }}
       role="button"
