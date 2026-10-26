@@ -26,9 +26,9 @@
 .tab {
   flex: 1; padding: 8px 4px; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; color: var(--ink);
   border-bottom: 2px solid var(--ink); border-top: none; border-left: none; border-right: none;
-  background: none; transition: border-bottom-width 150ms ease;
+  background: none; transition: box-shadow 150ms ease;
 }
-.tabActive { border-bottom-width: 6px; }
+.tabActive { box-shadow: inset 0 -4px 0 var(--ink); }
 
 .stepper { display: flex; align-items: center; gap: 12px; }
 .stepBtn, .miniBtn {

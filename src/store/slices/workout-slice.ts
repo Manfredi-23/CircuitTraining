@@ -52,6 +52,8 @@ export interface WorkoutSlice {
   rampBest: number | null;
   /** Pain score given before this session, when it was asked. */
   sessionPain: number | null;
+  /** Finger readiness given before this session, when it was asked. */
+  sessionReadiness: number | null;
   /** Personal bests set in this session, as display lines. */
   sessionPBs: string[];
   /** The athlete's lasting HARDER / EASIER changes, by exercise id. Persisted. */
@@ -63,10 +65,10 @@ export interface WorkoutSlice {
   /** Seconds the last rest ran past its end while the app slept; 0 when it did not. */
   restOverrun: number;
 
-  /** Start the selected session. `pain` is the pre-session score, for finger sessions. */
-  startWorkout: (pain?: number) => void;
+  /** Start the selected session. `check` is the pre-session pain and readiness, for finger sessions. */
+  startWorkout: (check?: Engine.FingerCheck) => void;
   /** Start a session built on the BUILD sheet, logged under `mode`. */
-  startCustom: (circuit: Circuit, list: ScaledExercise[], mode: Mode, pain?: number) => void;
+  startCustom: (circuit: Circuit, list: ScaledExercise[], mode: Mode, check?: Engine.FingerCheck) => void;
   exerciseDone: () => void;
   /** Rest is over: back to the card, noting how long ago it ended when the app slept through it. */
   endRest: (overrunSec: number) => void;
@@ -117,21 +119,25 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   doneSets: {},
   rampBest: null,
   sessionPain: null,
+  sessionReadiness: null,
   sessionPBs: [],
   tweaks: {},
   addedIds: [],
   startXP: 0,
   restOverrun: 0,
 
-  startWorkout: (pain) => {
+  startWorkout: (check) => {
     const { mode, circuitIndex } = get();
     const circuits = getModeData(mode);
     const circuit = circuits[circuitIndex];
-    get().startCustom(circuit, sessionListFor(get(), circuit), mode, pain);
+    get().startCustom(circuit, sessionListFor(get(), circuit), mode, check);
   },
 
-  startCustom: (circuit, list, mode, pain) => {
-    const exerciseList = Engine.applyPainCheck(list, pain);
+  startCustom: (circuit, list, mode, check) => {
+    const { energy, progress, tweaks, blockStart, sessionLog } = get();
+    const deload = getBlockWeek(blockStart, sessionLog).deload && deloads(circuit);
+    const exerciseList = Engine.applyFingerCheck(list, check, circuit,
+      ex => Engine.scaleExercise(ex, energy, progress, { deload, tweaks }));
     // A custom session has no card of its own: the home tab follows its mode.
     const tab = mode === get().mode ? {} : { mode, circuitIndex: 0 };
 
@@ -148,7 +154,8 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       exerciseTimerActive: false,
       doneSets: {},
       rampBest: null,
-      sessionPain: pain ?? null,
+      sessionPain: check?.pain ?? null,
+      sessionReadiness: check?.readiness ?? null,
       sessionPBs: [],
       sessionLevelUps: [],
       addedIds: [],
@@ -371,7 +378,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   setExerciseTimerActive: (active) => set({ exerciseTimerActive: active }),
 
   completeSession: () => {
-    const { circuit, mode, energy, sessionStartTime, progress, exerciseList, doneSets, sessionPain, addedIds } = get();
+    const { circuit, mode, energy, sessionStartTime, progress, exerciseList, doneSets, sessionPain, sessionReadiness, addedIds } = get();
     if (!circuit) return;
 
     const duration = sessionStartTime ? Math.round((Date.now() - sessionStartTime) / 60000) : 0;
@@ -392,6 +399,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       // Ramp tests end on a failed attempt by design, so they have no plan to fall short of.
       planned: Object.fromEntries(exerciseList.filter(ex => !ex.ramp).map(ex => [ex.id, ex.scaledSets])),
       ...(sessionPain !== null ? { pain: sessionPain } : {}),
+      ...(sessionReadiness !== null ? { readiness: sessionReadiness } : {}),
       ...(addedIds.length ? { added: addedIds } : {}),
     }];
 
@@ -471,12 +479,14 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
     // tweaks and pain check, no time cap (the athlete just chose more or less).
     const deload = getBlockWeek(st.blockStart, st.sessionLog).deload && deloads(circuit);
     const day = { ...activeDay(st.dayPlan), minutes: null };
-    const built = Engine.applyPainCheck(
+    const built = Engine.applyFingerCheck(
       applyDay(
         Engine.buildList(circuit, energy, st.progress, st.benchmarkResults, { deload, tweaks: st.tweaks }),
         circuit, day, st.mode,
       ),
-      st.sessionPain,
+      { pain: st.sessionPain, readiness: st.sessionReadiness },
+      circuit,
+      ex => Engine.scaleExercise(ex, energy, st.progress, { deload, tweaks: st.tweaks }),
     );
     const head = st.exerciseList.slice(0, st.stepIndex + 1);
     const seen = new Set(head.map(e => e.id));

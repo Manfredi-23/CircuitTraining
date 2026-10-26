@@ -365,6 +365,7 @@ export function FingerSection({ sessionLog, climbLog }: { sessionLog: SessionLog
   const weeks = useMemo(() => getFingerWeeks(sessionLog, climbLog), [sessionLog, climbLog]);
   const max = Math.max(...weeks.map(w => w.load));
   const anyPain = weeks.some(w => w.maxPain !== null);
+  const anyReady = weeks.some(w => w.minReadiness !== null && w.minReadiness < 100);
   if (!max && !anyPain) return <div className={styles.empty}>Finger sessions and boulder days appear here, with the pain score from each check.</div>;
   return (
     <div className={styles.block}>
@@ -380,11 +381,14 @@ export function FingerSection({ sessionLog, climbLog }: { sessionLog: SessionLog
             <span className={`${styles.barLabel}${i === weeks.length - 1 ? ` ${styles.barLabelNow}` : ''}`}>
               {weekTick(i, weeks.length)}
             </span>
+            {anyReady && (
+              <span className={styles.barLabel}>{w.minReadiness !== null && w.minReadiness < 100 ? w.minReadiness : ''}</span>
+            )}
           </div>
         ))}
       </div>
       <div className={styles.hint}>
-        Bars: boulder days and finger sessions, effort x minutes. Numbers: highest finger and wrist pain that week, 3 and up in orange.
+        Bars: boulder days and finger sessions, effort x minutes. Numbers: highest finger and wrist pain that week, 3 and up in orange.{anyReady && ' Under the weeks: lowest finger readiness, in %, when it was under 100.'}
         Pain that rises with the bars is the pattern to act on.
       </div>
     </div>

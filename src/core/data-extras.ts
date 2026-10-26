@@ -329,7 +329,7 @@ const FEET_UP_PUSHUP: Exercise = {
   },
 };
 
-const SL_BALANCE: Exercise = {
+export const SL_BALANCE: Exercise = {
   id: 'extra-sl-balance',
   name: 'Single-Leg Balance',
   capacities: ['legs', 'tension'],

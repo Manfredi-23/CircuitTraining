@@ -298,6 +298,17 @@ export interface Exercise {
   /** Capacity level at which this exercise enters the session. */
   minLevel?: number;
   gate?: Gate;
+  /**
+   * Hangs from the hands (bar, rings, hangboard). Comes out at the lowest
+   * finger readiness, with the finger work.
+   */
+  hangs?: boolean;
+  /**
+   * A substitute (in `circuit.substitutes`) that trains the same thing without
+   * a grip. Finger work swaps to it at low finger readiness instead of
+   * dropping out.
+   */
+  noGripId?: string;
   variations?: Variation[];
   form?: FormGuide;
   /** A TEST exercise whose result is saved as a benchmark, opening gates. */
@@ -433,6 +444,8 @@ export interface SessionLogEntry {
   effort?: number;
   /** Finger and wrist pain before the session, 0-10. Only asked before finger work. */
   pain?: number;
+  /** Finger readiness before the session, 20-100 in steps of 20. Asked with the pain check. */
+  readiness?: number;
   /** Exercises added from the reserve during the session. */
   added?: string[];
   /** How each loaded exercise felt, asked on the complete screen. Read by the next load suggestion. */

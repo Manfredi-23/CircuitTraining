@@ -2,8 +2,8 @@
 // recommend.ts — Which session today
 //
 // The week the programme is written for: DAILY most mornings, CAVE 02 or 03
-// straight after bouldering, CAVE 01 only in a week a bouldering day was
-// skipped, ASSESS every six to eight weeks. While a finger heals, a gym day
+// straight after bouldering, a training day (CAVE 01 STRONG first, then 04
+// POWER or 05 FULL BODY) in a week a bouldering day was skipped, ASSESS every six to eight weeks. While a finger heals, a gym day
 // every other day (ring rehab, FOOTWORK, then a HEAL strength session), the
 // ring rehab every second day, and finger-free DAILY between. The rules below read that week
 // back out of the logs, in order of what matters most. It recommends; the
@@ -42,6 +42,9 @@ export interface RecommendInput {
   day?: ActiveDay;
   now?: Date;
 }
+
+/** CAVE 01 STRONG: the training day that loads the fingers maximally. */
+export const STRONG_ID = 'cave-01';
 
 /** Weeks between ASSESS sessions. Retesting sooner mostly measures the familiarisation effect. */
 export const RETEST_WEEKS = 7;
@@ -204,7 +207,7 @@ export function recommend(input: RecommendInput): Recommendation | null {
     return { mode: 'CAVE', circuitId: pick.id, reason: why(stacking, pick, 'You climbed today. This one stacks on it.') };
   }
 
-  const strong = cave.find(c => !c.stacksOnSession);
+  const strong = cave.find(c => c.id === STRONG_ID);
   const fingersReady = strong ? getReadiness(strong, progress).level === 'ready' : false;
 
   // 4. ASSESS due, fresh fingers, not a deload week, no climbing today, and
@@ -218,18 +221,33 @@ export function recommend(input: RecommendInput): Recommendation | null {
     };
   }
 
-  // 5. CAVE 01: from Thursday, in a week with fewer than two climbing days.
-  // Only once climbs are being logged: with an empty climb log the app cannot
-  // tell a skipped bouldering day from one that was never written down.
+  // 5. A training day: from Thursday, in a week with fewer than two climbing
+  // days, each missing bouldering day can be a no-climbing CAVE session.
+  // STRONG first while the fingers are fresh and it is not done this week,
+  // otherwise POWER or FULL BODY, whichever was done least recently. Only once
+  // climbs are being logged: with an empty climb log the app cannot tell a
+  // skipped bouldering day from one that was never written down.
   const monday = mondayOf(today);
   const weekday = daysBetween(monday, today); // 0 = Monday
   const climbsThisWeek = new Set(climbLog.filter(c => c.date >= monday && c.date <= today).map(c => c.date)).size;
+  const training = cave.filter(c => !c.stacksOnSession);
+  const trainingThisWeek = new Set(sessionLog
+    .filter(s => training.some(c => c.id === s.circuitId) && dayOf(s.date) >= monday)
+    .map(s => dayOf(s.date))).size;
   const strongThisWeek = strong ? sessionLog.some(s => s.circuitId === strong.id && dayOf(s.date) >= monday) : true;
-  if (strong && climbLog.length > 0 && !input.tired && !forearms && !shortDay && weekday >= 3 && climbsThisWeek < 2 && !climbedToday && fingersReady && !strongThisWeek && !doneToday('CAVE')) {
-    return {
-      mode: 'CAVE', circuitId: strong.id,
-      reason: `${climbsThisWeek} climbing day${climbsThisWeek === 1 ? '' : 's'} this week. STRONG instead.`,
-    };
+  if (climbLog.length > 0 && !input.tired && !shortDay && weekday >= 3 && climbsThisWeek + trainingThisWeek < 2
+      && !climbedToday && !doneToday('CAVE')) {
+    const reason = (title: string) =>
+      `${climbsThisWeek} climbing day${climbsThisWeek === 1 ? '' : 's'} this week. ${title} instead.`;
+    if (strong && !forearms && fingersReady && !strongThisWeek) {
+      return { mode: 'CAVE', circuitId: strong.id, reason: reason(strong.title) };
+    }
+    const others = training.filter(c => c.id !== strong?.id
+      && getReadiness(c, progress).level === 'ready' && !(forearms && asksPainCheck(c)));
+    if (others.length) {
+      const pick = leastRecent(spare(others), sessionLog);
+      return { mode: 'CAVE', circuitId: pick.id, reason: why(others, pick, reason(pick.title)) };
+    }
   }
 
   // 6. The morning DAILY, rotating through the five.

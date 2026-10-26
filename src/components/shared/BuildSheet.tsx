@@ -12,7 +12,7 @@ import { isHealing, PAIN_MEMORY_DAYS } from '@/core/recommend';
 import { legSoreness } from '@/core/activity';
 import { activeDay } from '@/core/today';
 import { getBlockWeek } from '@/core/block';
-import { asksPainCheck, applyPainCheck } from '@/core/engine';
+import { asksPainCheck, asksReadiness, applyFingerCheck } from '@/core/engine';
 import { dayOf, daysBetween, localDate } from '@/core/dates';
 import { CONFIG } from '@/core/config';
 import type { Place } from '@/core/reserve';
@@ -141,10 +141,11 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
   };
   const begin = () => {
     if (!session) return;
-    if (asksPainCheck(session.circuit)) setPainOpen(true);
+    if (asksReadiness(session.circuit)) setPainOpen(true);
     else { onClose(); startCustom(session.circuit, session.list, customMode(place)); }
   };
   const lastPain = [...sessionLog].reverse().find(s => s.pain !== undefined)?.pain ?? null;
+  const lastReadiness = [...sessionLog].reverse().find(s => s.readiness !== undefined)?.readiness ?? null;
   const userPreset = preset && buildPresets.some(p => p.id === preset.id) ? preset : null;
 
   const Chip = ({ on, out, label, onClick, mark, disabled }: {
@@ -348,10 +349,12 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
         <PainCheck
           open={painOpen}
           title={session.circuit.title}
+          askPain={asksPainCheck(session.circuit)}
           lastPain={lastPain}
-          remainingFor={pain => applyPainCheck(session.list, pain).filter(e => e.block !== 'WARMUP').length}
+          lastReadiness={lastReadiness}
+          remainingFor={check => applyFingerCheck(session.list, check).filter(e => e.block !== 'WARMUP').length}
           onClose={() => setPainOpen(false)}
-          onStart={pain => { setPainOpen(false); onClose(); startCustom(session.circuit, session.list, customMode(place), pain); }}
+          onStart={check => { setPainOpen(false); onClose(); startCustom(session.circuit, session.list, customMode(place), check); }}
         />
       )}
     </div>

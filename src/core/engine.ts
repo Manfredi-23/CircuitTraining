@@ -489,6 +489,112 @@ export function applyPainCheck(list: ScaledExercise[], pain: number | null | und
   });
 }
 
+// ---------------------------------------------------------------------------
+// Finger readiness
+//
+// Pain is the safety question; readiness is the athlete's own call on how much
+// the fingers have in them today, asked beside it in five steps. Each step
+// only takes away, and the pain check runs first, so the stricter of the two
+// always wins:
+//   100  as written
+//    80  finger work capped at HARD, one set fewer
+//    60  finger work capped at MODERATE, one set fewer, no maximal finger tests
+//    40  finger work swaps to its no-grip version where it has one, else out
+//    20  as 40, and nothing hangs from the hands: pulling and hanging core out
+// ---------------------------------------------------------------------------
+
+export const READINESS_STEPS = [20, 40, 60, 80, 100] as const;
+
+/** At or below this readiness, the next suggested finger load holds. */
+export const READINESS_HOLD_FROM = 60;
+
+export type ReadinessBand = 'full' | 'cap' | 'submax' | 'nogrip' | 'handsoff';
+
+export function readinessBand(readiness: number): ReadinessBand {
+  if (readiness >= 100) return 'full';
+  if (readiness >= 80) return 'cap';
+  if (readiness >= 60) return 'submax';
+  if (readiness >= 40) return 'nogrip';
+  return 'handsoff';
+}
+
+export const READINESS_MESSAGES: Record<ReadinessBand, string> = {
+  full: 'Finger work as written.',
+  cap: 'Finger work capped at HARD, one set fewer.',
+  submax: 'Finger work kept light: MODERATE at most, one set fewer, no maximal tests. Loads hold next time.',
+  nogrip: 'Finger work swaps to a no-grip version, or comes out. The rest of the session stays.',
+  handsoff: 'Hands rest: no finger work and nothing that hangs from the hands.',
+};
+
+/** Whether a session should ask finger readiness: it loads the fingers or hangs from the hands. */
+export function asksReadiness(circuit: Circuit): boolean {
+  return asksPainCheck(circuit)
+    || circuit.exercises.some(e => e.block !== 'WARMUP' && (e.hangs || e.capacities.includes('pull')));
+}
+
+/** Hangs from the hands, or pulls on them: out when the hands rest. */
+function usesHands(exercise: Exercise): boolean {
+  return Boolean(exercise.hangs) || exercise.capacities.includes('pull');
+}
+
+/**
+ * Applies the readiness step. `swap` returns the no-grip version of an
+ * exercise, scaled like the rest of the session, or null when it has none.
+ */
+export function applyReadiness(
+  list: ScaledExercise[],
+  readiness: number | null | undefined,
+  swap: (exercise: ScaledExercise) => ScaledExercise | null = () => null,
+): ScaledExercise[] {
+  if (readiness === null || readiness === undefined) return list;
+  const band = readinessBand(readiness);
+  if (band === 'full') return list;
+  const cap = band === 'cap' ? 'HARD' : 'MODERATE';
+  const seen = new Set(list.map(e => e.id));
+  return list.flatMap(e => {
+    if (band === 'nogrip' || band === 'handsoff') {
+      if (loadsFingers(e)) {
+        const alt = swap(e);
+        if (!alt || seen.has(alt.id)) return [];
+        seen.add(alt.id);
+        return [alt];
+      }
+      return band === 'handsoff' && usesHands(e) ? [] : [e];
+    }
+    if (!loadsFingers(e)) return [e];
+    if (e.block === 'TEST' && e.intensity === 'MAX') return band === 'submax' ? [] : [e];
+    if (e.fixed || e.block === 'WARMUP') return [e];
+    const capped = INTENSITY_ORDER.indexOf(e.appliedIntensity) > INTENSITY_ORDER.indexOf(cap)
+      ? cap as Intensity : e.appliedIntensity;
+    return [{ ...e, appliedIntensity: capped, scaledSets: Math.max(1, e.scaledSets - 1) }];
+  });
+}
+
+/** What was said before the session: pain (finger sessions) and readiness. */
+export interface FingerCheck {
+  pain?: number | null;
+  readiness?: number | null;
+}
+
+/**
+ * Pain first, then readiness. `swap` finds an exercise's no-grip version in
+ * the circuit's substitutes; the caller scales it.
+ */
+export function applyFingerCheck(
+  list: ScaledExercise[],
+  check: FingerCheck | undefined,
+  circuit?: Circuit,
+  scale?: (exercise: Exercise) => ScaledExercise,
+): ScaledExercise[] {
+  if (!check) return list;
+  const subs = new Map((circuit?.substitutes ?? []).map(e => [e.id, e]));
+  const swap = (e: ScaledExercise) => {
+    const alt = e.noGripId ? subs.get(e.noGripId) : undefined;
+    return alt && scale ? scale(alt) : null;
+  };
+  return applyReadiness(applyPainCheck(list, check.pain), check.readiness, swap);
+}
+
 /**
  * When the fingers are next ready for maximal work: 48h after the last hard
  * loading. Null when there is no hard loading on record.

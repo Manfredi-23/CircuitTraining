@@ -51,6 +51,24 @@ test('a session runs from TRAIN, finishes, and lands in LOG', async ({ page }) =
   await expect(page.getByText('DAILY · LEGS + CORE')).toHaveCount(0);
 });
 
+test('CAVE 04 asks pain and readiness, and 40% takes the hangs out', async ({ page }) => {
+  const errors = await open(page, { ...seed.data, sessionLog: [] });
+  await tab(page, 'TRAIN');
+  await page.getByRole('tab', { name: 'CAVE', exact: true }).click();
+  await page.getByRole('button', { name: /POWER/ }).first().click();
+  await page.getByRole('button', { name: /^START POWER/ }).click();
+  const start = page.getByRole('button', { name: 'START', exact: true });
+  await expect(page.getByRole('button', { name: 'PAIN FIRST' })).toBeDisabled();
+  await page.getByRole('radio', { name: '1', exact: true }).click();
+  await page.getByRole('radio', { name: '40%' }).click();
+  await expect(page.getByText(/no-grip version/)).toBeVisible();
+  await start.click();
+  await expect(page.getByRole('button', { name: 'DONE', exact: true })).toBeVisible();
+  // Twelve exercises as written; the finger warm-up and the hangs come out.
+  await expect(page.getByText('EXERCISE 1/10')).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
 test('MAKE IT MINE copies a session into a routine that runs', async ({ page }) => {
   await open(page);
   await tab(page, 'TRAIN');
