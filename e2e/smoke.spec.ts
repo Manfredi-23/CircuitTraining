@@ -69,6 +69,30 @@ test('CAVE 04 asks pain and readiness, and 40% takes the hangs out', async ({ pa
   expect(errors).toEqual([]);
 });
 
+test('EDIT changes a session before START: remove, swap, a pack, kept or reset', async ({ page }) => {
+  const errors = await open(page, { ...seed.data, sessionLog: [] });
+  await tab(page, 'TRAIN');
+  await tab(page, 'CAVE');
+  await page.getByRole('button', { name: /FULL BODY/ }).first().click();
+  await expect(page.getByText(/12 exercises/i)).toBeVisible();
+  await page.getByRole('button', { name: 'EDIT', exact: true }).click();
+  await page.getByRole('button', { name: 'Remove Box Jump' }).click();
+  await page.getByRole('button', { name: 'SWAP', exact: true }).nth(2).click();
+  await expect(page.getByText('SIMILAR', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: /Goblet Squat/ }).first().click();
+  await page.getByRole('button', { name: '+ PACK' }).click();
+  await page.getByRole('button', { name: 'ADD', exact: true }).first().click();
+  await page.getByRole('button', { name: /^DONE \(1 ADDED\)/ }).click();
+  await page.getByRole('button', { name: 'KEEP FOR NEXT TIME' }).click();
+  await page.getByRole('button', { name: /^DONE ·/ }).click();
+  await expect(page.getByText('YOUR VERSION, KEPT')).toBeVisible();
+  // Box jump out, the goblet squat in, two of the core finisher (the twist is already there).
+  await expect(page.getByText(/13 exercises/i)).toBeVisible();
+  await page.getByRole('button', { name: 'RESET', exact: true }).click();
+  await expect(page.getByText(/12 exercises/i)).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
 test('MAKE IT MINE copies a session into a routine that runs', async ({ page }) => {
   await open(page);
   await tab(page, 'TRAIN');

@@ -20,6 +20,12 @@ interface SessionInfoProps {
   onEnergy?: (energy: EnergyKey) => void;
   /** Further actions above START, e.g. making it a routine. */
   extra?: ReactNode;
+  /** Open the editor: swap, remove, move, sets, reps, load, add. */
+  onEdit?: () => void;
+  /** The session carries an edit: for today, or kept until reset. */
+  edited?: 'TODAY' | 'KEPT' | null;
+  /** Back to the session as written. */
+  onReset?: () => void;
 }
 
 const formatRest = (s: number) =>
@@ -37,7 +43,7 @@ function dose(ex: ScaledExercise): string {
  * stand-ins.
  */
 export default function SessionInfo({
-  open, mode, circuit, list, energy, duration, onClose, onStart, onEnergy, extra,
+  open, mode, circuit, list, energy, duration, onClose, onStart, onEnergy, extra, onEdit, edited, onReset,
 }: SessionInfoProps) {
   const [entered, setEntered] = useState(false);
 
@@ -70,7 +76,16 @@ export default function SessionInfo({
       <div className={styles.head}>
         <div className={styles.title}>{circuit.title}</div>
         <div className={styles.subtitle}>{displaySubtitle(circuit)}</div>
-        <div className={styles.meta}>{duration} min &middot; {energy} &middot; {list.length} exercises</div>
+        <div className={styles.metaRow}>
+          <div className={styles.meta}>{duration} min &middot; {energy} &middot; {list.length} exercises</div>
+          {onEdit && <button className={styles.edit} onClick={onEdit}>EDIT</button>}
+        </div>
+        {edited && (
+          <div className={styles.edited}>
+            {edited === 'KEPT' ? 'YOUR VERSION, KEPT' : 'EDITED FOR TODAY'}
+            {onReset && <button className={styles.reset} onClick={onReset}>RESET</button>}
+          </div>
+        )}
         <div className={styles.focus}>{circuit.focus}</div>
         {onEnergy && (
           <div className={styles.energy} role="tablist" aria-label="Energy">

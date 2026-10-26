@@ -92,7 +92,7 @@ full stretch, no bench or barbell and no hard finger set, and proves the
 one-arm rungs open on a tested weighted pull-up and never on XP, and `npm test`. Every new core module gets a test file in
 `src/core/__tests__/` in the same commit. The screens have Playwright smoke
 tests in `e2e/smoke.spec.ts` (TODAY, a session from TRAIN to LOG, the finger
-check on CAVE 04, MAKE IT MINE, the weekly plan, STATS, UNDO), run against the static build with the
+check on CAVE 04, EDIT before START, MAKE IT MINE, the weekly plan, STATS, UNDO), run against the static build with the
 seed history; `e2e/serve.mjs` serves `out/`. In the cloud session set
 `PW_CHROMIUM=/opt/pw-browsers/chromium-1243/chrome-linux64/chrome`; on the Mac
 run `npx playwright install chromium` once.
@@ -135,6 +135,8 @@ src/
     today.ts     # ADJUST TODAY: time cap, no kit, sore areas, rest / sick days
     custom.ts    # BUILD: place, time, goals and areas in/out, avoid, presets; what is not trained enough
     routines.ts  # the athlete's own routines: fixed lists, copy a session, freeze a build, warnings
+    session-edit.ts # EDIT on the session page: swap (similar first), remove, move, sets, reps,
+                 #   load planned for today, + exercise, + pack; today only or kept
     plan.ts      # the weekly plan, and how it leads TODAY unless a safety rule stops it
     also-fits.ts # TODAY: up to two more sessions that pass the same safety rules
     history.ts   # LOG: everything done as one stream; delete or correct a past session
@@ -158,7 +160,8 @@ src/
     shared/      # SettingsOverlay, TimerFlash, LoadLogger, ClimbStats, SessionInfo, StatsSections,
                  #   FormGuide, SessionProgressBar, AdjustControls, ReservePicker, DayControls,
                  #   BuildSheet, StatsOverview, SessionCard, RoutineEditor, ExercisePicker,
-                 #   WeekPlanner, SessionDetail, ExerciseDetail, Led, WeekRail
+                 #   WeekPlanner, SessionDetail, ExerciseDetail, Led, WeekRail,
+                 #   SessionEditor, PackList
 e2e/             # Playwright smoke tests, the seed history (fixtures/athlete.json), serve.mjs
   app/           # layout.tsx, page.tsx (screen router), globals.css
 ios/             # Xcode project (Capacitor 8, SPM)
@@ -183,7 +186,7 @@ design/          # pixel-grid.svg drawing template; illustrations/<name>/NN.svg 
 - **Zustand persist**: Only the keys in `PERSISTED_KEYS` (`src/core/backup.ts`)
   are persisted: `progress`, `sessionLog`, `benchmarkResults`, `loadLog`,
   `climbLog`, `activityLog`, `tweaks`, `dayPlan`, `offDays`, `blockStart`,
-  `settings`, `health`, `buildPresets`, `routines` and `weekPlan`. `partialize` reads that list, so a
+  `settings`, `health`, `buildPresets`, `routines`, `weekPlan` and `sessionEdits`. `partialize` reads that list, so a
   new key is persisted and backed up by adding it there. UI state is transient. The blob
   carries `version: 2`, but legacy cleanup runs from `merge`, not `migrate`:
   persist only calls `migrate` when the stored blob has a **numeric** version,
@@ -739,6 +742,35 @@ what is shown is what runs.
 
 MINE holds the athlete's routines, BUILD A SESSION, and THIS WEEK.
 
+## EDIT before START
+
+The session page has **EDIT** (`SessionEditor`, `session-edit.ts`, v35), on
+every programme session (a routine has EDIT ROUTINE instead):
+
+- Per exercise: SWAP, remove, up / down, sets (1-8) and reps or seconds (half
+  to double), and **LOAD**, the load planned for today: the stepper opens on
+  it (`Exercise.targetLoad`, read by `primeLoad`) instead of last time's.
+  Fixed protocols, tests and warm-ups keep their sets and work. Rest is never
+  on the screen. The editor shows sets and reps as they run at today's energy.
+- **SWAP** lists **SIMILAR** first (`similarTo`: the stand-in it already has,
+  same area, same main capacity, protocol, block and load kind), then
+  everything the place allows.
+- **+ EXERCISE** and **+ PACK**. Additions go where they belong (`addIds`,
+  `insertIndex`): heavy first, a closing mobility last, curls closing a DAILY.
+- Safety (`allowedToday`): home kit at home, NO KIT keeps it on the mat, no
+  tests, nothing gripped, pulled or hung and no finger work while a finger
+  heals, no finger work after pain 3+. Gates still substitute when it runs,
+  and the pain check asks if finger work was added.
+- An edit is saved as it is made and holds **for today**; KEEP FOR NEXT TIME
+  keeps it until RESET (`sessionEdits`, persisted, by circuit id). The session
+  keeps its circuit id, so it logs, recovers and is recommended as itself.
+  `sessionListFor` and `circuitFor` apply it, so the page, TODAY's minutes
+  and the workout agree. MAKE IT MINE copies the edited list.
+- **Packs** (`PACKS`): CORE FINISHER, ARMS (no XP), SHOULDER CARE, MOBILITY
+  10, BALANCE + POWER, LEGS, FINGERS LIGHT (closed while healing or after pain
+  3+), each with a home and a gym version. Also the first tab of + ADD
+  EXERCISE mid-session (`addExtras`).
+
 ## Routines
 
 A routine (`routines.ts`, `routine-slice.ts`, `RoutineEditor`) is a fixed
@@ -998,9 +1030,12 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v34.md`** — **start here.** Balance and power at full
+- **`7bit-handover-v35.md`** — **start here.** EDIT before START: swap
+  (similar first), remove, move, sets, reps, load for today, add exercises
+  and packs; today only or kept. Packs mid-session too.
+- **`7bit-handover-v34.md`** — Balance and power at full
   stretch in every session, in proportion to its length.
-- **`7bit-handover-v33.md`** — read second. CAVE 04 POWER and 05 FULL
+- **`7bit-handover-v33.md`** — CAVE 04 POWER and 05 FULL
   BODY, finger readiness beside the pain check, and a UI pass: tab labels
   that no longer jump, press feedback on every button, the finger check's
   START filled and in reach.

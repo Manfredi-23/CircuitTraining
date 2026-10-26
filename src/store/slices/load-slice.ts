@@ -44,6 +44,12 @@ export const createLoadSlice: StateCreator<Store, [], [], LoadSlice> = (set, get
       set({ pendingLoad: clampToAxis(start, axis) });
       return;
     }
+    // A load planned on the session page wins over last time's.
+    const axis = getLoadAxis(exercise)!;
+    if (exercise.targetLoad !== undefined) {
+      set({ pendingLoad: clampToAxis(exercise.targetLoad, axis) });
+      return;
+    }
     set({ pendingLoad: getOpeningLoad(exercise, get().loadLog) });
   },
 

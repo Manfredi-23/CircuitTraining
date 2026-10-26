@@ -229,7 +229,7 @@ const BLOCK_RANK: Record<BlockType, number> = {
  * while an opening mobility block does not pull the extra to the front. In a
  * DAILY it goes before the curls, and a curl closes the session.
  */
-export function insertIndex(list: ScaledExercise[], from: number, exercise: Exercise, mode: Mode): number {
+export function insertIndex(list: Array<Pick<Exercise, 'id' | 'block'>>, from: number, exercise: Exercise, mode: Mode): number {
   const start = Math.min(list.length, from + 1);
   if (mode === 'DAILY' && isCurl(exercise.id)) return list.length;
   const rank = BLOCK_RANK[exercise.block];

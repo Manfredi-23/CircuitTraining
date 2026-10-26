@@ -15,6 +15,7 @@ import BuildSheet from '@/components/shared/BuildSheet';
 import RoutineEditor from '@/components/shared/RoutineEditor';
 import WeekPlanner from '@/components/shared/WeekPlanner';
 import { blankRoutine, routineCircuit, routineFromCircuit, routineMode, type Routine } from '@/core/routines';
+import { activeEdit } from '@/core/session-edit';
 import type { Circuit, Mode } from '@/core/types';
 import styles from './TrainScreen.module.css';
 
@@ -50,12 +51,19 @@ export default function TrainScreen({ onSettings }: { onSettings: () => void }) 
   const [buildOpen, setBuildOpen] = useState(false);
   const today = localDate();
 
+  /** MAKE IT MINE copies the session as it stands, with an edit made on its page. */
+  const mineFrom = (m: Mode, c: Circuit): Routine => {
+    const r = routineFromCircuit(c, m);
+    const edit = activeEdit(useStore.getState().sessionEdits, c.id, today);
+    return edit ? { ...r, items: edit.items.map(({ id, sets, work }) => ({ id, ...(sets !== undefined ? { sets } : {}), ...(work !== undefined ? { work } : {}) })) } : r;
+  };
+
   const extraFor = (m: Mode, c: Circuit, routine?: Routine) => (
     <button
       className={styles.extra}
       onClick={() => {
         launcher.show(null);
-        setEditing(routine ? { routine, isNew: false } : { routine: routineFromCircuit(c, m), isNew: true });
+        setEditing(routine ? { routine, isNew: false } : { routine: mineFrom(m, c), isNew: true });
       }}
     >
       {routine ? 'EDIT ROUTINE' : 'MAKE IT MINE: COPY AS A ROUTINE'}

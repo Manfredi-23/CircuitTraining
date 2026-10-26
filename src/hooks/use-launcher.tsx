@@ -3,10 +3,14 @@
 import { useState, type ReactNode } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useStore } from '@/store/store';
-import { sessionListFor } from '@/store/slices/workout-slice';
+import { circuitFor, sessionListFor } from '@/store/slices/workout-slice';
+import { activeEdit } from '@/core/session-edit';
+import { ROUTINE_PREFIX } from '@/core/routines';
+import { localDate } from '@/core/dates';
 import { asksPainCheck, asksReadiness, applyFingerCheck, estimateDuration, scaleExercise, type FingerCheck } from '@/core/engine';
 import SessionInfo from '@/components/shared/SessionInfo';
 import PainCheck from '@/components/shared/PainCheck';
+import SessionEditor from '@/components/shared/SessionEditor';
 import type { Circuit, Mode } from '@/core/types';
 
 export interface LaunchTarget {
@@ -28,29 +32,34 @@ export function useLauncher() {
   // other change (a timer tick, a stats filter) would rebuild every list.
   const state = useStore(useShallow(s => ({
     energy: s.energy, progress: s.progress, benchmarkResults: s.benchmarkResults, blockStart: s.blockStart,
-    sessionLog: s.sessionLog, tweaks: s.tweaks, dayPlan: s.dayPlan,
-    setEnergy: s.setEnergy, selectCircuit: s.selectCircuit, startCustom: s.startCustom,
+    sessionLog: s.sessionLog, tweaks: s.tweaks, dayPlan: s.dayPlan, sessionEdits: s.sessionEdits,
+    setEnergy: s.setEnergy, selectCircuit: s.selectCircuit, startCustom: s.startCustom, setSessionEdit: s.setSessionEdit,
   })));
   const [info, setInfo] = useState<LaunchTarget | null>(null);
   const [pain, setPain] = useState<LaunchTarget | null>(null);
+  const [editing, setEditing] = useState(false);
 
   const listOf = (t: LaunchTarget) => sessionListFor({ ...state, mode: t.mode }, t.circuit);
+  /** The session as it runs today, with the edit made on its page. */
+  const runs = (t: LaunchTarget) => circuitFor(state, t.circuit);
   const run = (t: LaunchTarget, check?: FingerCheck) => {
     state.selectCircuit(t.mode, t.circuit.id);
-    state.startCustom(t.circuit, listOf(t), t.mode, check);
+    state.startCustom(runs(t), listOf(t), t.mode, check);
   };
   const start = (t: LaunchTarget) => {
     setInfo(null);
-    if (asksReadiness(t.circuit)) setPain(t);
+    setEditing(false);
+    if (asksReadiness(runs(t))) setPain(t);
     else run(t);
   };
   const lastPain = [...state.sessionLog].reverse().find(s => s.pain !== undefined)?.pain ?? null;
   const lastReadiness = [...state.sessionLog].reverse().find(s => s.readiness !== undefined)?.readiness ?? null;
   const remaining = (t: LaunchTarget, check: FingerCheck) =>
-    applyFingerCheck(listOf(t), check, t.circuit, ex => scaleExercise(ex, state.energy, state.progress, { tweaks: state.tweaks }))
+    applyFingerCheck(listOf(t), check, runs(t), ex => scaleExercise(ex, state.energy, state.progress, { tweaks: state.tweaks }))
       .filter(e => e.block !== 'WARMUP').length;
 
   const infoList = info ? listOf(info) : [];
+  const edit = info ? activeEdit(state.sessionEdits, info.circuit.id, localDate()) : null;
   const element = (
     <>
       {info && (
@@ -63,15 +72,22 @@ export function useLauncher() {
           duration={estimateDuration(infoList)}
           onEnergy={state.setEnergy}
           extra={info.extra}
-          onClose={() => setInfo(null)}
+          // A routine is edited in its own editor (EDIT ROUTINE).
+          onEdit={info.circuit.id.startsWith(ROUTINE_PREFIX) ? undefined : () => setEditing(true)}
+          edited={edit ? (edit.kept ? 'KEPT' : 'TODAY') : null}
+          onReset={() => state.setSessionEdit(info.circuit.id, null)}
+          onClose={() => { setInfo(null); setEditing(false); }}
           onStart={() => start(info)}
         />
+      )}
+      {info && editing && (
+        <SessionEditor mode={info.mode} circuit={info.circuit} onClose={() => setEditing(false)} />
       )}
       {pain && (
         <PainCheck
           open
           title={pain.circuit.title}
-          askPain={asksPainCheck(pain.circuit)}
+          askPain={asksPainCheck(runs(pain))}
           lastPain={lastPain}
           lastReadiness={lastReadiness}
           remainingFor={check => remaining(pain, check)}

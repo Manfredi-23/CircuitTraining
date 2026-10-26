@@ -332,6 +332,11 @@ export interface Exercise {
     /** The stepper opens this far below the last result, in axis units. */
     startBelow: number;
   };
+  /**
+   * The load planned for this run on the session page (EDIT): the stepper
+   * opens on it instead of last time's. Set only by a session edit.
+   */
+  targetLoad?: number;
   /** Section heading shown on the card and in the session list, e.g. 'MAX STRENGTH'. */
   section?: string;
   /**
