@@ -1,27 +1,51 @@
-.panel { background: var(--dots), #E4E2DD; z-index: 60; gap: 12px; }
-.crumb { font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--accent); }
+/* The exercise picker. Roomy rows, a thumb's width apart; the search is a
+   tool you open, not the first thing on the screen. The search text is 16px:
+   under that, iOS zooms the page in when the field is focused. */
+.panel { background: var(--dots), #E4E2DD; z-index: 60; gap: 18px; }
+.crumb { font-weight: 700; font-size: 12px; letter-spacing: 0.12em; color: var(--accent); }
+
+.replacing { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; padding-bottom: 4px; }
+.replacingLabel { font-weight: 700; font-size: 11px; letter-spacing: 0.12em; color: var(--ink-dim); }
+.replacingName { font-weight: 700; font-size: 20px; line-height: 1.25; color: var(--ink); }
+
+.tools { display: flex; flex-direction: column; gap: 14px; flex-shrink: 0; }
 .search {
-  height: 44px; padding: 0 14px; font-family: inherit; font-size: 14px; color: var(--ink);
-  background: #F1EFEA; border: 2px solid var(--ink); border-radius: var(--rad-sm); flex-shrink: 0;
+  height: 48px; width: 100%; padding: 0 16px; font-family: inherit; font-size: 16px; color: var(--ink);
+  background: #F1EFEA; border: 2px solid var(--ink); border-radius: var(--rad-sm);
+  -webkit-appearance: none; appearance: none;
 }
 .search::placeholder { color: var(--ink-dim); }
-.filters { display: flex; gap: 6px; overflow-x: auto; flex-shrink: 0; padding-bottom: 2px; scrollbar-width: none; }
+.filters { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
 .filters::-webkit-scrollbar { display: none; }
 .filter {
-  flex: none; height: 36px; padding: 0 10px; font-weight: 700; font-size: 11px; letter-spacing: 0.06em; color: var(--ink-dim);
+  flex: none; height: 40px; padding: 0 14px; font-weight: 700; font-size: 11px; letter-spacing: 0.08em; color: var(--ink-dim);
   border: 2px solid var(--ink-ghost); border-radius: var(--rad-sm); white-space: nowrap;
 }
 .filterOn { color: var(--ink); border-color: var(--ink); }
-.count { font-size: 11px; color: var(--ink-dim); flex-shrink: 0; }
+.count { font-size: 11px; color: var(--ink-dim); }
+
 .scroll { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; border-top: 2px solid var(--ink); }
-.empty { font-size: 13px; padding: 20px 0; color: var(--ink); }
-.row { width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 0; min-height: 56px; text-align: left; border-bottom: 1px solid var(--ink-faint); }
+.group { font-weight: 700; font-size: 11px; letter-spacing: 0.12em; color: var(--accent); padding: 18px 0 4px; }
+.empty { font-size: 13px; padding: 24px 0; color: var(--ink); }
+
+.row {
+  width: 100%; display: flex; align-items: center; gap: 16px; min-height: 72px; padding: 16px 0;
+  text-align: left; border-bottom: 1px solid var(--ink-faint);
+}
 .row:not(:disabled):active { background: rgba(24,22,16,0.04); }
 .row:disabled { cursor: default; }
 .row:disabled .name { color: var(--ink-dim); }
-.body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.name { font-weight: 700; font-size: 13px; color: var(--ink); }
-.meta { font-size: 11px; color: var(--ink-dim); }
-.add { width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 2px solid var(--ink); border-radius: var(--rad-sm); font-weight: 700; font-size: 16px; }
+.body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.name { font-weight: 700; font-size: 15px; line-height: 1.3; color: var(--ink); }
+.meta { font-size: 12px; color: var(--ink-dim); line-height: 1.4; }
+.add {
+  width: 44px; height: 40px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--ink); border-radius: var(--rad-sm); font-weight: 700; font-size: 16px;
+}
+.addWord { width: 56px; font-size: 11px; letter-spacing: 0.1em; }
 .row:disabled .add { border-color: var(--ink-ghost); font-size: 11px; color: var(--ink-dim); }
-.group { font-weight: 700; font-size: 11px; letter-spacing: 0.12em; color: var(--accent); padding: 14px 0 2px; }
+
+.browse {
+  flex-shrink: 0; height: 52px; border: 2px dashed var(--ink); border-radius: var(--rad-lg);
+  font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--ink);
+}

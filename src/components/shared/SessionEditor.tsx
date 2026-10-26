@@ -218,7 +218,8 @@ export default function SessionEditor({ mode, circuit, onClose }: {
         <ExercisePicker
           place={place}
           taken={ids}
-          title={picker.swap === null ? 'ADD EXERCISE' : `SWAP ${swapping?.name ?? ''}`.toUpperCase()}
+          title={picker.swap === null ? 'ADD EXERCISE' : 'SWAP'}
+          replacing={picker.swap === null ? undefined : swapping?.name}
           similar={picker.swap === null ? undefined : similar}
           allow={allow}
           onClose={() => setPicker(null)}

@@ -238,7 +238,8 @@ export function similarTo(ex: Exercise, ctx: EditContext, taken: string[] = []):
     .filter(e => e.exercise.id !== ex.id && e.exercise.name !== ex.name && !taken.includes(e.exercise.id))
     .filter(e => allowedToday(e.exercise, ctx) && (ex.block === 'WARMUP') === (e.exercise.block === 'WARMUP'))
     .map(e => ({ e, s: likeness(ex, e.exercise) }))
-    .filter(x => x.s >= SIMILAR_MIN_SCORE)
+    // Any other warm-up is an alternative to a warm-up.
+    .filter(x => x.s >= SIMILAR_MIN_SCORE || ex.block === 'WARMUP')
     .sort((x, y) => y.s - x.s || x.e.exercise.name.localeCompare(y.e.exercise.name))
     .slice(0, SIMILAR_MAX)
     .map(x => x.e);

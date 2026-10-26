@@ -13,28 +13,33 @@ const filterLabel = (f: Filter) => (f === null ? 'ALL' : f === 'WARM-UP' ? 'WARM
 
 /**
  * Every exercise the place's kit allows, searchable and by area. Used to add
- * to a routine or a session and to swap one exercise for another. A swap
- * lists the most similar exercises first.
+ * to a routine or a session and to swap one exercise for another.
+ *
+ * A swap opens on a short list of SIMILAR exercises, roomy enough to pick from
+ * with a thumb; the whole library and its search are one tap away. Nothing
+ * focuses the search by itself: the keyboard would cover half the list.
  */
-export default function ExercisePicker({ place, taken, title, onPick, onClose, similar, allow }: {
+export default function ExercisePicker({ place, taken, title, onPick, onClose, similar, allow, replacing }: {
   place: Place;
   /** Already in the routine: shown, not offered again. */
   taken: string[];
   title: string;
   onPick: (id: string) => void;
   onClose: () => void;
-  /** Alternatives to the exercise being swapped, shown first while nothing is searched or filtered. */
+  /** Alternatives to the exercise being swapped, shown first. */
   similar?: LibraryEntry[];
   /** Only what may go in today (healing, finger pain, no kit). */
   allow?: (e: Exercise) => boolean;
+  /** The name of the exercise being swapped out. */
+  replacing?: string;
 }) {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>(null);
+  const [browse, setBrowse] = useState(!similar?.length);
   const list = useMemo(
     () => libraryFor(place, query, filter, taken).filter(e => !allow || allow(e.exercise)),
     [place, query, filter, taken, allow],
   );
-  const top = !query.trim() && filter === null && similar?.length ? similar : [];
 
   return (
     <div className={`overlay-panel overlay-enter ${styles.panel}`} role="dialog" aria-modal="true" aria-label={title}>
@@ -42,32 +47,55 @@ export default function ExercisePicker({ place, taken, title, onPick, onClose, s
         <span className={styles.crumb}>{title}</span>
         <button className="overlay-close" onClick={onClose} aria-label="Close">X</button>
       </div>
-      <input
-        className={styles.search}
-        value={query}
-        onChange={e => setQuery(e.target.value)}
-        placeholder="Search exercises"
-        aria-label="Search exercises"
-        autoFocus
-      />
-      <div className={styles.filters} role="tablist" aria-label="Area">
-        {FILTERS.map(f => (
-          <button
-            key={String(f)}
-            className={`${styles.filter}${f === filter ? ` ${styles.filterOn}` : ''}`}
-            aria-pressed={f === filter}
-            onClick={() => setFilter(f)}
-          >{filterLabel(f)}</button>
-        ))}
-      </div>
-      <div className={styles.count}>{list.length} exercise{list.length === 1 ? '' : 's'}{place === 'HOME' ? ' for mat, band and edge' : ''}</div>
-      <div className={styles.scroll}>
-        {list.length === 0 && <div className={styles.empty}>Nothing matches. Try another word or area.</div>}
-        {top.length > 0 && <div className={styles.group}>SIMILAR</div>}
-        {top.map(entry => row(entry, 'similar'))}
-        {top.length > 0 && <div className={styles.group}>EVERYTHING</div>}
-        {list.map(entry => row(entry, 'all'))}
-      </div>
+
+      {replacing && (
+        <div className={styles.replacing}>
+          <span className={styles.replacingLabel}>INSTEAD OF</span>
+          <span className={styles.replacingName}>{replacing}</span>
+        </div>
+      )}
+
+      {!browse && similar?.length ? (
+        <>
+          <div className={styles.scroll}>
+            <div className={styles.group}>SIMILAR</div>
+            {similar.map(entry => row(entry, 'similar'))}
+          </div>
+          <button className={styles.browse} onClick={() => setBrowse(true)}>SEARCH ALL EXERCISES</button>
+        </>
+      ) : (
+        <>
+          <div className={styles.tools}>
+            <input
+              className={styles.search}
+              type="search"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder="Search exercises"
+              aria-label="Search exercises"
+              enterKeyHint="search"
+            />
+            <div className={styles.filters} role="tablist" aria-label="Area">
+              {FILTERS.map(f => (
+                <button
+                  key={String(f)}
+                  className={`${styles.filter}${f === filter ? ` ${styles.filterOn}` : ''}`}
+                  aria-pressed={f === filter}
+                  onClick={() => setFilter(f)}
+                >{filterLabel(f)}</button>
+              ))}
+            </div>
+            <div className={styles.count}>{list.length} exercise{list.length === 1 ? '' : 's'}{place === 'HOME' ? ' for mat, band and edge' : ''}</div>
+          </div>
+          <div className={styles.scroll}>
+            {list.length === 0 && <div className={styles.empty}>Nothing matches. Try another word or area.</div>}
+            {list.map(entry => row(entry, 'all'))}
+          </div>
+          {similar?.length ? (
+            <button className={styles.browse} onClick={() => { setBrowse(false); setQuery(''); setFilter(null); }}>BACK TO SIMILAR</button>
+          ) : null}
+        </>
+      )}
     </div>
   );
 
@@ -82,7 +110,7 @@ export default function ExercisePicker({ place, taken, title, onPick, onClose, s
             {e.gate ? ' · stand-in until tested' : ''}
           </span>
         </span>
-        <span className={styles.add}>{has ? 'IN' : '+'}</span>
+        <span className={`${styles.add}${replacing ? ` ${styles.addWord}` : ''}`}>{has ? 'IN' : replacing ? 'USE' : '+'}</span>
       </button>
     );
   }

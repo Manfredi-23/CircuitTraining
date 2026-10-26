@@ -92,6 +92,11 @@ describe('session edits', () => {
     expect(sim.length).toBeGreaterThan(0);
     expect(sim.every(s => areaOf(s.exercise) === 'LEGS')).toBe(true);
 
+    const warm = full.exercises.find(x => x.block === 'WARMUP')!;
+    const warmUps = similarTo(warm, gym);
+    expect(warmUps.length).toBeGreaterThan(0);
+    expect(warmUps.every(s => s.exercise.block === 'WARMUP')).toBe(true);
+
     const push = daily01.exercises.find(x => x.capacities[0] === 'press')!;
     const atHome = similarTo(push, home);
     expect(atHome.every(s => isHomeExercise(s.exercise.id))).toBe(true);
