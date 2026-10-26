@@ -79,19 +79,20 @@ npm run build    # Production build
 npx serve out    # Serve the production build (static export: `npm run start` does not work)
 
 npm run check:daily     # DAILY: 20-minute ceiling, TIRED drops nothing, curling last
-npm run check:cave      # CAVE 02 and 03 budgets, and the one-arm gates
+npm run check:cave      # CAVE budgets (02/03 45 min, 04/05 75), 04/05 contents, one-arm gates
 npm test                # Vitest around src/core/ (src/core/__tests__)
 npm run test:e2e        # Playwright smoke tests on the built out/ (run npm run build first)
 npm run seed            # Rewrite e2e/fixtures/athlete.json, an eight-week sample history
 ```
 
 The automated checks are `check:daily`, which guards the promises DAILY
-makes, `check:cave`, which keeps CAVE 02 and 03 inside 45 minutes NORMAL at
-every level and proves the one-arm rungs open on a tested weighted pull-up and
-never on XP, and `npm test`. Every new core module gets a test file in
+makes, `check:cave`, which keeps CAVE 02 and 03 inside 45 minutes NORMAL and
+04 and 05 inside 75 at every level, holds 04 and 05 to core, balance, power at
+full stretch, no bench or barbell and no hard finger set, and proves the
+one-arm rungs open on a tested weighted pull-up and never on XP, and `npm test`. Every new core module gets a test file in
 `src/core/__tests__/` in the same commit. The screens have Playwright smoke
-tests in `e2e/smoke.spec.ts` (TODAY, a session from TRAIN to LOG, MAKE IT
-MINE, the weekly plan, STATS, UNDO), run against the static build with the
+tests in `e2e/smoke.spec.ts` (TODAY, a session from TRAIN to LOG, the finger
+check on CAVE 04, MAKE IT MINE, the weekly plan, STATS, UNDO), run against the static build with the
 seed history; `e2e/serve.mjs` serves `out/`. In the cloud session set
 `PW_CHROMIUM=/opt/pw-browsers/chromium-1243/chrome-linux64/chrome`; on the Mac
 run `npx playwright install chromium` once.
@@ -264,12 +265,24 @@ loop. `Circuit.exercises` is a flat ordered list; each exercise carries its own
 `WARMUP` | `PRIMARY` | `SECONDARY` | `ACCESSORY` | `PREHAB` | `MOBILITY` | `TEST`.
 Order is by neurological cost: fingers and CNS when fresh, conditioning last.
 
-### Pain check, effort and load
+### Pain check, readiness, effort and load
 
 Sessions that load the fingers open with a 0-10 finger and wrist pain check
 (`applyPainCheck`): up to 2 as written; 3-5 caps finger work at HARD, one set
 shorter, and drops maximal finger tests; 6+ removes finger work. The score is
-saved on the session. The complete screen asks session effort (1-10); the
+saved on the session.
+
+Beside it, **finger readiness** (v33, the athlete's own call): 20 / 40 / 60 /
+80 / 100%, default 100, asked on the same panel (`PainCheck`) before any
+session that loads the fingers or hangs from the hands (`asksReadiness`: finger
+capacities, `pull`, or `hangs: true`). `applyReadiness`: 80 caps finger work
+at HARD, one set fewer; 60 caps it at MODERATE, one set fewer, no maximal
+finger tests; 40 swaps finger work for its `noGripId` substitute (in
+`circuit.substitutes`) or takes it out; 20 also takes out everything that
+hangs or pulls. `applyFingerCheck` runs pain then readiness, so the stricter
+wins, at start and on an energy switch. Saved as `readiness`; 60 or less holds
+the next suggested finger load; shown in LOG, on the session page and under
+FINGER LOAD. The complete screen asks session effort (1-10); the
 climb log takes minutes and effort. Effort x minutes is the training load
 (`training-load.ts`), climbing included. The session log keeps `planned` beside
 `sets` so "all sets done" can be told from "cut short".
@@ -342,12 +355,15 @@ fit that week; HEAL was added as a fourth while a finger heals.
 | Mode | Sessions |
 |------|----------|
 | DAILY | 01 CORE + OBLIQUES, 02 OBLIQUES + BACK, 03 BAND STRENGTH, 04 FINGERS + MOBILITY, 05 LEGS + CORE, 06 QUIET FEET |
-| CAVE | 01 STRONG, 02 PULL + PUSH, 03 LEGS + BACK |
+| CAVE | 01 STRONG, 04 POWER, 05 FULL BODY (no climbing); 02 PULL + PUSH, 03 LEGS + BACK (after bouldering) |
 | TEST | 01 ASSESS (five sections, ramps, ~76-88 min) |
 | HEAL | 01 LEGS + TRUNK, 02 PUSH + HINGE (injured finger, gym, ~60-70 min), 03 RING REHAB, 04 RING TEST (home, portable edge), 05 FOOTWORK (gym slabs, ~28 min) |
 
 A typical week: DAILY most mornings, CAVE 02 or 03 straight after each
-bouldering session, CAVE 01 only in a week a bouldering day is skipped.
+bouldering session, and a training day in place of a skipped bouldering day:
+CAVE 01 STRONG first (once a week, fingers fresh), then 04 POWER or 05 FULL
+BODY, least recently done (recommender rule 5, from Thursday, while climbing
+days plus training days are under two).
 
 HOME, HANG and MORN no longer exist. Their exercises that fit a mat-and-band
 flat moved into DAILY with their ids unchanged, so load history carries over.
@@ -449,10 +465,27 @@ DAILY 02, then the loaded 45-degree back extension and single-leg RDL in CAVE
 
 ### CAVE
 
-CAVE is almost always done straight after bouldering.
+Five sessions (v33): three for a day without climbing, two for straight after
+bouldering. The gym kit: pull-up bar, hangboard, TRX rings, kettlebells,
+dumbbells, plates, boxes, bands, a mat. **No bench, no barbell to press, no
+cables.**
 
 - **01 STRONG** replaces a bouldering day: max hangs, heavy weighted pull-ups,
   the one-arm path, lock-offs, front lever, hanging leg raise. 70-80 minutes.
+- **04 POWER** (`cave-07`), no climbing, about 70 min: light 20mm hangs at
+  50% (MODERATE, so `lastHard` does not move), explosive pull-ups, explosive
+  push-ups, weighted pull-ups for volume (RPE 7-8, 3 x 6), single-arm dumbbell
+  row (hand on a box), half-kneeling dumbbell press, floor pullover (power
+  from the stretch), TRX knee tuck / pike, single-leg balance, band face pull.
+- **05 FULL BODY** (`cave-08`), no climbing, about 65-70 min, no hangboard:
+  box jump, lateral hop + stick, double kettlebell front squat, dumbbell RDL,
+  high-step rock-over drive, push-ups / ring dips, ring row, suitcase carry
+  (the one grip load; `noGripId` swaps it for a plate hug carry at readiness
+  40 or less), goblet Cossack squat, Copenhagen, Russian twist.
+- 04 and 05 always carry **core, a balance drill and power at full stretch**
+  (protocol `end-range-strength`: three seconds into the stretch, drive out
+  fast). Box jumps use `lower-power`. `PUSH_DIP`, `RUSSIAN_TWIST` and
+  `COPENHAGEN` are shared constants in `data-cave.ts`, so their history is one.
 - **02 PULL + PUSH**, after bouldering: weighted pull-ups at RPE 8 (SECONDARY,
   so level adds no sets), band-assisted one-arms, push-ups/dips, spiderman +
   cross-body mountain climber, hanging oblique raise (ab straps allowed),
@@ -461,7 +494,7 @@ CAVE is almost always done straight after bouldering.
   single-leg RDL, toe-tip plate drag, Copenhagen plank, plate crunch, side
   plank hip dip, frogger. Nothing loads the fingers.
 - 02 and 03 are `stacksOnSession` and `check:cave` keeps them inside 45
-  minutes NORMAL.
+  minutes NORMAL; 04 and 05 (24h, not stacking) inside 75.
 - The athlete's wrists and fingers are symptomatic: plank-based cards name a
   fist, handle or forearm option, and hanging core stays at two sets.
 
@@ -491,7 +524,7 @@ Kode Mono monospace font. Mobile-first, max-width 390px. CSS Modules per compone
 
 **Color tokens:** `--ink` (#181610), `--accent` (#E64D19), `--bg` (parchment gradient), `--ink-ghost`/`--ink-dim`/`--ink-faint` for opacity variants.
 
-**Design rules:** No glassmorphism. No dark theme. Cards outlined (2px solid), not filled. Tab indicators use bottom-border style (6px active, 2px inactive).
+**Design rules:** No glassmorphism. No dark theme. Cards outlined (2px solid), not filled. Tab indicators use bottom-border style (6px active, 2px inactive): the extra 4px is an inset `box-shadow`, never a wider border, so the active label does not move. Every button sinks on press (`button:active` in `globals.css`).
 
 **The LED language** (v29). The interface speaks the dot-matrix of the
 illustrations:
@@ -939,11 +972,15 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v32.md`** — **start here.** The UI and use review:
+- **`7bit-handover-v33.md`** — **start here.** CAVE 04 POWER and 05 FULL
+  BODY, finger readiness beside the pain check, and a UI pass: tab labels
+  that no longer jump, press feedback on every button, the finger check's
+  START filled and in reach.
+- **`7bit-handover-v32.md`** — read second. The UI and use review:
   START and DONE always in reach, the workout card's ADJUST row, FINISH NOW
   with UNDO, the complete screen summary, folded BODY sections, LOG filters,
   + LOG TODAY'S CLIMBS on TODAY, the rest overrun.
-- **`7bit-handover-v31.md`** — read second. A second taste-skill pass:
+- **`7bit-handover-v31.md`** — A second taste-skill pass:
   long exercise names on two lines, the complete screen from the top, deltas
   orange only on a real drop, the session page's doubled minutes and rules.
 - **`7bit-handover-v30.md`** — Polish: larger LED dots,

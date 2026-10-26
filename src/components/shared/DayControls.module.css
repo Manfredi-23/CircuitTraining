@@ -16,7 +16,7 @@
   font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: var(--ink-dim);
   border: 2px solid var(--ink-ghost); border-radius: var(--rad-sm); padding: 0 12px; min-height: 40px;
 }
-.chipOn { color: var(--ink); border-color: var(--ink); border-bottom-width: 5px; }
+.chipOn { color: var(--ink); border-color: var(--ink); box-shadow: inset 0 -3px 0 var(--ink); }
 .hint { font-size: 11px; color: var(--ink-dim); line-height: 1.4; }
 .clear {
   align-self: flex-start; font-weight: 700; font-size: 11px; letter-spacing: 0.08em; color: var(--ink);

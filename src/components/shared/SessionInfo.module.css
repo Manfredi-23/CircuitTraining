@@ -45,6 +45,6 @@
 .energy { display: flex; margin-top: 10px; }
 .energyTab {
   flex: 1; height: 40px; font-weight: 700; font-size: 13px; letter-spacing: 0.1em; color: var(--ink);
-  border-bottom: 2px solid var(--ink); transition: border-bottom-width 150ms ease;
+  border-bottom: 2px solid var(--ink); transition: box-shadow 150ms ease;
 }
-.energyTabOn { border-bottom-width: 6px; }
+.energyTabOn { box-shadow: inset 0 -4px 0 var(--ink); }

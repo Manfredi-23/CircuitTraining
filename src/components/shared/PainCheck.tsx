@@ -103,12 +103,11 @@ export default function PainCheck({
       </section>
 
       <button
-        className="overlay-btn"
+        className="overlay-btn overlay-btn-primary"
         disabled={!canStart}
-        style={{ opacity: canStart ? 1 : 0.25 }}
         onClick={() => canStart && onStart(check)}
       >
-        START
+        {answered ? 'START' : 'PAIN FIRST'}
       </button>
     </div>
   );

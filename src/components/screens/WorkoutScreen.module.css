@@ -116,7 +116,7 @@
   flex: 1; padding: 6px 2px; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
   color: var(--ink); background: none; border: none; border-bottom: 2px solid var(--ink);
 }
-.energyBtnOn { border-bottom-width: 6px; }
+.energyBtnOn { box-shadow: inset 0 -4px 0 var(--ink); }
 
 /* ADJUST: the controls that change the session, folded while a set is on */
 .adjustToggle {

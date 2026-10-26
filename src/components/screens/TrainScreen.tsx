@@ -23,7 +23,7 @@ const SHELVES: Shelf[] = [...(CONFIG.modes as Mode[]), 'MINE'];
 
 const SHELF_LINE: Record<Shelf, string> = {
   DAILY: 'Short home sessions before breakfast. Mat, band, portable edge.',
-  CAVE: 'Gym sessions. 02 and 03 follow a bouldering session.',
+  CAVE: 'Gym sessions. 01, 04 and 05 for a day without climbing; 02 and 03 after bouldering.',
   TEST: 'The benchmark battery. Every six to eight weeks.',
   HEAL: 'Training around an injured finger: nothing gripped, nothing pulled.',
   MINE: 'Sessions you build or keep.',
@@ -84,7 +84,7 @@ export default function TrainScreen({ onSettings }: { onSettings: () => void }) 
           </span>
           <span className={styles.sub}>{displaySubtitle(c)}</span>
           <span className={readiness.level === 'ready' ? styles.meta : styles.metaWarn}>
-            {readiness.level === 'ready' ? `Last ${ago(last === null ? null : daysBetween(last, today))}` : readiness.message}
+            {readiness.level === 'ready' ? (last === null ? 'Not done yet' : `Last ${ago(daysBetween(last, today))}`) : readiness.message}
           </span>
         </span>
         <span className={styles.min}>{minutes}<small> min</small></span>

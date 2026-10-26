@@ -3,7 +3,7 @@
   height: 40px; padding: 0 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
   color: var(--ink); background: none; border: 2px solid var(--ink-ghost); border-radius: var(--rad-sm);
 }
-.typeBtnOn { border-color: var(--ink); border-bottom-width: 6px; }
+.typeBtnOn { border-color: var(--ink); box-shadow: inset 0 -4px 0 var(--ink); }
 .typeBtn:active { transform: scale(0.94); }
 
 .hint { font-size: 12px; color: var(--ink-dim); line-height: 1.4; }

@@ -23,7 +23,7 @@ function Delta({ now, before, unit = '', neutral = false }: { now: number | null
   if (d === 0) return <span className={styles.deltaNone}>same as before</span>;
   const material = Math.abs(now - before) / before >= 0.15;
   const cls = neutral ? styles.deltaNeutral : d > 0 ? styles.deltaUp : material ? styles.deltaDown : styles.deltaNone;
-  return <span className={cls}>{d > 0 ? '+' : ''}{d}{unit} vs 4 wks before</span>;
+  return <span className={cls}>{d > 0 ? '+' : ''}{d}{unit} vs prior</span>;
 }
 
 function Tile({ label, value, unit, children }: { label: string; value: string; unit?: string; children?: React.ReactNode }) {

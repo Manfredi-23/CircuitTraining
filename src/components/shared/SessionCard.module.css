@@ -40,9 +40,9 @@
   padding: 8px 4px; font-weight: 600; font-size: 16px;
   letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink);
   border-bottom: 2px solid var(--ink);
-  transition: border-bottom-width 150ms ease;
+  transition: box-shadow 150ms ease;
 }
-.energyTabActive { border-bottom-width: 6px; }
+.energyTabActive { box-shadow: inset 0 -4px 0 var(--ink); }
 .energyTabSuggested { color: var(--accent); }
 
 .infoBar {
