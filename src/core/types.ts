@@ -57,6 +57,9 @@ export type BlockType =
   | 'MOBILITY'
   | 'TEST';      // assessment protocol, run every 6-8 weeks
 
+/** Qualities every training session carries a dose of (v34). */
+export type Quality = 'balance' | 'stretch';
+
 export type Intensity = 'TECHNIQUE' | 'EASY' | 'MODERATE' | 'HARD' | 'MAX';
 
 export type LoadKind =
@@ -309,6 +312,11 @@ export interface Exercise {
    * dropping out.
    */
   noGripId?: string;
+  /**
+   * Qualities trained besides what the protocol says, e.g. a lunge drive that
+   * ends in a single-leg stick also trains balance. Read by `qualities.ts`.
+   */
+  alsoTrains?: Quality[];
   variations?: Variation[];
   form?: FormGuide;
   /** A TEST exercise whose result is saved as a benchmark, opening gates. */

@@ -11,13 +11,14 @@
 //   02 PULL + PUSH — after bouldering: weighted pull-ups at RPE 8, band-assisted
 //                    one-arms, pushing, then the trunk.
 //   03 LEGS + BACK — after bouldering: legs, the lower back, toes, abs and
-//                    obliques, hips. Nothing loads the fingers.
+//                    obliques, hips, balance. Nothing loads the fingers.
 //   04 POWER       — no climbing: explosive pulling and pushing, pull-up
 //                    volume, rows and presses for size, light hangs only.
 //   05 FULL BODY   — no climbing: power, a heavy squat and hinge, push, row,
 //                    a carry. No hangboard, so it never competes with 01.
-// 04 and 05 always carry a bit of core, a balance drill and power at full
-// stretch (end-range strength).
+// Every session carries balance and power at full stretch (end-range
+// strength, qualities.ts), in proportion: one set of the lunge drive after
+// bouldering, two in STRONG, full exercises on 03, 04 and 05.
 //
 // Free bouldering is the athlete's own and stays unprogrammed. The test
 // battery lives in its own TEST tab (data-assess.ts).
@@ -30,7 +31,7 @@
 import type { Circuit, Exercise } from './types';
 import { oneArmPath, assistedOneArm, oneArmNegative, oneArmShrug } from './data-oap';
 import { SIDE_PLANK_DIP } from './data-daily';
-import { SL_BALANCE } from './data-extras';
+import { LUNGE_DRIVE, SL_BALANCE } from './data-extras';
 
 export const WARMUP_PULSE = {
   id: 'cave-warmup-pulse',
@@ -144,6 +145,26 @@ export const COPENHAGEN: Exercise = {
     cue: 'The adductors do a lot of work in climbing and almost never get trained directly. This is the fix.',
     breathing: 'Steady.',
     mistakes: 'Hips sagging. Rolling the chest toward the floor.',
+  },
+};
+
+export const COSSACK: Exercise = {
+  id: 'full-cossack',
+  name: 'Goblet Cossack Squat',
+  capacities: ['legs', 'mobility'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 2, work: 6, unit: 'reps', restSec: 60,
+  load: { kind: 'added-kg', value: 8, text: 'A light bell or plate hugged at the chest' },
+  progression: 'Deeper with the heel down, then a pause at the bottom, then 2kg heavier.',
+  protocolId: 'end-range-strength',
+  perSide: true,
+  note: 'Per side. Slowly down into the side split, then drive out of it: drop knees and wide stems.',
+  form: {
+    setup: 'Wide stance, toes slightly out, a light weight at the chest.',
+    execution: 'Shift into one hip, bending that knee until the other leg is straight with the toes up. Three seconds down, then push back to the middle fast.',
+    cue: 'Adductors at full stretch, then strong from there. Only as deep as you can drive out of.',
+    breathing: 'Inhale down, exhale on the drive.',
+    mistakes: 'The bent heel lifting. Rounding the back. Collapsing into the bottom.',
   },
 };
 
@@ -286,6 +307,7 @@ export const DATA_CAVE: Circuit[] = [
           mistakes: 'Swinging into each rep. Letting the shoulders go passive at the bottom.',
         },
       },
+      { ...LUNGE_DRIVE, sets: 2 },
       {
         id: 'cave-band-er',
         name: 'Band External Rotation',
@@ -409,6 +431,7 @@ export const DATA_CAVE: Circuit[] = [
         },
       },
       RUSSIAN_TWIST,
+      LUNGE_DRIVE,
       {
         id: 'addon-cuff',
         name: 'Band External Rotation',
@@ -519,6 +542,7 @@ export const DATA_CAVE: Circuit[] = [
           mistakes: 'Opening the hip of the free leg toward the ceiling. Rounding the back to reach lower. Locking the standing knee.',
         },
       },
+      COSSACK,
       {
         id: 'legs-toe-drag',
         name: 'Toe-Tip Plate Drag',
@@ -569,6 +593,7 @@ export const DATA_CAVE: Circuit[] = [
         },
       },
       SIDE_PLANK_DIP,
+      { ...SL_BALANCE, sets: 2 },
       {
         id: 'feet-frogger',
         name: 'Frogger + Active Straddle',
@@ -961,25 +986,7 @@ export const DATA_CAVE: Circuit[] = [
           mistakes: 'Leaning. The shoulder dropping. Walking fast.',
         },
       },
-      {
-        id: 'full-cossack',
-        name: 'Goblet Cossack Squat',
-        capacities: ['legs', 'mobility'],
-        block: 'SECONDARY', intensity: 'MODERATE',
-        sets: 2, work: 6, unit: 'reps', restSec: 60,
-        load: { kind: 'added-kg', value: 8, text: 'A light bell or plate hugged at the chest' },
-        progression: 'Deeper with the heel down, then a pause at the bottom, then 2kg heavier.',
-        protocolId: 'end-range-strength',
-        perSide: true,
-        note: 'Per side. Slowly down into the side split, then drive out of it: drop knees and wide stems.',
-        form: {
-          setup: 'Wide stance, toes slightly out, a light weight at the chest.',
-          execution: 'Shift into one hip, bending that knee until the other leg is straight with the toes up. Three seconds down, then push back to the middle fast.',
-          cue: 'Adductors at full stretch, then strong from there. Only as deep as you can drive out of.',
-          breathing: 'Inhale down, exhale on the drive.',
-          mistakes: 'The bent heel lifting. Rounding the back. Collapsing into the bottom.',
-        },
-      },
+      COSSACK,
       COPENHAGEN,
       RUSSIAN_TWIST,
     ],

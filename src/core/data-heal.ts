@@ -40,6 +40,7 @@
 import type { Exercise, Circuit } from './types';
 import { DATA_CAVE } from './data-cave';
 import { DATA_DAILY, SIDE_PLANK_DIP } from './data-daily';
+import { LUNGE_DRIVE } from './data-extras';
 import { FINGER_KG_AXIS } from './load';
 import { RING_GOAL_PCT, RING_LEFT_EXERCISE, RING_RIGHT_BENCHMARK } from './rehab';
 
@@ -540,6 +541,7 @@ export const DATA_HEAL: Circuit[] = [
       },
       PLATE_CRUNCH,
       TOE_DRAG,
+      { ...LUNGE_DRIVE, sets: 2 },
       FROGGER,
       TENDON_GLIDES,
     ],
@@ -708,6 +710,7 @@ export const DATA_HEAL: Circuit[] = [
           mistakes: 'Lower back arching as the legs go down. Dropping the legs fast. Pushing hard through the hands.',
         },
       },
+      { ...LUNGE_DRIVE, sets: 2 },
       BACK_UNWIND,
       TENDON_GLIDES,
     ],
@@ -749,6 +752,6 @@ export const DATA_HEAL: Circuit[] = [
       'At the gym, on the easiest slabs and vertical walls. Hands only rest flat on the wall '
       + 'or stay off it. On a gym day: ring rehab, then this, then 01 or 02. Stay low, '
       + 'step down rather than fall.',
-    exercises: [FOOT_WARMUP, SILENT_FEET, STICKY_FEET, EDGE_SMEAR, NO_HANDS_SLAB, STORK],
+    exercises: [FOOT_WARMUP, SILENT_FEET, STICKY_FEET, EDGE_SMEAR, NO_HANDS_SLAB, STORK, LUNGE_DRIVE],
   },
 ];
