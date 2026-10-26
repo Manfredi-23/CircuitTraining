@@ -161,7 +161,8 @@ export default function RoutineEditor({ routine, isNew, onClose }: {
         <ExercisePicker
           place={r.place}
           taken={r.items.map(i => i.id)}
-          title={picker.swap === null ? 'ADD EXERCISE' : `SWAP ${lib.get(r.items[picker.swap]?.id)?.name ?? ''}`.toUpperCase()}
+          title={picker.swap === null ? 'ADD EXERCISE' : 'SWAP'}
+          replacing={picker.swap === null ? undefined : lib.get(r.items[picker.swap]?.id)?.name}
           onClose={() => setPicker(null)}
           onPick={id => {
             setR(picker.swap === null ? addItem(r, id) : swapItem(r, picker.swap, id));

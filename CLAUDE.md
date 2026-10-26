@@ -752,9 +752,11 @@ every programme session (a routine has EDIT ROUTINE instead):
   it (`Exercise.targetLoad`, read by `primeLoad`) instead of last time's.
   Fixed protocols, tests and warm-ups keep their sets and work. Rest is never
   on the screen. The editor shows sets and reps as they run at today's energy.
-- **SWAP** lists **SIMILAR** first (`similarTo`: the stand-in it already has,
-  same area, same main capacity, protocol, block and load kind), then
-  everything the place allows.
+- **SWAP** opens on **SIMILAR** only (`similarTo`: the stand-in it already
+  has, same area, same main capacity, protocol, block and load kind; for a
+  warm-up, the other warm-ups); SEARCH ALL EXERCISES opens the whole library.
+  The picker never focuses its search (the keyboard would cover the list) and
+  the search text is 16px (under that, iOS zooms in on focus).
 - **+ EXERCISE** and **+ PACK**. Additions go where they belong (`addIds`,
   `insertIndex`): heavy first, a closing mobility last, curls closing a DAILY.
 - Safety (`allowedToday`): home kit at home, NO KIT keeps it on the mat, no
@@ -1030,7 +1032,9 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v36.md`** — **start here.** More room in the session
+- **`7bit-handover-v37.md`** — **start here.** The swap screen: SIMILAR
+  first in roomy rows, search one tap away, no keyboard or iOS zoom on open.
+- **`7bit-handover-v36.md`** — More room in the session
   editor: one card per exercise, labelled steppers, airier packs.
 - **`7bit-handover-v35.md`** — EDIT before START: swap
   (similar first), remove, move, sets, reps, load for today, add exercises

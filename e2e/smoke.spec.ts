@@ -79,6 +79,7 @@ test('EDIT changes a session before START: remove, swap, a pack, kept or reset',
   await page.getByRole('button', { name: 'Remove Box Jump' }).click();
   await page.getByRole('button', { name: 'SWAP', exact: true }).nth(2).click();
   await expect(page.getByText('SIMILAR', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'SEARCH ALL EXERCISES' })).toBeVisible();
   await page.getByRole('button', { name: /Goblet Squat/ }).first().click();
   await page.getByRole('button', { name: '+ PACK' }).click();
   await page.getByRole('button', { name: 'ADD', exact: true }).first().click();
