@@ -48,7 +48,7 @@
 // =============================================================================
 
 import type { Circuit, Exercise } from './types';
-import { SL_REACH } from './data-extras';
+import { LUNGE_DRIVE, SL_REACH } from './data-extras';
 
 // ---- Shared ------------------------------------------------------------------
 
@@ -616,6 +616,7 @@ export const DATA_DAILY: Circuit[] = [
         },
       },
       PUSH_UP,
+      LUNGE_DRIVE,
       {
         id: 'daily-spiderman',
         name: 'Spiderman Plank',
@@ -733,29 +734,7 @@ export const DATA_DAILY: Circuit[] = [
       },
       PRONE_EXTENSION,
       SIDE_PLANK_DIP,
-      {
-        id: 'morn-chop',
-        name: 'Standing Band Chop',
-        capacities: ['tension'],
-        block: 'PREHAB', intensity: 'EASY',
-        sets: 1, work: 12, unit: 'reps', restSec: 20,
-        load: { kind: 'band', text: 'Standing on one end, tension on from the first rep' },
-        progression: 'Add a 2s hold at the top, then move to a split stance so the trunk does more of the work.',
-        protocolId: 'daily-trunk',
-        perSide: true,
-        variations: [
-          { minLevel: 1, name: 'Standing Band Chop' },
-          { minLevel: 4, name: 'Standing Band Chop, 2s Hold' },
-          { minLevel: 6, name: 'Split-Stance Band Chop' },
-        ],
-        form: {
-          setup: 'Stand on one end of the band with the left foot, feet shoulder-width, other end in both hands with arms fairly straight down by the left hip and the band already under tension. Soft knees, tall chest. This is the first standing exercise, by design: you are getting up.',
-          execution: 'Pull the band diagonally up and across, finishing with the hands high outside the right shoulder and the ribcage rotating to follow. Control it back to the left hip. All reps on one diagonal, then stand on the other end and reverse.',
-          cue: 'Drive the rotation from the ribs and the front-side obliques, not from the arms and never from the lower back. Your arms are a rope, your trunk is the winch.',
-          breathing: 'Exhale sharply on the way up and across, inhale on the controlled return.',
-          mistakes: 'Chopping with the arms while the torso stays still. Leaning back to get the hands higher. Letting the band snap you down. Uneven counts left versus right, which is how obliques get built asymmetrically.',
-        },
-      },
+      LUNGE_DRIVE,
       BAND_GOOD_MORNING,
       RUSSIAN_TWIST,
     ],
@@ -881,6 +860,7 @@ export const DATA_DAILY: Circuit[] = [
           mistakes: 'Rounding the lower back. Letting the hip of the free leg rotate open.',
         },
       },
+      LUNGE_DRIVE,
       {
         id: 'morn-pullapart',
         name: 'Band Pull-Apart + Overhead Pass',
@@ -1004,6 +984,7 @@ export const DATA_DAILY: Circuit[] = [
           mistakes: 'Rocking too far too soon. Bouncing. Doing it once a week instead of daily.',
         },
       },
+      LUNGE_DRIVE,
       EDGE_DENSITY,
     ],
   },
@@ -1024,6 +1005,7 @@ export const DATA_DAILY: Circuit[] = [
       CAT_COW,
       SPIDERMAN_LUNGE,
       COSSACK_SHIFT,
+      LUNGE_DRIVE,
       BODYWEIGHT_SQUAT,
       GLUTE_BRIDGE,
       PUSH_UP,
@@ -1052,6 +1034,7 @@ export const DATA_DAILY: Circuit[] = [
       SL_REACH,
       ROCKOVER_TRANSFER,
       FLAG_HOLD,
+      LUNGE_DRIVE,
     ],
   },
 ];

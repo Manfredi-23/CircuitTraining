@@ -499,3 +499,35 @@ export const EXTRA_EXERCISES: Exercise[] = [
   BAND_CURL, BAND_HAMMER, BAND_TRICEPS, DIAMOND_PUSHUP, DB_CURL, CHINUP_NEGATIVE, BAND_LATERAL, FACE_PULL,
   ...GOAL_EXERCISES,
 ];
+
+// ---- Balance and power at full stretch, in every session ---------------------------
+// One short drill that does both: sink into the deep lunge, drive out of it
+// fast, finish standing on the front leg. A minute in a DAILY, two sets in a
+// longer session (v34).
+
+export const LUNGE_DRIVE: Exercise = {
+  id: 'extra-lunge-drive',
+  name: 'Deep Lunge Drive + Stick',
+  capacities: ['legs', 'mobility'],
+  block: 'MOBILITY', intensity: 'MODERATE',
+  sets: 1, work: 5, unit: 'reps', restSec: 15,
+  fixed: true,
+  load: { kind: 'bodyweight', text: 'Bodyweight, hands free' },
+  progression: 'A deeper lunge with a longer stick, then a pause at the bottom, then a small hop into the stick.',
+  protocolId: 'end-range-strength',
+  alsoTrains: ['balance'],
+  perSide: true,
+  note: 'Per leg. Three seconds down into the deepest lunge, then drive up fast onto the front leg and freeze for two seconds.',
+  variations: [
+    { minLevel: 1, name: 'Deep Lunge Drive + Stick' },
+    { minLevel: 3, name: 'Deep Lunge Drive + Stick, 2s Pause' },
+    { minLevel: 5, name: 'Deep Lunge Drive + Hop Stick' },
+  ],
+  form: {
+    setup: 'Long split stance, front foot flat, back knee just off the floor. Hands free.',
+    execution: 'Sink for three seconds until the front hip is low and the back hip flexor stretches. Then drive through the front foot, stand up onto it, lift the back knee to hip height and hold two seconds without a wobble. Step back down into the lunge.',
+    cue: 'Power from the stretched position, then stillness on one foot: the high step and the stand-up on it.',
+    breathing: 'Inhale sinking in, exhale on the drive.',
+    mistakes: 'Pushing off the back foot. Knee caving on the stand. Putting the free foot down to save the stick.',
+  },
+};

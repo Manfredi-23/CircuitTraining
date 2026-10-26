@@ -120,6 +120,7 @@ src/
     training-load.ts # session-RPE load (effort x minutes), weekly totals, acute:chronic
     block.ts     # mesocycle: three build weeks, one deload week
     rehab.ts     # injured ring finger vs the healthy one: % of right, the 80% goal
+    qualities.ts # balance and power at full stretch: what counts, which sessions are exempt
     progression.ts # suggested next load, personal bests
     recommend.ts # which session today
     reminders.ts # which local notifications to schedule
@@ -449,6 +450,31 @@ Short home sessions before breakfast. `npm run check:daily` holds the rules:
   drills normally do not count as leg load, but fifteen minutes on one leg is
   poor practice on legs sore from a descent, so the recommender steps around it
   then.
+
+### Balance and power at full stretch
+
+Since v34 every training session carries a dose of both, in proportion to its
+length (`qualities.ts`, held by `qualities.test.ts`, TIRED included). What
+counts: a `balance`, `footwork` or `floor-footwork` protocol, power at full
+stretch (`end-range-strength`: three seconds into the stretch, drive out
+fast), or `alsoTrains` on the exercise. The common dose is
+`LUNGE_DRIVE` (`extra-lunge-drive`, `data-extras.ts`, fixed MOBILITY): sink
+into the deep lunge, drive up onto the front leg, stick two seconds; it counts
+for both.
+
+| Session | Dose |
+|---|---|
+| Every DAILY | one set of the lunge drive (before the curls; before the edge in 04) |
+| CAVE 01 STRONG | two sets of the lunge drive, before the cuff |
+| CAVE 02 PULL + PUSH | one set, before the cuff |
+| CAVE 03 LEGS + BACK | `COSSACK` (goblet Cossack, 2 x 6) and single-leg balance (2 x 30s) |
+| CAVE 04 / 05 | their own: floor pullover, rock-over drive, Cossack; single-leg balance, hop + stick |
+| HEAL 01 / 02 | two sets of the lunge drive, before the closing mobility |
+| HEAL 05 FOOTWORK | one set, last |
+
+Exempt (`QUALITY_EXEMPT`): TEST 01 ASSESS (extra work would move the
+scores), HEAL 03 RING REHAB and 04 RING TEST (the physio's plan). DAILY 02
+lost the standing band chop to stay inside 20 minutes FRESH.
 
 ### Core
 
@@ -972,11 +998,13 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v33.md`** — **start here.** CAVE 04 POWER and 05 FULL
+- **`7bit-handover-v34.md`** — **start here.** Balance and power at full
+  stretch in every session, in proportion to its length.
+- **`7bit-handover-v33.md`** — read second. CAVE 04 POWER and 05 FULL
   BODY, finger readiness beside the pain check, and a UI pass: tab labels
   that no longer jump, press feedback on every button, the finger check's
   START filled and in reach.
-- **`7bit-handover-v32.md`** — read second. The UI and use review:
+- **`7bit-handover-v32.md`** — The UI and use review:
   START and DONE always in reach, the workout card's ADJUST row, FINISH NOW
   with UNDO, the complete screen summary, folded BODY sections, LOG filters,
   + LOG TODAY'S CLIMBS on TODAY, the rest overrun.
