@@ -6,11 +6,17 @@ import { RESERVE_GROUPS, closedGroups, placeOf, reserveFor, type ReserveGroup } 
 import { daysBetween, localDate } from '@/core/dates';
 import { legSoreness } from '@/core/activity';
 import { activeDay } from '@/core/today';
+import { isHealing } from '@/core/recommend';
+import { packsFor } from '@/core/session-edit';
+import PackList from './PackList';
 import type { Exercise } from '@/core/types';
 import styles from './ReservePicker.module.css';
 
-const GROUP_LABEL: Record<ReserveGroup, string> = {
-  CORE: 'CORE', PULL: 'PULL', ARMS: 'ARMS', SHOULDERS: 'SHLDR', LEGS: 'LEGS', MOBILITY: 'MOBIL', FINGERS: 'FINGR',
+type Tab = ReserveGroup | 'PACKS';
+const TABS: Tab[] = ['PACKS', ...RESERVE_GROUPS];
+
+const GROUP_LABEL: Record<Tab, string> = {
+  PACKS: 'PACKS', CORE: 'CORE', PULL: 'PULL', ARMS: 'ARMS', SHOULDERS: 'SHLDR', LEGS: 'LEGS', MOBILITY: 'MOBIL', FINGERS: 'FINGR',
 };
 
 function dose(e: Exercise): string {
@@ -26,7 +32,8 @@ function ago(date: string | null): string {
 /**
  * The reserve: extra exercises for the running session, by area. Only what
  * the place has and what is safe today; least recently done first. Picks go
- * into the session after the exercise in hand, in block order.
+ * into the session after the exercise in hand, in block order. PACKS adds a
+ * short block (core finisher, arms, shoulder care...) in one tap.
  */
 export default function ReservePicker({ open, onClose }: { open: boolean; onClose: () => void }) {
   const mode = useStore(s => s.mode);
@@ -36,13 +43,18 @@ export default function ReservePicker({ open, onClose }: { open: boolean; onClos
   const sessionLog = useStore(s => s.sessionLog);
   const activityLog = useStore(s => s.activityLog);
   const addExtra = useStore(s => s.addExtra);
+  const addExtras = useStore(s => s.addExtras);
+  const climbLog = useStore(s => s.climbLog);
+  const energy = useStore(s => s.energy);
+  const progress = useStore(s => s.progress);
   const noKit = useStore(s => activeDay(s.dayPlan).noKit);
-  const [group, setGroup] = useState<ReserveGroup>('CORE');
+  const [group, setGroup] = useState<Tab>('CORE');
   const [added, setAdded] = useState<string[]>([]);
+  const [packsAdded, setPacksAdded] = useState<string[]>([]);
   const [entered, setEntered] = useState(false);
 
   useEffect(() => {
-    if (open) { setAdded([]); requestAnimationFrame(() => setEntered(true)); } else setEntered(false);
+    if (open) { setAdded([]); setPacksAdded([]); requestAnimationFrame(() => setEntered(true)); } else setEntered(false);
   }, [open]);
 
   const ctx = circuit ? { mode, circuitId: circuit.id, list: exerciseList, pain: sessionPain, sessionLog, noKit } : null;
@@ -54,8 +66,12 @@ export default function ReservePicker({ open, onClose }: { open: boolean; onClos
   );
 
   if (!open || !circuit || !ctx || !reserve) return null;
-  const closed = closedGroups(ctx);
-  const items = reserve[group];
+  const closed: Partial<Record<Tab, string>> = closedGroups(ctx);
+  const items = group === 'PACKS' ? [] : reserve[group];
+  const place = noKit ? 'HOME' : placeOf(mode, circuit.id);
+  const offers = group === 'PACKS'
+    ? packsFor({ place, mode, healing: isHealing(sessionLog, climbLog), pain: sessionPain, noKit }, exerciseList.map(e => e.id))
+    : [];
   const sore = group === 'LEGS' && legSoreness(activityLog) !== null;
 
   return (
@@ -75,7 +91,7 @@ export default function ReservePicker({ open, onClose }: { open: boolean; onClos
       </div>
 
       <div className={styles.tabs} role="tablist" aria-label="Area">
-        {RESERVE_GROUPS.map(g => (
+        {TABS.map(g => (
           <button
             key={g}
             role="tab"
@@ -88,7 +104,16 @@ export default function ReservePicker({ open, onClose }: { open: boolean; onClos
 
       <div className={styles.scroll}>
         {closed[group] && <div className={styles.empty}>{closed[group]}</div>}
-        {!closed[group] && items.length === 0 && <div className={styles.empty}>Nothing more here for this place.</div>}
+        {group === 'PACKS' && (
+          <PackList
+            offers={offers}
+            added={packsAdded}
+            energy={energy}
+            progress={progress}
+            onAdd={offer => { addExtras(offer.ids); setAdded(a => [...a, ...offer.ids]); setPacksAdded(p => [...p, offer.pack.id]); }}
+          />
+        )}
+        {group !== 'PACKS' && !closed[group] && items.length === 0 && <div className={styles.empty}>Nothing more here for this place.</div>}
         {sore && <div className={styles.warn}>Legs still sore from the last activity. Go easy.</div>}
         {group === 'ARMS' && items.length > 0 && <div className={styles.empty}>Extras: recorded, no XP.</div>}
         {items.map(({ exercise, lastDone, curl }) => {

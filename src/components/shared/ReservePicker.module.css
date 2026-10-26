@@ -29,3 +29,4 @@
   background: var(--ink); color: #E4E2DD;
   font-family: inherit; font-weight: 700; font-size: 15px; letter-spacing: 0.06em;
 }
+.add:disabled:not(.addDone) { opacity: 0.4; }

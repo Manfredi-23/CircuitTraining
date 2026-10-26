@@ -24,3 +24,4 @@
 .meta { font-size: 11px; color: var(--ink-dim); }
 .add { width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 2px solid var(--ink); border-radius: var(--rad-sm); font-weight: 700; font-size: 16px; }
 .row:disabled .add { border-color: var(--ink-ghost); font-size: 11px; color: var(--ink-dim); }
+.group { font-weight: 700; font-size: 11px; letter-spacing: 0.12em; color: var(--accent); padding: 14px 0 2px; }

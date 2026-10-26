@@ -10,7 +10,7 @@
 export const PERSISTED_KEYS = [
   'progress', 'sessionLog', 'benchmarkResults', 'loadLog', 'climbLog',
   'activityLog', 'tweaks', 'dayPlan', 'offDays', 'blockStart', 'settings', 'health', 'buildPresets',
-  'routines', 'weekPlan',
+  'routines', 'weekPlan', 'sessionEdits',
 ] as const;
 
 export type PersistedKey = typeof PERSISTED_KEYS[number];

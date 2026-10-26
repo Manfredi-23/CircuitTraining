@@ -10,6 +10,8 @@ import { getLoadAxis, formatLoad } from '@/core/load';
 import { adjust, setBounds, type AdjustDir } from '@/core/adjust';
 import { exerciseLibrary, insertIndex } from '@/core/reserve';
 import { activeDay, applyDay } from '@/core/today';
+import { activeEdit, editedCircuit } from '@/core/session-edit';
+import { localDate } from '@/core/dates';
 
 /**
  * The session as it will run: level, energy, gates, and the deload week. The
@@ -17,14 +19,20 @@ import { activeDay, applyDay } from '@/core/today';
  * is the session you get.
  */
 export function sessionListFor(
-  state: Pick<Store, 'mode' | 'energy' | 'progress' | 'benchmarkResults' | 'blockStart' | 'sessionLog' | 'tweaks' | 'dayPlan'>,
-  circuit: Circuit,
+  state: Pick<Store, 'mode' | 'energy' | 'progress' | 'benchmarkResults' | 'blockStart' | 'sessionLog' | 'tweaks' | 'dayPlan'> & Partial<Pick<Store, 'sessionEdits'>>,
+  written: Circuit,
   now = new Date(),
 ): ScaledExercise[] {
+  const circuit = circuitFor(state, written, now);
   const deload = getBlockWeek(state.blockStart, state.sessionLog, now).deload && deloads(circuit);
   const list = Engine.buildList(circuit, state.energy, state.progress, state.benchmarkResults, { deload, tweaks: state.tweaks });
   // Today's time cap and kit, from the TODAY sheet.
   return applyDay(list, circuit, activeDay(state.dayPlan, now), state.mode);
+}
+
+/** The session as it runs today: with the edit made on its page, if one holds. */
+export function circuitFor(state: Partial<Pick<Store, 'sessionEdits'>>, circuit: Circuit, now = new Date()): Circuit {
+  return editedCircuit(circuit, activeEdit(state.sessionEdits, circuit.id, localDate(now)));
 }
 
 /**
@@ -94,6 +102,8 @@ export interface WorkoutSlice {
   changeSets: (delta: number) => void;
   /** Add an exercise from the reserve to the running session. */
   addExtra: (exerciseId: string) => void;
+  /** Add a pack from the reserve: each exercise where it belongs. */
+  addExtras: (exerciseIds: string[]) => void;
   /** End here and log the session as cut short. No XP is lost. UNDO goes back to the set in hand. */
   finishNow: () => void;
   /** Change energy mid-session: what is left is rebuilt at the new energy. */
@@ -130,7 +140,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
     const { mode, circuitIndex } = get();
     const circuits = getModeData(mode);
     const circuit = circuits[circuitIndex];
-    get().startCustom(circuit, sessionListFor(get(), circuit), mode, check);
+    get().startCustom(circuitFor(get(), circuit), sessionListFor(get(), circuit), mode, check);
   },
 
   startCustom: (circuit, list, mode, check) => {
@@ -461,6 +471,10 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
     const list = [...state.exerciseList];
     list.splice(at, 0, scaled);
     set({ exerciseList: list, addedIds: [...state.addedIds, exerciseId] });
+  },
+
+  addExtras: (exerciseIds) => {
+    for (const id of exerciseIds) get().addExtra(id);
   },
 
   finishNow: () => {
