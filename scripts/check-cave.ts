@@ -1,10 +1,16 @@
 // =============================================================================
-// check-cave.ts — guards the two after-bouldering sessions and the one-arm gates.
+// check-cave.ts — guards the CAVE session budgets, what the training-day
+// sessions must hold, and the one-arm gates.
 // Run with: npm run check:cave
 //
-//   1. CAVE 02 PULL + PUSH and CAVE 03 LEGS + BACK stay inside their NORMAL
-//      budget at every capacity level. Both run after a two-hour boulder session; volume added
-//      there creeps up unnoticed. FRESH and TIRED are printed for reference.
+//   1. CAVE 02 PULL + PUSH and CAVE 03 LEGS + BACK stay inside 45 minutes
+//      NORMAL at every capacity level: both run after a two-hour boulder
+//      session, and volume added there creeps up unnoticed. CAVE 04 POWER and
+//      05 FULL BODY, the training days, stay inside 75. FRESH and TIRED are
+//      printed for reference.
+//   1b. 04 and 05 each carry core, a balance drill and power at full stretch;
+//      nothing in them needs a bench or a barbell; 04 keeps its finger work
+//      below HARD so it never restarts the 48h; 05 has no hangboard.
 //   2. The one-arm pull-up rungs open on a tested weighted pull-up and nothing
 //      else: no benchmark shows the lopsided substitute, 131% (2RM) opens
 //      assisted one-arms, 141% opens negatives. At max level with no benchmark, none of
@@ -19,7 +25,7 @@ import { getModeData } from '@/core/data-index';
 import { OAP_ASSISTED_GATE, OAP_NEGATIVE_GATE } from '@/core/data-oap';
 import type { BenchmarkResult, EnergyKey, Progress } from '@/core/types';
 
-const NORMAL_BUDGET_MINUTES: Record<string, number> = { 'cave-05': 45, 'cave-06': 45 };
+const NORMAL_BUDGET_MINUTES: Record<string, number> = { 'cave-05': 45, 'cave-06': 45, 'cave-07': 75, 'cave-08': 75 };
 const ENERGIES: EnergyKey[] = ['TIRED', 'NORMAL', 'FRESH'];
 
 function progressAt(level: number): Progress {
@@ -54,6 +60,36 @@ for (const circuit of cave) {
     });
     console.log(`  L${level}  ${row.join('   ')}`);
   }
+}
+
+// ---- 1b. Training days -------------------------------------------------------
+
+console.log('\n=== training days ===');
+for (const id of ['cave-07', 'cave-08']) {
+  const circuit = cave.find(c => c.id === id);
+  if (!circuit) { fail(`no circuit ${id}`); continue; }
+  const all = [...circuit.exercises, ...(circuit.substitutes ?? [])];
+  const working = circuit.exercises.filter(e => e.block !== 'WARMUP');
+  if (!working.some(e => e.capacities.includes('tension') && (e.block === 'SECONDARY' || e.block === 'PRIMARY'))) fail(`${id}: no core`);
+  if (!working.some(e => e.protocolId === 'balance')) fail(`${id}: no balance drill`);
+  if (!working.some(e => e.protocolId === 'end-range-strength')) fail(`${id}: no power at full stretch`);
+  for (const e of all) {
+    const text = [e.form?.setup, e.form?.execution, e.load.text].join(' ').toLowerCase();
+    if (/\bbench\b|barbell/.test(text)) fail(`${id}: ${e.id} needs a bench or a barbell`);
+  }
+  const finger = working.filter(e => e.capacities.includes('crimp') || e.capacities.includes('openhand'));
+  if (id === 'cave-08' && finger.length) fail(`${id}: hangboard work in FULL BODY`);
+  for (const level of CONFIG.levels.map(l => l.level)) {
+    for (const energy of ENERGIES) {
+      for (const e of buildList(circuit, energy, progressAt(level))) {
+        const fingers = e.capacities.includes('crimp') || e.capacities.includes('openhand');
+        if (fingers && e.block !== 'WARMUP' && (e.appliedIntensity === 'HARD' || e.appliedIntensity === 'MAX')) {
+          fail(`${id}: ${e.id} is a hard finger set at L${level} ${energy}`);
+        }
+      }
+    }
+  }
+  console.log(`  ${circuit.circuitNum} ${circuit.title}  core, balance, stretch; no bench or barbell`);
 }
 
 // ---- 2. One-arm gates --------------------------------------------------------

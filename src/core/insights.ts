@@ -392,6 +392,8 @@ export interface FingerWeek {
   load: number;
   /** Highest pain score given that week, or null if none was asked. */
   maxPain: number | null;
+  /** Lowest finger readiness given that week, or null if none was asked. */
+  minReadiness: number | null;
 }
 
 export function getFingerWeeks(
@@ -410,11 +412,15 @@ export function getFingerWeeks(
   const loads = weeklyLoad(items, weeks, now);
   return loads.map(w => {
     const end = addDays(w.monday, 7);
-    const pains = sessionLog
-      .filter(s => s.pain !== undefined)
-      .filter(s => { const d = localDate(new Date(s.date)); return d >= w.monday && d < end; })
-      .map(s => s.pain!);
-    return { monday: w.monday, load: w.total, maxPain: pains.length ? Math.max(...pains) : null };
+    const week = sessionLog
+      .filter(s => { const d = localDate(new Date(s.date)); return d >= w.monday && d < end; });
+    const pains = week.filter(s => s.pain !== undefined).map(s => s.pain!);
+    const ready = week.filter(s => s.readiness !== undefined).map(s => s.readiness!);
+    return {
+      monday: w.monday, load: w.total,
+      maxPain: pains.length ? Math.max(...pains) : null,
+      minReadiness: ready.length ? Math.min(...ready) : null,
+    };
   });
 }
 

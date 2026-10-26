@@ -53,6 +53,7 @@ function sessionItem(s: SessionLogEntry, index: number): HistoryItem {
   if (sets) parts.push(sets);
   if (s.effort !== undefined) parts.push(`effort ${s.effort}`);
   if (s.pain !== undefined && s.pain >= 3) parts.push(`pain ${s.pain}`);
+  if (s.readiness !== undefined && s.readiness < 100) parts.push(`ready ${s.readiness}%`);
   return { kind: 'SESSION', day: dayOf(s.date), at: s.date, ref: String(index), title: `${s.mode} · ${s.circuitTitle}`, detail: parts.join(' · ') };
 }
 

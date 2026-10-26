@@ -53,7 +53,13 @@ export default function SessionDetail({ index, onClose, onExercise }: {
           <div className={styles.fact}><span className={styles.factLabel}>Time</span><span className={styles.factValue}>{s.duration}<small> min</small></span></div>
           <div className={styles.fact}><span className={styles.factLabel}>Energy</span><span className={styles.factValue}>{s.energy}</span></div>
           <div className={styles.fact}><span className={styles.factLabel}>Sets</span><span className={styles.factValue}>{sets ?? '-'}</span></div>
-          <div className={styles.fact}><span className={styles.factLabel}>Pain</span><span className={styles.factValue}>{s.pain ?? '-'}{s.pain !== undefined && <small> /10</small>}</span></div>
+          <div className={styles.fact}>
+            <span className={styles.factLabel}>{s.readiness !== undefined ? 'Pain · Ready' : 'Pain'}</span>
+            <span className={styles.factValue}>
+              {s.pain ?? '-'}{s.pain !== undefined && <small> /10</small>}
+              {s.readiness !== undefined && <> · {s.readiness}<small>%</small></>}
+            </span>
+          </div>
         </div>
 
         {ids.length > 0 && (

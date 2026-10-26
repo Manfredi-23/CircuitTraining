@@ -1,17 +1,23 @@
 // =============================================================================
 // data-cave.ts — CAVE mode: full gym sessions
-// Equipment: hangboard, rings, TRX, kettlebells, dumbbells and
-//            plates, pull-up bars, weighted pull-up harness, a pulley under the
-//            hangboard, bands + anchors, bouldering wall with slab and steep.
+// Equipment: hangboard, pull-up bar, TRX rings, kettlebells, dumbbells and
+//            plates, weighted pull-up harness, boxes, bands, a mat, the
+//            bouldering wall. No bench, no barbell to press, no cables.
 //
-// CAVE is almost always done straight after a bouldering session at Minimum.
-// Three sessions:
-//   01 STRONG      — the one that REPLACES bouldering, fresh: max hangs, heavy
-//                    weighted pull-ups, the one-arm path, front lever.
+// Five sessions: three for a day without climbing, two for straight after
+// bouldering.
+//   01 STRONG      — no climbing, fresh: max hangs, heavy weighted pull-ups,
+//                    the one-arm path, front lever.
 //   02 PULL + PUSH — after bouldering: weighted pull-ups at RPE 8, band-assisted
 //                    one-arms, pushing, then the trunk.
 //   03 LEGS + BACK — after bouldering: legs, the lower back, toes, abs and
 //                    obliques, hips. Nothing loads the fingers.
+//   04 POWER       — no climbing: explosive pulling and pushing, pull-up
+//                    volume, rows and presses for size, light hangs only.
+//   05 FULL BODY   — no climbing: power, a heavy squat and hinge, push, row,
+//                    a carry. No hangboard, so it never competes with 01.
+// 04 and 05 always carry a bit of core, a balance drill and power at full
+// stretch (end-range strength).
 //
 // Free bouldering is the athlete's own and stays unprogrammed. The test
 // battery lives in its own TEST tab (data-assess.ts).
@@ -21,9 +27,10 @@
 // work goes last where fatigue costs nothing.
 // =============================================================================
 
-import type { Circuit } from './types';
+import type { Circuit, Exercise } from './types';
 import { oneArmPath, assistedOneArm, oneArmNegative, oneArmShrug } from './data-oap';
 import { SIDE_PLANK_DIP } from './data-daily';
+import { SL_BALANCE } from './data-extras';
 
 export const WARMUP_PULSE = {
   id: 'cave-warmup-pulse',
@@ -64,10 +71,86 @@ export const WARMUP_FINGERS = {
   },
 };
 
+// Shared between sessions: one id, one load history.
+
+export const PUSH_DIP: Exercise = {
+  id: 'addon-pushup',
+  name: 'Push-Ups / Ring Dips',
+  capacities: ['press', 'shoulder'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 3, work: 10, unit: 'reps', restSec: 90,
+  load: { kind: 'bodyweight', text: 'Bodyweight. Add a pack or a belt once three sets of twelve are easy.' },
+  progression:
+    'Reps to 12 across all three sets, then move up the variation ladder before '
+    + 'you add any weight. Range before load on a pressing pattern you have barely trained.',
+  protocolId: 'strength-endurance',
+  note: 'Wrists sore: push-ups on fists, dumbbells or push-up handles, so the wrist stays straight. Rings and dips already keep it neutral.',
+  variations: [
+    { minLevel: 1, name: 'Push-Ups' },
+    { minLevel: 2, name: 'Ring Push-Ups' },
+    { minLevel: 4, name: 'Ring Dips' },
+    { minLevel: 6, name: 'Weighted Ring Dips', load: 'Belt or pack, RPE 8' },
+  ],
+  form: {
+    setup: 'Push-ups: hands under the shoulders, body one straight line from heels to crown. Rings: set just above floor height, shoulders packed down. Dips: rings at hip height, arms locked, ribs down.',
+    execution: 'Lower with the elbows tracking back at about 45 degrees from the ribs, chest to the floor or to the rings, then press to full lockout. On rings, finish each rep by turning the rings out until the palms face forward.',
+    cue: 'Climbing is two hours of pulling and zero pressing, and the shoulder pays for that imbalance long before the fingers do. This is the single most useful thing in the session even though it feels like the least climbing-specific.',
+    breathing: 'Inhale down, exhale on the press.',
+    mistakes: 'Hips sagging. Elbows flaring to 90 degrees. On dips, dropping below the point where the shoulder stays packed - a deep dip loads the front of the shoulder hard and is not worth the extra range. Chasing the harder ring variation before the easier one is clean.',
+  },
+};
+
+export const RUSSIAN_TWIST: Exercise = {
+  id: 'addon-russian-twist',
+  name: 'Russian Twist',
+  capacities: ['tension'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 2, work: 16, unit: 'reps', restSec: 60,
+  load: { kind: 'added-kg', text: 'A plate or dumbbell held at the chest, or none to start' },
+  progression:
+    'Sixteen slow reps with a straight back, then feet up, then add a plate in '
+    + '2.5kg steps. Slower before heavier.',
+  protocolId: 'trunk-hypertrophy',
+  note: 'Left plus right is 2 reps. Tall and slow: the obliques do the turning, not the arms.',
+  variations: [
+    { minLevel: 1, name: 'Russian Twist - Feet Down' },
+    { minLevel: 3, name: 'Russian Twist - Feet Up' },
+    { minLevel: 5, name: 'Weighted Russian Twist - Feet Up' },
+    { minLevel: 7, name: 'Weighted Russian Twist - Feet Up, 1s Pause' },
+  ],
+  form: {
+    setup: 'Sit with knees bent and heels on the floor. Lean back to about 45 degrees with the chest up and the lower back straight, not rounded into a C. Plate held at the chest in both hands.',
+    execution: 'Turn the ribcage and the plate together to one side until the plate is beside the hip, then to the other. Move slowly. The pelvis stays still; the rotation comes from the ribs and the middle of the back.',
+    cue: 'After bouldering the spine is warm, which makes this the place to load the twist. A straight back and a slow turn make the obliques work harder than a fast swing, because speed lets momentum do the turning.',
+    breathing: 'Exhale as you turn to each side.',
+    mistakes: 'Rounding the lower back. Swinging the plate with the arms while the chest faces forward. Going fast. Tapping the floor by bending sideways instead of turning.',
+  },
+};
+
+export const COPENHAGEN: Exercise = {
+  id: 'home-copenhagen',
+  name: 'Copenhagen Plank',
+  capacities: ['tension', 'legs'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 2, work: 20, unit: 'sec', restSec: 60,
+  load: { kind: 'bodyweight', text: 'Bodyweight' },
+  progression: 'Bent knee on the support, then the full straight-leg version, then add time to 30s.',
+  protocolId: 'tension-iso',
+  perSide: true,
+  note: 'Adductor strength. Drop knees, bridging and knee health all live here.',
+  form: {
+    setup: 'Side plank on the forearm, top leg resting on a box at knee or ankle height.',
+    execution: 'Lift the hips so the body is a straight line, with the bottom leg lifted toward the top one. Hold.',
+    cue: 'The adductors do a lot of work in climbing and almost never get trained directly. This is the fix.',
+    breathing: 'Steady.',
+    mistakes: 'Hips sagging. Rolling the chest toward the floor.',
+  },
+};
+
 export const DATA_CAVE: Circuit[] = [
   {
     id: 'cave-01', circuitNum: '01',
-    title: 'STRONG', subtitle: 'instead of bouldering - fingers - pull',
+    title: 'STRONG', subtitle: 'no climbing - fingers - pull',
     focus: 'Raise the ceiling: peak finger force and maximal pulling, both fresh.',
     capacities: ['crimp', 'pull', 'tension'],
     illustration: 'maxhangs.svg',
@@ -138,6 +221,7 @@ export const DATA_CAVE: Circuit[] = [
         id: 'cave-lockoff',
         name: 'Lock-Off Ladder',
         capacities: ['pull'],
+        hangs: true,
         block: 'SECONDARY', intensity: 'HARD',
         sets: 3, work: 15, unit: 'sec', restSec: 120,
         load: { kind: 'bodyweight', text: 'Bodyweight, assisted or weighted as needed' },
@@ -157,6 +241,7 @@ export const DATA_CAVE: Circuit[] = [
         id: 'cave-front-lever',
         name: 'Front Lever Progression',
         capacities: ['tension'],
+        hangs: true,
         block: 'SECONDARY', intensity: 'HARD',
         sets: 4, work: 10, unit: 'sec', restSec: 90,
         load: { kind: 'bodyweight', text: 'Hardest progression you can hold with a flat lower back' },
@@ -181,6 +266,7 @@ export const DATA_CAVE: Circuit[] = [
         id: 'home-leg-raise',
         name: 'Hanging Leg Raise',
         capacities: ['tension'],
+        hangs: true,
         block: 'SECONDARY', intensity: 'HARD',
         sets: 3, work: 8, unit: 'reps', restSec: 90,
         load: { kind: 'bodyweight', text: 'Bodyweight, slow and controlled' },
@@ -268,32 +354,7 @@ export const DATA_CAVE: Circuit[] = [
       },
       { ...oneArmShrug('addon-oap-shrug'), sets: 1 },
       assistedOneArm('addon-oap-assisted', 'addon-oap-path', 'band'),
-      {
-        id: 'addon-pushup',
-        name: 'Push-Ups / Ring Dips',
-        capacities: ['press', 'shoulder'],
-        block: 'SECONDARY', intensity: 'MODERATE',
-        sets: 3, work: 10, unit: 'reps', restSec: 90,
-        load: { kind: 'bodyweight', text: 'Bodyweight. Add a pack or a belt once three sets of twelve are easy.' },
-        progression:
-          'Reps to 12 across all three sets, then move up the variation ladder before '
-          + 'you add any weight. Range before load on a pressing pattern you have barely trained.',
-        protocolId: 'strength-endurance',
-        note: 'Wrists sore: push-ups on fists, dumbbells or push-up handles, so the wrist stays straight. Rings and dips already keep it neutral.',
-        variations: [
-          { minLevel: 1, name: 'Push-Ups' },
-          { minLevel: 2, name: 'Ring Push-Ups' },
-          { minLevel: 4, name: 'Ring Dips' },
-          { minLevel: 6, name: 'Weighted Ring Dips', load: 'Belt or pack, RPE 8' },
-        ],
-        form: {
-          setup: 'Push-ups: hands under the shoulders, body one straight line from heels to crown. Rings: set just above floor height, shoulders packed down. Dips: rings at hip height, arms locked, ribs down.',
-          execution: 'Lower with the elbows tracking back at about 45 degrees from the ribs, chest to the floor or to the rings, then press to full lockout. On rings, finish each rep by turning the rings out until the palms face forward.',
-          cue: 'Climbing is two hours of pulling and zero pressing, and the shoulder pays for that imbalance long before the fingers do. This is the single most useful thing in the session even though it feels like the least climbing-specific.',
-          breathing: 'Inhale down, exhale on the press.',
-          mistakes: 'Hips sagging. Elbows flaring to 90 degrees. On dips, dropping below the point where the shoulder stays packed - a deep dip loads the front of the shoulder hard and is not worth the extra range. Chasing the harder ring variation before the easier one is clean.',
-        },
-      },
+      PUSH_DIP,
       {
         id: 'addon-mountain-climber',
         name: 'Spiderman + Cross-Body Mountain Climber',
@@ -325,6 +386,7 @@ export const DATA_CAVE: Circuit[] = [
         id: 'addon-hanging-oblique',
         name: 'Hanging Oblique Knee Raise',
         capacities: ['tension'],
+        hangs: true,
         block: 'SECONDARY', intensity: 'HARD',
         sets: 2, work: 8, unit: 'reps', restSec: 90,
         load: { kind: 'bodyweight', text: 'Bodyweight. Ab straps if the grip or fingers complain.' },
@@ -346,32 +408,7 @@ export const DATA_CAVE: Circuit[] = [
           mistakes: 'Swinging to generate the lift. Dead shoulders. Grinding through a finger that is complaining when straps would remove it.',
         },
       },
-      {
-        id: 'addon-russian-twist',
-        name: 'Russian Twist',
-        capacities: ['tension'],
-        block: 'SECONDARY', intensity: 'MODERATE',
-        sets: 2, work: 16, unit: 'reps', restSec: 60,
-        load: { kind: 'added-kg', text: 'A plate or dumbbell held at the chest, or none to start' },
-        progression:
-          'Sixteen slow reps with a straight back, then feet up, then add a plate in '
-          + '2.5kg steps. Slower before heavier.',
-        protocolId: 'trunk-hypertrophy',
-        note: 'Left plus right is 2 reps. Tall and slow: the obliques do the turning, not the arms.',
-        variations: [
-          { minLevel: 1, name: 'Russian Twist - Feet Down' },
-          { minLevel: 3, name: 'Russian Twist - Feet Up' },
-          { minLevel: 5, name: 'Weighted Russian Twist - Feet Up' },
-          { minLevel: 7, name: 'Weighted Russian Twist - Feet Up, 1s Pause' },
-        ],
-        form: {
-          setup: 'Sit with knees bent and heels on the floor. Lean back to about 45 degrees with the chest up and the lower back straight, not rounded into a C. Plate held at the chest in both hands.',
-          execution: 'Turn the ribcage and the plate together to one side until the plate is beside the hip, then to the other. Move slowly. The pelvis stays still; the rotation comes from the ribs and the middle of the back.',
-          cue: 'After bouldering the spine is warm, which makes this the place to load the twist. A straight back and a slow turn make the obliques work harder than a fast swing, because speed lets momentum do the turning.',
-          breathing: 'Exhale as you turn to each side.',
-          mistakes: 'Rounding the lower back. Swinging the plate with the arms while the chest faces forward. Going fast. Tapping the floor by bending sideways instead of turning.',
-        },
-      },
+      RUSSIAN_TWIST,
       {
         id: 'addon-cuff',
         name: 'Band External Rotation',
@@ -505,25 +542,7 @@ export const DATA_CAVE: Circuit[] = [
           mistakes: 'Lifting the heel to use the calf. Kicking the plate with the whole leg. Going so heavy the toes cramp.',
         },
       },
-      {
-        id: 'home-copenhagen',
-        name: 'Copenhagen Plank',
-        capacities: ['tension', 'legs'],
-        block: 'SECONDARY', intensity: 'MODERATE',
-        sets: 2, work: 20, unit: 'sec', restSec: 60,
-        load: { kind: 'bodyweight', text: 'Bodyweight' },
-        progression: 'Bent knee on the support, then the full straight-leg version, then add time to 30s.',
-        protocolId: 'tension-iso',
-        perSide: true,
-        note: 'Adductor strength. Drop knees, bridging and knee health all live here.',
-        form: {
-          setup: 'Side plank on the forearm, top leg resting on a chair or bench at knee or ankle height.',
-          execution: 'Lift the hips so the body is a straight line, with the bottom leg lifted toward the top one. Hold.',
-          cue: 'The adductors do a lot of work in climbing and almost never get trained directly. This is the fix.',
-          breathing: 'Steady.',
-          mistakes: 'Hips sagging. Rolling the chest toward the floor.',
-        },
-      },
+      COPENHAGEN,
       {
         id: 'legs-plate-crunch',
         name: 'Plate Crunch',
@@ -566,6 +585,421 @@ export const DATA_CAVE: Circuit[] = [
           cue: 'Wide, flat-to-the-wall hips are what put the weight over the toes on a slab. Passive range makes it possible, active strength makes it usable.',
           breathing: 'Long exhales into the stretch.',
           mistakes: 'Forcing the range. Arching the lower back in the frogger.',
+        },
+      },
+    ],
+  },
+
+  {
+    id: 'cave-07', circuitNum: '04',
+    title: 'POWER', subtitle: 'no climbing - power - pull - push',
+    focus: 'Pull and push fast, then build the size that holds it: the upper body, fresh.',
+    capacities: ['pull', 'contact', 'press', 'shoulder', 'tension'],
+    illustration: 'pullups.svg',
+    duration: 70,
+    recoveryHours: 24,
+    note:
+      'For a training day without climbing. Light hangs keep the fingers loaded without '
+      + 'making it a hard finger day, so STRONG can follow two days later. Power first, '
+      + 'while every rep can be fast, then the volume, then the stretch, the trunk and '
+      + 'the balance. Stop a power set the moment a rep slows down.',
+    exercises: [
+      WARMUP_PULSE,
+      { ...WARMUP_FINGERS, sets: 3 },
+      {
+        id: 'power-light-hang',
+        name: 'Submax Hangs — 20mm',
+        capacities: ['crimp', 'openhand'],
+        block: 'SECONDARY', intensity: 'MODERATE',
+        sets: 6, work: 10, unit: 'sec', restSec: 50,
+        load: { kind: 'percent-max', value: 50, text: '20mm, about half of your 10s max. Feet on a box if needed.' },
+        progression: 'Same load for the block. Two more hangs before any more weight: this is volume, never a max.',
+        protocolId: 'density-hang',
+        note: 'Light on purpose. The finger flexors and pulleys get loaded without the 48 hours a max hang costs.',
+        form: {
+          setup: '20mm edge, half-crimp or open hand, alternating each hang. Feet on a box under you to take weight off.',
+          execution: 'Ten seconds on, fifty off. Step down between hangs, shake out.',
+          cue: 'It should feel easy all the way through. If the last hang is hard, the load is too high.',
+          breathing: 'Normal breathing throughout.',
+          mistakes: 'Turning it into max hangs. Drifting into a full crimp.',
+        },
+      },
+      {
+        id: 'power-explosive-pullup',
+        name: 'Explosive Pull-Ups',
+        capacities: ['pull', 'contact'],
+        block: 'PRIMARY', intensity: 'HARD',
+        sets: 4, work: 3, unit: 'reps', restSec: 150,
+        load: { kind: 'bodyweight', text: 'Bodyweight. Every rep as fast as you can pull it.' },
+        progression: 'Chest to the bar on every rep, then a short release of the hands at the top, then a light belt.',
+        protocolId: 'upper-power',
+        hangs: true,
+        note: 'Three reps, all fast. The moment one slows down, the set is over: speed is the load.',
+        variations: [
+          { minLevel: 1, name: 'Explosive Pull-Ups — Chin Over' },
+          { minLevel: 3, name: 'Explosive Pull-Ups — Chest to Bar' },
+          { minLevel: 5, name: 'Explosive Pull-Ups — Hand Release', load: 'Hands leave the bar for a moment at the top' },
+          { minLevel: 7, name: 'Explosive Pull-Ups — +5kg', load: 'Light belt, the same speed' },
+        ],
+        form: {
+          setup: 'Dead hang, shoulder-width grip, shoulders set before the first rep.',
+          execution: 'From the dead hang, pull as hard and fast as you can, aiming the chest at the bar. Lower under control to a full hang. Reset, then the next.',
+          cue: 'This is the move to a far hold: the force arrives in the first half of the pull, so start it violently.',
+          breathing: 'Sharp exhale on the pull.',
+          mistakes: 'Kipping to fake speed. Dropping into the bottom on straight, passive shoulders. A fourth slow rep.',
+        },
+      },
+      {
+        id: 'power-explosive-pushup',
+        name: 'Explosive Push-Ups',
+        capacities: ['press'],
+        block: 'SECONDARY', intensity: 'HARD',
+        sets: 3, work: 5, unit: 'reps', restSec: 120,
+        load: { kind: 'bodyweight', text: 'Bodyweight. Hands leave the floor on every rep.' },
+        progression: 'Hands off the floor every rep, then a clap, then feet on a box.',
+        protocolId: 'upper-power',
+        note: 'Wrists sore: do them on push-up handles or fists and stop at hands-off, no clap.',
+        variations: [
+          { minLevel: 1, name: 'Explosive Push-Ups — Hands Off' },
+          { minLevel: 4, name: 'Clap Push-Ups' },
+          { minLevel: 6, name: 'Clap Push-Ups — Feet on a Box' },
+        ],
+        form: {
+          setup: 'High plank, hands just outside the shoulders, body one line, glutes on.',
+          execution: 'Lower under control, then push so hard the hands leave the floor. Land with soft elbows and go straight into the next.',
+          cue: 'The press-out and the mantel ask for a fast push the wall never trains. Speed, not reps.',
+          breathing: 'Inhale down, sharp exhale on the push.',
+          mistakes: 'Hips sagging on landing. Locked elbows on landing. Grinding a slow rep.',
+        },
+      },
+      {
+        id: 'power-weighted-pullup',
+        name: 'Weighted Pull-Ups — Volume',
+        capacities: ['pull'],
+        block: 'SECONDARY', intensity: 'HARD',
+        sets: 3, work: 6, unit: 'reps', restSec: 150,
+        load: { kind: 'added-kg', text: 'RPE 7-8: lighter than STRONG, two or three reps in reserve' },
+        progression: 'Three sets of six clean, then add 2kg. Keep it well under your STRONG load.',
+        protocolId: 'hypertrophy',
+        hangs: true,
+        note: 'The size behind the strength: more reps at a lighter load than STRONG.',
+        variations: [
+          { minLevel: 1, name: 'Pull-Ups — Bodyweight', load: 'Bodyweight, six clean reps' },
+          { minLevel: 3, name: 'Pull-Ups — 3s Lower', load: 'Bodyweight, three seconds down' },
+          { minLevel: 4, name: 'Weighted Pull-Ups — Volume', load: 'Belt or pack, RPE 7-8' },
+        ],
+        form: {
+          setup: 'Dead hang, pronated grip just outside shoulder width. Belt or pack for the weight.',
+          execution: 'Pull until the chin clears the bar, lower to a full dead hang every rep, a steady tempo.',
+          cue: 'Six good reps, two left in the tank. Size comes from many hard sets, not one grinding set.',
+          breathing: 'Exhale on the pull.',
+          mistakes: 'Half reps. Going heavy enough that rep six becomes a fight.',
+        },
+      },
+      {
+        id: 'power-db-row',
+        name: 'Single-Arm Dumbbell Row',
+        capacities: ['pull', 'shoulder'],
+        block: 'SECONDARY', intensity: 'MODERATE',
+        sets: 3, work: 10, unit: 'reps', restSec: 75,
+        load: { kind: 'added-kg', value: 16, text: 'One dumbbell, the free hand on a box' },
+        progression: 'Ten clean reps a side with a one-second squeeze, then 2kg heavier.',
+        protocolId: 'hypertrophy',
+        perSide: true,
+        note: 'Per arm. The horizontal pull climbing barely trains, done without a bench: the free hand on a box.',
+        form: {
+          setup: 'Staggered stance, free hand on a box at knee height, back flat and nearly horizontal. Dumbbell hanging under the shoulder.',
+          execution: 'Row the elbow back past the ribs, squeeze the shoulder blade for one second, lower all the way to a stretch.',
+          cue: 'Elbow to the hip pocket, not to the ceiling. The shoulder blade moves first.',
+          breathing: 'Exhale on the row.',
+          mistakes: 'Twisting the torso to heave the weight. Shrugging. Cutting the stretch at the bottom.',
+        },
+      },
+      {
+        id: 'power-db-press',
+        name: 'Half-Kneeling Dumbbell Press',
+        capacities: ['press', 'shoulder'],
+        block: 'SECONDARY', intensity: 'MODERATE',
+        sets: 3, work: 8, unit: 'reps', restSec: 90,
+        load: { kind: 'added-kg', value: 10, text: 'One dumbbell or kettlebell' },
+        progression: 'Eight clean reps a side with the ribs down, then 2kg heavier.',
+        protocolId: 'hypertrophy',
+        perSide: true,
+        note: 'Per arm. The overhead press without a bar to press: kneeling on one knee, so the trunk has to hold.',
+        form: {
+          setup: 'Half-kneeling on the mat, the knee down on the same side as the dumbbell. Weight at the shoulder, glute of the down leg squeezed.',
+          execution: 'Press straight up until the biceps is beside the ear, lower slowly to the shoulder.',
+          cue: 'Ribs down, glute on. If the lower back arches to finish the rep, the weight is too heavy.',
+          breathing: 'Exhale on the press.',
+          mistakes: 'Leaning away from the weight. Arching the lower back. Pressing forward instead of up.',
+        },
+      },
+      {
+        id: 'power-floor-pullover',
+        name: 'Floor Pullover — Power from the Stretch',
+        capacities: ['shoulder', 'mobility'],
+        block: 'SECONDARY', intensity: 'MODERATE',
+        sets: 3, work: 8, unit: 'reps', restSec: 75,
+        load: { kind: 'added-kg', value: 8, text: 'One dumbbell held in both hands' },
+        progression: 'Deeper behind the head with the ribs down, then a one-second pause in the stretch, then 2kg heavier.',
+        protocolId: 'end-range-strength',
+        note: 'Three seconds down into the stretch overhead, a short pause, then pull it back over the chest fast. The reach above your head, made strong.',
+        form: {
+          setup: 'On your back on the mat, knees bent, lower back flat. Dumbbell held over the chest in both hands, elbows soft.',
+          execution: 'Lower the dumbbell behind the head in three seconds, as far as the ribs stay down. Pause, then drive it back over the chest quickly.',
+          cue: 'The lats and the shoulder at full stretch are where a long reach fails. Strength there is range you can use.',
+          breathing: 'Inhale as it goes back, exhale on the drive.',
+          mistakes: 'Ribs flaring to fake the range. Bending the elbows into a press. Bouncing out of the bottom.',
+        },
+      },
+      {
+        id: 'power-trx-pike',
+        name: 'TRX Knee Tuck / Pike',
+        capacities: ['tension'],
+        block: 'SECONDARY', intensity: 'HARD',
+        sets: 3, work: 10, unit: 'reps', restSec: 60,
+        load: { kind: 'bodyweight', text: 'Feet in the TRX straps, hands on the floor' },
+        progression: 'Knee tucks with a pause, then body saws, then straight-leg pikes.',
+        protocolId: 'trunk-hypertrophy',
+        note: 'Wrists sore: fists, push-up handles, or the forearms for the body saw.',
+        variations: [
+          { minLevel: 1, name: 'TRX Knee Tuck' },
+          { minLevel: 3, name: 'TRX Body Saw', load: 'On the forearms, rock back and forth from the shoulders' },
+          { minLevel: 5, name: 'TRX Pike' },
+        ],
+        form: {
+          setup: 'Toes in the TRX foot cradles at mid-shin height, high plank, hands under the shoulders.',
+          execution: 'Tuck: knees to the chest, back to plank. Pike: hips straight up with straight legs, back to plank. Slow on the way out.',
+          cue: 'The same lower-abs pull that brings a foot up to a high hold on a steep wall.',
+          breathing: 'Exhale as the knees or hips come up.',
+          mistakes: 'Hips sagging between reps. Shoulders drifting behind the hands. Swinging.',
+        },
+      },
+      SL_BALANCE,
+      {
+        id: 'power-band-face-pull',
+        name: 'Band Face Pull',
+        capacities: ['shoulder'],
+        block: 'PREHAB', intensity: 'EASY',
+        sets: 2, work: 15, unit: 'reps', restSec: 45,
+        load: { kind: 'band', text: 'Light band anchored at face height' },
+        progression: 'Reps to 20 with a pause at the face, then a slightly heavier band.',
+        protocolId: 'prehab',
+        form: {
+          setup: 'Band anchored at face height, a hand on each end, step back until the arms are straight.',
+          execution: 'Pull the band to the face, hands finishing beside the ears, elbows high. Pause, return slowly.',
+          cue: 'Rear shoulder and rotator cuff against all the pulling. Finish like a double-biceps pose.',
+          breathing: 'Exhale as you pull.',
+          mistakes: 'Elbows dropping. Shrugging. A band so heavy the back leans.',
+        },
+      },
+    ],
+  },
+  {
+    id: 'cave-08', circuitNum: '05',
+    title: 'FULL BODY', subtitle: 'no climbing - legs - push - pull - trunk',
+    focus: 'Everything strong in one session: jump, squat, hinge, push, row, carry.',
+    capacities: ['legs', 'contact', 'press', 'pull', 'tension', 'mobility'],
+    illustration: 'kettlebell.svg',
+    duration: 70,
+    recoveryHours: 24,
+    note:
+      'For a training day without climbing, alternated with POWER. No hangboard: the '
+      + 'carry is the only grip load, and it swaps for a plate hugged to the chest when '
+      + 'the fingers are not ready. Jumps first, then the heavy legs, then the upper body, '
+      + 'the stretch, and the trunk.',
+    exercises: [
+      WARMUP_PULSE,
+      {
+        id: 'full-box-jump',
+        name: 'Box Jump',
+        capacities: ['legs', 'contact'],
+        block: 'SECONDARY', intensity: 'HARD',
+        sets: 4, work: 3, unit: 'reps', restSec: 90,
+        load: { kind: 'bodyweight', text: 'A box you land on softly in a quarter squat' },
+        progression: 'A higher box only when every landing is quiet. Then seated starts, then single-leg take-offs.',
+        protocolId: 'lower-power',
+        note: 'Step down, never jump down.',
+        variations: [
+          { minLevel: 1, name: 'Box Jump' },
+          { minLevel: 3, name: 'Box Jump — Seated Start', load: 'From sitting on a second box: no countermovement' },
+          { minLevel: 5, name: 'Single-Leg Box Jump', load: 'Low box, three a leg' },
+        ],
+        form: {
+          setup: 'Box at about knee height, a step in front of it. Feet hip-width.',
+          execution: 'Swing the arms back, dip, jump onto the box, land on the whole foot in a quarter squat. Stand, step down, reset.',
+          cue: 'Dynos and big moves off poor feet are the legs firing fast. Three fresh reps train that.',
+          breathing: 'In on the dip, out on the jump.',
+          mistakes: 'A box so high you land in a deep squat. Knees caving. Jumping down.',
+        },
+      },
+      {
+        id: 'full-hop-stick',
+        name: 'Lateral Hop + Stick',
+        capacities: ['legs', 'tension'],
+        block: 'PREHAB', intensity: 'TECHNIQUE',
+        sets: 2, work: 5, unit: 'reps', restSec: 45,
+        load: { kind: 'bodyweight', text: 'Bodyweight, one foot to the other' },
+        progression: 'Longer hops, then a two-second stick, then eyes on a point that is not the floor.',
+        protocolId: 'balance',
+        fixed: true,
+        perSide: true,
+        note: 'Balance under speed: land on one foot and freeze. A wobble means the hop was too long.',
+        form: {
+          setup: 'Stand on one foot, knee soft, space to the side.',
+          execution: 'Hop sideways onto the other foot and stick the landing for two seconds without moving. Hop back.',
+          cue: 'Absorb with the ankle, knee and hip together; the knee stays over the middle toes.',
+          breathing: 'Exhale on the landing.',
+          mistakes: 'Landing on a straight leg. Knee caving in. Putting the other foot down to save it.',
+        },
+      },
+      {
+        id: 'full-front-squat',
+        name: 'Double Kettlebell Front Squat',
+        capacities: ['legs'],
+        block: 'PRIMARY', intensity: 'HARD',
+        sets: 4, work: 5, unit: 'reps', restSec: 150,
+        load: { kind: 'added-kg', value: 24, text: 'Two kettlebells or dumbbells at the shoulders, total kg' },
+        progression: 'Four sets of five at full depth with a flat back, then 2-4kg more in total.',
+        protocolId: 'max-strength',
+        note: 'The heavy leg lift of the week. Racked at the shoulders, so the trunk works too.',
+        variations: [
+          { minLevel: 1, name: 'Goblet Squat — Heavy', load: 'One bell at the chest' },
+          { minLevel: 3, name: 'Double Kettlebell Front Squat' },
+          { minLevel: 5, name: 'Double Kettlebell Front Squat — 2s Pause' },
+        ],
+        form: {
+          setup: 'Bells racked on the forearms at the shoulders, elbows in, feet shoulder-width, toes slightly out.',
+          execution: 'Sit down between the hips until the hip crease passes the knee, chest tall. Drive up through the whole foot.',
+          cue: 'Brace before you descend and keep the brace all the way up. The legs push the floor away.',
+          breathing: 'Big breath in at the top, brace, exhale through the top half.',
+          mistakes: 'Cutting depth. Heels lifting. The chest dropping so the bells pull you forward.',
+        },
+      },
+      {
+        id: 'full-db-rdl',
+        name: 'Dumbbell Romanian Deadlift',
+        capacities: ['legs', 'tension'],
+        block: 'SECONDARY', intensity: 'HARD',
+        sets: 3, work: 8, unit: 'reps', restSec: 120,
+        load: { kind: 'added-kg', value: 32, text: 'Two dumbbells or kettlebells, total kg' },
+        progression: 'Eight reps with a flat back and a deep hamstring stretch, then 4kg more in total.',
+        protocolId: 'back-strength',
+        note: 'The hinge under load. Your lower back is the weak point, so the back stays flat and the hips do the moving.',
+        form: {
+          setup: 'Feet hip-width, a weight in each hand in front of the thighs, knees soft.',
+          execution: 'Push the hips back, sliding the weights down the thighs until the hamstrings stop you, back flat. Drive the hips forward to stand.',
+          cue: 'A long stretch on the hamstrings at the bottom, then stand up hard. Hips, not the lower back.',
+          breathing: 'Inhale down, exhale up.',
+          mistakes: 'Rounding the back to go lower. Squatting it. Leaning back at the top.',
+        },
+      },
+      {
+        id: 'full-rockover-drive',
+        name: 'High-Step Rock-Over Drive',
+        capacities: ['legs', 'mobility'],
+        block: 'SECONDARY', intensity: 'HARD',
+        sets: 3, work: 4, unit: 'reps', restSec: 90,
+        load: { kind: 'added-kg', value: 0, text: 'Bodyweight, then a dumbbell in each hand' },
+        progression: 'A higher box, then a pause in the deep position, then dumbbells in 2kg steps.',
+        protocolId: 'end-range-strength',
+        perSide: true,
+        note: 'Per leg. The high step on the wall: sink into the deep stretch over the foot, then drive up to stand, fast.',
+        variations: [
+          { minLevel: 1, name: 'Rock-Over Drive — Knee-Height Box' },
+          { minLevel: 3, name: 'Rock-Over Drive — Hip-Height Box' },
+          { minLevel: 5, name: 'Rock-Over Drive — Hip-Height, 2s Pause' },
+        ],
+        form: {
+          setup: 'Whole foot on a stable box, the other on the floor. Hands free or holding light dumbbells.',
+          execution: 'Shift the pelvis forward over the high foot and sink into the deepest position you can drive out of. Hold a breath, then stand up on the box as fast as you can. Step down slowly.',
+          cue: 'No push from the floor foot. The power comes from the bent leg at full stretch, exactly as on a high foothold.',
+          breathing: 'Inhale sinking in, exhale on the drive.',
+          mistakes: 'Bouncing off the back foot. Knee caving. Going deeper than you can drive out of.',
+        },
+      },
+      { ...PUSH_DIP, sets: 3 },
+      {
+        id: 'full-ring-row',
+        name: 'Ring Row',
+        capacities: ['pull', 'shoulder'],
+        block: 'SECONDARY', intensity: 'MODERATE',
+        sets: 3, work: 10, unit: 'reps', restSec: 75,
+        load: { kind: 'bodyweight', text: 'TRX rings, body straight. Feet further forward is harder.' },
+        progression: 'Feet further forward, then feet on a box, then a three-second lower.',
+        protocolId: 'hypertrophy',
+        variations: [
+          { minLevel: 1, name: 'Ring Row' },
+          { minLevel: 3, name: 'Ring Row — Feet on a Box' },
+          { minLevel: 5, name: 'Ring Row — Feet on a Box, 3s Lower' },
+        ],
+        form: {
+          setup: 'Rings at waist height, lean back with straight arms, body one line from heels to head.',
+          execution: 'Row the chest up to the rings, elbows close to the ribs, squeeze one second, lower slowly.',
+          cue: 'The shoulder blades pull together first. The body stays a plank.',
+          breathing: 'Exhale on the row.',
+          mistakes: 'Hips sagging. Leading with the chin. Half reps.',
+        },
+      },
+      {
+        id: 'full-suitcase-carry',
+        name: 'Suitcase Carry',
+        capacities: ['forearm', 'tension'],
+        block: 'SECONDARY', intensity: 'MODERATE',
+        sets: 3, work: 30, unit: 'sec', restSec: 60,
+        load: { kind: 'added-kg', value: 20, text: 'One heavy kettlebell or dumbbell' },
+        progression: 'Walk the time tall and level, then 4kg heavier.',
+        protocolId: 'tension-iso',
+        perSide: true,
+        noGripId: 'full-plate-carry',
+        note: 'Per side. One weight, so the trunk stops you leaning: the obliques and the grip together.',
+        form: {
+          setup: 'A heavy bell in one hand at your side, shoulders level, standing tall.',
+          execution: 'Walk slowly for the time without leaning toward or away from the weight. Swap hands.',
+          cue: 'Tall and level, as if a string pulls the crown of the head up.',
+          breathing: 'Short, steady breaths under the brace.',
+          mistakes: 'Leaning. The shoulder dropping. Walking fast.',
+        },
+      },
+      {
+        id: 'full-cossack',
+        name: 'Goblet Cossack Squat',
+        capacities: ['legs', 'mobility'],
+        block: 'SECONDARY', intensity: 'MODERATE',
+        sets: 2, work: 6, unit: 'reps', restSec: 60,
+        load: { kind: 'added-kg', value: 8, text: 'A light bell or plate hugged at the chest' },
+        progression: 'Deeper with the heel down, then a pause at the bottom, then 2kg heavier.',
+        protocolId: 'end-range-strength',
+        perSide: true,
+        note: 'Per side. Slowly down into the side split, then drive out of it: drop knees and wide stems.',
+        form: {
+          setup: 'Wide stance, toes slightly out, a light weight at the chest.',
+          execution: 'Shift into one hip, bending that knee until the other leg is straight with the toes up. Three seconds down, then push back to the middle fast.',
+          cue: 'Adductors at full stretch, then strong from there. Only as deep as you can drive out of.',
+          breathing: 'Inhale down, exhale on the drive.',
+          mistakes: 'The bent heel lifting. Rounding the back. Collapsing into the bottom.',
+        },
+      },
+      COPENHAGEN,
+      RUSSIAN_TWIST,
+    ],
+    substitutes: [
+      {
+        id: 'full-plate-carry',
+        name: 'Plate Hug Carry',
+        capacities: ['tension', 'legs'],
+        block: 'SECONDARY', intensity: 'MODERATE',
+        sets: 3, work: 30, unit: 'sec', restSec: 60,
+        load: { kind: 'added-kg', value: 15, text: 'A plate hugged to the chest, nothing gripped' },
+        progression: 'Walk the time tall, then a heavier plate.',
+        protocolId: 'tension-iso',
+        note: 'The carry without the grip: the plate rests on the forearms against the chest.',
+        form: {
+          setup: 'A plate hugged flat against the chest, forearms under it, hands open.',
+          execution: 'Walk slowly for the time, standing tall with the ribs down.',
+          cue: 'The trunk holds, the hands rest.',
+          breathing: 'Short, steady breaths under the brace.',
+          mistakes: 'Leaning back to hold the plate. Gripping the edge.',
         },
       },
     ],

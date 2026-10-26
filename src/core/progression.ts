@@ -8,7 +8,7 @@
 // =============================================================================
 
 import { getLastLoad, getLoadAxis, getLoadHistory, clampToAxis } from './load';
-import { PAIN_REDUCE_FROM } from './engine';
+import { PAIN_REDUCE_FROM, READINESS_HOLD_FROM, loadsFingers } from './engine';
 import type { Exercise, LoadAxis, LoadLogEntry, SessionLogEntry } from './types';
 
 /** Session effort above which the load holds even when every set was done. */
@@ -62,6 +62,10 @@ export function suggestLoad(
   // A finger that hurt going in is not a finger to add load to, whatever the sets say.
   if (session?.pain !== undefined && session.pain >= PAIN_REDUCE_FROM) {
     return { kind: 'hold', value: last.value, reason: `Finger pain ${session.pain}/10 last time. Hold the load.` };
+  }
+  // Fingers said they were not all there: what was lifted then is not a ceiling to build on.
+  if (session?.readiness !== undefined && session.readiness <= READINESS_HOLD_FROM && loadsFingers(exercise)) {
+    return { kind: 'hold', value: last.value, reason: `Finger readiness ${session.readiness}% last time. Hold the load.` };
   }
   // How this exercise felt beats how the whole session felt.
   const feel = session?.feel?.[exercise.id];

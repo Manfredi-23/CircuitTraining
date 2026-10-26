@@ -4,7 +4,7 @@ import { useState, type ReactNode } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useStore } from '@/store/store';
 import { sessionListFor } from '@/store/slices/workout-slice';
-import { asksPainCheck, applyPainCheck, estimateDuration } from '@/core/engine';
+import { asksPainCheck, asksReadiness, applyFingerCheck, estimateDuration, scaleExercise, type FingerCheck } from '@/core/engine';
 import SessionInfo from '@/components/shared/SessionInfo';
 import PainCheck from '@/components/shared/PainCheck';
 import type { Circuit, Mode } from '@/core/types';
@@ -35,16 +35,20 @@ export function useLauncher() {
   const [pain, setPain] = useState<LaunchTarget | null>(null);
 
   const listOf = (t: LaunchTarget) => sessionListFor({ ...state, mode: t.mode }, t.circuit);
-  const run = (t: LaunchTarget, score?: number) => {
+  const run = (t: LaunchTarget, check?: FingerCheck) => {
     state.selectCircuit(t.mode, t.circuit.id);
-    state.startCustom(t.circuit, listOf(t), t.mode, score);
+    state.startCustom(t.circuit, listOf(t), t.mode, check);
   };
   const start = (t: LaunchTarget) => {
     setInfo(null);
-    if (asksPainCheck(t.circuit)) setPain(t);
+    if (asksReadiness(t.circuit)) setPain(t);
     else run(t);
   };
   const lastPain = [...state.sessionLog].reverse().find(s => s.pain !== undefined)?.pain ?? null;
+  const lastReadiness = [...state.sessionLog].reverse().find(s => s.readiness !== undefined)?.readiness ?? null;
+  const remaining = (t: LaunchTarget, check: FingerCheck) =>
+    applyFingerCheck(listOf(t), check, t.circuit, ex => scaleExercise(ex, state.energy, state.progress, { tweaks: state.tweaks }))
+      .filter(e => e.block !== 'WARMUP').length;
 
   const infoList = info ? listOf(info) : [];
   const element = (
@@ -67,10 +71,12 @@ export function useLauncher() {
         <PainCheck
           open
           title={pain.circuit.title}
+          askPain={asksPainCheck(pain.circuit)}
           lastPain={lastPain}
-          remainingFor={p => applyPainCheck(listOf(pain), p).filter(e => e.block !== 'WARMUP').length}
+          lastReadiness={lastReadiness}
+          remainingFor={check => remaining(pain, check)}
           onClose={() => setPain(null)}
-          onStart={p => { const t = pain; setPain(null); run(t, p); }}
+          onStart={check => { const t = pain; setPain(null); run(t, check); }}
         />
       )}
     </>

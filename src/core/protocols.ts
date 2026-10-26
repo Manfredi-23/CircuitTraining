@@ -400,6 +400,28 @@ export const PROTOCOLS: Record<string, Protocol> = {
       + 'mobility assessment protocols.',
   },
 
+  'end-range-strength': {
+    id: 'end-range-strength',
+    name: 'Power at Full Stretch',
+    quality: 'Force produced from the deep, stretched end of a range',
+    work: '5-10 reps: three seconds down into the stretch, a short pause, then up fast',
+    rest: '60-90s',
+    sets: '2-3',
+    intensity: 'Moderate load. Only as deep as you can drive out of',
+    frequency: '2-3x per week, after the heavy work',
+    rationale:
+      'Strength training through a full range improves range of motion about as much as '
+      + 'static stretching does, and it adds strength at the stretched position, where '
+      + 'passive stretching adds none. Climbing asks for exactly that: a high step, a '
+      + 'deep rock-over or a long reach is only usable if the muscle can drive hard while '
+      + 'it is lengthened. The slow lower takes the muscle into the stretch, the fast '
+      + 'drive trains it to produce force from there.',
+    source:
+      'Afonso et al., strength training versus stretching for improving range of motion, '
+      + 'Healthcare (2021); Pedrosa et al., partial range of motion training at long '
+      + 'muscle lengths, Eur J Sport Sci (2022).',
+  },
+
   'assessment': {
     id: 'assessment',
     name: 'Assessment Battery',
@@ -483,6 +505,25 @@ export const PROTOCOLS: Record<string, Protocol> = {
     source:
       'Lake and Lauder, kettlebell swing training improves maximal and explosive '
       + 'strength, J Strength Cond Res (2012).',
+  },
+
+  'lower-power': {
+    id: 'lower-power',
+    name: 'Leg Power',
+    quality: 'Force from the legs, produced fast',
+    work: '3-5 jumps, every one from a dead stop',
+    rest: '90s',
+    sets: '3-4',
+    intensity: 'Maximal intent, low box, soft landings. Stop when a jump gets lower or louder',
+    frequency: '1-2x per week, first in the session after the warm-up',
+    rationale:
+      'Jumps train the rate of force development that a dyno, a run-and-jump start or a '
+      + 'big move off a poor foot needs. Power drops first with fatigue, so it goes first, '
+      + 'with few reps and full rest. Stepping down instead of jumping down keeps the '
+      + 'landing load for the knees and Achilles small.',
+    source:
+      'Haff and Nimphius, training principles for power, Strength Cond J (2012); NSCA '
+      + 'Essentials of Strength Training and Conditioning, 4th ed., plyometric guidelines.',
   },
 
   'floor-footwork': {
