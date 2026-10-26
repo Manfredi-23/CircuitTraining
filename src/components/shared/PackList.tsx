@@ -4,7 +4,7 @@ import { exerciseLibrary } from '@/core/reserve';
 import { estimateDuration, scaleExercise } from '@/core/engine';
 import type { PackOffer } from '@/core/session-edit';
 import type { EnergyKey, Progress } from '@/core/types';
-import styles from './ReservePicker.module.css';
+import styles from './PackList.module.css';
 
 /**
  * The add-on packs: short blocks added in one tap, before a session or in the
@@ -30,9 +30,14 @@ export default function PackList({ offers, added, energy, progress, onAdd }: {
         return (
           <div key={pack.id} className={styles.row}>
             <div className={styles.body}>
-              <div className={styles.name}>{pack.name}{exs.length ? ` · +${minutes} MIN` : ''}</div>
-              <div className={styles.meta}>{pack.note}</div>
-              <div className={styles.meta}>{closed ?? exs.map(e => e.name).join(', ')}</div>
+              <div className={styles.head}>
+                <span className={styles.name}>{pack.name}</span>
+                {exs.length > 0 && <span className={styles.minutes}>+{minutes} MIN</span>}
+              </div>
+              <div className={styles.note}>{pack.note}</div>
+              {closed
+                ? <div className={styles.closed}>{closed}</div>
+                : <div className={styles.items}>{exs.map(e => e.name).join(' · ')}</div>}
             </div>
             <button
               className={`${styles.add}${done ? ` ${styles.addDone}` : ''}`}

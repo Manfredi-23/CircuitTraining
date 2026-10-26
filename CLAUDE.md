@@ -1030,7 +1030,9 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v35.md`** — **start here.** EDIT before START: swap
+- **`7bit-handover-v36.md`** — **start here.** More room in the session
+  editor: one card per exercise, labelled steppers, airier packs.
+- **`7bit-handover-v35.md`** — EDIT before START: swap
   (similar first), remove, move, sets, reps, load for today, add exercises
   and packs; today only or kept. Packs mid-session too.
 - **`7bit-handover-v34.md`** — Balance and power at full

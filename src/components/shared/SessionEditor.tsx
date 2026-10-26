@@ -18,7 +18,7 @@ import {
 } from '@/core/session-edit';
 import ExercisePicker from './ExercisePicker';
 import PackList from './PackList';
-import styles from './RoutineEditor.module.css';
+import styles from './SessionEditor.module.css';
 import packStyles from './ReservePicker.module.css';
 import type { Circuit, Exercise, Mode } from '@/core/types';
 
@@ -82,22 +82,26 @@ export default function SessionEditor({ mode, circuit, onClose }: {
 
       <div className={styles.scroll}>
         <div className={styles.field}>
-          <div className={styles.listHead}>
-            <span className={styles.label}>{circuit.title}</span>
-            <span className={styles.minutes}>{minutes} MIN AT {state.energy}</span>
-          </div>
-          <span className={styles.hint}>
+          <div className={styles.intro}>
+            <div className={styles.listHead}>
+              <span className={styles.label}>{circuit.title}</span>
+              <span className={styles.minutes}>{minutes} MIN AT {state.energy}</span>
+            </div>
+            <span className={styles.hint}>
             {changed ? (edit.kept ? 'Your version: kept until you reset it.' : 'Changed for today. Tomorrow it is back as written.') : 'As written. Every change holds for today.'}
-          </span>
+            </span>
+          </div>
           {edit.items.length === 0 && <div className={styles.empty}>Nothing left. Add an exercise or a pack below.</div>}
           {edit.items.length > 0 && (
             <ol className={styles.list}>
               {edit.items.map((it, i) => {
                 const ex = editExercise(circuit, it);
+                const num = String(i + 1).padStart(2, '0');
                 if (!ex) {
                   return (
-                    <li key={it.id} className={styles.item}>
-                      <div className={styles.itemTop}>
+                    <li key={it.id} className={styles.card}>
+                      <div className={styles.cardHead}>
+                        <span className={styles.num}>{num}</span>
                         <span className={styles.name}>No longer in the app</span>
                         <button className={styles.icon} onClick={() => save(removeAt(edit, i))} aria-label="Remove">X</button>
                       </div>
@@ -114,56 +118,68 @@ export default function SessionEditor({ mode, circuit, onClose }: {
                 const opening = axis ? getOpeningLoad({ ...ex, targetLoad: undefined }, state.loadLog) : 0;
                 const added = !circuit.exercises.some(e => e.id === it.id);
                 return (
-                  <li key={it.id} className={styles.item}>
-                    <div className={styles.itemTop}>
-                      <span className={styles.name}>
-                        {ex.name}
-                        {added && <span className={styles.hint}> &middot; yours</span>}
-                      </span>
-                      <button className={styles.icon} disabled={i === 0} onClick={() => save(moveAt(edit, i, -1))} aria-label={`Move ${ex.name} up`}>&uarr;</button>
-                      <button className={styles.icon} disabled={i === edit.items.length - 1} onClick={() => save(moveAt(edit, i, 1))} aria-label={`Move ${ex.name} down`}>&darr;</button>
+                  <li key={it.id} className={styles.card}>
+                    <div className={styles.cardHead}>
+                      <span className={styles.num}>{num}</span>
+                      <div className={styles.title}>
+                        <span className={styles.name}>{ex.name}</span>
+                        <span className={styles.tag}>{ex.block}{added ? ' · YOURS' : ''}</span>
+                      </div>
                       <button className={styles.icon} onClick={() => save(removeAt(edit, i))} aria-label={`Remove ${ex.name}`}>X</button>
                     </div>
-                    <div className={styles.itemBottom}>
-                      {editable ? (
-                        <>
+
+                    {editable ? (
+                      <div className={styles.fields}>
+                        <div className={styles.fieldBox}>
+                          <span className={styles.fieldLabel}>SETS</span>
                           <span className={styles.stepper}>
                             <button className={styles.step} disabled={ex.sets <= 1} onClick={() => save(stepAt(circuit, edit, i, 'sets', -1))} aria-label="One set fewer">-</button>
-                            <span className={it.sets !== undefined ? styles.valueChanged : styles.value}>{sets}<small> x</small></span>
+                            <span className={it.sets !== undefined ? styles.valueChanged : styles.value}>{sets}</span>
                             <button className={styles.step} disabled={ex.sets >= MAX_SETS} onClick={() => save(stepAt(circuit, edit, i, 'sets', 1))} aria-label="One set more">+</button>
                           </span>
+                        </div>
+                        <div className={styles.fieldBox}>
+                          <span className={styles.fieldLabel}>{ex.unit === 'sec' ? 'SECONDS' : 'REPS'}{ex.perSide ? ' / SIDE' : ''}</span>
                           <span className={styles.stepper}>
                             <button className={styles.step} onClick={() => save(stepAt(circuit, edit, i, 'work', -1))} aria-label="Less work">-</button>
-                            <span className={it.work !== undefined ? styles.valueChanged : styles.value}>{work}{unit}<small>{ex.perSide ? '/s' : ''}</small></span>
+                            <span className={it.work !== undefined ? styles.valueChanged : styles.value}>{work}{unit}</span>
                             <button className={styles.step} onClick={() => save(stepAt(circuit, edit, i, 'work', 1))} aria-label="More work">+</button>
                           </span>
-                        </>
-                      ) : (
-                        <span className={styles.fixed}>{sets} x {work}{unit} &middot; as written</span>
-                      )}
-                      <button className={styles.swap} onClick={() => setPicker({ swap: i })}>SWAP</button>
-                    </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className={styles.fixed}>{sets} x {work}{unit}{ex.perSide ? ' /side' : ''} &middot; taken as written</div>
+                    )}
+
                     {axis && (
-                      <div className={styles.itemBottom}>
-                        <span className={styles.hint}>LOAD</span>
-                        <span className={styles.stepper}>
+                      <div className={styles.fieldBox}>
+                        <span className={styles.fieldLabel}>
+                          LOAD TODAY
+                          {it.target !== undefined
+                            ? <button className={styles.textBtn} onClick={() => save(clearTarget(edit, i))}>BACK TO LAST TIME</button>
+                            : <span className={styles.fieldNote}>as last time</span>}
+                        </span>
+                        <span className={`${styles.stepper} ${styles.stepperWide}`}>
                           <button className={styles.step} onClick={() => save(stepTarget(circuit, edit, i, -1, opening))} aria-label="Less load">-</button>
                           <span className={it.target !== undefined ? styles.valueChanged : styles.value}>{formatLoad(it.target ?? opening, axis)}</span>
                           <button className={styles.step} onClick={() => save(stepTarget(circuit, edit, i, 1, opening))} aria-label="More load">+</button>
                         </span>
-                        {it.target !== undefined
-                          ? <button className={styles.swap} onClick={() => save(clearTarget(edit, i))}>LAST TIME</button>
-                          : <span className={styles.hint}>last time</span>}
                       </div>
                     )}
+
+                    <div className={styles.cardFoot}>
+                      <button className={styles.icon} disabled={i === 0} onClick={() => save(moveAt(edit, i, -1))} aria-label={`Move ${ex.name} up`}>&uarr;</button>
+                      <button className={styles.icon} disabled={i === edit.items.length - 1} onClick={() => save(moveAt(edit, i, 1))} aria-label={`Move ${ex.name} down`}>&darr;</button>
+                      <button className={styles.swap} onClick={() => setPicker({ swap: i })}>SWAP</button>
+                    </div>
                   </li>
                 );
               })}
             </ol>
           )}
-          <div className={styles.chips}>
-            <button className={styles.add} style={{ flex: 1 }} disabled={edit.items.length >= MAX_EDIT_ITEMS} onClick={() => setPicker({ swap: null })}>+ EXERCISE</button>
-            <button className={styles.add} style={{ flex: 1 }} disabled={edit.items.length >= MAX_EDIT_ITEMS} onClick={() => { setPacksAdded([]); setPacks(true); }}>+ PACK</button>
+          <div className={styles.addRow}>
+            <button className={styles.add} disabled={edit.items.length >= MAX_EDIT_ITEMS} onClick={() => setPicker({ swap: null })}>+ EXERCISE</button>
+            <button className={styles.add} disabled={edit.items.length >= MAX_EDIT_ITEMS} onClick={() => { setPacksAdded([]); setPacks(true); }}>+ PACK</button>
           </div>
           <span className={styles.hint}>Sets and reps as they run at {state.energy}. Rest stays as each exercise writes it; level picks the variation.</span>
         </div>
@@ -219,7 +235,7 @@ export default function SessionEditor({ mode, circuit, onClose }: {
             <span className={packStyles.crumb}>ADD A PACK TO {circuit.title}</span>
             <button className="overlay-close" onClick={() => setPacks(false)} aria-label="Close">X</button>
           </div>
-          <div className={packStyles.place}>Each exercise goes where it belongs: heavy first, curls last.</div>
+          <div className={`${packStyles.place} ${styles.packIntro}`}>Each exercise goes where it belongs: heavy first, curls last.</div>
           <div className={packStyles.scroll}>
             <PackList
               offers={packsFor(ctx, ids)}
