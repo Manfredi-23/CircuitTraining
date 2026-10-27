@@ -35,9 +35,17 @@
   font-weight: 700; font-size: 12px; letter-spacing: 0.08em;
 }
 
-.alts { display: flex; flex-direction: column; gap: 14px; }
+.alts { border: 2px solid var(--ink); border-radius: var(--rad-lg); overflow: hidden; flex-shrink: 0; }
+.altHead {
+  width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 14px 20px; min-height: 60px; text-align: left;
+}
+.altHeadText { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.altLabel { font-weight: 700; font-size: 14px; letter-spacing: 0.04em; color: var(--ink); }
+.altSummary { font-size: 12px; color: var(--ink-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chev { font-weight: 700; font-size: 20px; width: 20px; text-align: center; flex-shrink: 0; }
 .h2 { font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--ink); }
-.altList { border: 2px solid var(--ink); border-radius: var(--rad-lg); overflow: hidden; }
+.altList { border-top: 2px solid var(--ink-faint); }
 .altRow {
   width: 100%; display: flex; align-items: center; gap: 14px; text-align: left;
   padding: 14px 20px; min-height: 64px;

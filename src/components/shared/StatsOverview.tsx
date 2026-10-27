@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   getInsights, getOverview, getWorkSplit, PERIOD_DAYS, WORK_AREA_LABEL,
   type InsightInput, type PeriodStats,
@@ -9,6 +9,9 @@ import type { ActivitySession } from '@/core/activity';
 import type { ClimbSession, SessionLogEntry } from '@/core/types';
 import Led from './Led';
 import styles from './StatsOverview.module.css';
+
+/** What stands out: how many lead before MORE. */
+const INSIGHTS_SHOWN = 3;
 
 const hours = (min: number) => (min >= 600 ? String(Math.round(min / 60)) : (Math.round(min / 6) / 10).toFixed(1));
 
@@ -52,6 +55,9 @@ export function OverviewCard({ level, sessionLog, climbLog, activityLog, insight
 }) {
   const ov = useMemo(() => getOverview(sessionLog, climbLog, activityLog), [sessionLog, climbLog, activityLog]);
   const insights = useMemo(() => getInsights(insightInput), [insightInput]);
+  // The first three lead; the rest wait one tap away.
+  const [allInsights, setAllInsights] = useState(false);
+  const shown = allInsights ? insights : insights.slice(0, INSIGHTS_SHOWN);
   const c: PeriodStats = ov.current;
   const p: PeriodStats = ov.previous;
   return (
@@ -81,12 +87,17 @@ export function OverviewCard({ level, sessionLog, climbLog, activityLog, insight
       {insights.length > 0 && (
         <div className={`${styles.insights} dot-rule`}>
           <div className={styles.insightsTitle}>WHAT STANDS OUT</div>
-          {insights.map(i => (
+          {shown.map(i => (
             <div key={i.text} className={`${styles.insight} ${styles[i.tone]}`}>
               <span className={styles.mark} aria-hidden="true" />
               <span>{i.text}</span>
             </div>
           ))}
+          {insights.length > INSIGHTS_SHOWN && (
+            <button className={styles.more} onClick={() => setAllInsights(a => !a)}>
+              {allInsights ? 'SHOW FEWER' : `${insights.length - INSIGHTS_SHOWN} MORE`}
+            </button>
+          )}
         </div>
       )}
     </>
