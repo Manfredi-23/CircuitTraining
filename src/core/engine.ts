@@ -467,6 +467,25 @@ export function painBand(pain: number): PainBand {
   return 'clear';
 }
 
+// Suggest, never remove (agreed October 2026): while a finger heals, or after
+// a pain score of 3-5, finger and grip work stays on offer with the reason it
+// is not recommended. Only 6 and above takes it away.
+export const HEALING_CAUTION = 'Not recommended yet: the finger heals.';
+export const painCaution = (pain: number) => `Not recommended: finger pain ${pain}/10.`;
+
+/**
+ * Why an exercise is not recommended today, or null. `grips` says it is held
+ * in the hands (a bar, a dumbbell, a band handle), which the caller knows.
+ */
+export function fingerCaution(
+  exercise: Exercise, ctx: { healing: boolean; pain: number | null }, grips = false,
+): string | null {
+  const fingers = loadsFingers(exercise);
+  if (ctx.healing && (fingers || grips || exercise.capacities.includes('pull') || exercise.hangs)) return HEALING_CAUTION;
+  if (fingers && ctx.pain !== null && ctx.pain >= PAIN_REDUCE_FROM && ctx.pain < PAIN_REMOVE_FROM) return painCaution(ctx.pain);
+  return null;
+}
+
 export const PAIN_MESSAGES: Record<PainBand, string> = {
   clear: 'Train as written.',
   reduce: 'Finger work stays, below maximal and one set shorter. No maximal finger tests today.',

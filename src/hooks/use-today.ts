@@ -9,7 +9,11 @@ import { applyPlan, type TodayPick } from '@/core/plan';
 import { deloadAdvice } from '@/core/adapt';
 import { healthReadiness } from '@/core/health';
 import { activeDay } from '@/core/today';
-import { localDate } from '@/core/dates';
+import { daysBetween, localDate } from '@/core/dates';
+import { getSeason } from '@/core/season';
+import { wallFocus } from '@/core/wall';
+import { isHealing } from '@/core/recommend';
+import { getRingRecovery } from '@/core/rehab';
 
 /**
  * What today calls for: the training-block week, the TODAY settings, the
@@ -30,6 +34,8 @@ export function useToday() {
   const suggestEnergy = useStore(s => s.suggestEnergy);
   const weekPlan = useStore(s => s.weekPlan);
   const routines = useStore(s => s.routines);
+  const goals = useStore(s => s.settings.goals);
+  const loadLog = useStore(s => s.loadLog);
 
   // Apple Health: sleep and HRV against the athlete's own week suggest an
   // energy. Applied once a day; any tap on the energy tabs overrides it.
@@ -41,12 +47,13 @@ export function useToday() {
   }, [healthDay, energySuggestedOn, suggestEnergy]);
 
   const block = useMemo(() => getBlockWeek(blockStart, sessionLog), [blockStart, sessionLog]);
+  const season = useMemo(() => getSeason(goals, sessionLog), [goals, sessionLog]);
   const day = activeDay(dayPlan);
   const input = useMemo(
-    () => ({ sessionLog, climbLog, activityLog, progress, benchmarkResults, block, tired: healthDay?.energy === 'TIRED', day }),
+    () => ({ sessionLog, climbLog, activityLog, progress, benchmarkResults, block, tired: healthDay?.energy === 'TIRED', day, season: season.phase }),
     // day is derived from dayPlan.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [sessionLog, climbLog, activityLog, progress, benchmarkResults, block, healthDay, dayPlan],
+    [sessionLog, climbLog, activityLog, progress, benchmarkResults, block, healthDay, dayPlan, season.phase],
   );
   const recommended = useMemo(() => recommend(input), [input]);
   // The athlete's weekly plan leads unless a safety rule stops it.
@@ -63,5 +70,15 @@ export function useToday() {
     [block, sessionLog, climbLog, activityLog],
   );
 
-  return { block, day, healthDay, recommendation, alternatives, planNote: outcome.note, deload };
+  // The next time on the wall: technique, head, stamina, and the finger while it heals.
+  const wall = useMemo(() => {
+    const today = localDate();
+    const roped = climbLog.some(c => c.discipline === 'ROPE' && daysBetween(c.date, today) <= 60);
+    return wallFocus({
+      climbLog, phase: season.phase, rope: roped, healing: isHealing(sessionLog, climbLog),
+      ringPct: getRingRecovery(loadLog, benchmarkResults).pct,
+    });
+  }, [climbLog, season.phase, sessionLog, loadLog, benchmarkResults]);
+
+  return { block, season, day, healthDay, recommendation, alternatives, planNote: outcome.note, deload, wall };
 }

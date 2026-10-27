@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useStore } from '@/store/store';
 import {
   AVOIDS, BUILT_IN_PRESETS, CUSTOM_GROUPS, CUSTOM_TIMES, GOALS,
-  areaNeeds, buildCustom, buildWarnings, closedAreas, customMode, cycleTarget, isGoal, makePreset, presetName,
+  areaNeeds, buildCustom, buildWarnings, cautionAreas, closedAreas, customMode, cycleTarget, isGoal, makePreset, presetName,
   suggestAreas, targetState,
   type Avoid, type BuildChoice, type BuildPreset, type CustomContext, type Target,
 } from '@/core/custom';
@@ -69,8 +69,10 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
     place, sessionLog, healing, pain: recentPain, day, legsSore: legSoreness(activityLog) !== null,
   };
   const closed = closedAreas(ctx);
+  const cautions = cautionAreas(ctx);
+  // Not recommended today: open to a tap, never suggested.
   const needs = useMemo(
-    () => areaNeeds(progress, sessionLog, closed),
+    () => areaNeeds(progress, sessionLog, { ...cautions, ...closed }),
     // closed follows place, the logs and the day plan.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [progress, sessionLog, place, healing, recentPain, dayPlan, activityLog],
@@ -109,7 +111,7 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [chosen.join(), exclude.join(), avoid.join(), place, minutes, energy, progress, benchmarkResults, tweaks, deload, sessionLog, dayPlan, healing, recentPain, preset],
   );
-  const warnings = buildWarnings(choice, needs, climbedToday);
+  const warnings = buildWarnings(choice, needs, climbedToday, cautions);
 
   if (!open) return null;
 
@@ -265,6 +267,9 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
           </div>
           {Object.entries(closed).map(([g, why]) => (
             <div key={g} className={styles.hint}>{g}: {why}</div>
+          ))}
+          {Object.entries(cautions).map(([g, why]) => (
+            <div key={g} className={styles.caution}>{g}: {why}</div>
           ))}
         </section>
 

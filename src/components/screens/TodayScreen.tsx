@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import { useStore } from '@/store/store';
 import { getModeData } from '@/core/data-index';
@@ -13,9 +13,11 @@ import ScreenHeader from '@/components/shell/ScreenHeader';
 import SessionCard from '@/components/shared/SessionCard';
 import DayControls from '@/components/shared/DayControls';
 import WeekRail from '@/components/shared/WeekRail';
+import WallCard from '@/components/shared/WallCard';
+import { seasonLabel } from '@/core/season';
 import Led from '@/components/shared/Led';
 import { routineCircuit } from '@/core/routines';
-import { climbToLog, type TodayPick } from '@/core/plan';
+import { climbToLog, plannedOn, type TodayPick } from '@/core/plan';
 import type { Routine } from '@/core/routines';
 import type { Circuit, Mode } from '@/core/types';
 import styles from './TodayScreen.module.css';
@@ -52,8 +54,9 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
   const climbLog = useStore(s => s.climbLog);
   const weekPlan = useStore(s => s.weekPlan);
   const openClimbLog = useStore(s => s.openClimbLog);
-  const { block, day, healthDay, recommendation, alternatives, planNote, deload } = useToday();
+  const { block, season, day, healthDay, recommendation, alternatives, planNote, deload, wall } = useToday();
   const launcher = useLauncher();
+  const [altsOpen, setAltsOpen] = useState(false);
 
   const today = localDate();
   const doneToday = sessionLog.filter(s => dayOf(s.date) === today);
@@ -75,7 +78,7 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
     <div className={`screen screen-enter tab-screen ${styles.screen}`}>
       <ScreenHeader
         title="TODAY"
-        sub={`${DATE_FMT.format(new Date())} · ${block.deload ? 'deload week' : `build week ${block.week} of ${block.buildWeeks}`}`}
+        sub={`${DATE_FMT.format(new Date())} · ${block.deload ? 'deload week' : `build week ${block.week} of ${block.buildWeeks}`} · ${seasonLabel(season)}`}
         onSettings={onSettings}
       >
         <Image src="/images/logo.svg" alt="7Bit" width={80} height={32} className={styles.logo} priority />
@@ -160,28 +163,43 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
         </div></section>
       )}
 
+      <WallCard
+        focus={wall}
+        today={plannedOn(weekPlan, new Date()).some(i => i.kind === 'CLIMB') || climbLog.some(c => c.date === today)}
+      />
+
       <DayControls />
 
       {alternatives.length > 0 && (
-        <section className={`${styles.alts} dot-rule`}>
-          <h2 className="section-label">ALSO FITS TODAY</h2>
-          <div className={styles.altList}>
-            {alternatives.map(a => {
-              const c = circuitOf(a, routines);
-              if (!c) return null;
-              const minutes = estimateDuration(launcher.listOf({ mode: a.mode, circuit: c }));
-              return (
-                <button key={a.circuitId} className={styles.altRow} onClick={() => launcher.show({ mode: a.mode, circuit: c })}>
-                  <Led text={c.circuitNum} dot={4} lit="var(--ink)" unlit="none" className={styles.altNum} label={`${a.mode} ${c.circuitNum}`} />
-                  <span className={styles.altBody}>
-                    <span className={styles.altTitle}>{a.routineId ? 'ROUTINE' : a.mode} &middot; {c.title}</span>
-                    <span className={styles.altWhy}>{a.reason}</span>
-                  </span>
-                  <span className={styles.altMin}>{minutes}<small> min</small></span>
-                </button>
-              );
-            })}
-          </div>
+        <section className={styles.alts}>
+          <button className={styles.altHead} aria-expanded={altsOpen} onClick={() => setAltsOpen(o => !o)}>
+            <span className={styles.altHeadText}>
+              <span className={styles.altLabel}>ALSO FITS TODAY</span>
+              <span className={styles.altSummary}>
+                {alternatives.map(a => circuitOf(a, routines)?.title).filter(Boolean).join(', ')}
+              </span>
+            </span>
+            <span className={styles.chev} aria-hidden="true">{altsOpen ? '-' : '+'}</span>
+          </button>
+          {altsOpen && (
+            <div className={styles.altList}>
+              {alternatives.map(a => {
+                const c = circuitOf(a, routines);
+                if (!c) return null;
+                const minutes = estimateDuration(launcher.listOf({ mode: a.mode, circuit: c }));
+                return (
+                  <button key={a.circuitId} className={styles.altRow} onClick={() => launcher.show({ mode: a.mode, circuit: c })}>
+                    <Led text={c.circuitNum} dot={4} lit="var(--ink)" unlit="none" className={styles.altNum} label={`${a.mode} ${c.circuitNum}`} />
+                    <span className={styles.altBody}>
+                      <span className={styles.altTitle}>{a.routineId ? 'ROUTINE' : a.mode} &middot; {c.title}</span>
+                      <span className={styles.altWhy}>{a.reason}</span>
+                    </span>
+                    <span className={styles.altMin}>{minutes}<small> min</small></span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </section>
       )}
 

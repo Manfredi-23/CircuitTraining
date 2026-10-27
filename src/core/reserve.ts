@@ -23,7 +23,7 @@
 import { CONFIG } from './config';
 import { getModeData } from './data-index';
 import { EXTRA_EXERCISES } from './data-extras';
-import { PAIN_REDUCE_FROM } from './engine';
+import { fingerCaution, PAIN_REMOVE_FROM } from './engine';
 import { dayOf } from './dates';
 import { needsKit } from './today';
 import type { BlockType, Exercise, Mode, ScaledExercise, SessionLogEntry } from './types';
@@ -151,6 +151,8 @@ export interface ReserveItem {
   lastDone: string | null;
   /** The least kit it needs: HOME runs anywhere, GYM only at the gym. */
   place: Place;
+  /** Offered, but not recommended today (a healing finger, finger pain 3-5), and why. */
+  caution: string | null;
 }
 
 export interface ReserveContext {
@@ -165,15 +167,14 @@ export interface ReserveContext {
   noKit?: boolean;
   /** Where, when it is not the session's own place (a custom session). */
   place?: Place;
-  /** A finger is healing: nothing gripped, no finger work. HEAL sessions always are. */
+  /** A finger is healing: grips and finger work are labelled, not removed. HEAL sessions always are. */
   healing?: boolean;
 }
 
 /** Why a whole group is missing, for the picker to say so. */
 export function closedGroups(ctx: ReserveContext): Partial<Record<ReserveGroup, string>> {
   const out: Partial<Record<ReserveGroup, string>> = {};
-  if (ctx.mode === 'HEAL' || ctx.healing) out.FINGERS = 'Not while a finger heals.';
-  else if (ctx.pain !== null && ctx.pain >= PAIN_REDUCE_FROM) out.FINGERS = `Finger pain ${ctx.pain}/10 today.`;
+  if (ctx.pain !== null && ctx.pain >= PAIN_REMOVE_FROM) out.FINGERS = `Finger pain ${ctx.pain}/10 today.`;
   return out;
 }
 
@@ -196,14 +197,15 @@ export function reserveFor(ctx: ReserveContext): Record<ReserveGroup, ReserveIte
   for (const entry of RESERVE) {
     if (closed[entry.group]) continue;
     if (place === 'HOME' && entry.place === 'GYM') continue;
-    if (healing && entry.grip) continue;
     if (inSession.has(entry.id)) continue;
     const exercise = lib.get(entry.id);
     if (!exercise || (ctx.noKit && (entry.grip || needsKit(exercise))) || exercise.gate || exercise.records || exercise.block === 'WARMUP' || exercise.block === 'TEST') continue;
-    out[entry.group].push({ exercise, group: entry.group, curl: Boolean(entry.curl), lastDone: lastDone.get(entry.id) ?? null, place: entry.place });
+    const caution = fingerCaution(exercise, { healing, pain: ctx.pain }, Boolean(entry.grip));
+    out[entry.group].push({ exercise, group: entry.group, curl: Boolean(entry.curl), lastDone: lastDone.get(entry.id) ?? null, place: entry.place, caution });
   }
+  // Recommended first, then least recently done.
   for (const g of RESERVE_GROUPS) {
-    out[g].sort((a, b) => (a.lastDone ?? '').localeCompare(b.lastDone ?? ''));
+    out[g].sort((a, b) => Number(Boolean(a.caution)) - Number(Boolean(b.caution)) || (a.lastDone ?? '').localeCompare(b.lastDone ?? ''));
   }
   return out;
 }

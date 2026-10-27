@@ -28,8 +28,14 @@ interface SessionInfoProps {
   onReset?: () => void;
 }
 
-const formatRest = (s: number) =>
-  s >= 60 ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}` : `${s}s`;
+/**
+ * The load line, without the words that say nothing: "No load" and a bare
+ * "Bodyweight" are the default, so only a cue or a real load is shown.
+ */
+export function loadCue(text: string | undefined): string {
+  const t = (text ?? '').replace(/^No load\.?\s*/i, '').trim();
+  return /^(bodyweight|no load)\.?$/i.test(t) ? '' : t;
+}
 
 function dose(ex: ScaledExercise): string {
   const work = ex.unit === 'sec' ? `${ex.scaledWork}s` : `${ex.scaledWork}`;
@@ -113,16 +119,10 @@ export default function SessionInfo({
             <span className={styles.num}>{String(i + 1).padStart(2, '0')}</span>
             <div className={styles.body}>
               <div className={styles.name}>{ex.displayName}</div>
-              <div className={styles.tags}>
-                {ex.block}
-                {ex.gated && <span className={styles.locked}> &middot; STAND-IN UNTIL TESTED</span>}
-              </div>
-              <div className={styles.load}>{ex.loadText}</div>
+              {ex.gated && <div className={styles.locked}>Stand-in until tested</div>}
+              {loadCue(ex.loadText) && <div className={styles.load}>{loadCue(ex.loadText)}</div>}
             </div>
-            <div className={styles.dose}>
-              <div>{ex.ramp ? `ramp, ${ex.scaledSets}-${ex.ramp.maxAttempts}` : dose(ex)}</div>
-              <div className={styles.rest}>rest {formatRest(ex.scaledRest)}</div>
-            </div>
+            <div className={styles.dose}>{ex.ramp ? `ramp, ${ex.scaledSets}-${ex.ramp.maxAttempts}` : dose(ex)}</div>
             </div>
           </li>
         ))}

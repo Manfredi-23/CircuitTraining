@@ -92,7 +92,8 @@ full stretch, no bench or barbell and no hard finger set, and proves the
 one-arm rungs open on a tested weighted pull-up and never on XP, and `npm test`. Every new core module gets a test file in
 `src/core/__tests__/` in the same commit. The screens have Playwright smoke
 tests in `e2e/smoke.spec.ts` (TODAY, a session from TRAIN to LOG, the finger
-check on CAVE 04, EDIT before START, MAKE IT MINE, the weekly plan, STATS, UNDO), run against the static build with the
+check on CAVE 04, EDIT before START, MAKE IT MINE, the weekly plan, STATS, UNDO,
+ON THE WALL and a tagged climb, THE GOAL and WHERE YOU FALL), run against the static build with the
 seed history; `e2e/serve.mjs` serves `out/`. In the cloud session set
 `PW_CHROMIUM=/opt/pw-browsers/chromium-1243/chrome-linux64/chrome`; on the Mac
 run `npx playwright install chromium` once.
@@ -142,12 +143,20 @@ src/
     history.ts   # LOG: everything done as one stream; delete or correct a past session
     stats-headlines.ts # the one-sentence answer on top of each STATS section
     adapt.ts     # deload early / skip a deload, stalled lifts, the Monday summary line
+    goals.ts     # grade goals (7C then 8A, 7c then 8a), the working grade from sends, milestones
+    gap.ts       # tested finger and pull standards at now, the next goal and the final one
+    climb-tags.ts# a climb's style (angle, holds, moves) and why it fell
+    limiters.ts  # styles sent less often than the athlete's own average; fall reasons; 110% goes
+    wall.ts      # ON THE WALL: a feet / technique, a head and a stamina drill for the next climb
+    season.ts    # BASE, STRENGTH, POWER, PEAK: rolling, or planned back from a trip
+    coach.ts     # the last four weeks as one text for a coach; the review's instructions
     led-font.ts  # the 5 x 7 LED glyphs and 7 x 7 icons behind the LED numerals
     week-rail.ts # this week Monday to Sunday for the rail on TODAY
     data-daily.ts, data-cave.ts, data-assess.ts, data-heal.ts  # Session libraries, one per tab
     data-oap.ts  # One-arm pull-up path, shared by CAVE 01 and CAVE 02
     data-index.ts  # getModeData(mode) helper
   storage/       # Async storage abstraction (swap localStorage for Supabase later)
+  coach/         # client.ts — the review from Claude with the athlete's own key (on the phone only)
   store/         # Zustand store (app / workout / progress / stats / load / climb / routine / history slices)
   hooks/         # use-timer, use-swipe, use-hydration, use-audio-init, use-wake-lock,
                  #   use-today (recommendation, plan, alternatives), use-launcher (open or start any session)
@@ -161,7 +170,7 @@ src/
                  #   FormGuide, SessionProgressBar, AdjustControls, ReservePicker, DayControls,
                  #   BuildSheet, StatsOverview, SessionCard, RoutineEditor, ExercisePicker,
                  #   WeekPlanner, SessionDetail, ExerciseDetail, Led, WeekRail,
-                 #   SessionEditor, PackList
+                 #   SessionEditor, PackList, GoalSection, LimitersSection, WallCard, CoachSection
 e2e/             # Playwright smoke tests, the seed history (fixtures/athlete.json), serve.mjs
   app/           # layout.tsx, page.tsx (screen router), globals.css
 ios/             # Xcode project (Capacitor 8, SPM)
@@ -639,7 +648,9 @@ than keeping a scraper alive.
 
 A `ClimbSession` is a date, a venue (`BOARD`, `GYM`, `OUTDOOR`), a discipline
 (`BOULDER`, `ROPE`; board is always boulder), the board and angle or an optional
-crag name, and a list of climbs: grade, attempts, sent or project. One attempt on
+crag name, and a list of climbs: grade, attempts, sent or project, and
+optionally its style and why it fell (+ STYLE under the climb). The session
+can be marked I GAVE ONE GO 110%, and ticks the WALL FOCUS DONE. One attempt on
 a sent climb is a flash. Sessions are independent; a project sent next week is a
 new entry.
 
@@ -676,8 +687,10 @@ GUIDE are always shown; everything that changes the session sits in one
 - **+ ADD EXERCISE** (workout card and rest screen) opens the reserve
   (`ReservePicker`, `reserve.ts`): CORE, PULL (gym only), ARMS, SHOULDERS,
   LEGS, MOBILITY, FINGERS, least recently done first. Home sessions (DAILY, HEAL 03 / 04) get
-  home kit only; HEAL gets nothing gripped and no finger work; a pain score of
-  3+ closes FINGERS; gated, test and warm-up exercises are never offered. Most
+  home kit only; while a finger heals (HEAL, or `isHealing`) grips and finger
+  work are offered labelled NOT RECOMMENDED YET and listed last; a pain score
+  of 3-5 labels finger work, 6+ closes FINGERS; gated, test and warm-up
+  exercises are never offered. Most
   entries are programme exercises (same ids, same history and XP); the arm
   extras in `data-extras.ts` have no capacity and earn no XP. A pick goes
   after the exercise in hand and after the last remaining exercise of its
@@ -696,10 +709,11 @@ GUIDE are always shown; everything that changes the session sits in one
 The first tab (`TodayScreen`, `use-today.ts`) answers one question: what do
 I train now? The pick leads, large: PLANNED when the weekly plan holds
 (`applyPlan`), otherwise RECOMMENDED, with the reason in words, the session
-card (energy tabs, duration, info), and one START. Under it ADJUST TODAY,
-then ALSO FITS TODAY: up to two more sessions (`alsoFits`) that pass the same
+card (energy tabs, duration, info), and one START. Under it ON THE WALL
+(the focus for the next climb), ADJUST TODAY, then ALSO FITS TODAY, each
+folded to one line: up to two more sessions (`alsoFits`) that pass the same
 safety rules, each with why it is second (the recommender's own pick first
-when the plan led). A banner offers a deload now, or skipping one, when the
+when the plan led). The subtitle names the block week and the season phase. A banner offers a deload now, or skipping one, when the
 logs say so (`deloadAdvice`). With nothing due it says why (rest day, done
 for today) and points to TRAIN.
 
@@ -760,17 +774,19 @@ every programme session (a routine has EDIT ROUTINE instead):
 - **+ EXERCISE** and **+ PACK**. Additions go where they belong (`addIds`,
   `insertIndex`): heavy first, a closing mobility last, curls closing a DAILY.
 - Safety (`allowedToday`): home kit at home, NO KIT keeps it on the mat, no
-  tests, nothing gripped, pulled or hung and no finger work while a finger
-  heals, no finger work after pain 3+. Gates still substitute when it runs,
-  and the pain check asks if finger work was added.
+  tests, no finger work after pain 6+. While a finger heals, grips, pulls,
+  hangs and finger work stay on offer labelled NOT RECOMMENDED YET
+  (`cautionToday`), after the recommended ones in SIMILAR; pain 3-5 labels
+  finger work. Gates still substitute when it runs, and the pain check asks
+  if finger work was added.
 - An edit is saved as it is made and holds **for today**; KEEP FOR NEXT TIME
   keeps it until RESET (`sessionEdits`, persisted, by circuit id). The session
   keeps its circuit id, so it logs, recovers and is recommended as itself.
   `sessionListFor` and `circuitFor` apply it, so the page, TODAY's minutes
   and the workout agree. MAKE IT MINE copies the edited list.
 - **Packs** (`PACKS`): CORE FINISHER, ARMS (no XP), SHOULDER CARE, MOBILITY
-  10, BALANCE + POWER, LEGS, FINGERS LIGHT (closed while healing or after pain
-  3+), each with a home and a gym version. Also the first tab of + ADD
+  10, BALANCE + POWER, LEGS, FINGERS LIGHT (labelled while healing or after
+  pain 3-5, closed at 6+), each with a home and a gym version. Also the first tab of + ADD
   EXERCISE mid-session (`addExtras`).
 
 ## Routines
@@ -804,10 +820,13 @@ THIS WEEK in TRAIN MINE (`WeekPlanner`, `plan.ts`, `weekPlan`, Monday 0 to
 Sunday 6): up to three items a day from BOULDERING, REST, routines and every
 programme session; an empty day is left to the recommender. On TODAY the
 first planned session not done today leads, unless `blockedBecause` says
-otherwise (healing finger or pain 6+ on a finger session, sore forearms, no
+otherwise (pain 6+ on a finger session, sore forearms, no
 kit for a gym session, a sore area it loads, sore legs on a leg-heavy one,
 not recovered): then the recommendation leads and says "CAVE 01 was planned,
-but finger pain 7/10 lately." REST planned leaves no pick and offers the
+but finger pain 7/10 lately." A finger session planned while a finger heals
+still leads, labelled ("Planned. Not recommended yet: it loads the fingers
+while one heals."), with the recommendation as the alternative
+(`cautionBecause`). REST planned leaves no pick and offers the
 recommendation; BOULDERING planned adds a note.
 
 ## LOG
@@ -851,9 +870,11 @@ BUILD A SESSION in TRAIN MINE (`BuildSheet`, `custom.ts`, presets in
   the athlete picks. The first tap on a goal starts an empty plan, on an area
   from the suggestion. `buildWarnings` says when a due area is tapped out, and
   when an hour or more of power follows a logged climb (a warning, not a block).
-- Safety as everywhere: home kit at home, nothing gripped, no pulling (PULL
-  POWER closed) and no finger work while healing (`isHealing` in
-  `recommend.ts`), no finger work after pain 3+, NO KIT keeps it on the mat, a
+- Safety as everywhere: home kit at home; while healing (`isHealing` in
+  `recommend.ts`) FINGERS, PULL and PULL POWER are open but labelled
+  (`cautionAreas`), never preselected, warned about when tapped in, and grips
+  and finger work stay out of every other target; pain 3-5 labels FINGERS, 6+
+  closes it; NO KIT keeps it on the mat, a
   sore area under ADJUST TODAY (or legs sore from an activity) is closed; sore
   shoulders close every push and pull target. PULL POWER keeps the one-arm
   gates: assisted rungs substitute the lopsided ladder, negatives stay hidden.
@@ -882,7 +903,7 @@ BUILD A SESSION in TRAIN MINE (`BuildSheet`, `custom.ts`, presets in
 Four tabs, each answering its own question. Every section names its period
 on the right and opens with its answer in one sentence (`stats-headlines.ts`).
 
-- **OVERVIEW** (`StatsOverview`, `review.ts`): the last 28 days against the
+- **OVERVIEW** (`StatsOverview`, `review.ts`), then THE COACH: the last 28 days against the
   28 before in four tiles (training days and days a week, hours with sessions
   and climbs, share of planned sets done, mean effort; effort changes are not
   coloured good or bad), the level, **WHAT STANDS OUT** (`getInsights`, at
@@ -891,7 +912,7 @@ on the right and opens with its answer in one sentence (`stats-headlines.ts`).
   pull-up already opens, training days against the period before,
   after-bouldering sessions with no climb logged, completion under 85%, when
   ASSESS is due, loads logged as 0 after a real value), then WEEKS.
-- **PROGRESS**: LIFTS (a row opens `ExerciseDetail`: every load on a scaled
+- **PROGRESS**: THE GOAL (ladders and the gap), LIFTS (a row opens `ExerciseDetail`: every load on a scaled
   chart, latest and best, NEXT TIME with the reason from `suggestLoad`, a
   stall, how it progresses, recent sessions), ONE-ARM PATH, TESTS.
 - **BODY** (each section folds to its title and headline; a tap opens it):
@@ -899,11 +920,64 @@ on the right and opens with its answer in one sentence (`stats-headlines.ts`).
   CORE THIS WEEK, CUT SHORT, RING FINGER, FINGER LOAD, LEVELS (capacities and
   the level trend, straight segments: every capacity in grey, overall in
   black, a tapped one in orange).
-- **CLIMBING**: CLIMBS, CLIMBING VS PULLING.
+- **CLIMBING**: WHERE YOU FALL, CLIMBS, CLIMBING VS PULLING.
 
 Lift series drop 0 kg entries (a stepper left unset) and leave out all-zero
 bodyweight series; CUT SHORT leaves tests out and names retired ids readably
 (`retiredName`).
+
+## The climbing weapon (v38)
+
+Agreed with the athlete in October 2026 (`docs/7bit-roadmap.md`, part two):
+goals of **7C then 8A boulder, 7c then 8a sport**; by their own read
+**technique and feet hold them back most, then the head** ("I'm scared and I
+rarely give 110%"), **then stamina**, with little rope time. The rule for all
+of it: **suggest, never remove**. Only a pain score of 6+ takes finger work
+away; a healing finger labels it NOT RECOMMENDED YET with the reason.
+
+- **Goals** (`goals.ts`, `settings.goals`, so in backups): next and final per
+  discipline, an optional trip `event`. The working grade is the hardest
+  grade sent twice in 120 days on boulders (once in 180 on a rope); a gym
+  colour counts as the bottom of its band (RED = 7A+); it never drops below
+  the profile's 7A / 7a. One milestone per grade with an estimate: 4 months a
+  grade on boulders, 5 on routes, a quarter slower per grade above 7B+, until
+  the log shows a grade gained and the athlete's own rate (2-12 months)
+  replaces it. THE GOAL leads STATS PROGRESS, with EDIT GOALS.
+- **The gap** (`gap.ts`): the two-arm 20mm hang (Lattice's V table, read
+  through `FONT_GRADE_MAP`, now to 8a / V11), the weighted pull-up 2RM and the
+  front lever (approximate grade tables, labelled so) against now, the next
+  goal and the final one. It says when strength is ready and the work belongs
+  on the wall.
+- **Climb tags** (`climb-tags.ts`): each climb may carry `tags` (one wall
+  angle; holds; moves) and, on a project or a send of 3+ goes, `why` (POWER,
+  FINGERS, FEET CUT, REACH, FOOT SLIPPED, NO BETA, BACKED OFF, SCARED,
+  PUMPED). A climbing session carries `tryHard` (one go at 110%) and
+  `focusDone` (wall drill ids). **WHERE YOU FALL** (`limiters.ts`) leads STATS
+  CLIMBING: twelve weeks, a style needs 4 tagged climbs and 8 in all before
+  it is named, weighted by how many climbs carry it, against the athlete's
+  own send rate.
+- **ON THE WALL** (`wall.ts`, `WallCard` on TODAY, open on a planned or
+  logged bouldering day): one FEET + TECHNIQUE drill (rotating the footwork
+  drills until the tags name a style, then the drill that answers it), one
+  HEAD drill (three goes at 110% until half the sessions have one, then
+  falling on purpose, committing the crux, flash goes, calm at the top) and a
+  STAMINA drill on boulders (4x4, ARC, up-down-up) when a week has passed,
+  pump leads the falls, or in BASE; rope drills only after a roped session in
+  60 days. While a finger heals a line says which grips are fine, from the
+  left ring finger's % of the right. The climb log ticks the drills done.
+- **The season** (`season.ts`): BASE, STRENGTH, POWER a block at a time from
+  the first logged session, or planned back from a trip: PEAK the last week,
+  POWER the four before, STRENGTH the six before those. TODAY's subtitle
+  names it. Recommender rule 5 prefers FULL BODY in BASE and POWER in POWER
+  (after STRONG, unless done this week); PEAK adds no training days.
+- **The coach** (`coach.ts`, `src/coach/client.ts`, THE COACH on STATS
+  OVERVIEW): COPY FOR COACH puts the last four weeks on the clipboard as one
+  text. With an Anthropic API key saved in Settings (local storage
+  `7bit_coach_key`, never persisted in the store or a backup), ASK THE COACH
+  sends it from the phone with `@anthropic-ai/sdk` (`dangerouslyAllowBrowser`,
+  imported on demand; model `claude-opus-5-5`, effort medium, server-side
+  `fallbacks: "default"`) and shows the review. It suggests; nothing changes
+  by itself.
 
 ## Adapting the block
 
@@ -1022,8 +1096,9 @@ keeps all three in sync. Do not hand-edit the PNGs.
 
 - **Supabase**: Auth + Postgres DB for multi-user. Swap storage adapter, add API routes.
 - **Vercel deployment**: Connect repo, configure build.
-- **The improvement roadmap**: `docs/7bit-roadmap.md`. All seven phases built; the
-  native ones still need checking on a device.
+- **The improvement roadmap**: `docs/7bit-roadmap.md`. Part one (phases 1-9) and
+  part two, the climbing weapon (phases 10-15), built; the native ones still
+  need checking on a device.
 
 ## Handoff Documents
 
@@ -1032,7 +1107,10 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v37.md`** — **start here.** The swap screen: SIMILAR
+- **`7bit-handover-v38.md`** — **start here.** The climbing weapon: goals
+  and the gap, climb tags and WHERE YOU FALL, ON THE WALL, the season, the
+  coach, a healing finger that labels instead of removing, calmer screens.
+- **`7bit-handover-v37.md`** — The swap screen: SIMILAR
   first in roomy rows, search one tap away, no keyboard or iOS zoom on open.
 - **`7bit-handover-v36.md`** — More room in the session
   editor: one card per exercise, labelled steppers, airier packs.

@@ -2,8 +2,8 @@
 // make-seed.ts — A believable eight-week backup for screenshots and e2e tests
 //
 // Writes e2e/fixtures/athlete.json: DAILY most mornings, CAVE 02 or 03 after
-// two bouldering days a week, an ASSESS, a weekend hike, loads that climb
-// slowly. Dates run back from the day it is generated, so the recommender
+// two bouldering days a week (climbs tagged), CAVE 04 and 05 once each, an
+// ASSESS, a weekend hike, loads that climb slowly. Dates run back from the day it is generated, so the recommender
 // and STATS always see recent data. Run: npx tsx scripts/make-seed.ts
 // =============================================================================
 
@@ -75,11 +75,15 @@ for (let d = DAYS; d >= 1; d--) {
   if (dow === 2 || dow === 4) {
     climbLog.push({
       id: `seed-climb-${d}`, date: ymd(at(d)), venue: 'GYM', discipline: 'BOULDER', durationMin: 90, effort: 7,
+      // Tagged: slabs and vertical walls go, the steep pinchy ones do not, and
+      // the falls are mostly the head.
       climbs: [
-        { grade: 'GREEN', attempts: 1, sent: true }, { grade: 'GREEN', attempts: 1, sent: true },
-        { grade: 'ORANGE', attempts: 2, sent: true }, { grade: 'ORANGE', attempts: 1, sent: true },
-        { grade: 'BLUE', attempts: d < 20 ? 3 : 5, sent: d < 30 }, { grade: 'BLUE', attempts: 4, sent: false },
+        { grade: 'GREEN', attempts: 1, sent: true, tags: ['slab', 'smear'] }, { grade: 'GREEN', attempts: 1, sent: true, tags: ['vertical', 'crimp'] },
+        { grade: 'ORANGE', attempts: 2, sent: true, tags: ['vertical', 'crimp'] }, { grade: 'ORANGE', attempts: 1, sent: true, tags: ['slab', 'smear'] },
+        { grade: 'BLUE', attempts: d < 20 ? 3 : 5, sent: d < 30, tags: ['overhang', 'pinch'], why: d < 30 ? undefined : ['power'] },
+        { grade: 'BLUE', attempts: 4, sent: false, tags: ['overhang', 'compression'], why: [d % 2 ? 'backed-off' : 'feet'] },
       ],
+      tryHard: d % 3 === 0,
     } as ClimbSession);
     log('CAVE', dow === 2 ? 'cave-05' : 'cave-06', d, 20, 7, d % 3 === 0);
   }
@@ -90,6 +94,10 @@ for (let d = DAYS; d >= 1; d--) {
     activityLog.push({ id: `seed-hike-${d}`, date: ymd(at(d)), type: 'HIKE', upM: 1100 } as ActivitySession);
   }
 }
+
+// The two no-climbing CAVE days, once each.
+log('CAVE', 'cave-07', 24, 10, 8);
+log('CAVE', 'cave-08', 17, 10, 7);
 
 // One ASSESS five weeks ago, results to match.
 log('TEST', 'assess-01', 35, 10, 8);

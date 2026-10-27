@@ -57,12 +57,13 @@ export default function ReservePicker({ open, onClose }: { open: boolean; onClos
     if (open) { setAdded([]); setPacksAdded([]); requestAnimationFrame(() => setEntered(true)); } else setEntered(false);
   }, [open]);
 
-  const ctx = circuit ? { mode, circuitId: circuit.id, list: exerciseList, pain: sessionPain, sessionLog, noKit } : null;
+  const healing = isHealing(sessionLog, climbLog);
+  const ctx = circuit ? { mode, circuitId: circuit.id, list: exerciseList, pain: sessionPain, sessionLog, noKit, healing } : null;
   // Keep what was added in this visit on screen, marked ADDED, instead of letting it vanish.
   const reserve = useMemo(
     () => (ctx ? reserveFor({ ...ctx, list: ctx.list.filter(e => !added.includes(e.id)) }) : null),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [open, mode, circuit, sessionPain, sessionLog, added.length, noKit],
+    [open, mode, circuit, sessionPain, sessionLog, added.length, noKit, healing],
   );
 
   if (!open || !circuit || !ctx || !reserve) return null;
@@ -70,7 +71,7 @@ export default function ReservePicker({ open, onClose }: { open: boolean; onClos
   const items = group === 'PACKS' ? [] : reserve[group];
   const place = noKit ? 'HOME' : placeOf(mode, circuit.id);
   const offers = group === 'PACKS'
-    ? packsFor({ place, mode, healing: isHealing(sessionLog, climbLog), pain: sessionPain, noKit }, exerciseList.map(e => e.id))
+    ? packsFor({ place, mode, healing, pain: sessionPain, noKit }, exerciseList.map(e => e.id))
     : [];
   const sore = group === 'LEGS' && legSoreness(activityLog) !== null;
 
@@ -87,7 +88,7 @@ export default function ReservePicker({ open, onClose }: { open: boolean; onClos
       </div>
       <div className={styles.place}>
         {noKit ? 'No kit today: mat only.' : placeOf(mode, circuit.id) === 'HOME' ? 'Home: mat, band, portable edge.' : 'Gym: everything.'}
-        {mode === 'HEAL' && ' Nothing gripped while the finger heals.'}
+        {(mode === 'HEAL' || healing) && ' Grips and finger work are not recommended while the finger heals.'}
       </div>
 
       <div className={styles.tabs} role="tablist" aria-label="Area">
@@ -116,7 +117,7 @@ export default function ReservePicker({ open, onClose }: { open: boolean; onClos
         {group !== 'PACKS' && !closed[group] && items.length === 0 && <div className={styles.empty}>Nothing more here for this place.</div>}
         {sore && <div className={styles.warn}>Legs still sore from the last activity. Go easy.</div>}
         {group === 'ARMS' && items.length > 0 && <div className={styles.empty}>Extras: recorded, no XP.</div>}
-        {items.map(({ exercise, lastDone, curl }) => {
+        {items.map(({ exercise, lastDone, curl, caution }) => {
           const done = added.includes(exercise.id);
           return (
             <div key={exercise.id} className={styles.row}>
@@ -126,6 +127,7 @@ export default function ReservePicker({ open, onClose }: { open: boolean; onClos
                   {dose(exercise)} &middot; {ago(lastDone)}
                   {curl && mode === 'DAILY' && ' · goes last'}
                 </div>
+                {caution && <div className={styles.caution}>{caution}</div>}
               </div>
               <button
                 className={`${styles.add}${done ? ` ${styles.addDone}` : ''}`}

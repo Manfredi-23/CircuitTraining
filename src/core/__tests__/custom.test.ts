@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
-  areaNeeds, buildCustom, buildWarnings, closedAreas, cycleTarget, flagsOf, makePreset, presetName, suggestAreas, touches,
+  areaNeeds, buildCustom, buildWarnings, cautionAreas, closedAreas, cycleTarget, flagsOf, makePreset, presetName, suggestAreas, touches,
   BUILT_IN_PRESETS, CUSTOM_TIMES, type CustomInput,
 } from '../custom';
 import { isCurl, exerciseLibrary } from '../reserve';
@@ -66,18 +66,27 @@ describe('a custom session', () => {
     expect(s.list.map(e => e.id)).not.toContain('daily-bw-squat');
   });
 
-  it('grips nothing and loads no finger while a finger heals', () => {
-    const s = buildCustom({ ...base, place: 'GYM', minutes: 60, include: ['CORE', 'SHOULDERS', 'FINGERS', 'PULL'], healing: true });
-    expect(closedAreas({ ...base, place: 'GYM', healing: true }).FINGERS).toBeTruthy();
+  it('while a finger heals, keeps grips out of other targets and labels the grip targets', () => {
+    const s = buildCustom({ ...base, place: 'GYM', minutes: 60, include: ['CORE', 'SHOULDERS'], healing: true });
     for (const e of s.list) {
       expect(loadsFingers(e)).toBe(false);
       expect(['addon-weighted-pullup', 'cave-lockoff', 'addon-hanging-oblique', 'morn-pullapart']).not.toContain(e.id);
     }
+    const ctx = { ...base, place: 'GYM' as const, healing: true };
+    expect(closedAreas(ctx).FINGERS).toBeUndefined();
+    expect(cautionAreas(ctx)).toMatchObject({ FINGERS: expect.stringMatching(/heals/), PULL: expect.any(String), 'PULL POWER': expect.any(String) });
+    // Tapped in, a grip target is the athlete's call: its work goes in, with a warning.
+    const fingers = buildCustom({ ...base, place: 'GYM', minutes: 45, include: ['FINGERS'], healing: true });
+    expect(fingers.list.some(loadsFingers)).toBe(true);
+    const warn = buildWarnings({ place: 'GYM', minutes: 45, include: ['FINGERS'], exclude: [], avoid: [] }, [], false, cautionAreas(ctx));
+    expect(warn[0]).toMatch(/^FINGERS: not recommended yet/);
   });
 
   it('closes what is sore, and the pull at home', () => {
-    const c = closedAreas({ ...base, day: { ...NO_DAY, sore: ['LEGS', 'SHOULDERS'] }, pain: 4 });
+    const c = closedAreas({ ...base, day: { ...NO_DAY, sore: ['LEGS', 'SHOULDERS'] }, pain: 6 });
     expect(Object.keys(c).sort()).toEqual(['CHEST', 'FINGERS', 'LEGS', 'PULL', 'PULL POWER', 'PUSH POWER', 'ROCKOVER', 'SHOULDERS']);
+    expect(closedAreas({ ...base, pain: 4 }).FINGERS).toBeUndefined();
+    expect(cautionAreas({ ...base, pain: 4 }).FINGERS).toBe('Not recommended: finger pain 4/10.');
     const s = buildCustom({ ...base, include: ['LEGS', 'CORE'], day: { ...NO_DAY, sore: ['LEGS'] } });
     expect(s.list.every(e => e.capacities[0] !== 'legs' || e.block === 'MOBILITY')).toBe(true);
   });
@@ -177,10 +186,12 @@ describe('goals, exclusions and avoid', () => {
     expect(buildWarnings({ place: 'GYM', minutes: 30, include: ['PULL POWER'], exclude: [], avoid: [] }, needs, true)).toEqual([]);
   });
 
-  it('closes PULL POWER and gripping goals while a finger heals', () => {
-    expect(closedAreas({ ...base, place: 'GYM', healing: true })['PULL POWER']).toBeTruthy();
+  it('labels PULL POWER and keeps gripping goal entries out of other goals while a finger heals', () => {
+    expect(closedAreas({ ...base, place: 'GYM', healing: true })['PULL POWER']).toBeUndefined();
     const chest = buildCustom({ ...base, place: 'GYM', minutes: 45, include: ['CHEST'], healing: true });
     for (const e of chest.list) expect(flagsOf(e.id).grip ?? false).toBe(false);
+    const pull = buildCustom({ ...base, place: 'GYM', minutes: 45, include: ['PULL POWER'], healing: true });
+    expect(pull.list.some(e => e.capacities.includes('pull'))).toBe(true);
   });
 });
 

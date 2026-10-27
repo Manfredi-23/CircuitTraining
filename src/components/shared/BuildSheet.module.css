@@ -55,3 +55,4 @@
 
 /* Sections after the first: a row of faint LED dots and air above. */
 .section + .section { padding-top: 24px; background-image: var(--rule); background-repeat: repeat-x; background-position: left top; background-size: 6px 2px; }
+.caution { font-size: 12px; font-weight: 700; color: var(--accent); line-height: 1.35; }

@@ -9,6 +9,7 @@ import { REMINDER_LABELS, type ReminderKind } from '@/core/reminders';
 import { isNative, requestNotifications } from '@/native/native';
 import { connectHealth, readHealth } from '@/native/health';
 import { connectMessage, describeRead, HEALTH_PERMISSIONS_HINT } from '@/core/health';
+import { getCoachKey, setCoachKey } from '@/coach/client';
 
 interface SettingsOverlayProps {
   open: boolean;
@@ -28,6 +29,9 @@ export default function SettingsOverlay({ open, onClose }: SettingsOverlayProps)
   const importBackup = useStore(s => s.importBackup);
   const restartBlock = useStore(s => s.restartBlock);
   const blockStart = useStore(s => s.blockStart);
+  const [coachKey, setCoachKeyState] = useState<string | null>(null);
+  const [keyDraft, setKeyDraft] = useState('');
+  useEffect(() => { if (open) setCoachKeyState(getCoachKey()); }, [open]);
   const sessionLog = useStore(s => s.sessionLog);
   const reminders = useStore(s => s.settings.reminders);
   const setReminder = useStore(s => s.setReminder);
@@ -218,6 +222,38 @@ export default function SettingsOverlay({ open, onClose }: SettingsOverlayProps)
             onChange={e => e.target.value && setDailyTime(e.target.value)}
           />
         </label>
+      </div>
+
+      <div className="overlay-section">
+        <div className="overlay-section-title">COACH</div>
+        <div className="overlay-body">
+          ASK THE COACH on STATS sends your last four weeks to Claude with your own Anthropic API key
+          (console.anthropic.com, a few cents a review). The key stays on this phone and never goes into a backup.
+          Without a key, COPY FOR COACH copies the same text to paste into the Claude app.
+        </div>
+        {coachKey ? (
+          <div className="overlay-row">
+            <span className="overlay-body">Key saved: ...{coachKey.slice(-4)}</span>
+            <button className="overlay-btn" onClick={() => { setCoachKey(null); setCoachKeyState(null); setStatus({ text: 'API key removed.', warn: false }); }}>REMOVE KEY</button>
+          </div>
+        ) : (
+          <div className="overlay-row">
+            <input
+              className="overlay-input"
+              type="password"
+              autoComplete="off"
+              placeholder="sk-ant-..."
+              aria-label="Anthropic API key"
+              value={keyDraft}
+              onChange={e => setKeyDraft(e.target.value)}
+            />
+            <button
+              className="overlay-btn"
+              disabled={!keyDraft.trim().startsWith('sk-ant-')}
+              onClick={() => { setCoachKey(keyDraft); setCoachKeyState(getCoachKey()); setKeyDraft(''); setStatus({ text: 'API key saved on this phone.', warn: false }); }}
+            >SAVE KEY</button>
+          </div>
+        )}
       </div>
 
       <div className="overlay-section">

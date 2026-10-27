@@ -49,3 +49,4 @@
   flex-shrink: 0; height: 52px; border: 2px dashed var(--ink); border-radius: var(--rad-lg);
   font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--ink);
 }
+.caution { font-size: 12px; font-weight: 700; color: var(--accent); line-height: 1.35; }

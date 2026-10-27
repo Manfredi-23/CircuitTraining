@@ -8,6 +8,11 @@ import {
 } from '@/core/climbing';
 import type { BoardName, ClimbDiscipline, ClimbEntry, ClimbSession, ClimbVenue } from '@/core/types';
 import ScalePicker from '@/components/shared/ScalePicker';
+import { useToday } from '@/hooks/use-today';
+import { drillById, focusDrills } from '@/core/wall';
+import {
+  CLIMB_TAGS, FALL_REASONS, TAG_GROUPS, asksWhy, describeTags, toggleTag,
+} from '@/core/climb-tags';
 import styles from './ClimbScreen.module.css';
 
 const VENUES: ClimbVenue[] = ['BOARD', 'GYM', 'OUTDOOR'];
@@ -65,6 +70,15 @@ export default function ClimbScreen() {
     () => climbLog.find(s => s.id === editingClimbId) ?? blankSession(),
   );
   const editing = climbLog.some(s => s.id === draft.id);
+  // The wall focus on TODAY, to tick off; an edited session keeps its own ticks.
+  const { wall } = useToday();
+  const focusIds = [...new Set([...focusDrills(wall).map(f => f.drill.id), ...(draft.focusDone ?? [])])];
+  const toggleFocus = (id: string) => {
+    const cur = draft.focusDone ?? [];
+    patch({ focusDone: cur.includes(id) ? cur.filter(x => x !== id) : [...cur, id] });
+  };
+  /** The climb whose style and fall reasons are open, one at a time. */
+  const [tagging, setTagging] = useState<number | null>(null);
   const scale = scaleFor(draft.venue, draft.discipline);
   const grades = gradesOf(scale);
 
@@ -95,14 +109,24 @@ export default function ClimbScreen() {
   const updateClimb = (i: number, p: Partial<ClimbEntry>) =>
     patch({ climbs: draft.climbs.map((c, j) => (j === i ? { ...c, ...p } : c)) });
 
-  const removeClimb = (i: number) =>
+  const removeClimb = (i: number) => {
+    setTagging(null);
     patch({ climbs: draft.climbs.filter((_, j) => j !== i) });
+  };
+
+  const toggleWhy = (i: number, id: string) => {
+    const cur = draft.climbs[i].why ?? [];
+    updateClimb(i, { why: cur.includes(id) ? cur.filter(r => r !== id) : [...cur, id] });
+  };
 
   const save = () => {
     if (draft.climbs.length === 0) return;
     // A Health import becomes a full entry once its climbs are added.
     const { draft: _imported, ...complete } = draft;
+    // Reasons only stay on climbs that ask for them.
+    complete.climbs = complete.climbs.map(c => (asksWhy(c) ? c : { ...c, why: undefined }));
     saveClimbSession(complete);
+    setTagging(null);
     setDraft(blankSession());
   };
 
@@ -202,8 +226,10 @@ export default function ClimbScreen() {
             <div className={styles.climbList}>
               {draft.climbs.map((c, i) => {
                 const colour = GYM_COLOURS.find(x => x.id === c.grade);
+                const described = describeTags(c.tags, asksWhy(c) ? c.why : undefined);
                 return (
-                  <div key={i} className={styles.climbRow}>
+                  <div key={i} className={styles.climbItem}>
+                  <div className={styles.climbRow}>
                     <span className={styles.climbGrade}>
                       {colour && <span className={styles.swatchSm} style={{ background: colour.hex }} />}
                       {gradeLabel(c.grade)}
@@ -229,10 +255,78 @@ export default function ClimbScreen() {
                     >PROJ</button>
                     <button className={styles.removeBtn} onClick={() => removeClimb(i)} aria-label="Remove climb">X</button>
                   </div>
+                  <button
+                    className={`${styles.styleLine}${described ? ` ${styles.styleLineOn}` : ''}`}
+                    aria-expanded={tagging === i}
+                    onClick={() => setTagging(t => (t === i ? null : i))}
+                  >
+                    {tagging === i ? 'CLOSE' : described || (asksWhy(c) ? '+ STYLE AND WHY IT FELL' : '+ STYLE')}
+                  </button>
+                  {tagging === i && (
+                    <div className={styles.tagPanel}>
+                      {TAG_GROUPS.map(g => (
+                        <div key={g} className={styles.tagGroup}>
+                          <div className={styles.tagLabel}>{g === 'ANGLE' ? 'WALL' : g}</div>
+                          <div className={styles.tagChips}>
+                            {CLIMB_TAGS.filter(t => t.group === g).map(t => {
+                              const on = c.tags?.includes(t.id) ?? false;
+                              return (
+                                <button key={t.id} aria-pressed={on} className={`${styles.tagChip}${on ? ` ${styles.tagChipOn}` : ''}`}
+                                  onClick={() => updateClimb(i, { tags: toggleTag(c.tags, t.id) })}>{t.label}</button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                      {asksWhy(c) && (
+                        <div className={styles.tagGroup}>
+                          <div className={styles.tagLabel}>{c.sent ? 'WHY IT TOOK SO MANY GOES' : 'WHY IT DID NOT GO'}</div>
+                          <div className={styles.tagChips}>
+                            {FALL_REASONS.map(r => {
+                              const on = c.why?.includes(r.id) ?? false;
+                              return (
+                                <button key={r.id} aria-pressed={on} className={`${styles.tagChip}${on ? ` ${styles.tagChipOn}` : ''}`}
+                                  onClick={() => toggleWhy(i, r.id)}>{r.label}</button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  </div>
                 );
               })}
             </div>
           )}
+
+          <div className={styles.focus}>
+            <div className={styles.label}>WALL FOCUS DONE</div>
+            {focusIds.map(id => {
+              const d = drillById(id);
+              if (!d) return null;
+              const on = draft.focusDone?.includes(id) ?? false;
+              return (
+                <button key={id} className={`${styles.focusRow}${on ? ` ${styles.focusRowOn}` : ''}`} aria-pressed={on} onClick={() => toggleFocus(id)}>
+                  <span className={styles.tryHardBox} aria-hidden="true">{on ? 'X' : ''}</span>
+                  <span className={styles.focusName}>{d.name}</span>
+                  <span className={styles.focusKind}>{d.kind === 'TECHNIQUE' ? 'FEET' : d.kind}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            className={`${styles.tryHard}${draft.tryHard ? ` ${styles.tryHardOn}` : ''}`}
+            aria-pressed={!!draft.tryHard}
+            onClick={() => patch({ tryHard: !draft.tryHard })}
+          >
+            <span className={styles.tryHardBox} aria-hidden="true">{draft.tryHard ? 'X' : ''}</span>
+            <span className={styles.tryHardText}>
+              <span className={styles.tryHardTitle}>I GAVE ONE GO 110%</span>
+              <span className={styles.tryHardWhy}>Fully committed at least once: no backing off, to the fall.</span>
+            </span>
+          </button>
 
           <div className={styles.row}>
             <span className={styles.label}>MINUTES</span>

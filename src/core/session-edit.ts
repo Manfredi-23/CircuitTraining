@@ -21,7 +21,7 @@ import { flagsOf } from './custom';
 import { isEditable, isHomeExercise, libraryFor, MAX_SETS, routineWarnings, workBounds, type LibraryEntry } from './routines';
 import { areaOf } from './review';
 import { getLoadAxis, clampToAxis } from './load';
-import { loadsFingers, PAIN_REDUCE_FROM } from './engine';
+import { fingerCaution, loadsFingers, PAIN_REMOVE_FROM } from './engine';
 import { needsKit } from './today';
 import type { Circuit, Exercise, Mode } from './types';
 
@@ -193,7 +193,7 @@ export function editWarnings(circuit: Circuit, edit: SessionEdit, place: Place):
 export interface EditContext {
   place: Place;
   mode: Mode;
-  /** A finger heals (HEAL, or `isHealing`): nothing gripped, no pulling, no finger work. */
+  /** A finger heals (HEAL, or `isHealing`): grips, pulling and finger work are not recommended. */
   healing: boolean;
   /** Last finger pain score, or today's when the session has started. */
   pain: number | null;
@@ -201,15 +201,22 @@ export interface EditContext {
   noKit: boolean;
 }
 
-/** Whether an exercise may be added or swapped in today. Gates still substitute when it runs. */
+/**
+ * Whether an exercise may be added or swapped in today. Gates still substitute
+ * when it runs. Kit and a pain score of 6+ decide; a healing finger only labels
+ * (`cautionToday`).
+ */
 export function allowedToday(ex: Exercise, ctx: EditContext): boolean {
   if (ex.block === 'TEST' || ex.records || ex.ramp) return false;
   if ((ctx.place === 'HOME' || ctx.noKit) && !isHomeExercise(ex.id)) return false;
   if (ctx.noKit && (needsKit(ex) || flagsOf(ex.id).grip)) return false;
-  const healing = ctx.healing || ctx.mode === 'HEAL';
-  if (healing && (flagsOf(ex.id).grip || loadsFingers(ex) || ex.capacities.includes('pull') || ex.hangs)) return false;
-  if (ctx.pain !== null && ctx.pain >= PAIN_REDUCE_FROM && loadsFingers(ex)) return false;
+  if (ctx.pain !== null && ctx.pain >= PAIN_REMOVE_FROM && loadsFingers(ex)) return false;
   return true;
+}
+
+/** Why an exercise is not recommended today, shown beside it, or null. */
+export function cautionToday(ex: Exercise, ctx: EditContext): string | null {
+  return fingerCaution(ex, { healing: ctx.healing || ctx.mode === 'HEAL', pain: ctx.pain }, Boolean(flagsOf(ex.id).grip));
 }
 
 /** How alike two exercises are: same area, same capacities, same protocol, same block and load. */
@@ -237,10 +244,11 @@ export function similarTo(ex: Exercise, ctx: EditContext, taken: string[] = []):
   return libraryFor(ctx.place)
     .filter(e => e.exercise.id !== ex.id && e.exercise.name !== ex.name && !taken.includes(e.exercise.id))
     .filter(e => allowedToday(e.exercise, ctx) && (ex.block === 'WARMUP') === (e.exercise.block === 'WARMUP'))
-    .map(e => ({ e, s: likeness(ex, e.exercise) }))
+    .map(e => ({ e, s: likeness(ex, e.exercise), c: cautionToday(e.exercise, ctx) ? 1 : 0 }))
     // Any other warm-up is an alternative to a warm-up.
     .filter(x => x.s >= SIMILAR_MIN_SCORE || ex.block === 'WARMUP')
-    .sort((x, y) => y.s - x.s || x.e.exercise.name.localeCompare(y.e.exercise.name))
+    // What is recommended today first, then the most alike.
+    .sort((x, y) => x.c - y.c || y.s - x.s || x.e.exercise.name.localeCompare(y.e.exercise.name))
     .slice(0, SIMILAR_MAX)
     .map(x => x.e);
 }
@@ -302,6 +310,8 @@ export interface PackOffer {
   ids: string[];
   /** Why nothing would, when nothing would. */
   closed: string | null;
+  /** Offered, but not recommended today, and why. */
+  caution: string | null;
 }
 
 /** Every pack for this place and today, with what of it would go in. */
@@ -309,18 +319,19 @@ export function packsFor(ctx: EditContext, inSession: string[]): PackOffer[] {
   const lib = exerciseLibrary();
   return PACKS.map(pack => {
     const all = ctx.place === 'GYM' && !ctx.noKit && pack.gym ? pack.gym : pack.home;
-    const healing = ctx.healing || ctx.mode === 'HEAL';
-    const hurts = ctx.pain !== null && ctx.pain >= PAIN_REDUCE_FROM;
-    if (pack.fingers && healing) return { pack, ids: [], closed: 'Not while a finger heals.' };
-    if (pack.fingers && hurts) return { pack, ids: [], closed: `Finger pain ${ctx.pain}/10.` };
+    if (pack.fingers && ctx.pain !== null && ctx.pain >= PAIN_REMOVE_FROM) {
+      return { pack, ids: [], closed: `Finger pain ${ctx.pain}/10.`, caution: null };
+    }
     const ids = all.filter(id => {
       const ex = lib.get(id);
       return ex && !inSession.includes(id) && allowedToday(ex, ctx);
     });
     const closed = ids.length ? null
       : all.every(id => inSession.includes(id)) ? 'Already in the session.'
-      : healing ? 'Nothing here without a grip.'
       : 'Not with today\'s kit.';
-    return { pack, ids, closed };
+    const cautions = ids.map(id => cautionToday(lib.get(id)!, ctx)).filter(Boolean) as string[];
+    // A pack is labelled when most of what it would add is not recommended.
+    const caution = cautions.length && cautions.length * 2 >= ids.length ? cautions[0] : null;
+    return { pack, ids, closed, caution };
   });
 }

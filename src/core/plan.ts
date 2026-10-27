@@ -74,7 +74,6 @@ export function blockedBecause(r: Resolved, input: RecommendInput): string | nul
     s => s.pain !== undefined && daysBetween(dayOf(s.date), today) <= PAIN_MEMORY_DAYS,
   )?.pain ?? 0;
   const fingers = asksPainCheck(circuit);
-  if (fingers && isHealing(input.sessionLog, input.climbLog, now)) return 'the finger is healing';
   if (fingers && pain >= 6) return `finger pain ${pain}/10 lately`;
   if (fingers && day.sore.includes('FOREARMS')) return 'forearms are sore';
   if (day.noKit && r.mode !== 'DAILY') return 'no kit today';
@@ -86,6 +85,17 @@ export function blockedBecause(r: Resolved, input: RecommendInput): string | nul
     if (ready.level === 'rest') return 'not recovered yet';
   }
   return null;
+}
+
+/**
+ * Why a planned session is not recommended, though it may run: it loads the
+ * fingers while one heals. The plan is the athlete's own; it leads, labelled.
+ */
+export function cautionBecause(r: Resolved, input: RecommendInput): string | null {
+  const now = input.now ?? new Date();
+  return asksPainCheck(r.circuit) && isHealing(input.sessionLog, input.climbLog, now)
+    ? 'it loads the fingers while one heals'
+    : null;
 }
 
 export type TodayPick = Recommendation & { routineId?: string; planned?: boolean };
@@ -128,7 +138,9 @@ export function applyPlan(
         note,
       };
     }
-    const pick: TodayPick = { mode: r.mode, circuitId: r.circuit.id, reason: 'Planned for today.', planned: true, ...(r.routineId ? { routineId: r.routineId } : {}) };
+    const caution = cautionBecause(r, input);
+    const reason = caution ? `Planned. Not recommended yet: ${caution}.` : 'Planned for today.';
+    const pick: TodayPick = { mode: r.mode, circuitId: r.circuit.id, reason, planned: true, ...(r.routineId ? { routineId: r.routineId } : {}) };
     const also = recommendation && recommendation.circuitId !== pick.circuitId ? recommendation : null;
     return { pick, also, note };
   }
