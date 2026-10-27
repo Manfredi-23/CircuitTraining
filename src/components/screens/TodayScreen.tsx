@@ -13,9 +13,11 @@ import ScreenHeader from '@/components/shell/ScreenHeader';
 import SessionCard from '@/components/shared/SessionCard';
 import DayControls from '@/components/shared/DayControls';
 import WeekRail from '@/components/shared/WeekRail';
+import WallCard from '@/components/shared/WallCard';
+import { seasonLabel } from '@/core/season';
 import Led from '@/components/shared/Led';
 import { routineCircuit } from '@/core/routines';
-import { climbToLog, type TodayPick } from '@/core/plan';
+import { climbToLog, plannedOn, type TodayPick } from '@/core/plan';
 import type { Routine } from '@/core/routines';
 import type { Circuit, Mode } from '@/core/types';
 import styles from './TodayScreen.module.css';
@@ -52,7 +54,7 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
   const climbLog = useStore(s => s.climbLog);
   const weekPlan = useStore(s => s.weekPlan);
   const openClimbLog = useStore(s => s.openClimbLog);
-  const { block, day, healthDay, recommendation, alternatives, planNote, deload } = useToday();
+  const { block, season, day, healthDay, recommendation, alternatives, planNote, deload, wall } = useToday();
   const launcher = useLauncher();
   const [altsOpen, setAltsOpen] = useState(false);
 
@@ -76,7 +78,7 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
     <div className={`screen screen-enter tab-screen ${styles.screen}`}>
       <ScreenHeader
         title="TODAY"
-        sub={`${DATE_FMT.format(new Date())} · ${block.deload ? 'deload week' : `build week ${block.week} of ${block.buildWeeks}`}`}
+        sub={`${DATE_FMT.format(new Date())} · ${block.deload ? 'deload week' : `build week ${block.week} of ${block.buildWeeks}`} · ${seasonLabel(season)}`}
         onSettings={onSettings}
       >
         <Image src="/images/logo.svg" alt="7Bit" width={80} height={32} className={styles.logo} priority />
@@ -160,6 +162,11 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
           <button className={styles.secondary} onClick={() => setTab('train')}>OPEN TRAIN</button>
         </div></section>
       )}
+
+      <WallCard
+        focus={wall}
+        today={plannedOn(weekPlan, new Date()).some(i => i.kind === 'CLIMB') || climbLog.some(c => c.date === today)}
+      />
 
       <DayControls />
 

@@ -8,6 +8,8 @@ import {
 } from '@/core/climbing';
 import type { BoardName, ClimbDiscipline, ClimbEntry, ClimbSession, ClimbVenue } from '@/core/types';
 import ScalePicker from '@/components/shared/ScalePicker';
+import { useToday } from '@/hooks/use-today';
+import { drillById, focusDrills } from '@/core/wall';
 import {
   CLIMB_TAGS, FALL_REASONS, TAG_GROUPS, asksWhy, describeTags, toggleTag,
 } from '@/core/climb-tags';
@@ -68,6 +70,13 @@ export default function ClimbScreen() {
     () => climbLog.find(s => s.id === editingClimbId) ?? blankSession(),
   );
   const editing = climbLog.some(s => s.id === draft.id);
+  // The wall focus on TODAY, to tick off; an edited session keeps its own ticks.
+  const { wall } = useToday();
+  const focusIds = [...new Set([...focusDrills(wall).map(f => f.drill.id), ...(draft.focusDone ?? [])])];
+  const toggleFocus = (id: string) => {
+    const cur = draft.focusDone ?? [];
+    patch({ focusDone: cur.includes(id) ? cur.filter(x => x !== id) : [...cur, id] });
+  };
   /** The climb whose style and fall reasons are open, one at a time. */
   const [tagging, setTagging] = useState<number | null>(null);
   const scale = scaleFor(draft.venue, draft.discipline);
@@ -290,6 +299,22 @@ export default function ClimbScreen() {
               })}
             </div>
           )}
+
+          <div className={styles.focus}>
+            <div className={styles.label}>WALL FOCUS DONE</div>
+            {focusIds.map(id => {
+              const d = drillById(id);
+              if (!d) return null;
+              const on = draft.focusDone?.includes(id) ?? false;
+              return (
+                <button key={id} className={`${styles.focusRow}${on ? ` ${styles.focusRowOn}` : ''}`} aria-pressed={on} onClick={() => toggleFocus(id)}>
+                  <span className={styles.tryHardBox} aria-hidden="true">{on ? 'X' : ''}</span>
+                  <span className={styles.focusName}>{d.name}</span>
+                  <span className={styles.focusKind}>{d.kind === 'TECHNIQUE' ? 'FEET' : d.kind}</span>
+                </button>
+              );
+            })}
+          </div>
 
           <button
             className={`${styles.tryHard}${draft.tryHard ? ` ${styles.tryHardOn}` : ''}`}

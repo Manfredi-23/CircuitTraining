@@ -18,6 +18,7 @@ import { resultHistory } from './benchmarks';
 import { REHAB_BENCHMARKS, RING_RIGHT_BENCHMARK } from './rehab';
 import { FOOTWORK_ID, HEAL_GYM_IDS, RING_REHAB_ID, RING_TEST_ID } from './data-heal';
 import type { BlockWeek } from './block';
+import { PHASE_TRAINING_DAY, type SeasonPhase } from './season';
 import { ACTIVITY_SPEC, isLegHeavy, legSoreness, type ActivitySession } from './activity';
 import { NO_DAY, loadsArea, needsKit, type ActiveDay, type SoreArea } from './today';
 import type { BenchmarkResult, Circuit, ClimbSession, Mode, Progress, SessionLogEntry } from './types';
@@ -40,6 +41,8 @@ export interface RecommendInput {
   tired?: boolean;
   /** What the athlete said about today on the TODAY sheet. */
   day?: ActiveDay;
+  /** The season's phase: it picks the training day, and PEAK adds none. */
+  season?: SeasonPhase;
   now?: Date;
 }
 
@@ -235,8 +238,9 @@ export function recommend(input: RecommendInput): Recommendation | null {
     .filter(s => training.some(c => c.id === s.circuitId) && dayOf(s.date) >= monday)
     .map(s => dayOf(s.date))).size;
   const strongThisWeek = strong ? sessionLog.some(s => s.circuitId === strong.id && dayOf(s.date) >= monday) : true;
+  // A peak week adds no training days: the trip is the training.
   if (climbLog.length > 0 && !input.tired && !shortDay && weekday >= 3 && climbsThisWeek + trainingThisWeek < 2
-      && !climbedToday && !doneToday('CAVE')) {
+      && !climbedToday && !doneToday('CAVE') && input.season !== 'PEAK') {
     const reason = (title: string) =>
       `${climbsThisWeek} climbing day${climbsThisWeek === 1 ? '' : 's'} this week. ${title} instead.`;
     if (strong && !forearms && fingersReady && !strongThisWeek) {
@@ -245,8 +249,13 @@ export function recommend(input: RecommendInput): Recommendation | null {
     const others = training.filter(c => c.id !== strong?.id
       && getReadiness(c, progress).level === 'ready' && !(forearms && asksPainCheck(c)));
     if (others.length) {
-      const pick = leastRecent(spare(others), sessionLog);
-      return { mode: 'CAVE', circuitId: pick.id, reason: why(others, pick, reason(pick.title)) };
+      // BASE prefers FULL BODY and POWER prefers POWER, unless done this week.
+      const phaseId = input.season ? PHASE_TRAINING_DAY[input.season] : undefined;
+      const phasePick = others.find(c => c.id === phaseId
+        && !sessionLog.some(s => s.circuitId === c.id && dayOf(s.date) >= monday));
+      const pick = phasePick ?? leastRecent(spare(others), sessionLog);
+      const text = phasePick ? `${reason(pick.title)} ${input.season!.charAt(0)}${input.season!.slice(1).toLowerCase()} phase.` : reason(pick.title);
+      return { mode: 'CAVE', circuitId: pick.id, reason: why(others, pick, text) };
     }
   }
 

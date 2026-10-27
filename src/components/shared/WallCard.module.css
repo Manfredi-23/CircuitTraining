@@ -1,0 +1,20 @@
+.box { border: 2px solid var(--ink); border-radius: var(--rad-lg); flex-shrink: 0; }
+.head {
+  width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 14px 20px; min-height: 60px; text-align: left;
+}
+.headText { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.label { font-weight: 700; font-size: 14px; letter-spacing: 0.04em; color: var(--ink); }
+.summary { font-size: 12px; color: var(--ink-dim); line-height: 1.4; }
+.chev { font-weight: 700; font-size: 20px; width: 20px; text-align: center; flex-shrink: 0; }
+.body { display: flex; flex-direction: column; border-top: 2px solid var(--ink-faint); padding: 4px 20px 18px; }
+.drill, .finger { display: flex; flex-direction: column; gap: 6px; padding: 14px 0; }
+.drill + .drill, .drill + .finger { border-top: 1px solid var(--ink-faint); }
+.kind { font-weight: 700; font-size: 11px; letter-spacing: 0.12em; color: var(--ink-dim); }
+.nameRow { display: flex; flex-direction: column; gap: 2px; }
+.name { font-weight: 700; font-size: 16px; color: var(--ink); }
+.dose { font-size: 12px; color: var(--ink-dim); }
+.how { font-size: 13px; line-height: 1.5; color: var(--ink); }
+.why { font-size: 12px; line-height: 1.4; color: var(--accent); font-weight: 700; }
+.finger .how { border-left: 3px solid var(--accent); padding-left: 10px; }
+.foot { font-size: 11px; color: var(--ink-dim); line-height: 1.4; padding-top: 4px; }

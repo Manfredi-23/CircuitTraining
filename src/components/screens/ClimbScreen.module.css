@@ -115,3 +115,11 @@
 .sessionHead { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; }
 .sessionVenue { color: var(--ink-dim); letter-spacing: 0.04em; }
 .sessionClimbs { font-size: 12px; color: var(--ink); line-height: 1.4; }
+.focus { display: flex; flex-direction: column; gap: 6px; }
+.focusRow {
+  display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 2px; text-align: left;
+  background: none; color: var(--ink); border-bottom: 1px solid var(--ink-faint);
+}
+.focusRowOn .tryHardBox { border-color: var(--accent); color: var(--accent); }
+.focusName { flex: 1; font-size: 13px; font-weight: 700; }
+.focusKind { font-size: 11px; letter-spacing: 0.1em; color: var(--ink-dim); }
