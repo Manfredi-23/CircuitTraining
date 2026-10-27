@@ -19,7 +19,7 @@ const filterLabel = (f: Filter) => (f === null ? 'ALL' : f === 'WARM-UP' ? 'WARM
  * with a thumb; the whole library and its search are one tap away. Nothing
  * focuses the search by itself: the keyboard would cover half the list.
  */
-export default function ExercisePicker({ place, taken, title, onPick, onClose, similar, allow, replacing }: {
+export default function ExercisePicker({ place, taken, title, onPick, onClose, similar, allow, replacing, caution }: {
   place: Place;
   /** Already in the routine: shown, not offered again. */
   taken: string[];
@@ -32,6 +32,8 @@ export default function ExercisePicker({ place, taken, title, onPick, onClose, s
   allow?: (e: Exercise) => boolean;
   /** The name of the exercise being swapped out. */
   replacing?: string;
+  /** Why an exercise is not recommended today, shown on its row; it stays on offer. */
+  caution?: (e: Exercise) => string | null;
 }) {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>(null);
@@ -109,6 +111,7 @@ export default function ExercisePicker({ place, taken, title, onPick, onClose, s
             {area ? WORK_AREA_LABEL[area] : 'Warm-up'} &middot; {e.sets} x {e.work}{e.unit === 'sec' ? 's' : ''}{e.perSide ? ' /side' : ''}
             {e.gate ? ' · stand-in until tested' : ''}
           </span>
+          {caution?.(e) && <span className={styles.caution}>{caution(e)}</span>}
         </span>
         <span className={`${styles.add}${replacing ? ` ${styles.addWord}` : ''}`}>{has ? 'IN' : replacing ? 'USE' : '+'}</span>
       </button>

@@ -14,3 +14,4 @@
 }
 .add:disabled:not(.addDone) { opacity: 0.35; }
 .addDone { color: var(--accent); border-color: var(--accent); }
+.caution { font-size: 12px; font-weight: 700; color: var(--accent); line-height: 1.35; }

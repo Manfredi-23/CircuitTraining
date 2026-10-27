@@ -162,6 +162,15 @@ describe('weekly plan', () => {
     expect(out.pick?.reason).toMatch(/was planned, but finger pain 7\/10/);
   });
 
+  it('a finger session planned while a finger heals still leads, labelled not recommended', () => {
+    const input = { ...base, sessionLog: [{ date: new Date(2026, 9, 6, 10).toISOString(), mode: 'HEAL' as const, circuitId: 'heal-01', circuitTitle: 'x', energy: 'NORMAL' as const, duration: 60 }] };
+    const plan: WeekPlan = { 3: [{ kind: 'SESSION', mode: 'CAVE', circuitId: 'cave-01' }] };
+    const out = applyPlan(plan, [], input, recommend(input));
+    expect(out.pick).toMatchObject({ circuitId: 'cave-01', planned: true });
+    expect(out.pick?.reason).toBe('Planned. Not recommended yet: it loads the fingers while one heals.');
+    expect(out.also?.mode).toBe('HEAL');
+  });
+
   it('skips a planned session already done today', () => {
     const input = { ...base, sessionLog: [{ date: new Date(2026, 9, 8, 7).toISOString(), mode: 'DAILY' as const, circuitId: 'daily-03', circuitTitle: 'x', energy: 'NORMAL' as const, duration: 10 }] };
     const plan: WeekPlan = { 3: [{ kind: 'SESSION', mode: 'DAILY', circuitId: 'daily-03' }, { kind: 'SESSION', mode: 'DAILY', circuitId: 'daily-05' }] };

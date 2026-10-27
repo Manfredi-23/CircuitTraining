@@ -85,3 +85,4 @@
 }
 
 .packIntro { padding-bottom: 6px; }
+.caution { font-size: 12px; font-weight: 700; color: var(--accent); line-height: 1.35; }

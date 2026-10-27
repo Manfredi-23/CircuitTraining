@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { loadsFingers } from '../engine';
 import { adjust, describeTweak, setBounds } from '../adjust';
 import { buildList, scaleExercise } from '../engine';
 import { exerciseLibrary, insertIndex, placeOf, reserveFor, RESERVE_GROUPS, closedGroups } from '../reserve';
@@ -117,21 +118,26 @@ describe('the reserve', () => {
     expect(ids).not.toContain('legs-plate-crunch');
   });
 
-  it('grips nothing and loads no finger while a finger heals', () => {
+  it('offers grips and finger work while a finger heals, labelled and last', () => {
     const ctx = { mode: 'HEAL' as const, circuitId: 'heal-02', list: [], pain: null, sessionLog: [] };
     const heal = reserveFor(ctx);
-    expect(heal.FINGERS).toEqual([]);
-    expect(closedGroups(ctx).FINGERS).toBeTruthy();
-    const ids = RESERVE_GROUPS.flatMap(g => heal[g].map(i => i.exercise.id));
-    expect(ids).toContain('extra-diamond-pushup');
-    expect(ids).not.toContain('extra-band-curl');
-    expect(ids).not.toContain('morn-pullapart');
-    for (const id of ids) expect(ex(id).capacities.some(c => c === 'crimp' || c === 'openhand' || c === 'forearm')).toBe(false);
+    expect(closedGroups(ctx).FINGERS).toBeUndefined();
+    expect(heal.FINGERS.length).toBeGreaterThan(0);
+    for (const i of heal.FINGERS.filter(x => loadsFingers(x.exercise))) expect(i.caution).toBe('Not recommended yet: the finger heals.');
+    const all = RESERVE_GROUPS.flatMap(g => heal[g]);
+    expect(all.find(i => i.exercise.id === 'extra-diamond-pushup')?.caution).toBeNull();
+    expect(all.find(i => i.exercise.id === 'extra-band-curl')?.caution).toMatch(/heals/);
+    for (const g of RESERVE_GROUPS) {
+      const flags = heal[g].map(i => Boolean(i.caution));
+      expect(flags).toEqual([...flags].sort((a, b) => Number(a) - Number(b)));
+    }
   });
 
-  it('closes finger work after a pain score of 3', () => {
+  it('labels finger work at pain 3-5 and closes it at 6', () => {
     const r = reserveFor({ mode: 'DAILY', circuitId: 'daily-04', list: [], pain: 3, sessionLog: [] });
-    expect(r.FINGERS).toEqual([]);
+    expect(r.FINGERS.length).toBeGreaterThan(0);
+    expect(r.FINGERS.find(i => loadsFingers(i.exercise))?.caution).toBe('Not recommended: finger pain 3/10.');
+    expect(reserveFor({ mode: 'DAILY', circuitId: 'daily-04', list: [], pain: 6, sessionLog: [] }).FINGERS).toEqual([]);
   });
 
   it('leaves out what the session already has, and puts the least recent first', () => {

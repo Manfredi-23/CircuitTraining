@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
-  activeEdit, addIds, allowedToday, clearTarget, editedCircuit, editFromCircuit, isChanged, moveAt,
+  activeEdit, addIds, allowedToday, cautionToday, clearTarget, editedCircuit, editFromCircuit, isChanged, moveAt,
   packsFor, removeAt, similarTo, stepAt, stepTarget, swapAt, PACKS, type EditContext,
 } from '../session-edit';
 import { getModeData } from '../data-index';
@@ -102,16 +102,22 @@ describe('session edits', () => {
     expect(atHome.every(s => isHomeExercise(s.exercise.id))).toBe(true);
   });
 
-  it('keeps grips, pulling and finger work out while a finger heals or hurts', () => {
+  it('labels grips, pulling and finger work while a finger heals or hurts, and removes them only at pain 6+', () => {
     const lib = [...exerciseLibrary().values()];
     const heal: EditContext = { ...gym, healing: true };
-    for (const ex of lib.filter(x => allowedToday(x, heal))) {
-      expect(flagsOf(ex.id).grip ?? false).toBe(false);
-      expect(loadsFingers(ex)).toBe(false);
-      expect(ex.capacities).not.toContain('pull');
+    const grippy = lib.filter(x => allowedToday(x, gym) && (flagsOf(x.id).grip || loadsFingers(x) || x.capacities.includes('pull')));
+    expect(grippy.length).toBeGreaterThan(0);
+    for (const ex of grippy) {
+      expect(allowedToday(ex, heal)).toBe(true);
+      expect(cautionToday(ex, heal)).toMatch(/Not recommended yet/);
     }
+    const plain = lib.find(x => x.id === 'daily-glute-bridge')!;
+    expect(cautionToday(plain, heal)).toBeNull();
     const sore: EditContext = { ...gym, pain: 4 };
-    expect(lib.filter(x => allowedToday(x, sore)).some(loadsFingers)).toBe(false);
+    const finger = lib.filter(x => allowedToday(x, sore) && loadsFingers(x));
+    expect(finger.length).toBeGreaterThan(0);
+    expect(cautionToday(finger[0], sore)).toBe('Not recommended: finger pain 4/10.');
+    expect(lib.filter(x => allowedToday(x, { ...gym, pain: 6 })).some(loadsFingers)).toBe(false);
     expect(lib.some(x => x.records && allowedToday(x, gym))).toBe(false);
   });
 });
@@ -129,9 +135,11 @@ describe('packs', () => {
     const offers = packsFor(gym, []);
     expect(offers.every(o => o.ids.length > 0)).toBe(true);
     const fingers = packsFor({ ...home, healing: true }, []).find(o => o.pack.id === 'fingers-light')!;
-    expect(fingers.ids).toEqual([]);
-    expect(fingers.closed).toMatch(/heals/);
-    expect(packsFor({ ...home, pain: 5 }, []).find(o => o.pack.id === 'fingers-light')!.closed).toMatch(/pain/);
+    expect(fingers.ids.length).toBeGreaterThan(0);
+    expect(fingers.caution).toMatch(/heals/);
+    expect(packsFor({ ...home, pain: 5 }, []).find(o => o.pack.id === 'fingers-light')!.caution).toMatch(/pain 5/);
+    expect(packsFor({ ...home, pain: 6 }, []).find(o => o.pack.id === 'fingers-light')!.closed).toMatch(/pain/);
+    expect(packsFor(home, []).every(o => o.caution === null)).toBe(true);
     const core = PACKS.find(p => p.id === 'core-finisher')!;
     expect(packsFor(home, core.home).find(o => o.pack.id === 'core-finisher')!.closed).toMatch(/Already/);
   });

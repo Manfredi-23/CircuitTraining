@@ -12,7 +12,7 @@ import { activeDay } from '@/core/today';
 import { localDate } from '@/core/dates';
 import { formatLoad, getLoadAxis, getOpeningLoad } from '@/core/load';
 import {
-  activeEdit, addIds, allowedToday, clearTarget, editExercise, editFromCircuit, editWarnings, isChanged,
+  activeEdit, addIds, allowedToday, cautionToday, clearTarget, editExercise, editFromCircuit, editWarnings, isChanged,
   moveAt, packsFor, removeAt, similarTo, stepAt, stepTarget, swapAt, MAX_EDIT_ITEMS,
   type EditContext, type SessionEdit,
 } from '@/core/session-edit';
@@ -56,6 +56,9 @@ export default function SessionEditor({ mode, circuit, onClose }: {
     noKit: activeDay(state.dayPlan).noKit,
   };
   const allow = useCallback((e: Exercise) => allowedToday(e, ctx),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [ctx.place, ctx.mode, ctx.healing, ctx.pain, ctx.noKit]);
+  const caution = useCallback((e: Exercise) => cautionToday(e, ctx),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [ctx.place, ctx.mode, ctx.healing, ctx.pain, ctx.noKit]);
 
@@ -124,6 +127,7 @@ export default function SessionEditor({ mode, circuit, onClose }: {
                       <div className={styles.title}>
                         <span className={styles.name}>{ex.name}</span>
                         <span className={styles.tag}>{ex.block}{added ? ' · YOURS' : ''}</span>
+                        {caution(ex) && <span className={styles.caution}>{caution(ex)}</span>}
                       </div>
                       <button className={styles.icon} onClick={() => save(removeAt(edit, i))} aria-label={`Remove ${ex.name}`}>X</button>
                     </div>
@@ -222,6 +226,7 @@ export default function SessionEditor({ mode, circuit, onClose }: {
           replacing={picker.swap === null ? undefined : swapping?.name}
           similar={picker.swap === null ? undefined : similar}
           allow={allow}
+          caution={caution}
           onClose={() => setPicker(null)}
           onPick={id => {
             save(picker.swap === null ? addIds(circuit, edit, [id], mode) : swapAt(edit, picker.swap, id));

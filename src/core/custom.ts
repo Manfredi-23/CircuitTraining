@@ -37,7 +37,7 @@
 
 import { CONFIG } from './config';
 import { WARMUP_PULSE } from './data-cave';
-import { buildList, estimateDuration, loadsFingers, PAIN_REDUCE_FROM } from './engine';
+import { buildList, estimateDuration, HEALING_CAUTION, loadsFingers, PAIN_REDUCE_FROM, PAIN_REMOVE_FROM, painCaution } from './engine';
 import { getCoreVolume, getFreshness, CORE_TARGETS, type CoreGroup } from './insights';
 import { exerciseLibrary, isCurl, reserveEntry, reserveFor, type EntryFlags, type Place, type ReserveGroup } from './reserve';
 import { localDate, mondayOf, daysBetween } from './dates';
@@ -193,10 +193,7 @@ export function closedAreas(ctx: CustomContext): Partial<Record<Target, string>>
   const out: Partial<Record<Target, string>> = {};
   const home = ctx.place === 'HOME' || ctx.day.noKit;
   if (home) { out.PULL = 'No bar at home.'; out['PULL POWER'] = 'No bar at home.'; }
-  if (ctx.healing) {
-    out.FINGERS = 'Not while a finger heals.';
-    out['PULL POWER'] ??= 'No pulling while a finger heals.';
-  } else if (ctx.pain !== null && ctx.pain >= PAIN_REDUCE_FROM) out.FINGERS = `Finger pain ${ctx.pain}/10 lately.`;
+  if (ctx.pain !== null && ctx.pain >= PAIN_REMOVE_FROM) out.FINGERS = `Finger pain ${ctx.pain}/10 lately.`;
   else if (ctx.day.sore.includes('FOREARMS')) out.FINGERS = 'Forearms sore today.';
   if (ctx.day.sore.includes('LEGS') || ctx.legsSore) { out.LEGS = 'Legs sore today.'; out.ROCKOVER = 'Legs sore today.'; }
   if (ctx.day.sore.includes('SHOULDERS')) {
@@ -204,6 +201,24 @@ export function closedAreas(ctx: CustomContext): Partial<Record<Target, string>>
   }
   return out;
 }
+
+/**
+ * Targets open today but not recommended, with the reason: shown on the chip,
+ * never preselected. Tapping one in is the athlete's call, and then its
+ * exercises go in, grips and all.
+ */
+export function cautionAreas(ctx: CustomContext): Partial<Record<Target, string>> {
+  const out: Partial<Record<Target, string>> = {};
+  const closed = closedAreas(ctx);
+  const set = (t: Target, why: string) => { if (!closed[t]) out[t] = why; };
+  if (ctx.healing) {
+    for (const t of ['FINGERS', 'PULL', 'PULL POWER'] as Target[]) set(t, HEALING_CAUTION);
+  } else if (ctx.pain !== null && ctx.pain >= PAIN_REDUCE_FROM) set('FINGERS', painCaution(ctx.pain));
+  return out;
+}
+
+/** While a finger heals, the targets whose exercises grip, pull or load the fingers by nature. */
+const GRIP_TARGETS: Target[] = ['FINGERS', 'PULL', 'PULL POWER'];
 
 // ---- Suggestion ------------------------------------------------------------------
 
@@ -366,15 +381,19 @@ export function buildCustom(input: CustomInput): CustomSession {
   // At the gym, what only the gym has goes first among the equally stale:
   // the bodyweight squat can wait for a morning at home.
   const gymFirst = (p: Place) => (place === 'GYM' && p === 'HOME' ? 1 : 0);
+  // While a finger heals, grips and finger work stay out of the other targets
+  // by default; a grip target tapped in is the athlete's call, and keeps them.
+  const keepsGrips = (t: Target) => !input.healing || GRIP_TARGETS.includes(t);
   const queueFor = (t: Target): Exercise[] => {
     if (isGoal(t)) {
       return GOAL_ENTRIES[t]
         .filter(g => place === 'GYM' || g.place === 'HOME')
-        .filter(g => !(input.healing && g.grip))
+        .filter(g => keepsGrips(t) || !g.grip)
         .map(g => lib.get(g.id))
-        .filter((e): e is Exercise => Boolean(e) && !(input.day.noKit && needsKit(e!)) && !(input.healing && loadsFingers(e!)));
+        .filter((e): e is Exercise => Boolean(e) && !(input.day.noKit && needsKit(e!)) && (keepsGrips(t) || !loadsFingers(e!)));
     }
     return [...reserve[t]]
+      .filter(i => keepsGrips(t) || !i.caution)
       .sort((a, b) => (a.lastDone ?? '').localeCompare(b.lastDone ?? '') || gymFirst(a.place) - gymFirst(b.place))
       .map(i => i.exercise);
   };
@@ -471,9 +490,15 @@ export function makePreset(choice: BuildChoice, name: string, now = Date.now()):
   return { ...choice, include: [...choice.include], exclude: [...choice.exclude], avoid: [...choice.avoid], id: `user-${now}`, name: (name.trim() || presetName(choice)).toUpperCase().slice(0, 32) };
 }
 
-/** Lines worth saying before START: a due area left out, and power after a climb. */
-export function buildWarnings(choice: BuildChoice, needs: AreaNeed[], climbedToday: boolean): string[] {
+/** Lines worth saying before START: a due area left out, power after a climb, a target not recommended. */
+export function buildWarnings(
+  choice: BuildChoice, needs: AreaNeed[], climbedToday: boolean, cautions: Partial<Record<Target, string>> = {},
+): string[] {
   const out: string[] = [];
+  for (const t of choice.include) {
+    const why = cautions[t];
+    if (why) out.push(`${t}: ${why.charAt(0).toLowerCase()}${why.slice(1)}`);
+  }
   for (const n of needs) {
     if (n.score >= 0.7 && choice.exclude.includes(n.group)) out.push(`${n.group} is behind (${n.reason}). Left out today.`);
   }

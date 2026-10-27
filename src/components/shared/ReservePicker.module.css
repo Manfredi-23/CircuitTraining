@@ -30,3 +30,4 @@
   font-family: inherit; font-weight: 700; font-size: 15px; letter-spacing: 0.06em;
 }
 .add:disabled:not(.addDone) { opacity: 0.4; }
+.caution { font-size: 12px; font-weight: 700; color: var(--accent); line-height: 1.35; }

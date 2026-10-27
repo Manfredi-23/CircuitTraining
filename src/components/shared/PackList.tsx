@@ -23,7 +23,7 @@ export default function PackList({ offers, added, energy, progress, onAdd }: {
   return (
     <>
       {offers.map(offer => {
-        const { pack, ids, closed } = offer;
+        const { pack, ids, closed, caution } = offer;
         const done = added.includes(pack.id);
         const exs = ids.map(id => lib.get(id)!).filter(Boolean);
         const minutes = exs.length ? estimateDuration(exs.map(e => scaleExercise(e, energy, progress))) : 0;
@@ -35,6 +35,7 @@ export default function PackList({ offers, added, energy, progress, onAdd }: {
                 {exs.length > 0 && <span className={styles.minutes}>+{minutes} MIN</span>}
               </div>
               <div className={styles.note}>{pack.note}</div>
+              {caution && !closed && <div className={styles.caution}>{caution}</div>}
               {closed
                 ? <div className={styles.closed}>{closed}</div>
                 : <div className={styles.items}>{exs.map(e => e.name).join(' · ')}</div>}
