@@ -147,3 +147,40 @@ test('a deleted session comes back with UNDO', async ({ page }) => {
   await page.getByRole('button', { name: 'UNDO' }).click();
   expect(await count()).toBe(before);
 });
+
+test('TODAY offers a wall focus, and the climb log tags a climb and a 110% go', async ({ page }) => {
+  const errors = await open(page);
+  await page.getByRole('button', { name: /TIME ON THE WALL|ON THE WALL TODAY/ }).click();
+  await expect(page.getByText('FEET + TECHNIQUE')).toBeVisible();
+  await tab(page, 'LOG');
+  await page.getByRole('button', { name: /CLIMB/ }).first().click();
+  await page.getByRole('button', { name: /^Red/ }).click();
+  await page.getByRole('button', { name: 'PROJ', exact: true }).click();
+  await page.getByRole('button', { name: '+ STYLE AND WHY IT FELL' }).click();
+  await page.getByRole('button', { name: 'OVERHANG', exact: true }).click();
+  await page.getByRole('button', { name: 'BACKED OFF', exact: true }).click();
+  await page.getByRole('button', { name: 'CLOSE' }).click();
+  await expect(page.getByText('OVERHANG · fell: BACKED OFF')).toBeVisible();
+  await page.getByRole('button', { name: /I GAVE ONE GO 110%/ }).click();
+  await page.getByRole('button', { name: /^SAVE SESSION/ }).click();
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('7bit_store')!).state.climbLog.at(-1));
+  expect(saved.tryHard).toBe(true);
+  expect(saved.climbs[0]).toMatchObject({ sent: false, tags: ['overhang'], why: ['backed-off'] });
+  expect(errors).toEqual([]);
+});
+
+test('STATS: the coach, the goal ladder and goals edited, and where you fall', async ({ page }) => {
+  const errors = await open(page);
+  await tab(page, 'STATS');
+  await expect(page.getByRole('heading', { name: 'THE COACH' })).toBeVisible();
+  await tab(page, 'PROGRESS');
+  await expect(page.getByText(/^7C boulder around/)).toBeVisible();
+  await page.getByRole('button', { name: 'EDIT GOALS' }).click();
+  await page.getByRole('radiogroup', { name: 'boulder next goal' }).getByRole('radio', { name: '7B+' }).click();
+  await page.getByRole('button', { name: 'SAVE GOALS' }).click();
+  await expect(page.getByText(/^7B\+ boulder around/)).toBeVisible();
+  await tab(page, 'CLIMBING');
+  await expect(page.getByRole('heading', { name: 'WHERE YOU FALL' })).toBeVisible();
+  await expect(page.getByText(/is where you fall/)).toBeVisible();
+  expect(errors).toEqual([]);
+});

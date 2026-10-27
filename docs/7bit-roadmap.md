@@ -149,43 +149,43 @@ Rules agreed for this part:
 
 | # | Chunk | Notes |
 |---|-------|-------|
-| 10.1 | [ ] TODAY: the pick, START and one line for the wall; ADJUST TODAY and ALSO FITS fold into one row | |
-| 10.2 | [ ] Session page: one line per exercise (name, sets x reps, load); block and rest move to the workout card | |
-| 10.3 | [ ] STATS overview: WHAT STANDS OUT shows three, the rest behind MORE | |
+| 10.1 | [x] TODAY: the pick and START lead; ON THE WALL, ADJUST TODAY and ALSO FITS each fold to one line | |
+| 10.2 | [x] Session page: one line per exercise (name, sets x reps, load); block and rest move to the workout card | |
+| 10.3 | [x] STATS overview: WHAT STANDS OUT shows three, the rest behind MORE | |
 
 ## Phase 11 — Goals and the gap
 
 | # | Chunk | Notes |
 |---|-------|-------|
-| 11.1 | [ ] Goals (`goals.ts`): boulder and sport goal, the working grade from the logs, milestones with an estimate | Persisted `goals`. |
-| 11.2 | [ ] The gap (`gap.ts`): each tested standard against now, the next milestone and the goal; what is already enough | |
-| 11.3 | [ ] GOAL section on STATS PROGRESS, goal sheet in Settings | |
+| 11.1 | [x] Goals (`goals.ts`): boulder and sport goal, the working grade from the logs, milestones with an estimate | |
+| 11.2 | [x] The gap (`gap.ts`): each tested standard against now, the next milestone and the goal; what is already enough | |
+| 11.3 | [x] THE GOAL on STATS PROGRESS, with EDIT GOALS (next, final, an optional trip) | Goals live in `settings.goals`. |
 
 ## Phase 12 — Why climbs fail
 
 | # | Chunk | Notes |
 |---|-------|-------|
-| 12.1 | [ ] Tags on each climb: angle, holds, moves, why it failed (incl. BACKED OFF), and a TRIED 110% mark on the session | Optional, two taps. |
-| 12.2 | [ ] Limiters (`limiters.ts`): send rate per style against the athlete's own average; the weakest three | |
-| 12.3 | [ ] WHERE YOU FALL on STATS CLIMBING | |
+| 12.1 | [x] Tags on each climb: angle, holds, moves, why it failed (incl. BACKED OFF), and a TRIED 110% mark on the session | Optional, two taps. |
+| 12.2 | [x] Limiters (`limiters.ts`): send rate per style against the athlete's own average; the weakest three | |
+| 12.3 | [x] WHERE YOU FALL on STATS CLIMBING | |
 
 ## Phase 13 — On the wall
 
 | # | Chunk | Notes |
 |---|-------|-------|
-| 13.1 | [ ] Wall focus (`wall.ts`): one technique or feet drill, one head drill, stamina when due, picked from the limiters and the season | Shown on TODAY as a suggestion. |
-| 13.2 | [ ] Finger, soft: while healing, grip types and exercises are labelled NOT RECOMMENDED YET, never removed | Pain 6+ stays hard. |
+| 13.1 | [x] Wall focus (`wall.ts`): one technique or feet drill, one head drill, stamina when due, picked from the limiters and the season | Shown on TODAY as a suggestion. |
+| 13.2 | [x] Finger, soft: while healing, grip types and exercises are labelled NOT RECOMMENDED YET, never removed | Pain 6+ stays hard. |
 
 ## Phase 14 — The season
 
 | # | Chunk | Notes |
 |---|-------|-------|
-| 14.1 | [ ] Season (`season.ts`): BASE, STRENGTH, POWER, PEAK, by block, planned back from a goal date or a trip when one is set | |
-| 14.2 | [ ] The phase steers the training-day pick and the wall focus, and names itself on TODAY | |
+| 14.1 | [x] Season (`season.ts`): BASE, STRENGTH, POWER, PEAK, by block, planned back from a goal date or a trip when one is set | |
+| 14.2 | [x] The phase steers the training-day pick and the wall focus, and names itself on TODAY | |
 
 ## Phase 15 — The coach
 
 | # | Chunk | Notes |
 |---|-------|-------|
-| 15.1 | [ ] COPY FOR COACH: the last four weeks in one text to paste into Claude | Nothing leaves the phone unless sent. |
-| 15.2 | [ ] COACH in the app with the athlete's own API key | The key stays on the phone and out of backups; the review is text, never a change to the plan. |
+| 15.1 | [x] COPY FOR COACH: the last four weeks in one text to paste into Claude | Nothing leaves the phone unless sent. |
+| 15.2 | [x] COACH in the app with the athlete's own API key | The key stays on the phone and out of backups; the review is text, never a change to the plan. |
