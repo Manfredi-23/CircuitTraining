@@ -19,6 +19,8 @@ import ScreenHeader from '@/components/shell/ScreenHeader';
 import ClimbStats from '@/components/shared/ClimbStats';
 import ExerciseDetail from '@/components/shared/ExerciseDetail';
 import { OverviewCard, WorkSplitSection } from '@/components/shared/StatsOverview';
+import GoalSection from '@/components/shared/GoalSection';
+import { goalHeadline, goalLadder } from '@/core/goals';
 import {
   WeekStripSection, CoreVolumeSection, BenchmarkSection, LiftSection,
   CapacityRows, ClimbVsPullSection,
@@ -32,7 +34,7 @@ type StatsTab = 'OVERVIEW' | 'PROGRESS' | 'BODY' | 'CLIMBING';
 const TABS: StatsTab[] = ['OVERVIEW', 'PROGRESS', 'BODY', 'CLIMBING'];
 const TAB_LINE: Record<StatsTab, string> = {
   OVERVIEW: 'The last four weeks against the four before, and what to do about them.',
-  PROGRESS: 'What was lifted, what was tested, how far to the one-arm.',
+  PROGRESS: 'Where the grades are going, what was lifted and tested.',
   BODY: 'Where the work went, how much, and what is fading.',
   CLIMBING: 'From the climb log.',
 };
@@ -132,7 +134,8 @@ export default function StatsScreen({ onSettings }: { onSettings: () => void }) 
     oap: oneArmHeadline(getOneArmPath(benchmarkResults)),
     tests: testsHeadline(benchmarkResults),
     climbs: climbHeadline(climbLog, primaryClimbView(climbLog)),
-  }), [loadLog, sessionLog, climbLog, activityLog, progress, benchmarkResults]);
+    goal: goalHeadline(goalLadder(settings.goals, climbLog, 'BOULDER'), goalLadder(settings.goals, climbLog, 'SPORT')),
+  }), [loadLog, sessionLog, climbLog, activityLog, progress, benchmarkResults, settings.goals]);
 
   const chartData = useMemo(() => {
     const overall = getOverallTrendData(progress, days);
@@ -172,6 +175,9 @@ export default function StatsScreen({ onSettings }: { onSettings: () => void }) 
 
       {tab === 'PROGRESS' && (
         <>
+          <Section title="THE GOAL" lead={heads.goal}>
+            <GoalSection />
+          </Section>
           <Section title="LIFTS" period="all time" lead={heads.lifts}>
             <LiftSection loadLog={loadLog} onPick={setExercise} />
           </Section>

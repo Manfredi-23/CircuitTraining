@@ -1,6 +1,7 @@
 import type { StateCreator } from 'zustand';
 import type { Store } from '../store';
 import { DEFAULT_REMINDER_SETTINGS, type ReminderKind, type ReminderSettings } from '@/core/reminders';
+import { DEFAULT_GOALS, withGoalDefaults, type Goals } from '@/core/goals';
 
 /** Athlete preferences that persist and travel in a backup. */
 export interface HealthSettings {
@@ -13,17 +14,20 @@ export interface HealthSettings {
 export interface AppSettings {
   reminders: ReminderSettings;
   health: HealthSettings;
+  /** Grade goals, boulder and sport, and an optional trip to peak for. */
+  goals: Goals;
 }
 
 export const DEFAULT_HEALTH_SETTINGS: HealthSettings = { connected: false, writeWorkouts: true };
 
-export const DEFAULT_SETTINGS: AppSettings = { reminders: DEFAULT_REMINDER_SETTINGS, health: DEFAULT_HEALTH_SETTINGS };
+export const DEFAULT_SETTINGS: AppSettings = { reminders: DEFAULT_REMINDER_SETTINGS, health: DEFAULT_HEALTH_SETTINGS, goals: DEFAULT_GOALS };
 
 export interface SettingsSlice {
   settings: AppSettings;
   setReminder: (kind: ReminderKind, on: boolean) => void;
   setDailyTime: (hhmm: string) => void;
   setHealthSettings: (patch: Partial<HealthSettings>) => void;
+  setGoals: (goals: Goals) => void;
 }
 
 /** Fill in anything a stored or imported settings blob is missing. */
@@ -34,6 +38,7 @@ export function withDefaults(s: Partial<AppSettings> | undefined): AppSettings {
       dailyTime: s?.reminders?.dailyTime ?? DEFAULT_REMINDER_SETTINGS.dailyTime,
     },
     health: { ...DEFAULT_HEALTH_SETTINGS, ...(s?.health ?? {}) },
+    goals: withGoalDefaults(s?.goals),
   };
 }
 
@@ -54,4 +59,6 @@ export const createSettingsSlice: StateCreator<Store, [], [], SettingsSlice> = (
   setHealthSettings: (patch) => set(state => ({
     settings: { ...state.settings, health: { ...state.settings.health, ...patch } },
   })),
+
+  setGoals: (goals) => set(state => ({ settings: { ...state.settings, goals: withGoalDefaults(goals) } })),
 });

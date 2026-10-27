@@ -122,6 +122,7 @@ export const FONT_GRADE_MAP: Record<string, string> = {
   '7b+': 'V8',
   '7c':  'V9',
   '7c+': 'V10',
+  '8a':  'V11',
 };
 
 /**
