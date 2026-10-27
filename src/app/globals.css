@@ -142,9 +142,14 @@ img { display: block; max-width: 100%; }
 .overlay-toggle-mark.on { border-color: var(--ink); background: var(--ink); color: #E4E2DD; }
 .overlay-time { display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
 .overlay-time input {
-  font: inherit; font-size: 14px; color: var(--ink); background: none;
+  font: inherit; font-size: 16px; color: var(--ink); background: none;
   border: 2px solid var(--ink); border-radius: var(--rad-sm); padding: 6px 8px;
 }
+.overlay-input {
+  flex: 1; min-width: 0; height: 52px; padding: 0 12px; font: inherit; font-size: 16px; color: var(--ink);
+  background: none; border: 2px solid var(--ink); border-radius: var(--rad-sm);
+}
+.overlay-btn:disabled { opacity: 0.35; }
 .overlay-footer { font-size: 11px; color: var(--ink-dim); margin-top: auto; opacity: 0.5; }
 
 @media (min-height: 800px) { .screen { padding-top: 56px; } }

@@ -21,6 +21,7 @@ import ExerciseDetail from '@/components/shared/ExerciseDetail';
 import { OverviewCard, WorkSplitSection } from '@/components/shared/StatsOverview';
 import GoalSection from '@/components/shared/GoalSection';
 import LimitersSection from '@/components/shared/LimitersSection';
+import CoachSection from '@/components/shared/CoachSection';
 import { getLimiters, limiterHeadline } from '@/core/limiters';
 import { goalHeadline, goalLadder } from '@/core/goals';
 import {
@@ -170,6 +171,9 @@ export default function StatsScreen({ onSettings }: { onSettings: () => void }) 
       {tab === 'OVERVIEW' && (
         <>
           <OverviewCard level={overallLevel} sessionLog={sessionLog} climbLog={climbLog} activityLog={activityLog} insightInput={insightInput} />
+          <Section title="THE COACH" period="28 days" lead="A review of the last four weeks: what went well, what holds you back, what to change.">
+            <CoachSection />
+          </Section>
           <Section title="WEEKS" period="12 weeks">
             <WeekStripSection sessionLog={sessionLog} climbLog={climbLog} activityLog={activityLog} />
           </Section>
