@@ -1,153 +1,153 @@
 {
  "app": "7bit",
  "format": 1,
- "exportedAt": "2026-10-22T06:40:02.909Z",
+ "exportedAt": "2026-10-27T21:42:23.850Z",
  "data": {
   "progress": {
    "crimp": {
-    "xp": 46,
-    "lastTrained": "2026-10-19T07:15:00.000Z",
+    "xp": 55,
+    "lastTrained": "2026-10-18T07:15:00.000Z",
     "history": [
      {
-      "date": "2026-08-27T07:15:00.000Z",
+      "date": "2026-09-01T07:15:00.000Z",
       "xp": 0
      },
      {
-      "date": "2026-10-22T07:30:00.000Z",
-      "xp": 46
+      "date": "2026-10-27T07:30:00.000Z",
+      "xp": 55
      }
     ]
    },
    "openhand": {
-    "xp": 40,
-    "lastTrained": "2026-10-19T07:15:00.000Z",
+    "xp": 49,
+    "lastTrained": "2026-10-18T07:15:00.000Z",
     "history": [
      {
-      "date": "2026-08-27T07:15:00.000Z",
+      "date": "2026-09-01T07:15:00.000Z",
       "xp": 0
      },
      {
-      "date": "2026-10-22T07:30:00.000Z",
-      "xp": 40
+      "date": "2026-10-27T07:30:00.000Z",
+      "xp": 49
      }
     ]
    },
    "forearm": {
-    "xp": 1,
-    "lastTrained": "2026-09-17T10:15:00.000Z",
+    "xp": 4,
+    "lastTrained": "2026-10-10T10:15:00.000Z",
     "history": [
      {
-      "date": "2026-08-27T07:15:00.000Z",
+      "date": "2026-09-01T07:15:00.000Z",
       "xp": 0
      },
      {
-      "date": "2026-10-22T07:30:00.000Z",
-      "xp": 1
+      "date": "2026-10-27T07:30:00.000Z",
+      "xp": 4
      }
     ]
    },
    "pull": {
-    "xp": 84,
-    "lastTrained": "2026-10-20T20:15:00.000Z",
+    "xp": 97,
+    "lastTrained": "2026-10-25T07:15:00.000Z",
     "history": [
      {
-      "date": "2026-08-27T07:15:00.000Z",
+      "date": "2026-09-01T07:15:00.000Z",
       "xp": 0
      },
      {
-      "date": "2026-10-22T07:30:00.000Z",
-      "xp": 84
+      "date": "2026-10-27T07:30:00.000Z",
+      "xp": 97
      }
     ]
    },
    "contact": {
-    "xp": 0,
-    "lastTrained": null,
+    "xp": 8,
+    "lastTrained": "2026-10-10T10:15:00.000Z",
     "history": [
      {
-      "date": "2026-08-27T07:15:00.000Z",
+      "date": "2026-09-01T07:15:00.000Z",
       "xp": 0
      },
      {
-      "date": "2026-10-22T07:30:00.000Z",
-      "xp": 0
+      "date": "2026-10-27T07:30:00.000Z",
+      "xp": 8
      }
     ]
    },
    "tension": {
-    "xp": 382,
-    "lastTrained": "2026-10-21T07:15:00.000Z",
+    "xp": 415,
+    "lastTrained": "2026-10-26T07:15:00.000Z",
     "history": [
      {
-      "date": "2026-08-27T07:15:00.000Z",
+      "date": "2026-09-01T07:15:00.000Z",
       "xp": 0
      },
      {
-      "date": "2026-10-22T07:30:00.000Z",
-      "xp": 382
+      "date": "2026-10-27T07:30:00.000Z",
+      "xp": 415
      }
     ]
    },
    "press": {
-    "xp": 65,
-    "lastTrained": "2026-10-20T20:15:00.000Z",
+    "xp": 74,
+    "lastTrained": "2026-10-25T07:15:00.000Z",
     "history": [
      {
-      "date": "2026-08-27T07:15:00.000Z",
+      "date": "2026-09-01T07:15:00.000Z",
       "xp": 0
      },
      {
-      "date": "2026-10-22T07:30:00.000Z",
-      "xp": 65
+      "date": "2026-10-27T07:30:00.000Z",
+      "xp": 74
      }
     ]
    },
    "shoulder": {
-    "xp": 126,
-    "lastTrained": "2026-10-20T20:15:00.000Z",
+    "xp": 145,
+    "lastTrained": "2026-10-25T07:15:00.000Z",
     "history": [
      {
-      "date": "2026-08-27T07:15:00.000Z",
+      "date": "2026-09-01T07:15:00.000Z",
       "xp": 0
      },
      {
-      "date": "2026-10-22T07:30:00.000Z",
-      "xp": 126
+      "date": "2026-10-27T07:30:00.000Z",
+      "xp": 145
      }
     ]
    },
    "legs": {
-    "xp": 263,
-    "lastTrained": "2026-10-21T07:15:00.000Z",
+    "xp": 359,
+    "lastTrained": "2026-10-26T07:15:00.000Z",
     "history": [
      {
-      "date": "2026-08-27T07:15:00.000Z",
+      "date": "2026-09-01T07:15:00.000Z",
       "xp": 0
      },
      {
-      "date": "2026-10-22T07:30:00.000Z",
-      "xp": 263
+      "date": "2026-10-27T07:30:00.000Z",
+      "xp": 359
      }
     ]
    },
    "mobility": {
-    "xp": 84,
-    "lastTrained": "2026-10-20T07:15:00.000Z",
+    "xp": 150,
+    "lastTrained": "2026-10-26T07:15:00.000Z",
     "history": [
      {
-      "date": "2026-08-27T07:15:00.000Z",
+      "date": "2026-09-01T07:15:00.000Z",
       "xp": 0
      },
      {
-      "date": "2026-10-22T07:30:00.000Z",
-      "xp": 84
+      "date": "2026-10-27T07:30:00.000Z",
+      "xp": 150
      }
     ]
    }
   },
   "sessionLog": [
    {
-    "date": "2026-08-27T07:15:00.000Z",
+    "date": "2026-09-01T07:15:00.000Z",
     "mode": "DAILY",
     "circuitId": "daily-03",
     "circuitTitle": "BAND STRENGTH",
@@ -159,6 +159,7 @@
      "morn-band-pushup": 2,
      "morn-band-split-squat": 2,
      "home-sl-rdl": 2,
+     "extra-lunge-drive": 1,
      "morn-pullapart": 1
     },
     "planned": {
@@ -167,118 +168,10 @@
      "morn-band-pushup": 2,
      "morn-band-split-squat": 2,
      "home-sl-rdl": 2,
+     "extra-lunge-drive": 1,
      "morn-pullapart": 1
     },
     "effort": 5
-   },
-   {
-    "date": "2026-08-27T20:15:00.000Z",
-    "mode": "CAVE",
-    "circuitId": "cave-06",
-    "circuitTitle": "LEGS + BACK",
-    "energy": "NORMAL",
-    "duration": 30,
-    "sets": {
-     "addon-goblet-squat": 2,
-     "legs-back-extension": 3,
-     "legs-sl-rdl": 2,
-     "legs-toe-drag": 2,
-     "home-copenhagen": 2,
-     "legs-plate-crunch": 3,
-     "daily-side-plank-dip": 2,
-     "feet-frogger": 2
-    },
-    "planned": {
-     "addon-goblet-squat": 2,
-     "legs-back-extension": 3,
-     "legs-sl-rdl": 2,
-     "legs-toe-drag": 2,
-     "home-copenhagen": 2,
-     "legs-plate-crunch": 3,
-     "daily-side-plank-dip": 2,
-     "feet-frogger": 2
-    },
-    "effort": 7
-   },
-   {
-    "date": "2026-08-30T07:15:00.000Z",
-    "mode": "DAILY",
-    "circuitId": "daily-06",
-    "circuitTitle": "QUIET FEET",
-    "energy": "NORMAL",
-    "duration": 16,
-    "sets": {
-     "daily-ankle-wall": 2,
-     "daily-short-foot": 2,
-     "daily-toe-taps": 3,
-     "extra-sl-reach": 2,
-     "daily-rockover-transfer": 2,
-     "daily-flag-hold": 3
-    },
-    "planned": {
-     "daily-ankle-wall": 2,
-     "daily-short-foot": 2,
-     "daily-toe-taps": 3,
-     "extra-sl-reach": 2,
-     "daily-rockover-transfer": 2,
-     "daily-flag-hold": 3
-    },
-    "effort": 5
-   },
-   {
-    "date": "2026-08-31T07:15:00.000Z",
-    "mode": "DAILY",
-    "circuitId": "daily-05",
-    "circuitTitle": "LEGS + CORE",
-    "energy": "NORMAL",
-    "duration": 13,
-    "sets": {
-     "morn-catcow": 1,
-     "daily-spiderman-lunge": 1,
-     "daily-cossack-shift": 1,
-     "daily-bw-squat": 2,
-     "daily-glute-bridge": 2,
-     "daily-pushup": 2,
-     "daily-plank-climber": 2,
-     "daily-back-unwind": 1
-    },
-    "planned": {
-     "morn-catcow": 1,
-     "daily-spiderman-lunge": 1,
-     "daily-cossack-shift": 1,
-     "daily-bw-squat": 2,
-     "daily-glute-bridge": 2,
-     "daily-pushup": 2,
-     "daily-plank-climber": 2,
-     "daily-back-unwind": 1
-    },
-    "effort": 5
-   },
-   {
-    "date": "2026-09-01T07:15:00.000Z",
-    "mode": "DAILY",
-    "circuitId": "daily-04",
-    "circuitTitle": "FINGERS + MOBILITY",
-    "energy": "NORMAL",
-    "duration": 15,
-    "sets": {
-     "morn-catcow": 1,
-     "morn-hip-9090": 1,
-     "home-hip-flow": 1,
-     "wrists-daily-block": 2,
-     "wrists-loaded-extension": 2,
-     "daily-edge-density": 6
-    },
-    "planned": {
-     "morn-catcow": 1,
-     "morn-hip-9090": 1,
-     "home-hip-flow": 1,
-     "wrists-daily-block": 2,
-     "wrists-loaded-extension": 2,
-     "daily-edge-density": 6
-    },
-    "effort": 5,
-    "pain": 1
    },
    {
     "date": "2026-09-01T20:15:00.000Z",
@@ -295,7 +188,8 @@
      "addon-mountain-climber": 3,
      "addon-hanging-oblique": 2,
      "addon-russian-twist": 2,
-     "addon-cuff": 1
+     "extra-lunge-drive": 1,
+     "addon-cuff": 2
     },
     "planned": {
      "addon-weighted-pullup": 3,
@@ -305,6 +199,7 @@
      "addon-mountain-climber": 3,
      "addon-hanging-oblique": 2,
      "addon-russian-twist": 2,
+     "extra-lunge-drive": 1,
      "addon-cuff": 2
     },
     "effort": 7
@@ -312,26 +207,28 @@
    {
     "date": "2026-09-03T07:15:00.000Z",
     "mode": "DAILY",
-    "circuitId": "daily-02",
-    "circuitTitle": "OBLIQUES + BACK",
+    "circuitId": "daily-01",
+    "circuitTitle": "CORE + OBLIQUES",
     "energy": "NORMAL",
-    "duration": 14,
+    "duration": 13,
     "sets": {
      "morn-breathing": 1,
-     "morn-birddog": 1,
-     "daily-prone-extension": 2,
-     "daily-side-plank-dip": 2,
-     "morn-chop": 1,
-     "daily-band-good-morning": 2,
+     "morn-deadbug": 1,
+     "daily-pushup": 2,
+     "extra-lunge-drive": 1,
+     "daily-spiderman": 2,
+     "daily-mountain-climber": 2,
+     "daily-reverse-crunch": 2,
      "morn-bw-russian-twist": 2
     },
     "planned": {
      "morn-breathing": 1,
-     "morn-birddog": 1,
-     "daily-prone-extension": 2,
-     "daily-side-plank-dip": 2,
-     "morn-chop": 1,
-     "daily-band-good-morning": 2,
+     "morn-deadbug": 1,
+     "daily-pushup": 2,
+     "extra-lunge-drive": 1,
+     "daily-spiderman": 2,
+     "daily-mountain-climber": 2,
+     "daily-reverse-crunch": 2,
      "morn-bw-russian-twist": 2
     },
     "effort": 5
@@ -347,20 +244,24 @@
      "addon-goblet-squat": 2,
      "legs-back-extension": 3,
      "legs-sl-rdl": 2,
+     "full-cossack": 2,
      "legs-toe-drag": 2,
      "home-copenhagen": 2,
      "legs-plate-crunch": 3,
      "daily-side-plank-dip": 2,
-     "feet-frogger": 2
+     "extra-sl-balance": 2,
+     "feet-frogger": 1
     },
     "planned": {
      "addon-goblet-squat": 2,
      "legs-back-extension": 3,
      "legs-sl-rdl": 2,
+     "full-cossack": 2,
      "legs-toe-drag": 2,
      "home-copenhagen": 2,
      "legs-plate-crunch": 3,
      "daily-side-plank-dip": 2,
+     "extra-sl-balance": 2,
      "feet-frogger": 2
     },
     "effort": 7
@@ -368,81 +269,82 @@
    {
     "date": "2026-09-04T07:15:00.000Z",
     "mode": "DAILY",
-    "circuitId": "daily-01",
-    "circuitTitle": "CORE + OBLIQUES",
+    "circuitId": "daily-06",
+    "circuitTitle": "QUIET FEET",
     "energy": "NORMAL",
-    "duration": 13,
+    "duration": 16,
     "sets": {
-     "morn-breathing": 1,
-     "morn-deadbug": 1,
-     "daily-pushup": 2,
-     "daily-spiderman": 2,
-     "daily-mountain-climber": 2,
-     "daily-reverse-crunch": 2,
-     "morn-bw-russian-twist": 2
+     "daily-ankle-wall": 2,
+     "daily-short-foot": 2,
+     "daily-toe-taps": 3,
+     "extra-sl-reach": 2,
+     "daily-rockover-transfer": 2,
+     "daily-flag-hold": 3,
+     "extra-lunge-drive": 1
     },
     "planned": {
-     "morn-breathing": 1,
-     "morn-deadbug": 1,
-     "daily-pushup": 2,
-     "daily-spiderman": 2,
-     "daily-mountain-climber": 2,
-     "daily-reverse-crunch": 2,
-     "morn-bw-russian-twist": 2
+     "daily-ankle-wall": 2,
+     "daily-short-foot": 2,
+     "daily-toe-taps": 3,
+     "extra-sl-reach": 2,
+     "daily-rockover-transfer": 2,
+     "daily-flag-hold": 3,
+     "extra-lunge-drive": 1
     },
     "effort": 5
    },
    {
     "date": "2026-09-06T07:15:00.000Z",
     "mode": "DAILY",
-    "circuitId": "daily-05",
-    "circuitTitle": "LEGS + CORE",
+    "circuitId": "daily-04",
+    "circuitTitle": "FINGERS + MOBILITY",
     "energy": "NORMAL",
-    "duration": 13,
+    "duration": 15,
     "sets": {
      "morn-catcow": 1,
-     "daily-spiderman-lunge": 1,
-     "daily-cossack-shift": 1,
-     "daily-bw-squat": 2,
-     "daily-glute-bridge": 2,
-     "daily-pushup": 2,
-     "daily-plank-climber": 2,
-     "daily-back-unwind": 1
+     "morn-hip-9090": 1,
+     "home-hip-flow": 1,
+     "wrists-daily-block": 2,
+     "wrists-loaded-extension": 2,
+     "extra-lunge-drive": 1,
+     "daily-edge-density": 6
     },
     "planned": {
      "morn-catcow": 1,
-     "daily-spiderman-lunge": 1,
-     "daily-cossack-shift": 1,
-     "daily-bw-squat": 2,
-     "daily-glute-bridge": 2,
-     "daily-pushup": 2,
-     "daily-plank-climber": 2,
-     "daily-back-unwind": 1
+     "morn-hip-9090": 1,
+     "home-hip-flow": 1,
+     "wrists-daily-block": 2,
+     "wrists-loaded-extension": 2,
+     "extra-lunge-drive": 1,
+     "daily-edge-density": 6
     },
-    "effort": 5
+    "effort": 5,
+    "pain": 1
    },
    {
     "date": "2026-09-08T07:15:00.000Z",
     "mode": "DAILY",
-    "circuitId": "daily-03",
-    "circuitTitle": "BAND STRENGTH",
+    "circuitId": "daily-02",
+    "circuitTitle": "OBLIQUES + BACK",
     "energy": "NORMAL",
     "duration": 14,
     "sets": {
-     "morn-band-wake": 1,
-     "morn-band-row": 3,
-     "morn-band-pushup": 2,
-     "morn-band-split-squat": 2,
-     "home-sl-rdl": 2,
-     "morn-pullapart": 1
+     "morn-breathing": 1,
+     "morn-birddog": 1,
+     "daily-prone-extension": 2,
+     "daily-side-plank-dip": 2,
+     "extra-lunge-drive": 1,
+     "daily-band-good-morning": 2,
+     "morn-bw-russian-twist": 2
     },
     "planned": {
-     "morn-band-wake": 1,
-     "morn-band-row": 3,
-     "morn-band-pushup": 2,
-     "morn-band-split-squat": 2,
-     "home-sl-rdl": 2,
-     "morn-pullapart": 1
+     "morn-breathing": 1,
+     "morn-birddog": 1,
+     "daily-prone-extension": 2,
+     "daily-side-plank-dip": 2,
+     "extra-lunge-drive": 1,
+     "daily-band-good-morning": 2,
+     "morn-bw-russian-twist": 2
     },
     "effort": 5
    },
@@ -461,6 +363,7 @@
      "addon-mountain-climber": 3,
      "addon-hanging-oblique": 2,
      "addon-russian-twist": 2,
+     "extra-lunge-drive": 1,
      "addon-cuff": 2
     },
     "planned": {
@@ -471,39 +374,13 @@
      "addon-mountain-climber": 3,
      "addon-hanging-oblique": 2,
      "addon-russian-twist": 2,
+     "extra-lunge-drive": 1,
      "addon-cuff": 2
     },
     "effort": 7
    },
    {
     "date": "2026-09-09T07:15:00.000Z",
-    "mode": "DAILY",
-    "circuitId": "daily-02",
-    "circuitTitle": "OBLIQUES + BACK",
-    "energy": "NORMAL",
-    "duration": 14,
-    "sets": {
-     "morn-breathing": 1,
-     "morn-birddog": 1,
-     "daily-prone-extension": 2,
-     "daily-side-plank-dip": 2,
-     "morn-chop": 1,
-     "daily-band-good-morning": 2,
-     "morn-bw-russian-twist": 2
-    },
-    "planned": {
-     "morn-breathing": 1,
-     "morn-birddog": 1,
-     "daily-prone-extension": 2,
-     "daily-side-plank-dip": 2,
-     "morn-chop": 1,
-     "daily-band-good-morning": 2,
-     "morn-bw-russian-twist": 2
-    },
-    "effort": 5
-   },
-   {
-    "date": "2026-09-10T07:15:00.000Z",
     "mode": "DAILY",
     "circuitId": "daily-01",
     "circuitTitle": "CORE + OBLIQUES",
@@ -513,6 +390,7 @@
      "morn-breathing": 1,
      "morn-deadbug": 1,
      "daily-pushup": 2,
+     "extra-lunge-drive": 1,
      "daily-spiderman": 2,
      "daily-mountain-climber": 2,
      "daily-reverse-crunch": 2,
@@ -522,10 +400,38 @@
      "morn-breathing": 1,
      "morn-deadbug": 1,
      "daily-pushup": 2,
+     "extra-lunge-drive": 1,
      "daily-spiderman": 2,
      "daily-mountain-climber": 2,
      "daily-reverse-crunch": 2,
      "morn-bw-russian-twist": 2
+    },
+    "effort": 5
+   },
+   {
+    "date": "2026-09-10T07:15:00.000Z",
+    "mode": "DAILY",
+    "circuitId": "daily-06",
+    "circuitTitle": "QUIET FEET",
+    "energy": "NORMAL",
+    "duration": 16,
+    "sets": {
+     "daily-ankle-wall": 2,
+     "daily-short-foot": 2,
+     "daily-toe-taps": 3,
+     "extra-sl-reach": 2,
+     "daily-rockover-transfer": 2,
+     "daily-flag-hold": 3,
+     "extra-lunge-drive": 1
+    },
+    "planned": {
+     "daily-ankle-wall": 2,
+     "daily-short-foot": 2,
+     "daily-toe-taps": 3,
+     "extra-sl-reach": 2,
+     "daily-rockover-transfer": 2,
+     "daily-flag-hold": 3,
+     "extra-lunge-drive": 1
     },
     "effort": 5
    },
@@ -540,20 +446,24 @@
      "addon-goblet-squat": 2,
      "legs-back-extension": 3,
      "legs-sl-rdl": 2,
+     "full-cossack": 2,
      "legs-toe-drag": 2,
      "home-copenhagen": 2,
      "legs-plate-crunch": 3,
      "daily-side-plank-dip": 2,
-     "feet-frogger": 1
+     "extra-sl-balance": 2,
+     "feet-frogger": 2
     },
     "planned": {
      "addon-goblet-squat": 2,
      "legs-back-extension": 3,
      "legs-sl-rdl": 2,
+     "full-cossack": 2,
      "legs-toe-drag": 2,
      "home-copenhagen": 2,
      "legs-plate-crunch": 3,
      "daily-side-plank-dip": 2,
+     "extra-sl-balance": 2,
      "feet-frogger": 2
     },
     "effort": 7
@@ -561,56 +471,36 @@
    {
     "date": "2026-09-11T07:15:00.000Z",
     "mode": "DAILY",
-    "circuitId": "daily-06",
-    "circuitTitle": "QUIET FEET",
+    "circuitId": "daily-05",
+    "circuitTitle": "LEGS + CORE",
     "energy": "NORMAL",
-    "duration": 16,
+    "duration": 13,
     "sets": {
-     "daily-ankle-wall": 2,
-     "daily-short-foot": 2,
-     "daily-toe-taps": 3,
-     "extra-sl-reach": 2,
-     "daily-rockover-transfer": 2,
-     "daily-flag-hold": 3
+     "morn-catcow": 1,
+     "daily-spiderman-lunge": 1,
+     "daily-cossack-shift": 1,
+     "extra-lunge-drive": 1,
+     "daily-bw-squat": 2,
+     "daily-glute-bridge": 2,
+     "daily-pushup": 2,
+     "daily-plank-climber": 2,
+     "daily-back-unwind": 1
     },
     "planned": {
-     "daily-ankle-wall": 2,
-     "daily-short-foot": 2,
-     "daily-toe-taps": 3,
-     "extra-sl-reach": 2,
-     "daily-rockover-transfer": 2,
-     "daily-flag-hold": 3
+     "morn-catcow": 1,
+     "daily-spiderman-lunge": 1,
+     "daily-cossack-shift": 1,
+     "extra-lunge-drive": 1,
+     "daily-bw-squat": 2,
+     "daily-glute-bridge": 2,
+     "daily-pushup": 2,
+     "daily-plank-climber": 2,
+     "daily-back-unwind": 1
     },
     "effort": 5
    },
    {
     "date": "2026-09-13T07:15:00.000Z",
-    "mode": "DAILY",
-    "circuitId": "daily-04",
-    "circuitTitle": "FINGERS + MOBILITY",
-    "energy": "NORMAL",
-    "duration": 15,
-    "sets": {
-     "morn-catcow": 1,
-     "morn-hip-9090": 1,
-     "home-hip-flow": 1,
-     "wrists-daily-block": 2,
-     "wrists-loaded-extension": 2,
-     "daily-edge-density": 6
-    },
-    "planned": {
-     "morn-catcow": 1,
-     "morn-hip-9090": 1,
-     "home-hip-flow": 1,
-     "wrists-daily-block": 2,
-     "wrists-loaded-extension": 2,
-     "daily-edge-density": 6
-    },
-    "effort": 5,
-    "pain": 1
-   },
-   {
-    "date": "2026-09-14T07:15:00.000Z",
     "mode": "DAILY",
     "circuitId": "daily-03",
     "circuitTitle": "BAND STRENGTH",
@@ -622,6 +512,7 @@
      "morn-band-pushup": 2,
      "morn-band-split-squat": 2,
      "home-sl-rdl": 2,
+     "extra-lunge-drive": 1,
      "morn-pullapart": 1
     },
     "planned": {
@@ -630,12 +521,13 @@
      "morn-band-pushup": 2,
      "morn-band-split-squat": 2,
      "home-sl-rdl": 2,
+     "extra-lunge-drive": 1,
      "morn-pullapart": 1
     },
     "effort": 5
    },
    {
-    "date": "2026-09-15T07:15:00.000Z",
+    "date": "2026-09-14T07:15:00.000Z",
     "mode": "DAILY",
     "circuitId": "daily-02",
     "circuitTitle": "OBLIQUES + BACK",
@@ -646,7 +538,7 @@
      "morn-birddog": 1,
      "daily-prone-extension": 2,
      "daily-side-plank-dip": 2,
-     "morn-chop": 1,
+     "extra-lunge-drive": 1,
      "daily-band-good-morning": 2,
      "morn-bw-russian-twist": 2
     },
@@ -655,8 +547,37 @@
      "morn-birddog": 1,
      "daily-prone-extension": 2,
      "daily-side-plank-dip": 2,
-     "morn-chop": 1,
+     "extra-lunge-drive": 1,
      "daily-band-good-morning": 2,
+     "morn-bw-russian-twist": 2
+    },
+    "effort": 5
+   },
+   {
+    "date": "2026-09-15T07:15:00.000Z",
+    "mode": "DAILY",
+    "circuitId": "daily-01",
+    "circuitTitle": "CORE + OBLIQUES",
+    "energy": "NORMAL",
+    "duration": 13,
+    "sets": {
+     "morn-breathing": 1,
+     "morn-deadbug": 1,
+     "daily-pushup": 2,
+     "extra-lunge-drive": 1,
+     "daily-spiderman": 2,
+     "daily-mountain-climber": 2,
+     "daily-reverse-crunch": 2,
+     "morn-bw-russian-twist": 2
+    },
+    "planned": {
+     "morn-breathing": 1,
+     "morn-deadbug": 1,
+     "daily-pushup": 2,
+     "extra-lunge-drive": 1,
+     "daily-spiderman": 2,
+     "daily-mountain-climber": 2,
+     "daily-reverse-crunch": 2,
      "morn-bw-russian-twist": 2
     },
     "effort": 5
@@ -676,7 +597,8 @@
      "addon-mountain-climber": 3,
      "addon-hanging-oblique": 2,
      "addon-russian-twist": 2,
-     "addon-cuff": 2
+     "extra-lunge-drive": 1,
+     "addon-cuff": 1
     },
     "planned": {
      "addon-weighted-pullup": 3,
@@ -686,12 +608,128 @@
      "addon-mountain-climber": 3,
      "addon-hanging-oblique": 2,
      "addon-russian-twist": 2,
+     "extra-lunge-drive": 1,
      "addon-cuff": 2
     },
     "effort": 7
    },
    {
     "date": "2026-09-16T07:15:00.000Z",
+    "mode": "DAILY",
+    "circuitId": "daily-06",
+    "circuitTitle": "QUIET FEET",
+    "energy": "NORMAL",
+    "duration": 16,
+    "sets": {
+     "daily-ankle-wall": 2,
+     "daily-short-foot": 2,
+     "daily-toe-taps": 3,
+     "extra-sl-reach": 2,
+     "daily-rockover-transfer": 2,
+     "daily-flag-hold": 3,
+     "extra-lunge-drive": 1
+    },
+    "planned": {
+     "daily-ankle-wall": 2,
+     "daily-short-foot": 2,
+     "daily-toe-taps": 3,
+     "extra-sl-reach": 2,
+     "daily-rockover-transfer": 2,
+     "daily-flag-hold": 3,
+     "extra-lunge-drive": 1
+    },
+    "effort": 5
+   },
+   {
+    "date": "2026-09-17T20:15:00.000Z",
+    "mode": "CAVE",
+    "circuitId": "cave-06",
+    "circuitTitle": "LEGS + BACK",
+    "energy": "NORMAL",
+    "duration": 30,
+    "sets": {
+     "addon-goblet-squat": 2,
+     "legs-back-extension": 3,
+     "legs-sl-rdl": 2,
+     "full-cossack": 2,
+     "legs-toe-drag": 2,
+     "home-copenhagen": 2,
+     "legs-plate-crunch": 3,
+     "daily-side-plank-dip": 2,
+     "extra-sl-balance": 2,
+     "feet-frogger": 2
+    },
+    "planned": {
+     "addon-goblet-squat": 2,
+     "legs-back-extension": 3,
+     "legs-sl-rdl": 2,
+     "full-cossack": 2,
+     "legs-toe-drag": 2,
+     "home-copenhagen": 2,
+     "legs-plate-crunch": 3,
+     "daily-side-plank-dip": 2,
+     "extra-sl-balance": 2,
+     "feet-frogger": 2
+    },
+    "effort": 7
+   },
+   {
+    "date": "2026-09-18T07:15:00.000Z",
+    "mode": "DAILY",
+    "circuitId": "daily-04",
+    "circuitTitle": "FINGERS + MOBILITY",
+    "energy": "NORMAL",
+    "duration": 15,
+    "sets": {
+     "morn-catcow": 1,
+     "morn-hip-9090": 1,
+     "home-hip-flow": 1,
+     "wrists-daily-block": 2,
+     "wrists-loaded-extension": 2,
+     "extra-lunge-drive": 1,
+     "daily-edge-density": 6
+    },
+    "planned": {
+     "morn-catcow": 1,
+     "morn-hip-9090": 1,
+     "home-hip-flow": 1,
+     "wrists-daily-block": 2,
+     "wrists-loaded-extension": 2,
+     "extra-lunge-drive": 1,
+     "daily-edge-density": 6
+    },
+    "effort": 5,
+    "pain": 1
+   },
+   {
+    "date": "2026-09-20T07:15:00.000Z",
+    "mode": "DAILY",
+    "circuitId": "daily-02",
+    "circuitTitle": "OBLIQUES + BACK",
+    "energy": "NORMAL",
+    "duration": 14,
+    "sets": {
+     "morn-breathing": 1,
+     "morn-birddog": 1,
+     "daily-prone-extension": 2,
+     "daily-side-plank-dip": 2,
+     "extra-lunge-drive": 1,
+     "daily-band-good-morning": 2,
+     "morn-bw-russian-twist": 2
+    },
+    "planned": {
+     "morn-breathing": 1,
+     "morn-birddog": 1,
+     "daily-prone-extension": 2,
+     "daily-side-plank-dip": 2,
+     "extra-lunge-drive": 1,
+     "daily-band-good-morning": 2,
+     "morn-bw-russian-twist": 2
+    },
+    "effort": 5
+   },
+   {
+    "date": "2026-09-21T07:15:00.000Z",
     "mode": "DAILY",
     "circuitId": "daily-01",
     "circuitTitle": "CORE + OBLIQUES",
@@ -701,6 +739,7 @@
      "morn-breathing": 1,
      "morn-deadbug": 1,
      "daily-pushup": 2,
+     "extra-lunge-drive": 1,
      "daily-spiderman": 2,
      "daily-mountain-climber": 2,
      "daily-reverse-crunch": 2,
@@ -710,6 +749,7 @@
      "morn-breathing": 1,
      "morn-deadbug": 1,
      "daily-pushup": 2,
+     "extra-lunge-drive": 1,
      "daily-spiderman": 2,
      "daily-mountain-climber": 2,
      "daily-reverse-crunch": 2,
@@ -718,7 +758,7 @@
     "effort": 5
    },
    {
-    "date": "2026-09-17T10:15:00.000Z",
+    "date": "2026-09-22T10:15:00.000Z",
     "mode": "TEST",
     "circuitId": "assess-01",
     "circuitTitle": "ASSESS",
@@ -768,116 +808,6 @@
     "pain": 1
    },
    {
-    "date": "2026-09-17T20:15:00.000Z",
-    "mode": "CAVE",
-    "circuitId": "cave-06",
-    "circuitTitle": "LEGS + BACK",
-    "energy": "NORMAL",
-    "duration": 30,
-    "sets": {
-     "addon-goblet-squat": 2,
-     "legs-back-extension": 3,
-     "legs-sl-rdl": 2,
-     "legs-toe-drag": 2,
-     "home-copenhagen": 2,
-     "legs-plate-crunch": 3,
-     "daily-side-plank-dip": 2,
-     "feet-frogger": 2
-    },
-    "planned": {
-     "addon-goblet-squat": 2,
-     "legs-back-extension": 3,
-     "legs-sl-rdl": 2,
-     "legs-toe-drag": 2,
-     "home-copenhagen": 2,
-     "legs-plate-crunch": 3,
-     "daily-side-plank-dip": 2,
-     "feet-frogger": 2
-    },
-    "effort": 7
-   },
-   {
-    "date": "2026-09-18T07:15:00.000Z",
-    "mode": "DAILY",
-    "circuitId": "daily-05",
-    "circuitTitle": "LEGS + CORE",
-    "energy": "NORMAL",
-    "duration": 13,
-    "sets": {
-     "morn-catcow": 1,
-     "daily-spiderman-lunge": 1,
-     "daily-cossack-shift": 1,
-     "daily-bw-squat": 2,
-     "daily-glute-bridge": 2,
-     "daily-pushup": 2,
-     "daily-plank-climber": 2,
-     "daily-back-unwind": 1
-    },
-    "planned": {
-     "morn-catcow": 1,
-     "daily-spiderman-lunge": 1,
-     "daily-cossack-shift": 1,
-     "daily-bw-squat": 2,
-     "daily-glute-bridge": 2,
-     "daily-pushup": 2,
-     "daily-plank-climber": 2,
-     "daily-back-unwind": 1
-    },
-    "effort": 5
-   },
-   {
-    "date": "2026-09-20T07:15:00.000Z",
-    "mode": "DAILY",
-    "circuitId": "daily-03",
-    "circuitTitle": "BAND STRENGTH",
-    "energy": "NORMAL",
-    "duration": 14,
-    "sets": {
-     "morn-band-wake": 1,
-     "morn-band-row": 3,
-     "morn-band-pushup": 2,
-     "morn-band-split-squat": 2,
-     "home-sl-rdl": 2,
-     "morn-pullapart": 1
-    },
-    "planned": {
-     "morn-band-wake": 1,
-     "morn-band-row": 3,
-     "morn-band-pushup": 2,
-     "morn-band-split-squat": 2,
-     "home-sl-rdl": 2,
-     "morn-pullapart": 1
-    },
-    "effort": 5
-   },
-   {
-    "date": "2026-09-21T07:15:00.000Z",
-    "mode": "DAILY",
-    "circuitId": "daily-02",
-    "circuitTitle": "OBLIQUES + BACK",
-    "energy": "NORMAL",
-    "duration": 14,
-    "sets": {
-     "morn-breathing": 1,
-     "morn-birddog": 1,
-     "daily-prone-extension": 2,
-     "daily-side-plank-dip": 2,
-     "morn-chop": 1,
-     "daily-band-good-morning": 2,
-     "morn-bw-russian-twist": 2
-    },
-    "planned": {
-     "morn-breathing": 1,
-     "morn-birddog": 1,
-     "daily-prone-extension": 2,
-     "daily-side-plank-dip": 2,
-     "morn-chop": 1,
-     "daily-band-good-morning": 2,
-     "morn-bw-russian-twist": 2
-    },
-    "effort": 5
-   },
-   {
     "date": "2026-09-22T20:15:00.000Z",
     "mode": "CAVE",
     "circuitId": "cave-05",
@@ -892,7 +822,8 @@
      "addon-mountain-climber": 3,
      "addon-hanging-oblique": 2,
      "addon-russian-twist": 2,
-     "addon-cuff": 1
+     "extra-lunge-drive": 1,
+     "addon-cuff": 2
     },
     "planned": {
      "addon-weighted-pullup": 3,
@@ -902,37 +833,13 @@
      "addon-mountain-climber": 3,
      "addon-hanging-oblique": 2,
      "addon-russian-twist": 2,
+     "extra-lunge-drive": 1,
      "addon-cuff": 2
     },
     "effort": 7
    },
    {
     "date": "2026-09-23T07:15:00.000Z",
-    "mode": "DAILY",
-    "circuitId": "daily-06",
-    "circuitTitle": "QUIET FEET",
-    "energy": "NORMAL",
-    "duration": 16,
-    "sets": {
-     "daily-ankle-wall": 2,
-     "daily-short-foot": 2,
-     "daily-toe-taps": 3,
-     "extra-sl-reach": 2,
-     "daily-rockover-transfer": 2,
-     "daily-flag-hold": 3
-    },
-    "planned": {
-     "daily-ankle-wall": 2,
-     "daily-short-foot": 2,
-     "daily-toe-taps": 3,
-     "extra-sl-reach": 2,
-     "daily-rockover-transfer": 2,
-     "daily-flag-hold": 3
-    },
-    "effort": 5
-   },
-   {
-    "date": "2026-09-24T07:15:00.000Z",
     "mode": "DAILY",
     "circuitId": "daily-05",
     "circuitTitle": "LEGS + CORE",
@@ -942,6 +849,7 @@
      "morn-catcow": 1,
      "daily-spiderman-lunge": 1,
      "daily-cossack-shift": 1,
+     "extra-lunge-drive": 1,
      "daily-bw-squat": 2,
      "daily-glute-bridge": 2,
      "daily-pushup": 2,
@@ -952,6 +860,7 @@
      "morn-catcow": 1,
      "daily-spiderman-lunge": 1,
      "daily-cossack-shift": 1,
+     "extra-lunge-drive": 1,
      "daily-bw-squat": 2,
      "daily-glute-bridge": 2,
      "daily-pushup": 2,
@@ -959,6 +868,34 @@
      "daily-back-unwind": 1
     },
     "effort": 5
+   },
+   {
+    "date": "2026-09-24T07:15:00.000Z",
+    "mode": "DAILY",
+    "circuitId": "daily-04",
+    "circuitTitle": "FINGERS + MOBILITY",
+    "energy": "NORMAL",
+    "duration": 15,
+    "sets": {
+     "morn-catcow": 1,
+     "morn-hip-9090": 1,
+     "home-hip-flow": 1,
+     "wrists-daily-block": 2,
+     "wrists-loaded-extension": 2,
+     "extra-lunge-drive": 1,
+     "daily-edge-density": 6
+    },
+    "planned": {
+     "morn-catcow": 1,
+     "morn-hip-9090": 1,
+     "home-hip-flow": 1,
+     "wrists-daily-block": 2,
+     "wrists-loaded-extension": 2,
+     "extra-lunge-drive": 1,
+     "daily-edge-density": 6
+    },
+    "effort": 5,
+    "pain": 1
    },
    {
     "date": "2026-09-24T20:15:00.000Z",
@@ -971,20 +908,24 @@
      "addon-goblet-squat": 2,
      "legs-back-extension": 3,
      "legs-sl-rdl": 2,
+     "full-cossack": 2,
      "legs-toe-drag": 2,
      "home-copenhagen": 2,
      "legs-plate-crunch": 3,
      "daily-side-plank-dip": 2,
-     "feet-frogger": 2
+     "extra-sl-balance": 2,
+     "feet-frogger": 1
     },
     "planned": {
      "addon-goblet-squat": 2,
      "legs-back-extension": 3,
      "legs-sl-rdl": 2,
+     "full-cossack": 2,
      "legs-toe-drag": 2,
      "home-copenhagen": 2,
      "legs-plate-crunch": 3,
      "daily-side-plank-dip": 2,
+     "extra-sl-balance": 2,
      "feet-frogger": 2
     },
     "effort": 7
@@ -992,58 +933,32 @@
    {
     "date": "2026-09-25T07:15:00.000Z",
     "mode": "DAILY",
-    "circuitId": "daily-04",
-    "circuitTitle": "FINGERS + MOBILITY",
+    "circuitId": "daily-03",
+    "circuitTitle": "BAND STRENGTH",
     "energy": "NORMAL",
-    "duration": 15,
+    "duration": 14,
     "sets": {
-     "morn-catcow": 1,
-     "morn-hip-9090": 1,
-     "home-hip-flow": 1,
-     "wrists-daily-block": 2,
-     "wrists-loaded-extension": 2,
-     "daily-edge-density": 6
+     "morn-band-wake": 1,
+     "morn-band-row": 3,
+     "morn-band-pushup": 2,
+     "morn-band-split-squat": 2,
+     "home-sl-rdl": 2,
+     "extra-lunge-drive": 1,
+     "morn-pullapart": 1
     },
     "planned": {
-     "morn-catcow": 1,
-     "morn-hip-9090": 1,
-     "home-hip-flow": 1,
-     "wrists-daily-block": 2,
-     "wrists-loaded-extension": 2,
-     "daily-edge-density": 6
-    },
-    "effort": 5,
-    "pain": 1
-   },
-   {
-    "date": "2026-09-28T07:15:00.000Z",
-    "mode": "DAILY",
-    "circuitId": "daily-01",
-    "circuitTitle": "CORE + OBLIQUES",
-    "energy": "NORMAL",
-    "duration": 13,
-    "sets": {
-     "morn-breathing": 1,
-     "morn-deadbug": 1,
-     "daily-pushup": 2,
-     "daily-spiderman": 2,
-     "daily-mountain-climber": 2,
-     "daily-reverse-crunch": 2,
-     "morn-bw-russian-twist": 2
-    },
-    "planned": {
-     "morn-breathing": 1,
-     "morn-deadbug": 1,
-     "daily-pushup": 2,
-     "daily-spiderman": 2,
-     "daily-mountain-climber": 2,
-     "daily-reverse-crunch": 2,
-     "morn-bw-russian-twist": 2
+     "morn-band-wake": 1,
+     "morn-band-row": 3,
+     "morn-band-pushup": 2,
+     "morn-band-split-squat": 2,
+     "home-sl-rdl": 2,
+     "extra-lunge-drive": 1,
+     "morn-pullapart": 1
     },
     "effort": 5
    },
    {
-    "date": "2026-09-29T07:15:00.000Z",
+    "date": "2026-09-28T07:15:00.000Z",
     "mode": "DAILY",
     "circuitId": "daily-06",
     "circuitTitle": "QUIET FEET",
@@ -1055,7 +970,8 @@
      "daily-toe-taps": 3,
      "extra-sl-reach": 2,
      "daily-rockover-transfer": 2,
-     "daily-flag-hold": 3
+     "daily-flag-hold": 3,
+     "extra-lunge-drive": 1
     },
     "planned": {
      "daily-ankle-wall": 2,
@@ -1063,7 +979,39 @@
      "daily-toe-taps": 3,
      "extra-sl-reach": 2,
      "daily-rockover-transfer": 2,
-     "daily-flag-hold": 3
+     "daily-flag-hold": 3,
+     "extra-lunge-drive": 1
+    },
+    "effort": 5
+   },
+   {
+    "date": "2026-09-29T07:15:00.000Z",
+    "mode": "DAILY",
+    "circuitId": "daily-05",
+    "circuitTitle": "LEGS + CORE",
+    "energy": "NORMAL",
+    "duration": 13,
+    "sets": {
+     "morn-catcow": 1,
+     "daily-spiderman-lunge": 1,
+     "daily-cossack-shift": 1,
+     "extra-lunge-drive": 1,
+     "daily-bw-squat": 2,
+     "daily-glute-bridge": 2,
+     "daily-pushup": 2,
+     "daily-plank-climber": 2,
+     "daily-back-unwind": 1
+    },
+    "planned": {
+     "morn-catcow": 1,
+     "daily-spiderman-lunge": 1,
+     "daily-cossack-shift": 1,
+     "extra-lunge-drive": 1,
+     "daily-bw-squat": 2,
+     "daily-glute-bridge": 2,
+     "daily-pushup": 2,
+     "daily-plank-climber": 2,
+     "daily-back-unwind": 1
     },
     "effort": 5
    },
@@ -1082,6 +1030,7 @@
      "addon-mountain-climber": 3,
      "addon-hanging-oblique": 2,
      "addon-russian-twist": 2,
+     "extra-lunge-drive": 1,
      "addon-cuff": 2
     },
     "planned": {
@@ -1092,41 +1041,13 @@
      "addon-mountain-climber": 3,
      "addon-hanging-oblique": 2,
      "addon-russian-twist": 2,
+     "extra-lunge-drive": 1,
      "addon-cuff": 2
     },
     "effort": 7
    },
    {
     "date": "2026-09-30T07:15:00.000Z",
-    "mode": "DAILY",
-    "circuitId": "daily-05",
-    "circuitTitle": "LEGS + CORE",
-    "energy": "NORMAL",
-    "duration": 13,
-    "sets": {
-     "morn-catcow": 1,
-     "daily-spiderman-lunge": 1,
-     "daily-cossack-shift": 1,
-     "daily-bw-squat": 2,
-     "daily-glute-bridge": 2,
-     "daily-pushup": 2,
-     "daily-plank-climber": 2,
-     "daily-back-unwind": 1
-    },
-    "planned": {
-     "morn-catcow": 1,
-     "daily-spiderman-lunge": 1,
-     "daily-cossack-shift": 1,
-     "daily-bw-squat": 2,
-     "daily-glute-bridge": 2,
-     "daily-pushup": 2,
-     "daily-plank-climber": 2,
-     "daily-back-unwind": 1
-    },
-    "effort": 5
-   },
-   {
-    "date": "2026-10-01T07:15:00.000Z",
     "mode": "DAILY",
     "circuitId": "daily-04",
     "circuitTitle": "FINGERS + MOBILITY",
@@ -1138,6 +1059,7 @@
      "home-hip-flow": 1,
      "wrists-daily-block": 2,
      "wrists-loaded-extension": 2,
+     "extra-lunge-drive": 1,
      "daily-edge-density": 6
     },
     "planned": {
@@ -1146,10 +1068,38 @@
      "home-hip-flow": 1,
      "wrists-daily-block": 2,
      "wrists-loaded-extension": 2,
+     "extra-lunge-drive": 1,
      "daily-edge-density": 6
     },
     "effort": 5,
     "pain": 1
+   },
+   {
+    "date": "2026-10-01T07:15:00.000Z",
+    "mode": "DAILY",
+    "circuitId": "daily-03",
+    "circuitTitle": "BAND STRENGTH",
+    "energy": "NORMAL",
+    "duration": 14,
+    "sets": {
+     "morn-band-wake": 1,
+     "morn-band-row": 3,
+     "morn-band-pushup": 2,
+     "morn-band-split-squat": 2,
+     "home-sl-rdl": 2,
+     "extra-lunge-drive": 1,
+     "morn-pullapart": 1
+    },
+    "planned": {
+     "morn-band-wake": 1,
+     "morn-band-row": 3,
+     "morn-band-pushup": 2,
+     "morn-band-split-squat": 2,
+     "home-sl-rdl": 2,
+     "extra-lunge-drive": 1,
+     "morn-pullapart": 1
+    },
+    "effort": 5
    },
    {
     "date": "2026-10-01T20:15:00.000Z",
@@ -1162,53 +1112,67 @@
      "addon-goblet-squat": 2,
      "legs-back-extension": 3,
      "legs-sl-rdl": 2,
+     "full-cossack": 2,
      "legs-toe-drag": 2,
      "home-copenhagen": 2,
      "legs-plate-crunch": 3,
      "daily-side-plank-dip": 2,
-     "feet-frogger": 1
+     "extra-sl-balance": 2,
+     "feet-frogger": 2
     },
     "planned": {
      "addon-goblet-squat": 2,
      "legs-back-extension": 3,
      "legs-sl-rdl": 2,
+     "full-cossack": 2,
      "legs-toe-drag": 2,
      "home-copenhagen": 2,
      "legs-plate-crunch": 3,
      "daily-side-plank-dip": 2,
+     "extra-sl-balance": 2,
      "feet-frogger": 2
     },
     "effort": 7
    },
    {
-    "date": "2026-10-04T07:15:00.000Z",
-    "mode": "DAILY",
-    "circuitId": "daily-01",
-    "circuitTitle": "CORE + OBLIQUES",
+    "date": "2026-10-03T10:15:00.000Z",
+    "mode": "CAVE",
+    "circuitId": "cave-07",
+    "circuitTitle": "POWER",
     "energy": "NORMAL",
-    "duration": 13,
+    "duration": 70,
     "sets": {
-     "morn-breathing": 1,
-     "morn-deadbug": 1,
-     "daily-pushup": 2,
-     "daily-spiderman": 2,
-     "daily-mountain-climber": 2,
-     "daily-reverse-crunch": 2,
-     "morn-bw-russian-twist": 2
+     "cave-warmup-pulse": 1,
+     "cave-warmup-fingers": 3,
+     "power-light-hang": 6,
+     "power-explosive-pullup": 4,
+     "power-explosive-pushup": 3,
+     "power-weighted-pullup": 3,
+     "power-db-row": 3,
+     "power-db-press": 3,
+     "power-floor-pullover": 3,
+     "power-trx-pike": 3,
+     "extra-sl-balance": 3,
+     "power-band-face-pull": 2
     },
     "planned": {
-     "morn-breathing": 1,
-     "morn-deadbug": 1,
-     "daily-pushup": 2,
-     "daily-spiderman": 2,
-     "daily-mountain-climber": 2,
-     "daily-reverse-crunch": 2,
-     "morn-bw-russian-twist": 2
+     "cave-warmup-pulse": 1,
+     "cave-warmup-fingers": 3,
+     "power-light-hang": 6,
+     "power-explosive-pullup": 4,
+     "power-explosive-pushup": 3,
+     "power-weighted-pullup": 3,
+     "power-db-row": 3,
+     "power-db-press": 3,
+     "power-floor-pullover": 3,
+     "power-trx-pike": 3,
+     "extra-sl-balance": 3,
+     "power-band-face-pull": 2
     },
-    "effort": 5
+    "effort": 8
    },
    {
-    "date": "2026-10-05T07:15:00.000Z",
+    "date": "2026-10-04T07:15:00.000Z",
     "mode": "DAILY",
     "circuitId": "daily-06",
     "circuitTitle": "QUIET FEET",
@@ -1220,7 +1184,8 @@
      "daily-toe-taps": 3,
      "extra-sl-reach": 2,
      "daily-rockover-transfer": 2,
-     "daily-flag-hold": 3
+     "daily-flag-hold": 3,
+     "extra-lunge-drive": 1
     },
     "planned": {
      "daily-ankle-wall": 2,
@@ -1228,12 +1193,13 @@
      "daily-toe-taps": 3,
      "extra-sl-reach": 2,
      "daily-rockover-transfer": 2,
-     "daily-flag-hold": 3
+     "daily-flag-hold": 3,
+     "extra-lunge-drive": 1
     },
     "effort": 5
    },
    {
-    "date": "2026-10-06T07:15:00.000Z",
+    "date": "2026-10-05T07:15:00.000Z",
     "mode": "DAILY",
     "circuitId": "daily-05",
     "circuitTitle": "LEGS + CORE",
@@ -1243,6 +1209,7 @@
      "morn-catcow": 1,
      "daily-spiderman-lunge": 1,
      "daily-cossack-shift": 1,
+     "extra-lunge-drive": 1,
      "daily-bw-squat": 2,
      "daily-glute-bridge": 2,
      "daily-pushup": 2,
@@ -1253,6 +1220,7 @@
      "morn-catcow": 1,
      "daily-spiderman-lunge": 1,
      "daily-cossack-shift": 1,
+     "extra-lunge-drive": 1,
      "daily-bw-squat": 2,
      "daily-glute-bridge": 2,
      "daily-pushup": 2,
@@ -1260,6 +1228,34 @@
      "daily-back-unwind": 1
     },
     "effort": 5
+   },
+   {
+    "date": "2026-10-06T07:15:00.000Z",
+    "mode": "DAILY",
+    "circuitId": "daily-04",
+    "circuitTitle": "FINGERS + MOBILITY",
+    "energy": "NORMAL",
+    "duration": 15,
+    "sets": {
+     "morn-catcow": 1,
+     "morn-hip-9090": 1,
+     "home-hip-flow": 1,
+     "wrists-daily-block": 2,
+     "wrists-loaded-extension": 2,
+     "extra-lunge-drive": 1,
+     "daily-edge-density": 6
+    },
+    "planned": {
+     "morn-catcow": 1,
+     "morn-hip-9090": 1,
+     "home-hip-flow": 1,
+     "wrists-daily-block": 2,
+     "wrists-loaded-extension": 2,
+     "extra-lunge-drive": 1,
+     "daily-edge-density": 6
+    },
+    "effort": 5,
+    "pain": 1
    },
    {
     "date": "2026-10-06T20:15:00.000Z",
@@ -1276,7 +1272,8 @@
      "addon-mountain-climber": 3,
      "addon-hanging-oblique": 2,
      "addon-russian-twist": 2,
-     "addon-cuff": 2
+     "extra-lunge-drive": 1,
+     "addon-cuff": 1
     },
     "planned": {
      "addon-weighted-pullup": 3,
@@ -1286,6 +1283,7 @@
      "addon-mountain-climber": 3,
      "addon-hanging-oblique": 2,
      "addon-russian-twist": 2,
+     "extra-lunge-drive": 1,
      "addon-cuff": 2
     },
     "effort": 7
@@ -1293,25 +1291,27 @@
    {
     "date": "2026-10-08T07:15:00.000Z",
     "mode": "DAILY",
-    "circuitId": "daily-03",
-    "circuitTitle": "BAND STRENGTH",
+    "circuitId": "daily-02",
+    "circuitTitle": "OBLIQUES + BACK",
     "energy": "NORMAL",
     "duration": 14,
     "sets": {
-     "morn-band-wake": 1,
-     "morn-band-row": 3,
-     "morn-band-pushup": 2,
-     "morn-band-split-squat": 2,
-     "home-sl-rdl": 2,
-     "morn-pullapart": 1
+     "morn-breathing": 1,
+     "morn-birddog": 1,
+     "daily-prone-extension": 2,
+     "daily-side-plank-dip": 2,
+     "extra-lunge-drive": 1,
+     "daily-band-good-morning": 2,
+     "morn-bw-russian-twist": 2
     },
     "planned": {
-     "morn-band-wake": 1,
-     "morn-band-row": 3,
-     "morn-band-pushup": 2,
-     "morn-band-split-squat": 2,
-     "home-sl-rdl": 2,
-     "morn-pullapart": 1
+     "morn-breathing": 1,
+     "morn-birddog": 1,
+     "daily-prone-extension": 2,
+     "daily-side-plank-dip": 2,
+     "extra-lunge-drive": 1,
+     "daily-band-good-morning": 2,
+     "morn-bw-russian-twist": 2
     },
     "effort": 5
    },
@@ -1326,20 +1326,24 @@
      "addon-goblet-squat": 2,
      "legs-back-extension": 3,
      "legs-sl-rdl": 2,
+     "full-cossack": 2,
      "legs-toe-drag": 2,
      "home-copenhagen": 2,
      "legs-plate-crunch": 3,
      "daily-side-plank-dip": 2,
+     "extra-sl-balance": 2,
      "feet-frogger": 2
     },
     "planned": {
      "addon-goblet-squat": 2,
      "legs-back-extension": 3,
      "legs-sl-rdl": 2,
+     "full-cossack": 2,
      "legs-toe-drag": 2,
      "home-copenhagen": 2,
      "legs-plate-crunch": 3,
      "daily-side-plank-dip": 2,
+     "extra-sl-balance": 2,
      "feet-frogger": 2
     },
     "effort": 7
@@ -1347,80 +1351,126 @@
    {
     "date": "2026-10-09T07:15:00.000Z",
     "mode": "DAILY",
-    "circuitId": "daily-02",
-    "circuitTitle": "OBLIQUES + BACK",
+    "circuitId": "daily-01",
+    "circuitTitle": "CORE + OBLIQUES",
     "energy": "NORMAL",
-    "duration": 14,
+    "duration": 13,
     "sets": {
      "morn-breathing": 1,
-     "morn-birddog": 1,
-     "daily-prone-extension": 2,
-     "daily-side-plank-dip": 2,
-     "morn-chop": 1,
-     "daily-band-good-morning": 2,
+     "morn-deadbug": 1,
+     "daily-pushup": 2,
+     "extra-lunge-drive": 1,
+     "daily-spiderman": 2,
+     "daily-mountain-climber": 2,
+     "daily-reverse-crunch": 2,
      "morn-bw-russian-twist": 2
     },
     "planned": {
      "morn-breathing": 1,
-     "morn-birddog": 1,
-     "daily-prone-extension": 2,
-     "daily-side-plank-dip": 2,
-     "morn-chop": 1,
-     "daily-band-good-morning": 2,
+     "morn-deadbug": 1,
+     "daily-pushup": 2,
+     "extra-lunge-drive": 1,
+     "daily-spiderman": 2,
+     "daily-mountain-climber": 2,
+     "daily-reverse-crunch": 2,
      "morn-bw-russian-twist": 2
     },
     "effort": 5
    },
    {
-    "date": "2026-10-11T07:15:00.000Z",
-    "mode": "DAILY",
-    "circuitId": "daily-06",
-    "circuitTitle": "QUIET FEET",
+    "date": "2026-10-10T10:15:00.000Z",
+    "mode": "CAVE",
+    "circuitId": "cave-08",
+    "circuitTitle": "FULL BODY",
     "energy": "NORMAL",
-    "duration": 16,
+    "duration": 70,
     "sets": {
-     "daily-ankle-wall": 2,
-     "daily-short-foot": 2,
-     "daily-toe-taps": 3,
-     "extra-sl-reach": 2,
-     "daily-rockover-transfer": 2,
-     "daily-flag-hold": 3
+     "cave-warmup-pulse": 1,
+     "full-box-jump": 4,
+     "full-hop-stick": 2,
+     "full-front-squat": 4,
+     "full-db-rdl": 3,
+     "full-rockover-drive": 3,
+     "addon-pushup": 3,
+     "full-ring-row": 3,
+     "full-suitcase-carry": 3,
+     "full-cossack": 2,
+     "home-copenhagen": 2,
+     "addon-russian-twist": 2
     },
     "planned": {
-     "daily-ankle-wall": 2,
-     "daily-short-foot": 2,
-     "daily-toe-taps": 3,
-     "extra-sl-reach": 2,
-     "daily-rockover-transfer": 2,
-     "daily-flag-hold": 3
+     "cave-warmup-pulse": 1,
+     "full-box-jump": 4,
+     "full-hop-stick": 2,
+     "full-front-squat": 4,
+     "full-db-rdl": 3,
+     "full-rockover-drive": 3,
+     "addon-pushup": 3,
+     "full-ring-row": 3,
+     "full-suitcase-carry": 3,
+     "full-cossack": 2,
+     "home-copenhagen": 2,
+     "addon-russian-twist": 2
+    },
+    "effort": 7
+   },
+   {
+    "date": "2026-10-11T07:15:00.000Z",
+    "mode": "DAILY",
+    "circuitId": "daily-05",
+    "circuitTitle": "LEGS + CORE",
+    "energy": "NORMAL",
+    "duration": 13,
+    "sets": {
+     "morn-catcow": 1,
+     "daily-spiderman-lunge": 1,
+     "daily-cossack-shift": 1,
+     "extra-lunge-drive": 1,
+     "daily-bw-squat": 2,
+     "daily-glute-bridge": 2,
+     "daily-pushup": 2,
+     "daily-plank-climber": 2,
+     "daily-back-unwind": 1
+    },
+    "planned": {
+     "morn-catcow": 1,
+     "daily-spiderman-lunge": 1,
+     "daily-cossack-shift": 1,
+     "extra-lunge-drive": 1,
+     "daily-bw-squat": 2,
+     "daily-glute-bridge": 2,
+     "daily-pushup": 2,
+     "daily-plank-climber": 2,
+     "daily-back-unwind": 1
     },
     "effort": 5
    },
    {
     "date": "2026-10-13T07:15:00.000Z",
     "mode": "DAILY",
-    "circuitId": "daily-04",
-    "circuitTitle": "FINGERS + MOBILITY",
+    "circuitId": "daily-03",
+    "circuitTitle": "BAND STRENGTH",
     "energy": "NORMAL",
-    "duration": 15,
+    "duration": 14,
     "sets": {
-     "morn-catcow": 1,
-     "morn-hip-9090": 1,
-     "home-hip-flow": 1,
-     "wrists-daily-block": 2,
-     "wrists-loaded-extension": 2,
-     "daily-edge-density": 6
+     "morn-band-wake": 1,
+     "morn-band-row": 3,
+     "morn-band-pushup": 2,
+     "morn-band-split-squat": 2,
+     "home-sl-rdl": 2,
+     "extra-lunge-drive": 1,
+     "morn-pullapart": 1
     },
     "planned": {
-     "morn-catcow": 1,
-     "morn-hip-9090": 1,
-     "home-hip-flow": 1,
-     "wrists-daily-block": 2,
-     "wrists-loaded-extension": 2,
-     "daily-edge-density": 6
+     "morn-band-wake": 1,
+     "morn-band-row": 3,
+     "morn-band-pushup": 2,
+     "morn-band-split-squat": 2,
+     "home-sl-rdl": 2,
+     "extra-lunge-drive": 1,
+     "morn-pullapart": 1
     },
-    "effort": 5,
-    "pain": 2
+    "effort": 5
    },
    {
     "date": "2026-10-13T20:15:00.000Z",
@@ -1437,7 +1487,8 @@
      "addon-mountain-climber": 3,
      "addon-hanging-oblique": 2,
      "addon-russian-twist": 2,
-     "addon-cuff": 1
+     "extra-lunge-drive": 1,
+     "addon-cuff": 2
     },
     "planned": {
      "addon-weighted-pullup": 3,
@@ -1447,37 +1498,13 @@
      "addon-mountain-climber": 3,
      "addon-hanging-oblique": 2,
      "addon-russian-twist": 2,
+     "extra-lunge-drive": 1,
      "addon-cuff": 2
     },
     "effort": 7
    },
    {
     "date": "2026-10-14T07:15:00.000Z",
-    "mode": "DAILY",
-    "circuitId": "daily-03",
-    "circuitTitle": "BAND STRENGTH",
-    "energy": "NORMAL",
-    "duration": 14,
-    "sets": {
-     "morn-band-wake": 1,
-     "morn-band-row": 3,
-     "morn-band-pushup": 2,
-     "morn-band-split-squat": 2,
-     "home-sl-rdl": 2,
-     "morn-pullapart": 1
-    },
-    "planned": {
-     "morn-band-wake": 1,
-     "morn-band-row": 3,
-     "morn-band-pushup": 2,
-     "morn-band-split-squat": 2,
-     "home-sl-rdl": 2,
-     "morn-pullapart": 1
-    },
-    "effort": 5
-   },
-   {
-    "date": "2026-10-15T07:15:00.000Z",
     "mode": "DAILY",
     "circuitId": "daily-02",
     "circuitTitle": "OBLIQUES + BACK",
@@ -1488,7 +1515,7 @@
      "morn-birddog": 1,
      "daily-prone-extension": 2,
      "daily-side-plank-dip": 2,
-     "morn-chop": 1,
+     "extra-lunge-drive": 1,
      "daily-band-good-morning": 2,
      "morn-bw-russian-twist": 2
     },
@@ -1497,8 +1524,37 @@
      "morn-birddog": 1,
      "daily-prone-extension": 2,
      "daily-side-plank-dip": 2,
-     "morn-chop": 1,
+     "extra-lunge-drive": 1,
      "daily-band-good-morning": 2,
+     "morn-bw-russian-twist": 2
+    },
+    "effort": 5
+   },
+   {
+    "date": "2026-10-15T07:15:00.000Z",
+    "mode": "DAILY",
+    "circuitId": "daily-01",
+    "circuitTitle": "CORE + OBLIQUES",
+    "energy": "NORMAL",
+    "duration": 13,
+    "sets": {
+     "morn-breathing": 1,
+     "morn-deadbug": 1,
+     "daily-pushup": 2,
+     "extra-lunge-drive": 1,
+     "daily-spiderman": 2,
+     "daily-mountain-climber": 2,
+     "daily-reverse-crunch": 2,
+     "morn-bw-russian-twist": 2
+    },
+    "planned": {
+     "morn-breathing": 1,
+     "morn-deadbug": 1,
+     "daily-pushup": 2,
+     "extra-lunge-drive": 1,
+     "daily-spiderman": 2,
+     "daily-mountain-climber": 2,
+     "daily-reverse-crunch": 2,
      "morn-bw-russian-twist": 2
     },
     "effort": 5
@@ -1514,20 +1570,24 @@
      "addon-goblet-squat": 2,
      "legs-back-extension": 3,
      "legs-sl-rdl": 2,
+     "full-cossack": 2,
      "legs-toe-drag": 2,
      "home-copenhagen": 2,
      "legs-plate-crunch": 3,
      "daily-side-plank-dip": 2,
-     "feet-frogger": 2
+     "extra-sl-balance": 2,
+     "feet-frogger": 1
     },
     "planned": {
      "addon-goblet-squat": 2,
      "legs-back-extension": 3,
      "legs-sl-rdl": 2,
+     "full-cossack": 2,
      "legs-toe-drag": 2,
      "home-copenhagen": 2,
      "legs-plate-crunch": 3,
      "daily-side-plank-dip": 2,
+     "extra-sl-balance": 2,
      "feet-frogger": 2
     },
     "effort": 7
@@ -1535,61 +1595,32 @@
    {
     "date": "2026-10-16T07:15:00.000Z",
     "mode": "DAILY",
-    "circuitId": "daily-01",
-    "circuitTitle": "CORE + OBLIQUES",
+    "circuitId": "daily-06",
+    "circuitTitle": "QUIET FEET",
     "energy": "NORMAL",
-    "duration": 13,
+    "duration": 16,
     "sets": {
-     "morn-breathing": 1,
-     "morn-deadbug": 1,
-     "daily-pushup": 2,
-     "daily-spiderman": 2,
-     "daily-mountain-climber": 2,
-     "daily-reverse-crunch": 2,
-     "morn-bw-russian-twist": 2
+     "daily-ankle-wall": 2,
+     "daily-short-foot": 2,
+     "daily-toe-taps": 3,
+     "extra-sl-reach": 2,
+     "daily-rockover-transfer": 2,
+     "daily-flag-hold": 3,
+     "extra-lunge-drive": 1
     },
     "planned": {
-     "morn-breathing": 1,
-     "morn-deadbug": 1,
-     "daily-pushup": 2,
-     "daily-spiderman": 2,
-     "daily-mountain-climber": 2,
-     "daily-reverse-crunch": 2,
-     "morn-bw-russian-twist": 2
+     "daily-ankle-wall": 2,
+     "daily-short-foot": 2,
+     "daily-toe-taps": 3,
+     "extra-sl-reach": 2,
+     "daily-rockover-transfer": 2,
+     "daily-flag-hold": 3,
+     "extra-lunge-drive": 1
     },
     "effort": 5
    },
    {
     "date": "2026-10-18T07:15:00.000Z",
-    "mode": "DAILY",
-    "circuitId": "daily-05",
-    "circuitTitle": "LEGS + CORE",
-    "energy": "NORMAL",
-    "duration": 13,
-    "sets": {
-     "morn-catcow": 1,
-     "daily-spiderman-lunge": 1,
-     "daily-cossack-shift": 1,
-     "daily-bw-squat": 2,
-     "daily-glute-bridge": 2,
-     "daily-pushup": 2,
-     "daily-plank-climber": 2,
-     "daily-back-unwind": 1
-    },
-    "planned": {
-     "morn-catcow": 1,
-     "daily-spiderman-lunge": 1,
-     "daily-cossack-shift": 1,
-     "daily-bw-squat": 2,
-     "daily-glute-bridge": 2,
-     "daily-pushup": 2,
-     "daily-plank-climber": 2,
-     "daily-back-unwind": 1
-    },
-    "effort": 5
-   },
-   {
-    "date": "2026-10-19T07:15:00.000Z",
     "mode": "DAILY",
     "circuitId": "daily-04",
     "circuitTitle": "FINGERS + MOBILITY",
@@ -1601,6 +1632,7 @@
      "home-hip-flow": 1,
      "wrists-daily-block": 2,
      "wrists-loaded-extension": 2,
+     "extra-lunge-drive": 1,
      "daily-edge-density": 6
     },
     "planned": {
@@ -1609,13 +1641,14 @@
      "home-hip-flow": 1,
      "wrists-daily-block": 2,
      "wrists-loaded-extension": 2,
+     "extra-lunge-drive": 1,
      "daily-edge-density": 6
     },
     "effort": 5,
     "pain": 2
    },
    {
-    "date": "2026-10-20T07:15:00.000Z",
+    "date": "2026-10-19T07:15:00.000Z",
     "mode": "DAILY",
     "circuitId": "daily-03",
     "circuitTitle": "BAND STRENGTH",
@@ -1627,6 +1660,7 @@
      "morn-band-pushup": 2,
      "morn-band-split-squat": 2,
      "home-sl-rdl": 2,
+     "extra-lunge-drive": 1,
      "morn-pullapart": 1
     },
     "planned": {
@@ -1635,7 +1669,35 @@
      "morn-band-pushup": 2,
      "morn-band-split-squat": 2,
      "home-sl-rdl": 2,
+     "extra-lunge-drive": 1,
      "morn-pullapart": 1
+    },
+    "effort": 5
+   },
+   {
+    "date": "2026-10-20T07:15:00.000Z",
+    "mode": "DAILY",
+    "circuitId": "daily-02",
+    "circuitTitle": "OBLIQUES + BACK",
+    "energy": "NORMAL",
+    "duration": 14,
+    "sets": {
+     "morn-breathing": 1,
+     "morn-birddog": 1,
+     "daily-prone-extension": 2,
+     "daily-side-plank-dip": 2,
+     "extra-lunge-drive": 1,
+     "daily-band-good-morning": 2,
+     "morn-bw-russian-twist": 2
+    },
+    "planned": {
+     "morn-breathing": 1,
+     "morn-birddog": 1,
+     "daily-prone-extension": 2,
+     "daily-side-plank-dip": 2,
+     "extra-lunge-drive": 1,
+     "daily-band-good-morning": 2,
+     "morn-bw-russian-twist": 2
     },
     "effort": 5
    },
@@ -1654,6 +1716,7 @@
      "addon-mountain-climber": 3,
      "addon-hanging-oblique": 2,
      "addon-russian-twist": 2,
+     "extra-lunge-drive": 1,
      "addon-cuff": 2
     },
     "planned": {
@@ -1664,12 +1727,133 @@
      "addon-mountain-climber": 3,
      "addon-hanging-oblique": 2,
      "addon-russian-twist": 2,
+     "extra-lunge-drive": 1,
      "addon-cuff": 2
     },
     "effort": 7
    },
    {
     "date": "2026-10-21T07:15:00.000Z",
+    "mode": "DAILY",
+    "circuitId": "daily-01",
+    "circuitTitle": "CORE + OBLIQUES",
+    "energy": "NORMAL",
+    "duration": 13,
+    "sets": {
+     "morn-breathing": 1,
+     "morn-deadbug": 1,
+     "daily-pushup": 2,
+     "extra-lunge-drive": 1,
+     "daily-spiderman": 2,
+     "daily-mountain-climber": 2,
+     "daily-reverse-crunch": 2,
+     "morn-bw-russian-twist": 2
+    },
+    "planned": {
+     "morn-breathing": 1,
+     "morn-deadbug": 1,
+     "daily-pushup": 2,
+     "extra-lunge-drive": 1,
+     "daily-spiderman": 2,
+     "daily-mountain-climber": 2,
+     "daily-reverse-crunch": 2,
+     "morn-bw-russian-twist": 2
+    },
+    "effort": 5
+   },
+   {
+    "date": "2026-10-22T20:15:00.000Z",
+    "mode": "CAVE",
+    "circuitId": "cave-06",
+    "circuitTitle": "LEGS + BACK",
+    "energy": "NORMAL",
+    "duration": 30,
+    "sets": {
+     "addon-goblet-squat": 2,
+     "legs-back-extension": 3,
+     "legs-sl-rdl": 2,
+     "full-cossack": 2,
+     "legs-toe-drag": 2,
+     "home-copenhagen": 2,
+     "legs-plate-crunch": 3,
+     "daily-side-plank-dip": 2,
+     "extra-sl-balance": 2,
+     "feet-frogger": 2
+    },
+    "planned": {
+     "addon-goblet-squat": 2,
+     "legs-back-extension": 3,
+     "legs-sl-rdl": 2,
+     "full-cossack": 2,
+     "legs-toe-drag": 2,
+     "home-copenhagen": 2,
+     "legs-plate-crunch": 3,
+     "daily-side-plank-dip": 2,
+     "extra-sl-balance": 2,
+     "feet-frogger": 2
+    },
+    "effort": 7
+   },
+   {
+    "date": "2026-10-23T07:15:00.000Z",
+    "mode": "DAILY",
+    "circuitId": "daily-05",
+    "circuitTitle": "LEGS + CORE",
+    "energy": "NORMAL",
+    "duration": 13,
+    "sets": {
+     "morn-catcow": 1,
+     "daily-spiderman-lunge": 1,
+     "daily-cossack-shift": 1,
+     "extra-lunge-drive": 1,
+     "daily-bw-squat": 2,
+     "daily-glute-bridge": 2,
+     "daily-pushup": 2,
+     "daily-plank-climber": 2,
+     "daily-back-unwind": 1
+    },
+    "planned": {
+     "morn-catcow": 1,
+     "daily-spiderman-lunge": 1,
+     "daily-cossack-shift": 1,
+     "extra-lunge-drive": 1,
+     "daily-bw-squat": 2,
+     "daily-glute-bridge": 2,
+     "daily-pushup": 2,
+     "daily-plank-climber": 2,
+     "daily-back-unwind": 1
+    },
+    "effort": 5
+   },
+   {
+    "date": "2026-10-25T07:15:00.000Z",
+    "mode": "DAILY",
+    "circuitId": "daily-03",
+    "circuitTitle": "BAND STRENGTH",
+    "energy": "NORMAL",
+    "duration": 14,
+    "sets": {
+     "morn-band-wake": 1,
+     "morn-band-row": 3,
+     "morn-band-pushup": 2,
+     "morn-band-split-squat": 2,
+     "home-sl-rdl": 2,
+     "extra-lunge-drive": 1,
+     "morn-pullapart": 1
+    },
+    "planned": {
+     "morn-band-wake": 1,
+     "morn-band-row": 3,
+     "morn-band-pushup": 2,
+     "morn-band-split-squat": 2,
+     "home-sl-rdl": 2,
+     "extra-lunge-drive": 1,
+     "morn-pullapart": 1
+    },
+    "effort": 5
+   },
+   {
+    "date": "2026-10-26T07:15:00.000Z",
     "mode": "DAILY",
     "circuitId": "daily-02",
     "circuitTitle": "OBLIQUES + BACK",
@@ -1680,7 +1864,7 @@
      "morn-birddog": 1,
      "daily-prone-extension": 2,
      "daily-side-plank-dip": 2,
-     "morn-chop": 1,
+     "extra-lunge-drive": 1,
      "daily-band-good-morning": 2,
      "morn-bw-russian-twist": 2
     },
@@ -1689,7 +1873,7 @@
      "morn-birddog": 1,
      "daily-prone-extension": 2,
      "daily-side-plank-dip": 2,
-     "morn-chop": 1,
+     "extra-lunge-drive": 1,
      "daily-band-good-morning": 2,
      "morn-bw-russian-twist": 2
     },
@@ -1700,66 +1884,31 @@
    {
     "benchmarkId": "bodyweight",
     "value": 68,
-    "date": "2026-09-17T10:15:00.000Z"
+    "date": "2026-09-22T10:15:00.000Z"
    },
    {
     "benchmarkId": "weighted-pullup-2rm",
     "value": 141,
-    "date": "2026-09-17T10:15:00.000Z"
+    "date": "2026-09-22T10:15:00.000Z"
    },
    {
     "benchmarkId": "max-pullups",
     "value": 14,
-    "date": "2026-09-17T10:15:00.000Z"
+    "date": "2026-09-22T10:15:00.000Z"
    },
    {
     "benchmarkId": "toes-to-bar",
     "value": 9,
-    "date": "2026-09-17T10:15:00.000Z"
+    "date": "2026-09-22T10:15:00.000Z"
    },
    {
     "benchmarkId": "hollow-hold",
     "value": 55,
-    "date": "2026-09-17T10:15:00.000Z"
+    "date": "2026-09-22T10:15:00.000Z"
    }
   ],
   "loadLog": [
    {
-    "exerciseId": "addon-goblet-squat",
-    "exerciseName": "Goblet Squat",
-    "date": "2026-08-27",
-    "value": 16,
-    "unit": "kg"
-   },
-   {
-    "exerciseId": "legs-back-extension",
-    "exerciseName": "45-Degree Back Extension",
-    "date": "2026-08-27",
-    "value": 8,
-    "unit": "kg"
-   },
-   {
-    "exerciseId": "legs-sl-rdl",
-    "exerciseName": "Single-Leg Romanian Deadlift",
-    "date": "2026-08-27",
-    "value": 8,
-    "unit": "kg"
-   },
-   {
-    "exerciseId": "legs-toe-drag",
-    "exerciseName": "Toe-Tip Plate Drag",
-    "date": "2026-08-27",
-    "value": 8,
-    "unit": "kg"
-   },
-   {
-    "exerciseId": "legs-plate-crunch",
-    "exerciseName": "Plate Crunch",
-    "date": "2026-08-27",
-    "value": 8,
-    "unit": "kg"
-   },
-   {
     "exerciseId": "addon-weighted-pullup",
     "exerciseName": "Weighted Pull-Ups",
     "date": "2026-09-01",
@@ -1790,6 +1939,13 @@
    {
     "exerciseId": "legs-sl-rdl",
     "exerciseName": "Single-Leg Romanian Deadlift",
+    "date": "2026-09-03",
+    "value": 8,
+    "unit": "kg"
+   },
+   {
+    "exerciseId": "full-cossack",
+    "exerciseName": "Goblet Cossack Squat",
     "date": "2026-09-03",
     "value": 8,
     "unit": "kg"
@@ -1826,35 +1982,42 @@
     "exerciseId": "addon-goblet-squat",
     "exerciseName": "Goblet Squat",
     "date": "2026-09-10",
-    "value": 17,
+    "value": 16,
     "unit": "kg"
    },
    {
     "exerciseId": "legs-back-extension",
     "exerciseName": "45-Degree Back Extension",
     "date": "2026-09-10",
-    "value": 9,
+    "value": 8,
     "unit": "kg"
    },
    {
     "exerciseId": "legs-sl-rdl",
     "exerciseName": "Single-Leg Romanian Deadlift",
     "date": "2026-09-10",
-    "value": 9,
+    "value": 8,
+    "unit": "kg"
+   },
+   {
+    "exerciseId": "full-cossack",
+    "exerciseName": "Goblet Cossack Squat",
+    "date": "2026-09-10",
+    "value": 8,
     "unit": "kg"
    },
    {
     "exerciseId": "legs-toe-drag",
     "exerciseName": "Toe-Tip Plate Drag",
     "date": "2026-09-10",
-    "value": 9,
+    "value": 8,
     "unit": "kg"
    },
    {
     "exerciseId": "legs-plate-crunch",
     "exerciseName": "Plate Crunch",
     "date": "2026-09-10",
-    "value": 9,
+    "value": 8,
     "unit": "kg"
    },
    {
@@ -1893,6 +2056,13 @@
     "unit": "kg"
    },
    {
+    "exerciseId": "full-cossack",
+    "exerciseName": "Goblet Cossack Squat",
+    "date": "2026-09-17",
+    "value": 9,
+    "unit": "kg"
+   },
+   {
     "exerciseId": "legs-toe-drag",
     "exerciseName": "Toe-Tip Plate Drag",
     "date": "2026-09-17",
@@ -1924,35 +2094,42 @@
     "exerciseId": "addon-goblet-squat",
     "exerciseName": "Goblet Squat",
     "date": "2026-09-24",
-    "value": 18,
+    "value": 17,
     "unit": "kg"
    },
    {
     "exerciseId": "legs-back-extension",
     "exerciseName": "45-Degree Back Extension",
     "date": "2026-09-24",
-    "value": 10,
+    "value": 9,
     "unit": "kg"
    },
    {
     "exerciseId": "legs-sl-rdl",
     "exerciseName": "Single-Leg Romanian Deadlift",
     "date": "2026-09-24",
-    "value": 10,
+    "value": 9,
+    "unit": "kg"
+   },
+   {
+    "exerciseId": "full-cossack",
+    "exerciseName": "Goblet Cossack Squat",
+    "date": "2026-09-24",
+    "value": 9,
     "unit": "kg"
    },
    {
     "exerciseId": "legs-toe-drag",
     "exerciseName": "Toe-Tip Plate Drag",
     "date": "2026-09-24",
-    "value": 10,
+    "value": 9,
     "unit": "kg"
    },
    {
     "exerciseId": "legs-plate-crunch",
     "exerciseName": "Plate Crunch",
     "date": "2026-09-24",
-    "value": 10,
+    "value": 9,
     "unit": "kg"
    },
    {
@@ -1991,6 +2168,13 @@
     "unit": "kg"
    },
    {
+    "exerciseId": "full-cossack",
+    "exerciseName": "Goblet Cossack Squat",
+    "date": "2026-10-01",
+    "value": 10,
+    "unit": "kg"
+   },
+   {
     "exerciseId": "legs-toe-drag",
     "exerciseName": "Toe-Tip Plate Drag",
     "date": "2026-10-01",
@@ -2022,35 +2206,42 @@
     "exerciseId": "addon-goblet-squat",
     "exerciseName": "Goblet Squat",
     "date": "2026-10-08",
-    "value": 19,
+    "value": 18,
     "unit": "kg"
    },
    {
     "exerciseId": "legs-back-extension",
     "exerciseName": "45-Degree Back Extension",
     "date": "2026-10-08",
-    "value": 11,
+    "value": 10,
     "unit": "kg"
    },
    {
     "exerciseId": "legs-sl-rdl",
     "exerciseName": "Single-Leg Romanian Deadlift",
     "date": "2026-10-08",
-    "value": 11,
+    "value": 10,
+    "unit": "kg"
+   },
+   {
+    "exerciseId": "full-cossack",
+    "exerciseName": "Goblet Cossack Squat",
+    "date": "2026-10-08",
+    "value": 10,
     "unit": "kg"
    },
    {
     "exerciseId": "legs-toe-drag",
     "exerciseName": "Toe-Tip Plate Drag",
     "date": "2026-10-08",
-    "value": 11,
+    "value": 10,
     "unit": "kg"
    },
    {
     "exerciseId": "legs-plate-crunch",
     "exerciseName": "Plate Crunch",
     "date": "2026-10-08",
-    "value": 11,
+    "value": 10,
     "unit": "kg"
    },
    {
@@ -2089,6 +2280,13 @@
     "unit": "kg"
    },
    {
+    "exerciseId": "full-cossack",
+    "exerciseName": "Goblet Cossack Squat",
+    "date": "2026-10-15",
+    "value": 11,
+    "unit": "kg"
+   },
+   {
     "exerciseId": "legs-toe-drag",
     "exerciseName": "Toe-Tip Plate Drag",
     "date": "2026-10-15",
@@ -2114,52 +2312,124 @@
     "exerciseName": "Russian Twist",
     "date": "2026-10-20",
     "value": 11,
+    "unit": "kg"
+   },
+   {
+    "exerciseId": "addon-goblet-squat",
+    "exerciseName": "Goblet Squat",
+    "date": "2026-10-22",
+    "value": 19,
+    "unit": "kg"
+   },
+   {
+    "exerciseId": "legs-back-extension",
+    "exerciseName": "45-Degree Back Extension",
+    "date": "2026-10-22",
+    "value": 11,
+    "unit": "kg"
+   },
+   {
+    "exerciseId": "legs-sl-rdl",
+    "exerciseName": "Single-Leg Romanian Deadlift",
+    "date": "2026-10-22",
+    "value": 11,
+    "unit": "kg"
+   },
+   {
+    "exerciseId": "full-cossack",
+    "exerciseName": "Goblet Cossack Squat",
+    "date": "2026-10-22",
+    "value": 11,
+    "unit": "kg"
+   },
+   {
+    "exerciseId": "legs-toe-drag",
+    "exerciseName": "Toe-Tip Plate Drag",
+    "date": "2026-10-22",
+    "value": 11,
+    "unit": "kg"
+   },
+   {
+    "exerciseId": "legs-plate-crunch",
+    "exerciseName": "Plate Crunch",
+    "date": "2026-10-22",
+    "value": 11,
+    "unit": "kg"
+   },
+   {
+    "exerciseId": "power-weighted-pullup",
+    "exerciseName": "Weighted Pull-Ups — Volume",
+    "date": "2026-10-03",
+    "value": 12,
+    "unit": "kg"
+   },
+   {
+    "exerciseId": "power-db-row",
+    "exerciseName": "Single-Arm Dumbbell Row",
+    "date": "2026-10-03",
+    "value": 10,
+    "unit": "kg"
+   },
+   {
+    "exerciseId": "power-db-press",
+    "exerciseName": "Half-Kneeling Dumbbell Press",
+    "date": "2026-10-03",
+    "value": 10,
+    "unit": "kg"
+   },
+   {
+    "exerciseId": "power-floor-pullover",
+    "exerciseName": "Floor Pullover — Power from the Stretch",
+    "date": "2026-10-03",
+    "value": 10,
+    "unit": "kg"
+   },
+   {
+    "exerciseId": "full-front-squat",
+    "exerciseName": "Double Kettlebell Front Squat",
+    "date": "2026-10-10",
+    "value": 10,
+    "unit": "kg"
+   },
+   {
+    "exerciseId": "full-db-rdl",
+    "exerciseName": "Dumbbell Romanian Deadlift",
+    "date": "2026-10-10",
+    "value": 10,
+    "unit": "kg"
+   },
+   {
+    "exerciseId": "full-rockover-drive",
+    "exerciseName": "High-Step Rock-Over Drive",
+    "date": "2026-10-10",
+    "value": 10,
+    "unit": "kg"
+   },
+   {
+    "exerciseId": "full-suitcase-carry",
+    "exerciseName": "Suitcase Carry",
+    "date": "2026-10-10",
+    "value": 10,
+    "unit": "kg"
+   },
+   {
+    "exerciseId": "full-cossack",
+    "exerciseName": "Goblet Cossack Squat",
+    "date": "2026-10-10",
+    "value": 10,
+    "unit": "kg"
+   },
+   {
+    "exerciseId": "addon-russian-twist",
+    "exerciseName": "Russian Twist",
+    "date": "2026-10-10",
+    "value": 10,
     "unit": "kg"
    }
   ],
   "climbLog": [
    {
     "id": "seed-climb-56",
-    "date": "2026-08-27",
-    "venue": "GYM",
-    "discipline": "BOULDER",
-    "durationMin": 90,
-    "effort": 7,
-    "climbs": [
-     {
-      "grade": "GREEN",
-      "attempts": 1,
-      "sent": true
-     },
-     {
-      "grade": "GREEN",
-      "attempts": 1,
-      "sent": true
-     },
-     {
-      "grade": "ORANGE",
-      "attempts": 2,
-      "sent": true
-     },
-     {
-      "grade": "ORANGE",
-      "attempts": 1,
-      "sent": true
-     },
-     {
-      "grade": "BLUE",
-      "attempts": 5,
-      "sent": false
-     },
-     {
-      "grade": "BLUE",
-      "attempts": 4,
-      "sent": false
-     }
-    ]
-   },
-   {
-    "id": "seed-climb-51",
     "date": "2026-09-01",
     "venue": "GYM",
     "discipline": "BOULDER",
@@ -2169,37 +2439,68 @@
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 2,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 5,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "pinch"
+      ],
+      "why": [
+       "power"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 4,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "compression"
+      ],
+      "why": [
+       "feet"
+      ]
      }
-    ]
+    ],
+    "tryHard": false
    },
    {
-    "id": "seed-climb-49",
+    "id": "seed-climb-54",
     "date": "2026-09-03",
     "venue": "GYM",
     "discipline": "BOULDER",
@@ -2209,37 +2510,68 @@
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 2,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 5,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "pinch"
+      ],
+      "why": [
+       "power"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 4,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "compression"
+      ],
+      "why": [
+       "feet"
+      ]
      }
-    ]
+    ],
+    "tryHard": true
    },
    {
-    "id": "seed-climb-44",
+    "id": "seed-climb-49",
     "date": "2026-09-08",
     "venue": "GYM",
     "discipline": "BOULDER",
@@ -2249,37 +2581,68 @@
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 2,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 5,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "pinch"
+      ],
+      "why": [
+       "power"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 4,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "compression"
+      ],
+      "why": [
+       "backed-off"
+      ]
      }
-    ]
+    ],
+    "tryHard": false
    },
    {
-    "id": "seed-climb-42",
+    "id": "seed-climb-47",
     "date": "2026-09-10",
     "venue": "GYM",
     "discipline": "BOULDER",
@@ -2289,37 +2652,68 @@
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 2,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 5,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "pinch"
+      ],
+      "why": [
+       "power"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 4,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "compression"
+      ],
+      "why": [
+       "backed-off"
+      ]
      }
-    ]
+    ],
+    "tryHard": false
    },
    {
-    "id": "seed-climb-37",
+    "id": "seed-climb-42",
     "date": "2026-09-15",
     "venue": "GYM",
     "discipline": "BOULDER",
@@ -2329,37 +2723,68 @@
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 2,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 5,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "pinch"
+      ],
+      "why": [
+       "power"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 4,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "compression"
+      ],
+      "why": [
+       "feet"
+      ]
      }
-    ]
+    ],
+    "tryHard": true
    },
    {
-    "id": "seed-climb-35",
+    "id": "seed-climb-40",
     "date": "2026-09-17",
     "venue": "GYM",
     "discipline": "BOULDER",
@@ -2369,37 +2794,68 @@
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 2,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 5,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "pinch"
+      ],
+      "why": [
+       "power"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 4,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "compression"
+      ],
+      "why": [
+       "feet"
+      ]
      }
-    ]
+    ],
+    "tryHard": false
    },
    {
-    "id": "seed-climb-30",
+    "id": "seed-climb-35",
     "date": "2026-09-22",
     "venue": "GYM",
     "discipline": "BOULDER",
@@ -2409,37 +2865,68 @@
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 2,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 5,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "pinch"
+      ],
+      "why": [
+       "power"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 4,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "compression"
+      ],
+      "why": [
+       "backed-off"
+      ]
      }
-    ]
+    ],
+    "tryHard": false
    },
    {
-    "id": "seed-climb-28",
+    "id": "seed-climb-33",
     "date": "2026-09-24",
     "venue": "GYM",
     "discipline": "BOULDER",
@@ -2449,37 +2936,68 @@
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 2,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 5,
-      "sent": true
+      "sent": false,
+      "tags": [
+       "overhang",
+       "pinch"
+      ],
+      "why": [
+       "power"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 4,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "compression"
+      ],
+      "why": [
+       "backed-off"
+      ]
      }
-    ]
+    ],
+    "tryHard": true
    },
    {
-    "id": "seed-climb-23",
+    "id": "seed-climb-28",
     "date": "2026-09-29",
     "venue": "GYM",
     "discipline": "BOULDER",
@@ -2489,37 +3007,65 @@
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 2,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 5,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "overhang",
+       "pinch"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 4,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "compression"
+      ],
+      "why": [
+       "feet"
+      ]
      }
-    ]
+    ],
+    "tryHard": false
    },
    {
-    "id": "seed-climb-21",
+    "id": "seed-climb-26",
     "date": "2026-10-01",
     "venue": "GYM",
     "discipline": "BOULDER",
@@ -2529,37 +3075,65 @@
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 2,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 5,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "overhang",
+       "pinch"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 4,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "compression"
+      ],
+      "why": [
+       "feet"
+      ]
      }
-    ]
+    ],
+    "tryHard": false
    },
    {
-    "id": "seed-climb-16",
+    "id": "seed-climb-21",
     "date": "2026-10-06",
     "venue": "GYM",
     "discipline": "BOULDER",
@@ -2569,37 +3143,65 @@
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 2,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "BLUE",
-      "attempts": 3,
-      "sent": true
+      "attempts": 5,
+      "sent": true,
+      "tags": [
+       "overhang",
+       "pinch"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 4,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "compression"
+      ],
+      "why": [
+       "backed-off"
+      ]
      }
-    ]
+    ],
+    "tryHard": true
    },
    {
-    "id": "seed-climb-14",
+    "id": "seed-climb-19",
     "date": "2026-10-08",
     "venue": "GYM",
     "discipline": "BOULDER",
@@ -2609,37 +3211,65 @@
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 2,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 3,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "overhang",
+       "pinch"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 4,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "compression"
+      ],
+      "why": [
+       "backed-off"
+      ]
      }
-    ]
+    ],
+    "tryHard": false
    },
    {
-    "id": "seed-climb-9",
+    "id": "seed-climb-14",
     "date": "2026-10-13",
     "venue": "GYM",
     "discipline": "BOULDER",
@@ -2649,37 +3279,65 @@
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 2,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 3,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "overhang",
+       "pinch"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 4,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "compression"
+      ],
+      "why": [
+       "feet"
+      ]
      }
-    ]
+    ],
+    "tryHard": false
    },
    {
-    "id": "seed-climb-7",
+    "id": "seed-climb-12",
     "date": "2026-10-15",
     "venue": "GYM",
     "discipline": "BOULDER",
@@ -2689,37 +3347,65 @@
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 2,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 3,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "overhang",
+       "pinch"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 4,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "compression"
+      ],
+      "why": [
+       "feet"
+      ]
      }
-    ]
+    ],
+    "tryHard": true
    },
    {
-    "id": "seed-climb-2",
+    "id": "seed-climb-7",
     "date": "2026-10-20",
     "venue": "GYM",
     "discipline": "BOULDER",
@@ -2729,65 +3415,161 @@
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "GREEN",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 2,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
      },
      {
       "grade": "ORANGE",
       "attempts": 1,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 3,
-      "sent": true
+      "sent": true,
+      "tags": [
+       "overhang",
+       "pinch"
+      ]
      },
      {
       "grade": "BLUE",
       "attempts": 4,
-      "sent": false
+      "sent": false,
+      "tags": [
+       "overhang",
+       "compression"
+      ],
+      "why": [
+       "backed-off"
+      ]
      }
-    ]
+    ],
+    "tryHard": false
+   },
+   {
+    "id": "seed-climb-5",
+    "date": "2026-10-22",
+    "venue": "GYM",
+    "discipline": "BOULDER",
+    "durationMin": 90,
+    "effort": 7,
+    "climbs": [
+     {
+      "grade": "GREEN",
+      "attempts": 1,
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
+     },
+     {
+      "grade": "GREEN",
+      "attempts": 1,
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
+     },
+     {
+      "grade": "ORANGE",
+      "attempts": 2,
+      "sent": true,
+      "tags": [
+       "vertical",
+       "crimp"
+      ]
+     },
+     {
+      "grade": "ORANGE",
+      "attempts": 1,
+      "sent": true,
+      "tags": [
+       "slab",
+       "smear"
+      ]
+     },
+     {
+      "grade": "BLUE",
+      "attempts": 3,
+      "sent": true,
+      "tags": [
+       "overhang",
+       "pinch"
+      ]
+     },
+     {
+      "grade": "BLUE",
+      "attempts": 4,
+      "sent": false,
+      "tags": [
+       "overhang",
+       "compression"
+      ],
+      "why": [
+       "backed-off"
+      ]
+     }
+    ],
+    "tryHard": false
    }
   ],
   "activityLog": [
    {
-    "id": "seed-hike-54",
-    "date": "2026-08-29",
+    "id": "seed-hike-52",
+    "date": "2026-09-05",
     "type": "HIKE",
     "upM": 1100
    },
    {
-    "id": "seed-hike-40",
-    "date": "2026-09-12",
+    "id": "seed-hike-38",
+    "date": "2026-09-19",
     "type": "HIKE",
     "upM": 1100
    },
    {
-    "id": "seed-hike-26",
-    "date": "2026-09-26",
+    "id": "seed-hike-24",
+    "date": "2026-10-03",
     "type": "HIKE",
     "upM": 1100
    },
    {
-    "id": "seed-hike-12",
-    "date": "2026-10-10",
+    "id": "seed-hike-10",
+    "date": "2026-10-17",
     "type": "HIKE",
     "upM": 1100
    }
   ],
   "tweaks": {},
   "offDays": [],
-  "blockStart": "2026-08-27",
+  "blockStart": "2026-09-01",
   "buildPresets": []
  }
 }

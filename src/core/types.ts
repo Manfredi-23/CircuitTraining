@@ -585,6 +585,10 @@ export interface ClimbEntry {
   attempts: number;
   /** False while it is still a project. */
   sent: boolean;
+  /** Its style: wall angle, holds and moves (`climb-tags.ts`). Optional, two taps. */
+  tags?: string[];
+  /** Why it did not go: on a project, or a send that took three goes or more. */
+  why?: string[];
 }
 
 /**
@@ -612,4 +616,8 @@ export interface ClimbSession {
   draft?: boolean;
   /** The Health workout it came from, so it is imported once. */
   healthId?: string;
+  /** At least one go at 110%: fully committed, no backing off. */
+  tryHard?: boolean;
+  /** The wall focus drills done this session (`wall.ts` ids). */
+  focusDone?: string[];
 }
