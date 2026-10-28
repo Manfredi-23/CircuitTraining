@@ -125,7 +125,7 @@ const WORKING = new Set<BlockType>(['PRIMARY', 'SECONDARY', 'ACCESSORY']);
 function hitsArea(e: Exercise, area: SoreArea): boolean {
   switch (area) {
     case 'LEGS': return e.capacities[0] === 'legs';
-    case 'BACK': return e.protocolId === 'back-strength';
+    case 'BACK': return e.protocolId === 'back-strength' || e.protocolId === 'upper-back';
     case 'SHOULDERS': return ['press', 'shoulder', 'pull'].includes(e.capacities[0] ?? '');
     case 'FOREARMS': return e.capacities.some(c => c === 'crimp' || c === 'openhand' || c === 'forearm');
   }

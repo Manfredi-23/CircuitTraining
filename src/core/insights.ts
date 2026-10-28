@@ -230,6 +230,7 @@ export const CORE_EXERCISES: Record<CoreGroup, string[]> = {
   back: [
     'daily-prone-extension', 'daily-band-good-morning', 'legs-back-extension',
     'legs-sl-rdl', 'home-sl-rdl', 'daily-glute-bridge',
+    'extra-prone-swimmer', 'extra-plate-good-morning', 'extra-kb-swing', 'extra-bw-good-morning',
   ],
 };
 

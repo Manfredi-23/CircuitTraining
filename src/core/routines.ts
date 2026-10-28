@@ -86,7 +86,7 @@ export function isHomeExercise(id: string): boolean {
 }
 
 const ILLUSTRATION: Record<WorkArea, string> = {
-  FINGERS: 'hangboard.svg', PULL: 'pullups.svg', PUSH: 'pushups.svg', CORE: 'core.svg',
+  FINGERS: 'hangboard.svg', PULL: 'pullups.svg', PUSH: 'pushups.svg', CORE: 'core.svg', BACK: 'core.svg',
   LEGS: 'squats.svg', MOBILITY: 'morning.svg', ARMS: 'dumbbell.svg',
 };
 

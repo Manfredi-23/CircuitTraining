@@ -275,6 +275,11 @@ export const PACKS: Pack[] = [
     gym: ['daily-side-plank-dip', 'legs-plate-crunch', 'addon-russian-twist'],
   },
   {
+    id: 'back', name: 'BACK', note: 'The lower back and the middle of it, nothing that curls.',
+    home: ['daily-prone-extension', 'extra-prone-swimmer', 'extra-prone-cobra'],
+    gym: ['legs-back-extension', 'extra-plate-good-morning', 'extra-db-reverse-fly'],
+  },
+  {
     id: 'arms', name: 'ARMS', note: 'Biceps and triceps. Recorded, no XP.',
     home: ['extra-diamond-pushup', 'extra-band-curl', 'extra-band-triceps'],
     gym: ['extra-diamond-pushup', 'extra-db-curl', 'extra-band-triceps'],

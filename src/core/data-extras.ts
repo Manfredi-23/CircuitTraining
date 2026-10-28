@@ -4,7 +4,8 @@
 // The reserve (reserve.ts) mostly offers exercises the sessions already use,
 // with their history. These are the gaps: arm work, which the programme leaves
 // out on purpose (biceps and triceps are not climbing capacities, and size
-// there is weight carried up the wall), and two shoulder raises. Arms carry no
+// there is weight carried up the wall), two shoulder raises, and more for the
+// back. Arms carry no
 // capacity, so they earn no XP: the athlete's own extra, recorded but not
 // counted. The shoulder ones train `shoulder` like the rest of the prehab.
 // =============================================================================
@@ -490,6 +491,170 @@ const DEAD_BUG_CHEST: Exercise = {
   },
 };
 
+// ---- BACK: the lower back and the middle of it -------------------------------------
+// BUILD's BACK area and the reserve (v40). The lower back gets the extension
+// and hinge ladder of `back-strength`; the middle of the back, between the
+// shoulder blades, the prone raises of `upper-back`. Four at home, three at
+// the gym; the two good mornings here grip nothing, so a hinge stays on offer
+// while a finger heals.
+
+const PRONE_SWIMMER: Exercise = {
+  id: 'extra-prone-swimmer',
+  name: 'Prone Swimmer',
+  capacities: ['tension', 'shoulder'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 2, work: 8, unit: 'reps', restSec: 45,
+  load: { kind: 'bodyweight', text: 'Chest and arms off the mat the whole set' },
+  progression: 'Eight slow sweeps with the chest up the whole set, then a two-second hold at each end, then ten.',
+  protocolId: 'upper-back',
+  note: 'The middle and the bottom of the back at once: the chest stays lifted while the arms sweep.',
+  variations: [
+    { minLevel: 1, name: 'Prone Swimmer' },
+    { minLevel: 3, name: 'Prone Swimmer, 2s Holds' },
+    { minLevel: 5, name: 'Prone Swimmer, Legs Lifted' },
+  ],
+  form: {
+    setup: 'Face down, legs straight, forehead just off the mat. Arms overhead in a Y, thumbs up. Squeeze the glutes, lift the chest and arms a few centimetres.',
+    execution: 'Keeping everything off the mat, sweep the arms wide and down, bending the elbows into a W, until the hands reach the lower back. Sweep back to the Y. One sweep is one rep.',
+    cue: 'The shoulder blades slide down and together at the bottom of each sweep: that squeeze is the centre of the back working.',
+    breathing: 'Exhale as the hands come down, inhale as they go overhead.',
+    mistakes: 'Cranking the head up. Dropping the chest to rest. Shrugging the shoulders to the ears.',
+  },
+};
+
+const PRONE_COBRA: Exercise = {
+  id: 'extra-prone-cobra',
+  name: 'Prone Cobra Hold',
+  capacities: ['shoulder', 'tension'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 3, work: 30, unit: 'sec', restSec: 45,
+  load: { kind: 'bodyweight', text: 'Hands by the hips, palms out' },
+  progression: 'Thirty seconds without the chest sinking, then forty, then the arms out in a T.',
+  protocolId: 'upper-back',
+  note: 'A hold for the muscles between the shoulder blades, against the rounded posture all the pulling builds.',
+  variations: [
+    { minLevel: 1, name: 'Prone Cobra Hold' },
+    { minLevel: 4, name: 'Prone Cobra Hold, Arms in a T' },
+    { minLevel: 6, name: 'Prone Cobra Hold, Arms in a Y' },
+  ],
+  form: {
+    setup: 'Face down, legs straight, arms by the sides with the palms facing the floor.',
+    execution: 'Turn the thumbs out so the palms face away from the body, squeeze the shoulder blades back and down, and lift the chest and hands a few centimetres. Hold.',
+    cue: 'Collarbones wide, chin tucked, eyes on the floor. The lower back holds, the shoulder blades do the work.',
+    breathing: 'Slow, steady breaths through the hold.',
+    mistakes: 'Lifting the head instead of the chest. Shrugging. Lifting so high the lower back pinches.',
+  },
+};
+
+const PLATE_GOOD_MORNING: Exercise = {
+  id: 'extra-plate-good-morning',
+  name: 'Plate Hug Good Morning',
+  capacities: ['tension', 'legs'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 3, work: 10, unit: 'reps', restSec: 60,
+  load: { kind: 'added-kg', value: 10, text: 'A plate hugged to the chest, nothing gripped' },
+  progression: 'Ten reps with a flat back and a one-second squeeze at the top, then a heavier plate, then a three-second lowering.',
+  protocolId: 'back-strength',
+  note: 'The loaded hip hinge with the hands free of any grip, so it stays while a finger heals.',
+  variations: [
+    { minLevel: 1, name: 'Plate Hug Good Morning' },
+    { minLevel: 4, name: 'Plate Hug Good Morning, 3s Lower' },
+    { minLevel: 6, name: 'Plate Hug Good Morning, 2s Pause' },
+  ],
+  form: {
+    setup: 'Feet hip-width, soft knees. A plate hugged flat against the chest, arms crossed over it.',
+    execution: 'Push the hips back and let the chest come forward until the torso is nearly parallel to the floor or the hamstrings stop you, back flat. Drive the hips forward to stand tall and squeeze the glutes.',
+    cue: 'The back holds its shape while the hips move the weight: the same work as the band good morning, with a load that keeps going up.',
+    breathing: 'Inhale on the way down, exhale as you stand.',
+    mistakes: 'Rounding the back to get lower. Squatting instead of hinging. Leaning back at the top.',
+  },
+};
+
+const DB_REVERSE_FLY: Exercise = {
+  id: 'extra-db-reverse-fly',
+  name: 'Bent-Over Dumbbell Reverse Fly',
+  capacities: ['shoulder', 'tension'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 3, work: 12, unit: 'reps', restSec: 60,
+  load: { kind: 'added-kg', value: 4, text: 'Two light dumbbells, kg each' },
+  progression: 'Twelve reps with a one-second squeeze at the top, then two kilos more, then a three-second lowering.',
+  protocolId: 'upper-back',
+  note: 'Rear shoulders and the middle of the back, the hinge held throughout. No bench: standing, bent over.',
+  form: {
+    setup: 'Feet hip-width, hinge until the torso is about 45 degrees, back flat, knees soft. A light dumbbell in each hand under the shoulders, a soft bend in the elbows.',
+    execution: 'Open the arms out to the sides until they are level with the back, squeeze the shoulder blades together for a second, lower slowly.',
+    cue: 'Lead with the elbows and think of the shoulder blades meeting. The hinge does not move.',
+    breathing: 'Exhale as the arms open, inhale as they lower.',
+    mistakes: 'Too heavy, so the body swings up. Shrugging. Standing up out of the hinge as you tire.',
+  },
+};
+
+const KB_SWING: Exercise = {
+  id: 'extra-kb-swing',
+  name: 'Kettlebell Swing',
+  capacities: ['legs', 'tension'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 3, work: 12, unit: 'reps', restSec: 60,
+  load: { kind: 'added-kg', value: 16, text: 'One kettlebell, both hands' },
+  progression: 'Twelve crisp swings to chest height, then four kilos more. Never to a grinding last rep.',
+  protocolId: 'back-strength',
+  note: 'The hinge made fast: the hips drive, the back stays flat and strong at speed.',
+  form: {
+    setup: 'Feet a little wider than the hips, the kettlebell a foot in front. Hinge, grip the handle, tilt it toward you.',
+    execution: 'Hike the bell back between the legs, then snap the hips forward to stand tall so the bell floats to chest height. Let it fall back into the hinge and go again.',
+    cue: 'A jump that never leaves the floor: hips, not arms, lift the bell. Stand tall with the glutes squeezed at the top.',
+    breathing: 'A sharp exhale at the top of every swing.',
+    mistakes: 'Squatting the swing. Lifting with the arms. Leaning back at the top. Rounding the back as the bell comes down.',
+  },
+};
+
+const BW_GOOD_MORNING: Exercise = {
+  id: 'extra-bw-good-morning',
+  name: 'Good Morning, Hands Behind Head',
+  capacities: ['tension', 'legs'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 2, work: 12, unit: 'reps', restSec: 45,
+  load: { kind: 'bodyweight', text: 'Hands behind the head: the arms are the load' },
+  progression: 'Twelve with a flat back and a one-second squeeze at the top, then a three-second lowering, then on one leg.',
+  protocolId: 'back-strength',
+  note: 'The hinge at home with nothing in the hands, so it stays while a finger heals.',
+  variations: [
+    { minLevel: 1, name: 'Good Morning, Hands Behind Head' },
+    { minLevel: 3, name: 'Good Morning, Hands Behind Head, 3s Lower' },
+    { minLevel: 5, name: 'Single-Leg Good Morning, Hands Behind Head' },
+  ],
+  form: {
+    setup: 'Feet hip-width, soft knees, fingertips resting behind the head, elbows wide. Ribs down, back flat.',
+    execution: 'Push the hips back and let the chest come forward until the torso is nearly parallel to the floor or the hamstrings stop you, back flat. Drive the hips forward to stand tall and squeeze the glutes.',
+    cue: 'The hands rest on the head, they never pull it. The back holds its shape, the hips move.',
+    breathing: 'Inhale on the way down, exhale as you stand.',
+    mistakes: 'Pulling the head forward. Rounding to get lower. Squatting instead of hinging.',
+  },
+};
+
+const WALL_ANGEL: Exercise = {
+  id: 'extra-wall-angel',
+  name: 'Wall Angel',
+  capacities: ['shoulder', 'mobility'],
+  block: 'PREHAB', intensity: 'EASY',
+  sets: 2, work: 10, unit: 'reps', restSec: 30,
+  load: { kind: 'bodyweight', text: 'Back to a wall, no load' },
+  progression: 'Ten slow slides with the wrists and elbows on the wall, then a step closer to the wall, then a three-second hold at the top.',
+  protocolId: 'upper-back',
+  note: 'The middle of the back and the thoracic spine, standing: against the rounded shoulders of a climbing week.',
+  form: {
+    setup: 'Back against a wall, feet a step out, the lower back and head touching the wall. Arms up in a goalpost, the backs of the hands and the elbows on the wall.',
+    execution: 'Slide the arms up the wall as far as they go without anything coming off it, then pull the elbows down toward the ribs, squeezing the shoulder blades down and together.',
+    cue: 'Ribs down: if the lower back arches off the wall, the range is coming from the wrong place.',
+    breathing: 'Inhale as the arms rise, exhale as the elbows pull down.',
+    mistakes: 'The lower back arching. The head jutting forward. Shrugging at the top.',
+  },
+};
+
+export const BACK_EXERCISES: Exercise[] = [
+  PRONE_SWIMMER, PRONE_COBRA, PLATE_GOOD_MORNING, DB_REVERSE_FLY, KB_SWING, BW_GOOD_MORNING, WALL_ANGEL,
+];
+
 export const GOAL_EXERCISES: Exercise[] = [
   RING_DIP, PLYO_PUSHUP, DB_FLOOR_PRESS, RING_PUSHUP, RING_FLY, FEET_UP_PUSHUP, SL_BALANCE, SL_REACH,
   STEP_DOWN, SHIFT_SPLIT_SQUAT, HIGH_KNEE_HOLD, SIDE_ABDUCTION, DEAD_BUG_CHEST,
@@ -497,7 +662,7 @@ export const GOAL_EXERCISES: Exercise[] = [
 
 export const EXTRA_EXERCISES: Exercise[] = [
   BAND_CURL, BAND_HAMMER, BAND_TRICEPS, DIAMOND_PUSHUP, DB_CURL, CHINUP_NEGATIVE, BAND_LATERAL, FACE_PULL,
-  ...GOAL_EXERCISES,
+  ...GOAL_EXERCISES, ...BACK_EXERCISES,
 ];
 
 // ---- Balance and power at full stretch, in every session ---------------------------

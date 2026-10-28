@@ -501,6 +501,19 @@ weak but not painful: bird dog, then prone extension, then band good morning in
 DAILY 02, then the loaded 45-degree back extension and single-leg RDL in CAVE
 03. `SIDE_PLANK_DIP` is shared between DAILY 02 and CAVE 03.
 
+**BACK is its own area** (v40), apart from CORE's abs and obliques, in BUILD,
+the reserve, the packs and the routine picker. The lower back is
+`back-strength`; the middle of the back, between the shoulder blades, is
+`upper-back` (prone raises, then rows and reverse flies: Cools 2007, Ekstrom
+2003). Seven exercises in `data-extras.ts` (`BACK_EXERCISES`): prone swimmer,
+prone cobra hold, good morning hands behind head, wall angel (home, nothing
+gripped); plate hug good morning (gym, nothing gripped, so it stays while a
+finger heals), bent-over dumbbell reverse fly, kettlebell swing (gym). The
+lower-back hard sets (`CORE_EXERCISES.back`) are BACK's need in NOT TRAINED
+ENOUGH, abs and obliques CORE's. `areaOf` calls `back-strength` and
+`upper-back` work BACK unless the legs lead it (the RDLs and the swing stay
+LEGS).
+
 ### CAVE
 
 Five sessions (v33): three for a day without climbing, two for straight after
@@ -685,7 +698,7 @@ GUIDE are always shown; everything that changes the session sits in one
 - **NEXT STEP**, the exercise's progression rule, and **SWAP** are in ADJUST
   too.
 - **+ ADD EXERCISE** (workout card and rest screen) opens the reserve
-  (`ReservePicker`, `reserve.ts`): CORE, PULL (gym only), ARMS, SHOULDERS,
+  (`ReservePicker`, `reserve.ts`): CORE, BACK, PULL (gym only), ARMS, SHOULDERS,
   LEGS, MOBILITY, FINGERS, least recently done first. Home sessions (DAILY, HEAL 03 / 04) get
   home kit only; while a finger heals (HEAL, or `isHealing`) grips and finger
   work are offered labelled NOT RECOMMENDED YET and listed last; a pain score
@@ -785,7 +798,7 @@ every programme session (a routine has EDIT ROUTINE instead):
   keeps its circuit id, so it logs, recovers and is recommended as itself.
   `sessionListFor` and `circuitFor` apply it, so the page, TODAY's minutes
   and the workout agree. MAKE IT MINE copies the edited list.
-- **Packs** (`PACKS`): CORE FINISHER, ARMS (no XP), SHOULDER CARE, MOBILITY
+- **Packs** (`PACKS`): CORE FINISHER, BACK, ARMS (no XP), SHOULDER CARE, MOBILITY
   10, BALANCE + POWER, LEGS, FINGERS LIGHT (labelled while healing or after
   pain 3-5, closed at 6+), each with a home and a gym version. Also the first tab of + ADD
   EXERCISE mid-session (`addExtras`).
@@ -846,21 +859,23 @@ delete (session, climb, activity, routine) offers UNDO for six seconds
 BUILD A SESSION in TRAIN MINE (`BuildSheet`, `custom.ts`, presets in
 `build-slice.ts`) makes a session on the spot:
 
-- **PRESETS**: one tap fills in everything. Six built in (`BUILT_IN_PRESETS`:
+- **PRESETS**: one tap fills in everything. Eight built in (`BUILT_IN_PRESETS`:
   PULL DAY, PUSH + CHEST, LEGS + BALANCE, QUICK HOME, ROCKOVER ENGINE (home,
   30: step-up + slow lower, split squat with forward shift, single-leg RDL,
   calf raise, glute bridge), HIPS + CONTROL (home, 15: 90/90, Cossack,
-  high-knee hold, knee-to-wall ankle, side-lying abduction, dead bug)); SAVE AS PRESET stores
+  high-knee hold, knee-to-wall ankle, side-lying abduction, dead bug), STRONG
+  BACK (home, 30, BACK only), BACK + CORE (gym, 45)); SAVE AS PRESET stores
   the athlete's own in `buildPresets` (persisted, in backups); an own preset
   can be renamed or deleted. SAVE THIS LIST AS A ROUTINE freezes the preview.
 - **WHERE**: HOME (mat, band, portable edge) or CAVE (the gym, with dumbbells
   and rings / TRX). **TIME**: 15 / 30 / 45 / 60 / 90 min.
 - **GOALS** (PULL POWER, PUSH POWER, CHEST, BALANCE, ROCKOVER, HIPS) and **AREAS** (CORE,
-  PULL, ARMS, SHOULDERS, LEGS, MOBILITY, FINGERS), each tapped in, out or off
+  BACK, PULL, ARMS, SHOULDERS, LEGS, MOBILITY, FINGERS), each tapped in, out or off
   (`cycleTarget`). A goal is an ordered list in `GOAL_ENTRIES`, key lift
   first; an area comes from the reserve, least recently done first. A target
   tapped out removes everything that `touches` it, wherever it came from (NO
-  CORE also drops a plank picked for the shoulders).
+  CORE also drops a plank picked for the shoulders; NO CORE keeps the back
+  work, NO BACK the abs). A sore back under ADJUST TODAY closes BACK.
 - **AVOID**: NO JUMPING, NO GRIP, NO FLOOR, from the `jump`, `grip` and
   `floor` flags on reserve and goal entries (`flagsOf`). NO GRIP (or healing)
   swaps the gym warm-up for `heal-warmup`; NO FLOOR drops the cat-cow opener.
@@ -1122,7 +1137,10 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v39.md`** — **start here.** BUILD keeps the time picked
+- **`7bit-handover-v40.md`** — **start here.** BACK as an
+  area of its own: seven new back exercises, the `upper-back` protocol, the
+  STRONG BACK and BACK + CORE presets, a BACK pack.
+- **`7bit-handover-v39.md`** — BUILD keeps the time picked
   (more sets when the exercises run out; today's cap no longer cuts it), three
   more core exercises, the coach research, the trial of THE COACH by paste,
   the first review, and the fuller COPY FOR COACH with the athlete's note.

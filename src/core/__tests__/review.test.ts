@@ -34,6 +34,10 @@ describe('where the work went', () => {
     const lib = exerciseLibrary();
     expect(areaOf(lib.get('cave-warmup-pulse')!)).toBeNull();
     expect(areaOf(lib.get('extra-band-curl')!)).toBe('ARMS');
+    expect(areaOf(lib.get('daily-prone-extension')!)).toBe('BACK');
+    expect(areaOf(lib.get('extra-prone-swimmer')!)).toBe('BACK');
+    expect(areaOf(lib.get('extra-db-reverse-fly')!)).toBe('BACK');
+    expect(areaOf(lib.get('full-db-rdl')!)).toBe('LEGS');
     const split = getWorkSplit([
       session(at(2026, 10, 20), 'cave-05', { 'cave-warmup-pulse': 1, 'addon-weighted-pullup': 3, 'addon-pushup': 3, 'retired-id': 4 }),
       session(at(2026, 9, 15), 'cave-06', { 'addon-goblet-squat': 2 }),
