@@ -725,7 +725,8 @@ they were set, soreness for that day and the next.
   ACCESSORY first, then MOBILITY, PREHAB, SECONDARY, PRIMARY, each from the
   end, until the estimate fits. Warm-ups and tests stay, at least one working
   exercise stays, rest and sets are never changed. Applied in
-  `sessionListFor`, so the card shows the cut duration. A cap of 30 or
+  `sessionListFor`, so the card shows the cut duration; never to a BUILD
+  session (`custom-*`), which is made for the time picked on it. A cap of 30 or
   less keeps ASSESS and STRONG off the recommendation.
 - **No kit**: DAILY drops band, edge and loaded work (`needsKit`); the
   recommendation is a DAILY with three or more mat-only working exercises
@@ -880,10 +881,14 @@ BUILD A SESSION in TRAIN MINE (`BuildSheet`, `custom.ts`, presets in
   gates: assisted rungs substitute the lopsided ladder, negatives stay hidden.
   The two weighted pull-ups never share a session (`SAME_MOVEMENT`).
 - **Building** (`buildCustom`): targets take turns. An exercise that would run
-  over the time is passed over; rest and sets are never touched. About one
+  over the time is passed over; rest is never touched. About one
   working exercise per four minutes (at most 14; mobility and prehab do not
   count), and the first working exercise always goes in. Gym opens with the
-  pulse raiser, home with cat-cow; heavy blocks first, curls last.
+  pulse raiser, home with cat-cow; heavy blocks first, curls last. When the
+  exercises run out before the time (the cap, or areas run dry: CORE alone
+  with PULL and LEGS out while a finger heals), the time is kept with more
+  sets, one at a time round the non-fixed working exercises, at most
+  `EXTRA_SETS` (2) more each; the sheet says how many (`extraSets`).
 - The goal exercises in `data-extras.ts` (`GOAL_EXERCISES`): ring dip,
   explosive push-up, dumbbell floor press, ring push-up, ring fly and feet-up
   push-up carry no capacity and earn no XP (push power uses the `upper-power`
@@ -1107,7 +1112,10 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v38.md`** — **start here.** The climbing weapon: goals
+- **`7bit-handover-v39.md`** — **start here.** BUILD keeps the time picked
+  (more sets when the exercises run out; today's cap no longer cuts it), three
+  more core exercises, the coach research and the trial of THE COACH by paste.
+- **`7bit-handover-v38.md`** — The climbing weapon: goals
   and the gap, climb tags and WHERE YOU FALL, ON THE WALL, the season, the
   coach, a healing finger that labels instead of removing, calmer screens.
 - **`7bit-handover-v37.md`** — The swap screen: SIMILAR

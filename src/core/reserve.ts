@@ -68,6 +68,9 @@ const RESERVE: ReserveEntry[] = [
   { id: 'addon-russian-twist', group: 'CORE', place: 'GYM', grip: false, curl: true, floor: true },
   { id: 'addon-hanging-oblique', group: 'CORE', place: 'GYM', grip: true },
   { id: 'home-leg-raise', group: 'CORE', place: 'GYM', grip: true },
+  { id: 'daily-plank-climber', group: 'CORE', place: 'HOME', grip: false, floor: true },
+  { id: 'power-trx-pike', group: 'CORE', place: 'GYM', grip: false, floor: true },
+  { id: 'full-plate-carry', group: 'CORE', place: 'GYM', grip: false },
 
   // PULL: back and lats. Gym only: there is no bar at home.
   { id: 'addon-weighted-pullup', group: 'PULL', place: 'GYM', grip: true },

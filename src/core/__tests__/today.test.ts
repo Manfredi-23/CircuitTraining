@@ -62,6 +62,13 @@ describe('no kit', () => {
     const cave = buildList(find('cave-06'), 'NORMAL', {});
     expect(applyDay(cave, find('cave-06'), day, 'CAVE')).toEqual(cave);
   });
+
+  it('never cuts a BUILD session: it was made for its own time', () => {
+    const day = { ...NO_DAY, minutes: 20 };
+    const long = buildList(find('cave-01'), 'NORMAL', {});
+    expect(applyDay(long, { ...find('cave-01'), id: 'custom-cave' }, day, 'CAVE')).toEqual(long);
+    expect(applyDay(long, find('cave-01'), day, 'CAVE').length).toBeLessThan(long.length);
+  });
 });
 
 describe('sore areas', () => {

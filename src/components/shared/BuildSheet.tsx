@@ -301,7 +301,14 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
               <span className={styles.meta}>{dose(ex)}</span>
             </div>
           ))}
-          {session && <div className={styles.hint}>Key lifts first. Rest and sets as written: what does not fit is left out. A preset picks again next time; a routine keeps this exact list.</div>}
+          {session && (
+            <div className={styles.hint}>
+              {session.extraSets > 0
+                ? `Key lifts first. The exercises ran out before ${minutes} minutes: ${session.extraSets} more ${session.extraSets === 1 ? 'set' : 'sets'} fill the time, rest as written. `
+                : 'Key lifts first. Rest and sets as written: what does not fit is left out. '}
+              A preset picks again next time; a routine keeps this exact list.
+            </div>
+          )}
           {session && naming === null && routineName === null && (
             <div className={styles.linkRow}>
               {!preset && <button className={styles.link} onClick={() => setNaming(presetName(choice))}>SAVE AS PRESET</button>}
