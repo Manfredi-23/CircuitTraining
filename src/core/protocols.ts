@@ -668,6 +668,28 @@ export const PROTOCOLS: Record<string, Protocol> = {
       + 'reviews.',
   },
 
+  'upper-back': {
+    id: 'upper-back',
+    name: 'Mid-Back Strength',
+    quality: 'Mid and lower trapezius, rhomboids: shoulder blades held back and down',
+    work: '8-15 controlled reps or 20-40s holds, a pause with the shoulder blades squeezed',
+    rest: '45-60s',
+    sets: '2-3',
+    intensity: 'Moderate, building to RPE 8. The shoulder blades move, the lower back does not.',
+    frequency: '2-3x per week',
+    rationale:
+      'Climbing pulls the shoulders forward and up all session; the muscles between the '
+      + 'shoulder blades that hold them back and down are the ones it trains least. The '
+      + 'prone exercises with the arms out (T, Y, W, swimmer, cobra) show the highest '
+      + 'activity of the middle and lower trapezius against the upper, which is the '
+      + 'balance to build. Rows and reverse flies then add load. Face down on the floor '
+      + 'the same lift also works the back extensors, so the centre and the bottom of '
+      + 'the back train together.',
+    source:
+      'Cools et al. 2007, scapular muscle balance (Am J Sports Med); Ekstrom et al. 2003, '
+      + 'trapezius and serratus EMG during rehabilitation exercises (JOSPT).',
+  },
+
   // ---------------------------------------------------------------------------
   // HEAL: training around an injured finger
   // ---------------------------------------------------------------------------

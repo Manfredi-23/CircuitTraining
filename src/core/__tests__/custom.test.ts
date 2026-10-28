@@ -176,8 +176,10 @@ describe('goals, exclusions and avoid', () => {
     expect(c).toEqual({ include: [], exclude: [] });
   });
 
-  it('ships the six presets, each building a session, and saves new ones', () => {
-    expect(BUILT_IN_PRESETS.map(p => p.name)).toEqual(['PULL DAY', 'PUSH + CHEST', 'LEGS + BALANCE', 'QUICK HOME', 'ROCKOVER ENGINE', 'HIPS + CONTROL']);
+  it('ships the eight presets, each building a session, and saves new ones', () => {
+    expect(BUILT_IN_PRESETS.map(p => p.name)).toEqual([
+      'PULL DAY', 'PUSH + CHEST', 'LEGS + BALANCE', 'QUICK HOME', 'ROCKOVER ENGINE', 'HIPS + CONTROL', 'STRONG BACK', 'BACK + CORE',
+    ]);
     for (const p of BUILT_IN_PRESETS) {
       const s = buildCustom({ ...base, ...p });
       expect(s.list.filter(e => e.block !== 'WARMUP' && e.id !== 'morn-catcow').length).toBeGreaterThan(1);
@@ -267,3 +269,54 @@ describe('starting a custom session', () => {
     expect(useStore.getState().buildPresets.some(x => x.id === p.id)).toBe(false);
   });
 });
+
+describe('BACK, apart from CORE', () => {
+  const preset = (id: string) => BUILT_IN_PRESETS.find(p => p.id === id)!;
+  const working = (list: { block: string; id: string }[]) => list.filter(e => !['WARMUP', 'MOBILITY'].includes(e.block));
+
+  it('builds STRONG BACK at home from back work only, nothing curling, inside 30 minutes at every energy', () => {
+    for (const energy of ENERGIES) {
+      for (const healing of [false, true]) {
+        const s = buildCustom({ ...base, ...preset('strong-back'), energy, healing });
+        expect(s.duration).toBeLessThanOrEqual(30);
+        const work = working(s.list);
+        expect(work.length).toBeGreaterThanOrEqual(4);
+        for (const e of work) expect(touches('BACK', lib.get(e.id)!), e.id).toBe(true);
+        for (const e of s.list) expect(isCurl(e.id), e.id).toBe(false);
+        // While a finger heals nothing is gripped: the bodyweight good morning stands in for the band.
+        if (healing) for (const e of s.list) expect(flagsOf(e.id).grip ?? false, e.id).toBe(false);
+      }
+    }
+    const ids = buildCustom({ ...base, ...preset('strong-back') }).list.map(e => e.id);
+    expect(ids).toContain('extra-prone-swimmer');
+    expect(ids).toContain('extra-prone-cobra');
+  });
+
+  it('builds BACK + CORE at the gym with the loaded back work, the plate hinge kept while a finger heals', () => {
+    const s = buildCustom({ ...base, ...preset('back-core') });
+    expect(s.duration).toBeLessThanOrEqual(45);
+    const ids = s.list.map(e => e.id);
+    expect(ids).toContain('legs-back-extension');
+    expect(ids).toContain('extra-plate-good-morning');
+    const healing = buildCustom({ ...base, ...preset('back-core'), healing: true }).list.map(e => e.id);
+    expect(healing).toContain('extra-plate-good-morning');
+    for (const id of healing) expect(flagsOf(id).grip ?? false, id).toBe(false);
+  });
+
+  it('keeps the back when CORE is out, and the abs when BACK is out', () => {
+    const back = buildCustom({ ...base, minutes: 30, include: ['BACK'], exclude: ['CORE'] }).list;
+    expect(working(back).length).toBeGreaterThan(2);
+    for (const e of back) expect(touches('CORE', e), e.id).toBe(false);
+    const core = buildCustom({ ...base, minutes: 30, include: ['CORE'], exclude: ['BACK'] }).list;
+    expect(working(core).length).toBeGreaterThan(2);
+    for (const e of core) expect(touches('BACK', e), e.id).toBe(false);
+  });
+
+  it('closes BACK on a sore back and counts the lower-back sets for BACK, not CORE', () => {
+    expect(closedAreas({ ...base, day: { ...NO_DAY, sore: ['BACK'] } }).BACK).toBe('Back sore today.');
+    const needs = areaNeeds({}, [], {}, NOW);
+    expect(needs.find(n => n.group === 'BACK')?.reason).toMatch(/^lower back 0 of 9/);
+    expect(needs.find(n => n.group === 'CORE')?.reason).not.toMatch(/lower back/);
+  });
+});
+

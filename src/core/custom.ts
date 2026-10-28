@@ -10,8 +10,9 @@
 // - TARGETS, each tapped in, out or off:
 //   - GOALS: PULL POWER, PUSH POWER, CHEST, BALANCE, ROCKOVER, HIPS. Each is
 //     an ordered list of exercises, the key lift first.
-//   - AREAS: core, pull, arms, shoulders, legs, mobility, fingers, from the
-//     reserve (reserve.ts), least recently done first.
+//   - AREAS: core, back, pull, arms, shoulders, legs, mobility, fingers, from
+//     the reserve (reserve.ts), least recently done first. BACK is the lower
+//     back and the middle of it, apart from CORE's abs and obliques.
 //   A target tapped out takes every exercise that touches it out of the
 //   session, wherever it came from: NO CORE also drops a plank picked for the
 //   shoulders.
@@ -19,7 +20,7 @@
 // - SUGGEST: the areas trained least lately, from how long each capacity has
 //   gone untrained against the days before it starts to fade, and this week's
 //   hard core sets against their targets.
-// - PRESETS: a saved set of these choices, six built in.
+// - PRESETS: a saved set of these choices, eight built in.
 //
 // The same rules hold as anywhere else: only the kit the place has, nothing
 // gripped and no finger work or pulling while a finger heals, no finger work
@@ -39,6 +40,7 @@ import { CONFIG } from './config';
 import { WARMUP_PULSE } from './data-cave';
 import { buildList, estimateDuration, HEALING_CAUTION, loadsFingers, PAIN_REDUCE_FROM, PAIN_REMOVE_FROM, painCaution } from './engine';
 import { getCoreVolume, getFreshness, CORE_TARGETS, type CoreGroup } from './insights';
+import { BACK_PROTOCOLS } from './review';
 import { exerciseLibrary, isCurl, reserveEntry, reserveFor, type EntryFlags, type Place, type ReserveGroup } from './reserve';
 import { localDate, mondayOf, daysBetween } from './dates';
 import { needsKit, type ActiveDay } from './today';
@@ -46,7 +48,7 @@ import type {
   BlockType, Capacity, Circuit, EnergyKey, Exercise, Mode, Progress, ScaledExercise, SessionLogEntry, Tweaks, BenchmarkResult,
 } from './types';
 
-export const CUSTOM_GROUPS: ReserveGroup[] = ['CORE', 'PULL', 'ARMS', 'SHOULDERS', 'LEGS', 'MOBILITY', 'FINGERS'];
+export const CUSTOM_GROUPS: ReserveGroup[] = ['CORE', 'BACK', 'PULL', 'ARMS', 'SHOULDERS', 'LEGS', 'MOBILITY', 'FINGERS'];
 export const CUSTOM_TIMES = [15, 30, 45, 60, 90];
 export const CUSTOM_PREFIX = 'custom-';
 
@@ -123,6 +125,7 @@ const SAME_MOVEMENT: string[][] = [['cave-weighted-pullup', 'addon-weighted-pull
 /** The capacities each area trains. ARMS are extras with none, so never suggested. */
 const GROUP_CAPACITIES: Record<ReserveGroup, Capacity[]> = {
   CORE: ['tension'],
+  BACK: ['tension'],
   PULL: ['pull'],
   ARMS: [],
   SHOULDERS: ['press', 'shoulder'],
@@ -132,7 +135,7 @@ const GROUP_CAPACITIES: Record<ReserveGroup, Capacity[]> = {
 };
 
 const ILLUSTRATION: Record<Target, string> = {
-  CORE: 'core.svg', PULL: 'pullups.svg', ARMS: 'dumbbell.svg', SHOULDERS: 'pushups.svg',
+  CORE: 'core.svg', BACK: 'core.svg', PULL: 'pullups.svg', ARMS: 'dumbbell.svg', SHOULDERS: 'pushups.svg',
   LEGS: 'squats.svg', MOBILITY: 'morning.svg', FINGERS: 'hangboard.svg',
   'PULL POWER': 'pullups.svg', 'PUSH POWER': 'pushups.svg', CHEST: 'pushups.svg', BALANCE: 'squats.svg',
   ROCKOVER: 'squats.svg', HIPS: 'morning.svg',
@@ -148,7 +151,7 @@ export function flagsOf(id: string): Partial<EntryFlags> {
   return reserveEntry(id) ?? GOALS.flatMap(g => GOAL_ENTRIES[g]).find(e => e.id === id) ?? {};
 }
 
-const TRUNK_PROTOCOLS = new Set(['trunk-hypertrophy', 'back-strength', 'daily-trunk', 'dynamic-core', 'tension-iso']);
+const TRUNK_PROTOCOLS = new Set(['trunk-hypertrophy', 'daily-trunk', 'dynamic-core', 'tension-iso']);
 
 /** Whether an exercise touches a target, so tapping the target out removes it. */
 export function touches(t: Target, ex: Exercise): boolean {
@@ -156,6 +159,7 @@ export function touches(t: Target, ex: Exercise): boolean {
   if (isGoal(t) && GOAL_ENTRIES[t].some(g => g.id === ex.id)) return true;
   switch (t) {
     case 'CORE': return TRUNK_PROTOCOLS.has(ex.protocolId ?? '');
+    case 'BACK': return BACK_PROTOCOLS.has(ex.protocolId ?? '');
     case 'LEGS': return ex.capacities[0] === 'legs';
     case 'PULL': case 'PULL POWER': return ex.capacities.includes('pull');
     case 'SHOULDERS': return ['press', 'shoulder'].includes(ex.capacities[0] ?? '');
@@ -195,6 +199,7 @@ export function closedAreas(ctx: CustomContext): Partial<Record<Target, string>>
   if (home) { out.PULL = 'No bar at home.'; out['PULL POWER'] = 'No bar at home.'; }
   if (ctx.pain !== null && ctx.pain >= PAIN_REMOVE_FROM) out.FINGERS = `Finger pain ${ctx.pain}/10 lately.`;
   else if (ctx.day.sore.includes('FOREARMS')) out.FINGERS = 'Forearms sore today.';
+  if (ctx.day.sore.includes('BACK')) out.BACK = 'Back sore today.';
   if (ctx.day.sore.includes('LEGS') || ctx.legsSore) { out.LEGS = 'Legs sore today.'; out.ROCKOVER = 'Legs sore today.'; }
   if (ctx.day.sore.includes('SHOULDERS')) {
     for (const t of ['SHOULDERS', 'PULL', 'PULL POWER', 'PUSH POWER', 'CHEST'] as Target[]) out[t] ??= 'Shoulders sore today.';
@@ -232,11 +237,14 @@ export interface AreaNeed {
 
 const CORE_LABEL: Record<CoreGroup, string> = { abs: 'abs', obliques: 'obliques', back: 'lower back' };
 
+/** Which of this week's hard trunk sets each area counts: the lower back is BACK's. */
+const VOLUME_GROUPS: Partial<Record<ReserveGroup, CoreGroup[]>> = { CORE: ['abs', 'obliques'], BACK: ['back'] };
+
 /**
  * How much each open area is owed, most first. A capacity is due as it nears
- * the days before it starts to fade; never trained counts as due. Core also
- * counts this week's hard sets against the targets, pro rata to the day of
- * the week, so Monday is not always behind.
+ * the days before it starts to fade; never trained counts as due. Core and
+ * back also count this week's hard sets against the targets, pro rata to the
+ * day of the week, so Monday is not always behind.
  */
 export function areaNeeds(progress: Progress, sessionLog: SessionLogEntry[], closed: Partial<Record<Target, string>> = {}, now = new Date()): AreaNeed[] {
   const fresh = new Map(getFreshness(progress, now).map(r => [r.capacity, r]));
@@ -255,11 +263,12 @@ export function areaNeeds(progress: Progress, sessionLog: SessionLogEntry[], clo
         reason = r.days === null ? `${label} never trained` : `${label} ${r.days} day${r.days === 1 ? '' : 's'}, fades after ${r.graceDays}`;
       }
     }
-    if (group === 'CORE') {
+    const counted = VOLUME_GROUPS[group];
+    if (counted) {
       const today = localDate(now);
       const share = (daysBetween(mondayOf(today), today) + 1) / 7;
       const volume = getCoreVolume(sessionLog, now);
-      for (const g of Object.keys(CORE_TARGETS) as CoreGroup[]) {
+      for (const g of counted) {
         const expected = CORE_TARGETS[g] * share;
         const behind = expected > 0 ? 1 - volume[g] / expected : 0;
         // Half the week's pro rata sets or fewer is as due as a fading capacity.
@@ -485,6 +494,8 @@ export const BUILT_IN_PRESETS: BuildPreset[] = [
   { id: 'quick-home', name: 'QUICK HOME', place: 'HOME', minutes: 15, include: ['MOBILITY', 'SHOULDERS'], exclude: ['CORE'], avoid: [] },
   { id: 'rockover-engine', name: 'ROCKOVER ENGINE', place: 'HOME', minutes: 30, include: ['ROCKOVER'], exclude: [], avoid: [] },
   { id: 'hips-control', name: 'HIPS + CONTROL', place: 'HOME', minutes: 15, include: ['HIPS'], exclude: [], avoid: [] },
+  { id: 'strong-back', name: 'STRONG BACK', place: 'HOME', minutes: 30, include: ['BACK'], exclude: [], avoid: [] },
+  { id: 'back-core', name: 'BACK + CORE', place: 'GYM', minutes: 45, include: ['BACK', 'CORE'], exclude: [], avoid: [] },
 ];
 
 export type TargetState = 'in' | 'out' | 'off';

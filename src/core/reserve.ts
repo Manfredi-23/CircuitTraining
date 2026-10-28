@@ -28,8 +28,8 @@ import { dayOf } from './dates';
 import { needsKit } from './today';
 import type { BlockType, Exercise, Mode, ScaledExercise, SessionLogEntry } from './types';
 
-export type ReserveGroup = 'CORE' | 'PULL' | 'ARMS' | 'SHOULDERS' | 'LEGS' | 'MOBILITY' | 'FINGERS';
-export const RESERVE_GROUPS: ReserveGroup[] = ['CORE', 'PULL', 'ARMS', 'SHOULDERS', 'LEGS', 'MOBILITY', 'FINGERS'];
+export type ReserveGroup = 'CORE' | 'BACK' | 'PULL' | 'ARMS' | 'SHOULDERS' | 'LEGS' | 'MOBILITY' | 'FINGERS';
+export const RESERVE_GROUPS: ReserveGroup[] = ['CORE', 'BACK', 'PULL', 'ARMS', 'SHOULDERS', 'LEGS', 'MOBILITY', 'FINGERS'];
 
 export type Place = 'HOME' | 'GYM';
 
@@ -52,18 +52,15 @@ export interface ReserveEntry {
 export type EntryFlags = Pick<ReserveEntry, 'place' | 'grip' | 'curl' | 'floor' | 'jump'>;
 
 const RESERVE: ReserveEntry[] = [
-  // CORE: abs, obliques, lower back.
+  // CORE: abs and obliques.
   { id: 'daily-spiderman', group: 'CORE', place: 'HOME', grip: false, floor: true },
   { id: 'daily-mountain-climber', group: 'CORE', place: 'HOME', grip: false, floor: true },
   { id: 'daily-side-plank-dip', group: 'CORE', place: 'HOME', grip: false, floor: true },
-  { id: 'daily-prone-extension', group: 'CORE', place: 'HOME', grip: false, floor: true },
   { id: 'morn-hollow', group: 'CORE', place: 'HOME', grip: false, floor: true },
   { id: 'daily-reverse-crunch', group: 'CORE', place: 'HOME', grip: false, curl: true, floor: true },
   { id: 'morn-bw-russian-twist', group: 'CORE', place: 'HOME', grip: false, curl: true, floor: true },
   { id: 'morn-leg-lowers', group: 'CORE', place: 'HOME', grip: false, curl: true, floor: true },
-  { id: 'daily-band-good-morning', group: 'CORE', place: 'HOME', grip: true },
   { id: 'home-copenhagen', group: 'CORE', place: 'GYM', grip: false, floor: true },
-  { id: 'legs-back-extension', group: 'CORE', place: 'GYM', grip: false },
   { id: 'legs-plate-crunch', group: 'CORE', place: 'GYM', grip: false, curl: true, floor: true },
   { id: 'addon-russian-twist', group: 'CORE', place: 'GYM', grip: false, curl: true, floor: true },
   { id: 'addon-hanging-oblique', group: 'CORE', place: 'GYM', grip: true },
@@ -72,7 +69,25 @@ const RESERVE: ReserveEntry[] = [
   { id: 'power-trx-pike', group: 'CORE', place: 'GYM', grip: false, floor: true },
   { id: 'full-plate-carry', group: 'CORE', place: 'GYM', grip: false },
 
-  // PULL: back and lats. Gym only: there is no bar at home.
+  // BACK: the lower back (extension, the hinge) and the middle of it, between
+  // the shoulder blades (prone raises, rows). A group of its own since v40, so
+  // it can be trained apart from the abs.
+  { id: 'morn-birddog', group: 'BACK', place: 'HOME', grip: false, floor: true },
+  { id: 'daily-prone-extension', group: 'BACK', place: 'HOME', grip: false, floor: true },
+  { id: 'extra-prone-swimmer', group: 'BACK', place: 'HOME', grip: false, floor: true },
+  { id: 'extra-prone-cobra', group: 'BACK', place: 'HOME', grip: false, floor: true },
+  { id: 'extra-bw-good-morning', group: 'BACK', place: 'HOME', grip: false },
+  { id: 'extra-wall-angel', group: 'BACK', place: 'HOME', grip: false },
+  { id: 'daily-band-good-morning', group: 'BACK', place: 'HOME', grip: true },
+  { id: 'morn-band-row', group: 'BACK', place: 'HOME', grip: true },
+  { id: 'legs-back-extension', group: 'BACK', place: 'GYM', grip: false },
+  { id: 'extra-plate-good-morning', group: 'BACK', place: 'GYM', grip: false },
+  { id: 'full-db-rdl', group: 'BACK', place: 'GYM', grip: true },
+  { id: 'extra-kb-swing', group: 'BACK', place: 'GYM', grip: true },
+  { id: 'extra-db-reverse-fly', group: 'BACK', place: 'GYM', grip: true },
+  { id: 'power-db-row', group: 'BACK', place: 'GYM', grip: true },
+
+  // PULL: the lats, on the bar. Gym only: there is no bar at home.
   { id: 'addon-weighted-pullup', group: 'PULL', place: 'GYM', grip: true },
   { id: 'cave-lockoff', group: 'PULL', place: 'GYM', grip: true },
 

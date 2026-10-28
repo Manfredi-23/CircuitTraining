@@ -107,6 +107,17 @@ describe('the reserve', () => {
     }
   });
 
+  it('has a BACK group of its own: lower and middle back, home and gym, none of it curling', () => {
+    const home = reserveFor({ mode: 'DAILY', circuitId: 'daily-01', list: [], pain: null, sessionLog: [] });
+    const gym = reserveFor({ mode: 'CAVE', circuitId: 'cave-05', list: [], pain: null, sessionLog: [] });
+    const homeIds = home.BACK.map(i => i.exercise.id);
+    expect(homeIds).toEqual(expect.arrayContaining(['daily-prone-extension', 'extra-prone-swimmer', 'extra-prone-cobra', 'extra-bw-good-morning']));
+    expect(homeIds).not.toContain('extra-plate-good-morning');
+    expect(gym.BACK.map(i => i.exercise.id)).toEqual(expect.arrayContaining(['legs-back-extension', 'extra-plate-good-morning', 'extra-db-reverse-fly']));
+    expect(home.CORE.map(i => i.exercise.id)).not.toContain('daily-prone-extension');
+    for (const i of gym.BACK) expect(i.curl).toBe(false);
+  });
+
   it('offers only home kit at home', () => {
     expect(placeOf('DAILY', 'daily-01')).toBe('HOME');
     expect(placeOf('HEAL', 'heal-03')).toBe('HOME');

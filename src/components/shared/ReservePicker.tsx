@@ -16,7 +16,7 @@ type Tab = ReserveGroup | 'PACKS';
 const TABS: Tab[] = ['PACKS', ...RESERVE_GROUPS];
 
 const GROUP_LABEL: Record<Tab, string> = {
-  PACKS: 'PACKS', CORE: 'CORE', PULL: 'PULL', ARMS: 'ARMS', SHOULDERS: 'SHLDR', LEGS: 'LEGS', MOBILITY: 'MOBIL', FINGERS: 'FINGR',
+  PACKS: 'PACKS', CORE: 'CORE', BACK: 'BACK', PULL: 'PULL', ARMS: 'ARMS', SHOULDERS: 'SHLDR', LEGS: 'LEGS', MOBILITY: 'MOBIL', FINGERS: 'FINGR',
 };
 
 function dose(e: Exercise): string {
