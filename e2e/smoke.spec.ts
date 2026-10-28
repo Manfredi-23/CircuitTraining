@@ -173,6 +173,9 @@ test('STATS: the coach, the goal ladder and goals edited, and where you fall', a
   const errors = await open(page);
   await tab(page, 'STATS');
   await expect(page.getByRole('heading', { name: 'THE COACH' })).toBeVisible();
+  const note = page.getByRole('textbox', { name: 'A NOTE FOR THE COACH' });
+  await note.fill('Slept badly this week.');
+  await expect(note).toHaveValue('Slept badly this week.');
   await tab(page, 'PROGRESS');
   await expect(page.getByText(/^7C boulder around/)).toBeVisible();
   await page.getByRole('button', { name: 'EDIT GOALS' }).click();

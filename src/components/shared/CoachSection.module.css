@@ -16,3 +16,8 @@
 .reviewItem { font-size: 13px; line-height: 1.5; color: var(--ink); padding-left: 14px; position: relative; }
 .reviewItem::before { content: ''; position: absolute; left: 0; top: 8px; width: 6px; height: 6px; background: var(--ink); }
 .reviewText { font-size: 13px; line-height: 1.5; color: var(--ink); }
+.noteLabel { display: flex; flex-direction: column; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: var(--ink); }
+.noteInput {
+  font: inherit; font-size: 16px; font-weight: 400; letter-spacing: 0; line-height: 1.4; color: var(--ink);
+  background: transparent; border: 2px solid var(--ink); border-radius: var(--rad-sm); padding: 10px 12px; resize: vertical;
+}

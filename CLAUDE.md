@@ -977,7 +977,17 @@ away; a healing finger labels it NOT RECOMMENDED YET with the reason.
   (after STRONG, unless done this week); PEAK adds no training days.
 - **The coach** (`coach.ts`, `src/coach/client.ts`, THE COACH on STATS
   OVERVIEW): COPY FOR COACH puts the last four weeks on the clipboard as one
-  text. With an Anthropic API key saved in Settings (local storage
+  text: the block week and the season (with a line when a healing finger
+  holds back what the phase asks), every session exercise by exercise (start
+  and end, energy, deload, sets done of planned with the load and how it
+  felt, skipped, cut short, added; ramp tests as attempts, never as sets over
+  the plan), loads without the tests, every test with the one before, every
+  row of the gap, the ring finger as a series with the pain before each
+  session, the climbs with gym colours as Font bands, rest days, today's
+  ADJUST, the weekly plan, and A NOTE FOR THE COACH typed above the button
+  (local storage `7bit_coach_note`). About 15,000 characters on the seed
+  history. During the trial the athlete pastes it into a Claude Code chat.
+  With an Anthropic API key saved in Settings (local storage
   `7bit_coach_key`, never persisted in the store or a backup), ASK THE COACH
   sends it from the phone with `@anthropic-ai/sdk` (`dangerouslyAllowBrowser`,
   imported on demand; model `claude-opus-5-5`, effort medium, server-side
@@ -1114,7 +1124,8 @@ export format.
 
 - **`7bit-handover-v39.md`** — **start here.** BUILD keeps the time picked
   (more sets when the exercises run out; today's cap no longer cuts it), three
-  more core exercises, the coach research and the trial of THE COACH by paste.
+  more core exercises, the coach research, the trial of THE COACH by paste,
+  the first review, and the fuller COPY FOR COACH with the athlete's note.
 - **`7bit-handover-v38.md`** — The climbing weapon: goals
   and the gap, climb tags and WHERE YOU FALL, ON THE WALL, the season, the
   coach, a healing finger that labels instead of removing, calmer screens.

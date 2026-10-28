@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useStore } from '@/store/store';
 import { coachSummary, daysSince } from '@/core/coach';
 import { isHealing } from '@/core/recommend';
-import { askCoach, getCoachKey, getLastReview, type StoredReview } from '@/coach/client';
+import { askCoach, getCoachKey, getCoachNote, getLastReview, setCoachNote, type StoredReview } from '@/coach/client';
 import styles from './CoachSection.module.css';
 
 /** A line of the review: a numbered heading, a bullet, or prose. */
@@ -33,16 +33,24 @@ export default function CoachSection() {
   const loadLog = useStore(s => s.loadLog);
   const benchmarkResults = useStore(s => s.benchmarkResults);
   const goals = useStore(s => s.settings.goals);
+  const blockStart = useStore(s => s.blockStart);
+  const offDays = useStore(s => s.offDays);
+  const dayPlan = useStore(s => s.dayPlan);
+  const weekPlan = useStore(s => s.weekPlan);
+  const routines = useStore(s => s.routines);
+  const [athleteNote, setAthleteNote] = useState('');
   const [hasKey, setHasKey] = useState(false);
   const [review, setReview] = useState<StoredReview | null>(null);
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<string | null>(null);
 
-  useEffect(() => { setHasKey(Boolean(getCoachKey())); setReview(getLastReview()); }, []);
+  useEffect(() => { setHasKey(Boolean(getCoachKey())); setReview(getLastReview()); setAthleteNote(getCoachNote()); }, []);
+  const editNote = (text: string) => { setAthleteNote(text); setCoachNote(text); };
 
   const summary = useMemo(() => coachSummary({
     sessionLog, climbLog, activityLog, loadLog, benchmarkResults, goals, healing: isHealing(sessionLog, climbLog),
-  }), [sessionLog, climbLog, activityLog, loadLog, benchmarkResults, goals]);
+    blockStart, offDays, dayPlan, weekPlan, routines, note: athleteNote,
+  }), [sessionLog, climbLog, activityLog, loadLog, benchmarkResults, goals, blockStart, offDays, dayPlan, weekPlan, routines, athleteNote]);
 
   const copy = async () => {
     const text = `Please review my last four weeks of climbing training.\n\n${summary}`;
@@ -65,6 +73,17 @@ export default function CoachSection() {
   const ago = daysSince(review?.at ?? null);
   return (
     <div className={styles.wrap}>
+      <label className={styles.noteLabel}>
+        A NOTE FOR THE COACH
+        <textarea
+          className={styles.noteInput}
+          value={athleteNote}
+          onChange={e => editNote(e.target.value)}
+          rows={3}
+          maxLength={600}
+          placeholder="What the logs cannot say: sleep, stress, a trip, how the finger feels."
+        />
+      </label>
       <div className={styles.actions}>
         {hasKey && (
           <button className={styles.primary} onClick={() => void ask()} disabled={busy}>
