@@ -42,6 +42,35 @@ Two parts.
   extra sets within `EXTRA_SETS`, no finger work), `today.test.ts` (a BUILD
   session is never cut by today's cap).
 
+### Second PR: the fuller COPY FOR COACH
+
+The first pasted summary was too thin to coach from (the review is in the
+chat; its main points: the ring finger turning, pulling 149% BW, the hang
+the real gap, too little climbing and none at the limit, no testing at pain
+3+, one PULL + PUSH a week while healing, hold the POWER phase until the left
+reaches about 60%). `coachSummary` now prints:
+
+- the block week, and a line when a healing finger holds back what the
+  STRENGTH or POWER phase asks;
+- every session with start and end, energy, deload, then each exercise: sets
+  done of planned @ the load that day, how it felt, skipped, cut short,
+  added. Ramp tests show as attempts with the best, never as sets over the
+  plan (the old "21/18" and "4/2"); a 0-minute session reads "under a
+  minute";
+- LOADS without the TEST entries, with sessions and best;
+- every test with the result before it, and every row of the gap, not only
+  the first;
+- the ring finger as a series: each left session with its % and the pain
+  before it, each right test, and what the % compares (a 3 x 12 working load
+  against a 12-rep max);
+- climbs with gym colours as their Font band and how many were logged;
+- rest and sick days, today's ADJUST, the weekly plan;
+- A NOTE FOR THE COACH, a text field above COPY FOR COACH (16px, kept on the
+  device under `7bit_coach_note`, never in a backup).
+
+About 15,000 characters (some 5,000 tokens) on the seed history.
+`coach.test.ts` covers each part; the STATS e2e types a note.
+
 ## 3. Research findings (kept for later)
 
 - **Cost of one ASK THE COACH** on Opus 5.5 at effort medium, from the seed
@@ -63,7 +92,7 @@ Two parts.
 ## 4. Verified
 
 - `npx tsc --noEmit`
-- `npm test`: 314 passing (312 before)
+- `npm test`: 314 passing (312 before); 318 after the second PR
 - `npm run check:daily`, `npm run check:cave`
 - `npm run build`
 - `npm run test:e2e`: 10 passing
@@ -71,10 +100,17 @@ Two parts.
 ## 5. Repo state
 
 Branch `claude/adoring-pascal-qrqz8o` from `main` at the v38 merge
-(`7499e94`), one PR to `main`. The v38 branch is already gone from the remote.
+(`7499e94`): the BUILD fix merged as PR #56. The branch was then restarted
+from `main` at that merge (`34cadbe`) for the second PR, the fuller COPY FOR
+COACH. The v38 branch is already gone from the remote.
 
 ## 6. Open items
 
+- The summary only shows what is logged: 120-minute climbing sessions with
+  one climb logged say little. Log every climb tried, with + STYLE on the
+  hard ones.
+- Rest days hold only their date (`offDays`), and only today's ADJUST TODAY
+  is kept, so sore days and time caps of earlier days are not in the summary.
 - **The coach trial:** the athlete pastes COPY FOR COACH into a chat; the
   review is done there. After a few weeks, decide: keep pasting, write the
   climbing-coach skill (for Claude Code and claude.ai), or set up the key.
@@ -110,13 +146,13 @@ npm test
 npm run check:daily
 npm run check:cave
 npm run build
-grep -rl "fill the time, rest as written" out/_next/static | head -1
+grep -rl "A NOTE FOR THE COACH" out/_next/static | head -1
 npx cap sync ios
-grep -rl "fill the time, rest as written" ios/App/App/public/_next/static | head -1
+grep -rl "A NOTE FOR THE COACH" ios/App/App/public/_next/static | head -1
 npx cap open ios
 ```
 
-- `git log -1` shows the merge of the v39 PR.
+- `git log -1` shows the merge of the second v39 PR (the fuller COPY FOR COACH).
 - Both `grep` lines print a file name.
 - In Xcode, press Shift+Cmd+K, then Cmd+R.
 

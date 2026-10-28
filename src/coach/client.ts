@@ -15,6 +15,7 @@ import { COACH_SYSTEM } from '@/core/coach';
 
 const KEY_STORAGE = '7bit_coach_key';
 const REVIEW_STORAGE = '7bit_coach_review';
+const NOTE_STORAGE = '7bit_coach_note';
 
 export const COACH_MODEL = 'claude-opus-5-5';
 
@@ -26,6 +27,18 @@ export function setCoachKey(key: string | null): void {
   try {
     if (key) localStorage.setItem(KEY_STORAGE, key.trim());
     else localStorage.removeItem(KEY_STORAGE);
+  } catch { /* private mode: nothing to keep */ }
+}
+
+/** The athlete's note for the next review: kept on this device until changed. */
+export function getCoachNote(): string {
+  try { return localStorage.getItem(NOTE_STORAGE) ?? ''; } catch { return ''; }
+}
+
+export function setCoachNote(note: string): void {
+  try {
+    if (note.trim()) localStorage.setItem(NOTE_STORAGE, note);
+    else localStorage.removeItem(NOTE_STORAGE);
   } catch { /* private mode: nothing to keep */ }
 }
 
