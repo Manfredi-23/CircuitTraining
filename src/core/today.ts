@@ -112,7 +112,9 @@ export function fitToMinutes(list: ScaledExercise[], minutes: number): ScaledExe
 export function applyDay(list: ScaledExercise[], circuit: Circuit, day: ActiveDay, mode: string): ScaledExercise[] {
   let out = list;
   if (day.noKit && mode === 'DAILY') out = out.filter(e => !needsKit(e));
-  if (day.minutes !== null) out = fitToMinutes(out, day.minutes);
+  // A BUILD session is made for the time picked on it; today's cap only sets
+  // where that picker opens, so it does not cut the session again.
+  if (day.minutes !== null && !circuit.id.startsWith('custom-')) out = fitToMinutes(out, day.minutes);
   return out;
 }
 

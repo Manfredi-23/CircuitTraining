@@ -303,7 +303,12 @@ export interface CustomSession {
   circuit: Circuit;
   list: ScaledExercise[];
   duration: number;
+  /** Sets added because the exercises ran out before the time. */
+  extraSets: number;
 }
+
+/** At most this many sets more on one exercise when the areas run dry. */
+export const EXTRA_SETS = 2;
 
 const BLOCK_RANK: Record<BlockType, number> = {
   WARMUP: 0, PRIMARY: 1, TEST: 1, SECONDARY: 2, ACCESSORY: 3, PREHAB: 4, MOBILITY: 5,
@@ -432,10 +437,30 @@ export function buildCustom(input: CustomInput): CustomSession {
     }
   }
 
+  // The exercises can run out before the time does: the areas run dry (CORE
+  // alone, PULL and LEGS out, a finger healing) or the cap above is reached.
+  // The time chosen is kept with more sets of what is there, one at a time
+  // round the working exercises, at most EXTRA_SETS more each. Fixed protocols
+  // are taken as written; rest is never touched.
+  let extraSets = 0;
+  const fillable = picks.map((e, i) => ({ e, i })).filter(({ e }) => !e.fixed && !LIGHT.has(e.block) && e.block !== 'WARMUP' && e.block !== 'TEST');
+  for (let round = 0; round < EXTRA_SETS && fillable.length; round++) {
+    let grew = false;
+    for (const { i } of fillable) {
+      const more = [...picks];
+      more[i] = { ...more[i], sets: more[i].sets + 1 };
+      if (estimateDuration(build(more)) > input.minutes) continue;
+      picks[i] = more[i];
+      extraSets++;
+      grew = true;
+    }
+    if (!grew) break;
+  }
+
   const exercises = order(openers, picks);
   const list = build(picks);
   const duration = estimateDuration(list);
-  return { circuit: circuitOf(input, include, exercises, duration), list, duration };
+  return { circuit: circuitOf(input, include, exercises, duration), list, duration, extraSets };
 }
 
 // ---- Choices, presets, warnings -------------------------------------------------

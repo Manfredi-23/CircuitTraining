@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   areaNeeds, buildCustom, buildWarnings, cautionAreas, closedAreas, cycleTarget, flagsOf, makePreset, presetName, suggestAreas, touches,
-  BUILT_IN_PRESETS, CUSTOM_TIMES, type CustomInput,
+  BUILT_IN_PRESETS, CUSTOM_TIMES, EXTRA_SETS, type CustomInput,
 } from '../custom';
 import { isCurl, exerciseLibrary } from '../reserve';
 import { loadsFingers } from '../engine';
@@ -144,6 +144,26 @@ describe('goals, exclusions and avoid', () => {
     const s = buildCustom({ ...base, place: 'GYM', minutes: 90, include: ['PULL POWER', 'CHEST', 'LEGS'] });
     expect(s.duration).toBeLessThanOrEqual(90);
     expect(s.duration).toBeGreaterThan(60);
+  });
+
+  it('keeps the hour when the areas run out of exercises: more sets, never past the time', () => {
+    // CORE alone at the gym, PULL, LEGS and FINGERS out, a finger healing, a
+    // deload week: 31 minutes before the fill.
+    const input: CustomInput = {
+      ...base, place: 'GYM', minutes: 60, include: ['CORE'], exclude: ['PULL', 'LEGS', 'FINGERS'], healing: true, deload: true,
+    };
+    for (const energy of ENERGIES) {
+      const s = buildCustom({ ...input, energy });
+      expect(s.duration).toBeLessThanOrEqual(60);
+      expect(s.duration).toBeGreaterThanOrEqual(55);
+      expect(s.extraSets).toBeGreaterThan(0);
+      for (const e of s.circuit.exercises) {
+        const written = lib.get(e.id)!;
+        expect(e.sets - written.sets).toBeLessThanOrEqual(EXTRA_SETS);
+        if (written.fixed || written.block === 'WARMUP') expect(e.sets).toBe(written.sets);
+      }
+      expect(s.list.some(loadsFingers)).toBe(false);
+    }
   });
 
   it('cycles a target in, out and off', () => {
