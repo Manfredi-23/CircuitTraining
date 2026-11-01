@@ -352,12 +352,15 @@ export function buildList(
  */
 const SECONDS_PER_REP = 3;
 
+/** Seconds of work and rest for `sets` sets of a scaled exercise. */
+export function exerciseSeconds(ex: ScaledExercise, sets = ex.scaledSets): number {
+  const workSeconds = ex.unit === 'sec' ? ex.scaledWork : ex.scaledWork * SECONDS_PER_REP;
+  const sides = ex.perSide ? 2 : 1;
+  return sets * (workSeconds * sides + ex.scaledRest);
+}
+
 export function estimateDuration(list: ScaledExercise[]): number {
-  const seconds = list.reduce((total, ex) => {
-    const workSeconds = ex.unit === 'sec' ? ex.scaledWork : ex.scaledWork * SECONDS_PER_REP;
-    const sides = ex.perSide ? 2 : 1;
-    return total + ex.scaledSets * (workSeconds * sides + ex.scaledRest);
-  }, 0);
+  const seconds = list.reduce((total, ex) => total + exerciseSeconds(ex), 0);
 
   const last = list[list.length - 1];
   const trailingRest = last ? last.scaledRest : 0;

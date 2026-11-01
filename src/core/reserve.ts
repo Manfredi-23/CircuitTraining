@@ -23,13 +23,14 @@
 import { CONFIG } from './config';
 import { getModeData } from './data-index';
 import { EXTRA_EXERCISES } from './data-extras';
+import { FEET_EXERCISES } from './data-feet';
 import { fingerCaution, PAIN_REMOVE_FROM } from './engine';
 import { dayOf } from './dates';
 import { needsKit } from './today';
 import type { BlockType, Exercise, Mode, ScaledExercise, SessionLogEntry } from './types';
 
-export type ReserveGroup = 'CORE' | 'BACK' | 'PULL' | 'ARMS' | 'SHOULDERS' | 'LEGS' | 'MOBILITY' | 'FINGERS';
-export const RESERVE_GROUPS: ReserveGroup[] = ['CORE', 'BACK', 'PULL', 'ARMS', 'SHOULDERS', 'LEGS', 'MOBILITY', 'FINGERS'];
+export type ReserveGroup = 'CORE' | 'BACK' | 'PULL' | 'ARMS' | 'SHOULDERS' | 'LEGS' | 'FEET' | 'MOBILITY' | 'FINGERS';
+export const RESERVE_GROUPS: ReserveGroup[] = ['CORE', 'BACK', 'PULL', 'ARMS', 'SHOULDERS', 'LEGS', 'FEET', 'MOBILITY', 'FINGERS'];
 
 export type Place = 'HOME' | 'GYM';
 
@@ -117,11 +118,33 @@ const RESERVE: ReserveEntry[] = [
   { id: 'heal-step-up', group: 'LEGS', place: 'GYM', grip: false },
   { id: 'heal-calf-raise', group: 'LEGS', place: 'GYM', grip: false },
   { id: 'heal-nordic-curl', group: 'LEGS', place: 'GYM', grip: false, floor: true },
-  { id: 'legs-toe-drag', group: 'LEGS', place: 'GYM', grip: false, floor: true },
   { id: 'addon-goblet-squat', group: 'LEGS', place: 'GYM', grip: true },
   { id: 'extra-step-down', group: 'LEGS', place: 'HOME', grip: false },
   { id: 'extra-shift-split-squat', group: 'LEGS', place: 'HOME', grip: false },
   { id: 'extra-side-abduction', group: 'LEGS', place: 'HOME', grip: false, floor: true },
+
+  { id: 'feet-box-pistol', group: 'LEGS', place: 'HOME', grip: false },
+  { id: 'feet-slider-curl', group: 'LEGS', place: 'HOME', grip: false, floor: true },
+  { id: 'feet-high-foot-drive', group: 'LEGS', place: 'GYM', grip: false, jump: true },
+
+  // FEET (v43): precise feet, foot and toe strength, the hooks, the high foot
+  // with the weight on it. Hands free or flat on a wall: open while a finger heals.
+  { id: 'feet-step-down-mark', group: 'FEET', place: 'HOME', grip: false },
+  { id: 'feet-shift-place', group: 'FEET', place: 'HOME', grip: false },
+  { id: 'feet-edge-stand', group: 'FEET', place: 'HOME', grip: false },
+  { id: 'feet-wall-high-step', group: 'FEET', place: 'HOME', grip: false },
+  { id: 'feet-lateral-reach', group: 'FEET', place: 'HOME', grip: false },
+  { id: 'feet-hip-airplane', group: 'FEET', place: 'HOME', grip: false },
+  { id: 'feet-tibialis-raise', group: 'FEET', place: 'HOME', grip: false },
+  { id: 'feet-heel-hook-bridge', group: 'FEET', place: 'HOME', grip: false, floor: true },
+  { id: 'feet-toe-pull-bridge', group: 'FEET', place: 'HOME', grip: false, floor: true },
+  { id: 'feet-towel-drag', group: 'FEET', place: 'HOME', grip: false },
+  { id: 'feet-toe-edge-calf', group: 'FEET', place: 'HOME', grip: false },
+  { id: 'daily-toe-taps', group: 'FEET', place: 'HOME', grip: false },
+  { id: 'daily-short-foot', group: 'FEET', place: 'HOME', grip: false },
+  { id: 'extra-sl-balance', group: 'FEET', place: 'HOME', grip: false },
+  { id: 'legs-toe-drag', group: 'FEET', place: 'GYM', grip: false, floor: true },
+  { id: 'feet-toe-hook-situp', group: 'FEET', place: 'GYM', grip: false, curl: true, floor: true },
 
   // MOBILITY.
   { id: 'morn-catcow', group: 'MOBILITY', place: 'HOME', grip: false, floor: true },
@@ -133,6 +156,11 @@ const RESERVE: ReserveEntry[] = [
   { id: 'feet-frogger', group: 'MOBILITY', place: 'HOME', grip: false, floor: true },
   { id: 'daily-ankle-wall', group: 'MOBILITY', place: 'HOME', grip: false },
   { id: 'extra-high-knee-hold', group: 'MOBILITY', place: 'HOME', grip: false },
+  { id: 'feet-box-lift-off', group: 'MOBILITY', place: 'HOME', grip: false },
+  { id: 'feet-seated-leg-lift', group: 'MOBILITY', place: 'HOME', grip: false, floor: true },
+  { id: 'feet-9090-lift', group: 'MOBILITY', place: 'HOME', grip: false, floor: true },
+  { id: 'feet-hip-cars', group: 'MOBILITY', place: 'HOME', grip: false },
+  { id: 'feet-active-frog', group: 'MOBILITY', place: 'HOME', grip: false, floor: true },
 
   // FINGERS: light only. The density no-hangs do not restart the 48h.
   { id: 'daily-edge-density', group: 'FINGERS', place: 'HOME', grip: true },
@@ -158,6 +186,7 @@ export function exerciseLibrary(): Map<string, Exercise> {
     }
   }
   for (const e of EXTRA_EXERCISES) library.set(e.id, e);
+  for (const e of FEET_EXERCISES) if (!library.has(e.id)) library.set(e.id, e);
   return library;
 }
 

@@ -40,7 +40,8 @@ import { CONFIG } from './config';
 import { WARMUP_PULSE } from './data-cave';
 import { buildList, estimateDuration, HEALING_CAUTION, loadsFingers, PAIN_REDUCE_FROM, PAIN_REMOVE_FROM, painCaution } from './engine';
 import { getCoreVolume, getFreshness, CORE_TARGETS, type CoreGroup } from './insights';
-import { BACK_PROTOCOLS } from './review';
+import { BACK_PROTOCOLS, FEET_PROTOCOLS } from './review';
+import { BODY_BANDS, weekSets } from './body-week';
 import { exerciseLibrary, isCurl, reserveEntry, reserveFor, type EntryFlags, type Place, type ReserveGroup } from './reserve';
 import { localDate, mondayOf, daysBetween } from './dates';
 import { needsKit, type ActiveDay } from './today';
@@ -48,12 +49,12 @@ import type {
   BlockType, Capacity, Circuit, EnergyKey, Exercise, Mode, Progress, ScaledExercise, SessionLogEntry, Tweaks, BenchmarkResult,
 } from './types';
 
-export const CUSTOM_GROUPS: ReserveGroup[] = ['CORE', 'BACK', 'PULL', 'ARMS', 'SHOULDERS', 'LEGS', 'MOBILITY', 'FINGERS'];
+export const CUSTOM_GROUPS: ReserveGroup[] = ['CORE', 'BACK', 'PULL', 'ARMS', 'SHOULDERS', 'LEGS', 'FEET', 'MOBILITY', 'FINGERS'];
 export const CUSTOM_TIMES = [15, 30, 45, 60, 90];
 export const CUSTOM_PREFIX = 'custom-';
 
-export type Goal = 'PULL POWER' | 'PUSH POWER' | 'CHEST' | 'BALANCE' | 'ROCKOVER' | 'HIPS';
-export const GOALS: Goal[] = ['PULL POWER', 'PUSH POWER', 'CHEST', 'BALANCE', 'ROCKOVER', 'HIPS'];
+export type Goal = 'PULL POWER' | 'PUSH POWER' | 'CHEST' | 'BALANCE' | 'ROCKOVER' | 'HIPS' | 'HOOKS';
+export const GOALS: Goal[] = ['PULL POWER', 'PUSH POWER', 'CHEST', 'BALANCE', 'ROCKOVER', 'HIPS', 'HOOKS'];
 export type Target = ReserveGroup | Goal;
 export const isGoal = (t: Target): t is Goal => (GOALS as string[]).includes(t);
 
@@ -98,6 +99,7 @@ const GOAL_ENTRIES: Record<Goal, GoalEntry[]> = {
     { id: 'heal-stork', place: 'GYM', grip: false },
     { id: 'heal-silent-feet', place: 'GYM', grip: false },
     { id: 'heal-sticky-feet', place: 'GYM', grip: false },
+    { id: 'feet-hip-airplane', place: 'HOME', grip: false },
   ],
   // Single-leg strength for high steps: standing up through one leg, the
   // hips over the foot first, a slow way down. All home, hands free.
@@ -107,6 +109,8 @@ const GOAL_ENTRIES: Record<Goal, GoalEntry[]> = {
     { id: 'home-sl-rdl', place: 'HOME', grip: false },
     { id: 'heal-calf-raise', place: 'HOME', grip: false },
     { id: 'daily-glute-bridge', place: 'HOME', grip: false, floor: true },
+    { id: 'feet-wall-high-step', place: 'HOME', grip: false },
+    { id: 'feet-box-pistol', place: 'HOME', grip: false },
   ],
   // Hip and ankle range under control, and the trunk still while the legs move.
   HIPS: [
@@ -116,6 +120,18 @@ const GOAL_ENTRIES: Record<Goal, GoalEntry[]> = {
     { id: 'daily-ankle-wall', place: 'HOME', grip: false },
     { id: 'extra-side-abduction', place: 'HOME', grip: false, floor: true },
     { id: 'extra-dead-bug', place: 'HOME', grip: false, floor: true },
+    { id: 'feet-9090-lift', place: 'HOME', grip: false, floor: true },
+    { id: 'feet-hip-cars', place: 'HOME', grip: false },
+  ],
+  // v43: the shin for toe hooks, the hamstring and calf for heel hooks, the big
+  // toe for pulling on a toe. Home but for the sit-back (the radiator) and the Nordic.
+  HOOKS: [
+    { id: 'feet-tibialis-raise', place: 'HOME', grip: false },
+    { id: 'feet-heel-hook-bridge', place: 'HOME', grip: false, floor: true },
+    { id: 'feet-toe-pull-bridge', place: 'HOME', grip: false, floor: true },
+    { id: 'feet-slider-curl', place: 'HOME', grip: false, floor: true },
+    { id: 'feet-toe-hook-situp', place: 'GYM', grip: false, floor: true },
+    { id: 'heal-nordic-curl', place: 'GYM', grip: false, floor: true },
   ],
 };
 
@@ -130,13 +146,15 @@ const GROUP_CAPACITIES: Record<ReserveGroup, Capacity[]> = {
   ARMS: [],
   SHOULDERS: ['press', 'shoulder'],
   LEGS: ['legs'],
+  // FEET is owed by this week's sets against its band (body-week.ts), not by a capacity.
+  FEET: [],
   MOBILITY: ['mobility'],
   FINGERS: ['forearm'],
 };
 
 const ILLUSTRATION: Record<Target, string> = {
   CORE: 'core.svg', BACK: 'core.svg', PULL: 'pullups.svg', ARMS: 'dumbbell.svg', SHOULDERS: 'pushups.svg',
-  LEGS: 'squats.svg', MOBILITY: 'morning.svg', FINGERS: 'hangboard.svg',
+  LEGS: 'squats.svg', FEET: 'squats.svg', MOBILITY: 'morning.svg', FINGERS: 'hangboard.svg', HOOKS: 'squats.svg',
   'PULL POWER': 'pullups.svg', 'PUSH POWER': 'pushups.svg', CHEST: 'pushups.svg', BALANCE: 'squats.svg',
   ROCKOVER: 'squats.svg', HIPS: 'morning.svg',
 };
@@ -161,6 +179,8 @@ export function touches(t: Target, ex: Exercise): boolean {
     case 'CORE': return TRUNK_PROTOCOLS.has(ex.protocolId ?? '');
     case 'BACK': return BACK_PROTOCOLS.has(ex.protocolId ?? '');
     case 'LEGS': return ex.capacities[0] === 'legs';
+    case 'FEET': return FEET_PROTOCOLS.has(ex.protocolId ?? '');
+    case 'HOOKS': return ex.protocolId === 'hook-strength';
     case 'PULL': case 'PULL POWER': return ex.capacities.includes('pull');
     case 'SHOULDERS': return ['press', 'shoulder'].includes(ex.capacities[0] ?? '');
     case 'PUSH POWER': return ex.capacities[0] === 'press';
@@ -200,7 +220,7 @@ export function closedAreas(ctx: CustomContext): Partial<Record<Target, string>>
   if (ctx.pain !== null && ctx.pain >= PAIN_REMOVE_FROM) out.FINGERS = `Finger pain ${ctx.pain}/10 lately.`;
   else if (ctx.day.sore.includes('FOREARMS')) out.FINGERS = 'Forearms sore today.';
   if (ctx.day.sore.includes('BACK')) out.BACK = 'Back sore today.';
-  if (ctx.day.sore.includes('LEGS') || ctx.legsSore) { out.LEGS = 'Legs sore today.'; out.ROCKOVER = 'Legs sore today.'; }
+  if (ctx.day.sore.includes('LEGS') || ctx.legsSore) { out.LEGS = 'Legs sore today.'; out.ROCKOVER = 'Legs sore today.'; out.HOOKS = 'Legs sore today.'; }
   if (ctx.day.sore.includes('SHOULDERS')) {
     for (const t of ['SHOULDERS', 'PULL', 'PULL POWER', 'PUSH POWER', 'CHEST'] as Target[]) out[t] ??= 'Shoulders sore today.';
   }
@@ -251,9 +271,18 @@ export function areaNeeds(progress: Progress, sessionLog: SessionLogEntry[], clo
   const out: AreaNeed[] = [];
   for (const group of CUSTOM_GROUPS) {
     const caps = GROUP_CAPACITIES[group];
-    if (closed[group] || !caps.length) continue;
+    if (closed[group] || (!caps.length && group !== 'FEET')) continue;
     let score = 0;
     let reason = '';
+    if (group === 'FEET') {
+      // Owed by this week's sets against the floor of its band, pro rata to the day.
+      const today = localDate(now);
+      const share = (daysBetween(mondayOf(today), today) + 1) / 7;
+      const done = weekSets(sessionLog, [], now).sets.FEET;
+      const floor = BODY_BANDS.FEET[0];
+      score = Math.max(0, (1 - done / (floor * share)) * 2);
+      reason = `feet ${done} of ${floor} sets this week`;
+    }
     for (const c of caps) {
       const r = fresh.get(c)!;
       const s = r.days === null ? 1 : r.days / r.graceDays;
@@ -496,6 +525,7 @@ export const BUILT_IN_PRESETS: BuildPreset[] = [
   { id: 'hips-control', name: 'HIPS + CONTROL', place: 'HOME', minutes: 15, include: ['HIPS'], exclude: [], avoid: [] },
   { id: 'strong-back', name: 'STRONG BACK', place: 'HOME', minutes: 30, include: ['BACK'], exclude: [], avoid: [] },
   { id: 'back-core', name: 'BACK + CORE', place: 'GYM', minutes: 45, include: ['BACK', 'CORE'], exclude: [], avoid: [] },
+  { id: 'footwork', name: 'FOOTWORK', place: 'HOME', minutes: 30, include: ['FEET', 'HOOKS'], exclude: [], avoid: [] },
 ];
 
 export type TargetState = 'in' | 'out' | 'off';

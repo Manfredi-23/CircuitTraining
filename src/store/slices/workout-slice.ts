@@ -12,6 +12,9 @@ import { exerciseLibrary, insertIndex } from '@/core/reserve';
 import { activeDay, applyDay } from '@/core/today';
 import { activeEdit, editedCircuit } from '@/core/session-edit';
 import { localDate } from '@/core/dates';
+import { resolveSlots } from '@/core/slots';
+import { withNote, type ExerciseNotes } from '@/core/notes';
+import { doLater, dropAhead, moveAhead, setsAhead } from '@/core/live-edit';
 
 /**
  * The session as it will run: level, energy, gates, and the deload week. The
@@ -30,9 +33,12 @@ export function sessionListFor(
   return applyDay(list, circuit, activeDay(state.dayPlan, now), state.mode);
 }
 
-/** The session as it runs today: with the edit made on its page, if one holds. */
-export function circuitFor(state: Partial<Pick<Store, 'sessionEdits'>>, circuit: Circuit, now = new Date()): Circuit {
-  return editedCircuit(circuit, activeEdit(state.sessionEdits, circuit.id, localDate(now)));
+/**
+ * The session as it runs today: with the edit made on its page, if one holds,
+ * and each choice slot running the exercise done least recently.
+ */
+export function circuitFor(state: Partial<Pick<Store, 'sessionEdits' | 'sessionLog'>>, circuit: Circuit, now = new Date()): Circuit {
+  return resolveSlots(editedCircuit(circuit, activeEdit(state.sessionEdits, circuit.id, localDate(now))), state.sessionLog ?? []);
 }
 
 /**
@@ -68,6 +74,13 @@ export interface WorkoutSlice {
   tweaks: Tweaks;
   /** Exercises added from the reserve in this session. */
   addedIds: string[];
+  /** Technique notes by exercise id, kept for next time (v43). Persisted. */
+  exerciseNotes: ExerciseNotes;
+  setExerciseNote: (exerciseId: string, text: string) => void;
+  /** The session map (v43): change an exercise still to come. */
+  editAhead: (action: 'later' | 'drop' | 'up' | 'down' | 'more' | 'fewer', index: number) => void;
+  /** A choice slot (v43): run another of its options instead, before its first set. */
+  chooseOption: (exerciseId: string) => void;
   /** XP across all capacities when the session started, for what it earned. */
   startXP: number;
   /** Seconds the last rest ran past its end while the app slept; 0 when it did not. */
@@ -133,6 +146,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   sessionPBs: [],
   tweaks: {},
   addedIds: [],
+  exerciseNotes: {},
   startXP: 0,
   restOverrun: 0,
 
@@ -471,6 +485,36 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
     const list = [...state.exerciseList];
     list.splice(at, 0, scaled);
     set({ exerciseList: list, addedIds: [...state.addedIds, exerciseId] });
+  },
+
+  setExerciseNote: (exerciseId, text) =>
+    set(s => ({ exerciseNotes: withNote(s.exerciseNotes, exerciseId, text, localDate()) })),
+
+  editAhead: (action, index) => {
+    const { exerciseList: list, stepIndex } = get();
+    const next = action === 'later' ? doLater(list, stepIndex, index)
+      : action === 'drop' ? dropAhead(list, stepIndex, index)
+      : action === 'up' ? moveAhead(list, stepIndex, index, -1)
+      : action === 'down' ? moveAhead(list, stepIndex, index, 1)
+      : setsAhead(list, stepIndex, index, action === 'more' ? 1 : -1);
+    if (next !== list) set({ exerciseList: next });
+  },
+
+  chooseOption: (exerciseId) => {
+    const st = get();
+    const curr = st.currentExercise;
+    const base = exerciseLibrary().get(exerciseId);
+    if (!curr || !base || st.setIndex !== 1 || !curr.options?.includes(exerciseId)) return;
+    if (st.exerciseList.some(e => e.id === exerciseId)) return;
+    const deload = Boolean(st.circuit) && getBlockWeek(st.blockStart, st.sessionLog).deload && deloads(st.circuit!);
+    const scaled = Engine.scaleExercise(base, st.energy, st.progress, { deload, tweaks: st.tweaks });
+    const next = { ...scaled, slot: curr.slot, options: [curr.id, ...curr.options.filter(o => o !== exerciseId)] };
+    set({
+      currentExercise: next,
+      exerciseList: st.exerciseList.map((e, i) => (i === st.stepIndex ? next : e)),
+      swapActive: false,
+    });
+    get().primeLoad(next);
   },
 
   addExtras: (exerciseIds) => {

@@ -22,6 +22,7 @@
 import { CONFIG } from '@/core/config';
 import { buildList, estimateDuration } from '@/core/engine';
 import { getModeData } from '@/core/data-index';
+import { slotVariants } from '@/core/slots';
 import { OAP_ASSISTED_GATE, OAP_NEGATIVE_GATE } from '@/core/data-oap';
 import type { BenchmarkResult, EnergyKey, Progress } from '@/core/types';
 
@@ -52,7 +53,8 @@ for (const circuit of cave) {
   console.log(`\n=== ${circuit.circuitNum} ${circuit.title}${budget ? ` (NORMAL budget ${budget} min)` : ''} ===`);
   for (const level of CONFIG.levels.map(l => l.level)) {
     const row = ENERGIES.map(energy => {
-      const minutes = estimateDuration(buildList(circuit, energy, progressAt(level)));
+      // A choice slot may run any of its options: the budget holds for the longest.
+      const minutes = Math.max(...slotVariants(circuit).map(v => estimateDuration(buildList(v, energy, progressAt(level)))));
       if (budget && energy === 'NORMAL' && minutes > budget) {
         fail(`${circuit.circuitNum} L${level} NORMAL is ${minutes} min, budget ${budget}`);
       }

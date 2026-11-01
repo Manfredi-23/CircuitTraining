@@ -13,6 +13,11 @@ import AdjustControls from '@/components/shared/AdjustControls';
 import ReservePicker from '@/components/shared/ReservePicker';
 import Led from '@/components/shared/Led';
 import { formatTime } from '@/hooks/use-timer';
+import { phaseOf, phaseTag } from '@/core/phases';
+import { focusOf, transferLine } from '@/core/transfer';
+import { lastTimeNote } from '@/core/notes';
+import { exerciseLibrary } from '@/core/reserve';
+import { localDate } from '@/core/dates';
 import styles from './WorkoutScreen.module.css';
 
 /** Long names step down so the name stays on two lines and the reps lead. */
@@ -31,6 +36,10 @@ export default function WorkoutScreen() {
   } = useStore();
   const tweaks = useStore(s => s.tweaks);
   const restOverrun = useStore(s => s.restOverrun);
+  const exerciseList = useStore(s => s.exerciseList);
+  const exerciseNotes = useStore(s => s.exerciseNotes);
+  const setExerciseNote = useStore(s => s.setExerciseNote);
+  const chooseOption = useStore(s => s.chooseOption);
   const [reserveOpen, setReserveOpen] = useState(false);
   const [adjustOpen, setAdjustOpen] = useState(false);
 
@@ -41,8 +50,16 @@ export default function WorkoutScreen() {
   const ramp = currentExercise.ramp;
   const axis = getLoadAxis(currentExercise);
   const bestText = rampBest !== null && axis ? formatLoad(rampBest, axis) : null;
-  const tagLead = currentExercise.section ?? currentExercise.block;
+  // What the exercise is for in the session: its phase and place in it, or the test section.
+  const tagLead = currentExercise.section ?? phaseTag(exerciseList, stepIndex);
   const tweakText = describeTweak(currentExercise, tweaks[currentExercise.id]);
+  const forLine = transferLine(currentExercise);
+  const focus = phaseOf(currentExercise) === 'SKILL' ? focusOf(currentExercise) : null;
+  const today = localDate();
+  const lastNote = lastTimeNote(exerciseNotes, currentExercise.id, today);
+  const todayNote = exerciseNotes[currentExercise.id]?.day === today ? exerciseNotes[currentExercise.id].text : '';
+  const lib = exerciseLibrary();
+  const choices = setIndex === 1 ? (currentExercise.options ?? []).filter(id => lib.has(id) && !exerciseList.some(e => e.id === id)) : [];
 
   return (
     <div className={`screen screen-enter ${styles.screen}`}>
@@ -82,13 +99,16 @@ export default function WorkoutScreen() {
           {currentExercise.displayName}
         </div>
 
-        <div className={styles.muscleTags}>
-          {currentExercise.capacities.map(c => (
-            <span key={c} className={styles.muscleTag}>
-              {CONFIG.capacityLabels[c].toUpperCase()} L{getCapacityLevel(progress, c)}
-            </span>
-          ))}
-        </div>
+        {/* What it is for on the wall; the capacity levels when it serves no move directly. */}
+        {forLine ? <div className={styles.forLine}>{forLine}</div> : (
+          <div className={styles.muscleTags}>
+            {currentExercise.capacities.map(c => (
+              <span key={c} className={styles.muscleTag}>
+                {CONFIG.capacityLabels[c].toUpperCase()} L{getCapacityLevel(progress, c)}
+              </span>
+            ))}
+          </div>
+        )}
 
         <div key={`reps-${stepIndex}`} className={styles.repsDisplay}>
           <Led
@@ -100,6 +120,11 @@ export default function WorkoutScreen() {
           />
           {currentExercise.perSide ? <span className={styles.perSide}>/ side</span> : null}
         </div>
+
+        {/* Skill work: one external cue, large. What the movement does, not the body part. */}
+        {focus && <div className={styles.focus}>{focus}</div>}
+
+        {lastNote && <div className={styles.lastNote}><b>LAST TIME</b> {lastNote.text}</div>}
 
         {/* Load prescription — where progression actually lives */}
         <div className={styles.loadLine}>{currentExercise.loadText}</div>
@@ -120,7 +145,7 @@ export default function WorkoutScreen() {
         >
           <span className={styles.adjustText}>
             <span className={styles.adjustTitle}>ADJUST</span>
-            <span className={styles.adjustSub}>{tweakText ?? 'Easier, harder, sets, swap, add, energy, finish'}</span>
+            <span className={styles.adjustSub}>{tweakText ?? 'Easier, harder, sets, swap, note, add, energy, finish'}</span>
           </span>
           <span className={styles.adjustMark} aria-hidden="true">{adjustOpen ? '-' : '+'}</span>
         </button>
@@ -138,6 +163,16 @@ export default function WorkoutScreen() {
                 </button>
                 <span className={styles.swapOr}>or:</span>
                 <span className={styles.baseName}>{swapActive ? currentExercise.name : baseName}</span>
+              </div>
+            )}
+
+            {/* A choice slot: another exercise for the same job, before its first set */}
+            {choices.length > 0 && (
+              <div className={styles.choice}>
+                <span className={styles.choiceLabel}>{currentExercise.slot ?? 'SAME JOB'}: OR</span>
+                {choices.map(id => (
+                  <button key={id} className={styles.choiceBtn} onClick={() => chooseOption(id)}>{lib.get(id)!.name}</button>
+                ))}
               </div>
             )}
 
@@ -161,6 +196,19 @@ export default function WorkoutScreen() {
                 ))}
               </div>
             )}
+
+            {/* One line for next time: shown as LAST TIME when this exercise comes up again */}
+            <label className={styles.noteField}>
+              <span className={styles.noteLabel}>NOTE FOR NEXT TIME</span>
+              <input
+                key={currentExercise.id}
+                className={styles.noteInput}
+                defaultValue={todayNote}
+                maxLength={140}
+                placeholder="e.g. right knee caves on the step-down"
+                onBlur={e => setExerciseNote(currentExercise.id, e.target.value)}
+              />
+            </label>
 
             {/* More than written: the reserve, or stop here and keep what was done */}
             <div className={styles.extraRow}>

@@ -1,12 +1,18 @@
-.wrap { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; width: 100%; }
+.wrap {
+  display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; width: 100%;
+  background: none; border: none; padding: 4px 0; margin: -4px 0; font-family: inherit; text-align: left; cursor: pointer;
+}
 .bar { display: flex; gap: 5px; width: 100%; }
 .group { display: flex; gap: 2px; flex-basis: 0; min-width: 0; }
+/* A phase change: more air than between two exercises. */
+.phaseStart { margin-left: 7px; }
 .cell { flex: 1; height: 6px; border-radius: 1px; min-width: 2px; transition: background 300ms ease; }
 .done { background: var(--ink); }
 .current { background: var(--accent); }
 .todo { background: var(--ink-faint); }
 .meta {
-  display: flex; justify-content: space-between;
+  display: flex; justify-content: space-between; gap: 8px;
   font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--ink-dim);
   font-variant-numeric: tabular-nums;
 }
+.time { color: var(--ink); font-weight: 700; text-decoration: underline; text-decoration-color: var(--ink-faint); text-underline-offset: 3px; }

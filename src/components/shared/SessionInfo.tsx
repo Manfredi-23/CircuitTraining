@@ -4,6 +4,11 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { CONFIG } from '@/core/config';
 import { displaySubtitle } from '@/core/data-index';
 import type { Circuit, EnergyKey, ScaledExercise } from '@/core/types';
+import { useStore } from '@/store/store';
+import { phaseRuns, PHASE_PURPOSE } from '@/core/phases';
+import { transferOf } from '@/core/transfer';
+import { addsLine, afterLine, bodyWeek, setsByArea } from '@/core/body-week';
+import { exerciseLibrary } from '@/core/reserve';
 import styles from './SessionInfo.module.css';
 
 interface SessionInfoProps {
@@ -52,6 +57,9 @@ export default function SessionInfo({
   open, mode, circuit, list, energy, duration, onClose, onStart, onEnergy, extra, onEdit, edited, onReset,
 }: SessionInfoProps) {
   const [entered, setEntered] = useState(false);
+  const sessionLog = useStore(s => s.sessionLog);
+  const climbLog = useStore(s => s.climbLog);
+  const progress = useStore(s => s.progress);
 
   useEffect(() => {
     if (open) requestAnimationFrame(() => setEntered(true));
@@ -66,6 +74,15 @@ export default function SessionInfo({
   }, [open, onClose]);
 
   if (!open) return null;
+
+  // Phases (PREP, SKILL, STRENGTH...) head the list unless the session has its own sections (ASSESS).
+  const runs = list.some(e => e.section) ? [] : phaseRuns(list);
+  const runAt = new Map(runs.map(r => [r.start, r]));
+  // What this session adds to the week, and the week after it.
+  const adds = setsByArea(list);
+  const addText = addsLine(adds);
+  const after = addText ? afterLine(bodyWeek({ sessionLog, climbLog, progress }), adds, 3) : '';
+  const lib = exerciseLibrary();
 
   return (
     <div
@@ -93,6 +110,12 @@ export default function SessionInfo({
           </div>
         )}
         <div className={styles.focus}>{circuit.focus}</div>
+        {addText && (
+          <div className={styles.adds}>
+            <div><b>THIS SESSION</b> {addText}</div>
+            {after && <div><b>WEEK AFTER</b> {after}</div>}
+          </div>
+        )}
         {onEnergy && (
           <div className={styles.energy} role="tablist" aria-label="Energy">
             {(Object.keys(CONFIG.energy) as EnergyKey[]).map(e => (
@@ -115,11 +138,25 @@ export default function SessionInfo({
             {ex.section && ex.section !== list[i - 1]?.section && (
               <div className={styles.section}>{ex.section}</div>
             )}
+            {runAt.has(i) && (
+              <div className={styles.phase}>
+                <span className={styles.section}>{runAt.get(i)!.phase} &middot; {runAt.get(i)!.minutes} MIN</span>
+                <span className={styles.purpose}>{PHASE_PURPOSE[runAt.get(i)!.phase]}</span>
+              </div>
+            )}
             <div className={styles.row}>
             <span className={styles.num}>{String(i + 1).padStart(2, '0')}</span>
             <div className={styles.body}>
               <div className={styles.name}>{ex.displayName}</div>
               {ex.gated && <div className={styles.locked}>Stand-in until tested</div>}
+              {ex.slot && (
+                <div className={styles.slot}>
+                  {ex.slot}: the one done least recently. Also {(ex.options ?? []).map(id => lib.get(id)?.name).filter(Boolean).join(', ')}{onEdit ? ' (SWAP in EDIT).' : '.'}
+                </div>
+              )}
+              {transferOf(ex).length > 0 && (
+                <div className={styles.chips}>{transferOf(ex).map(t => <span key={t} className={styles.chip}>{t}</span>)}</div>
+              )}
               {loadCue(ex.loadText) && <div className={styles.load}>{loadCue(ex.loadText)}</div>}
             </div>
             <div className={styles.dose}>{ex.ramp ? `ramp, ${ex.scaledSets}-${ex.ramp.maxAttempts}` : dose(ex)}</div>

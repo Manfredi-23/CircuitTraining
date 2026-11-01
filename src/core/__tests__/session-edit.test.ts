@@ -53,7 +53,7 @@ describe('session edits', () => {
     expect(e.items[squat - 1].sets).toBeUndefined();
 
     e = swapAt(e, 1, 'addon-goblet-squat');
-    expect(e.items[1]).toEqual({ id: 'addon-goblet-squat' });
+    expect(e.items[1]).toEqual({ id: 'addon-goblet-squat', chosen: true });
     // Already in: no swap.
     expect(swapAt(e, 2, 'addon-goblet-squat')).toBe(e);
   });

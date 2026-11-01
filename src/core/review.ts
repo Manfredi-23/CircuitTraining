@@ -121,14 +121,20 @@ export function getOverview(
 
 // ---- Where the work went -----------------------------------------------------------
 
-export type WorkArea = 'FINGERS' | 'PULL' | 'PUSH' | 'CORE' | 'BACK' | 'LEGS' | 'MOBILITY' | 'ARMS';
-export const WORK_AREAS: WorkArea[] = ['FINGERS', 'PULL', 'PUSH', 'CORE', 'BACK', 'LEGS', 'MOBILITY', 'ARMS'];
+export type WorkArea = 'FINGERS' | 'PULL' | 'PUSH' | 'CORE' | 'BACK' | 'LEGS' | 'FEET' | 'MOBILITY' | 'ARMS';
+export const WORK_AREAS: WorkArea[] = ['FINGERS', 'PULL', 'PUSH', 'CORE', 'BACK', 'LEGS', 'FEET', 'MOBILITY', 'ARMS'];
 export const WORK_AREA_LABEL: Record<WorkArea, string> = {
-  FINGERS: 'Fingers', PULL: 'Pull', PUSH: 'Push + shoulder', CORE: 'Core', BACK: 'Back', LEGS: 'Legs', MOBILITY: 'Mobility', ARMS: 'Arm extras',
+  FINGERS: 'Fingers', PULL: 'Pull', PUSH: 'Push + shoulder', CORE: 'Core', BACK: 'Back', LEGS: 'Legs', FEET: 'Feet + hooks', MOBILITY: 'Mobility', ARMS: 'Arm extras',
 };
 
 /** The protocols of direct back work: the lower back, and the middle of it. */
 export const BACK_PROTOCOLS = new Set(['back-strength', 'upper-back']);
+
+/**
+ * The protocols of FEET (v43): footwork and balance skill, the high foot with
+ * the weight on it, foot and toe strength, and the hooks.
+ */
+export const FEET_PROTOCOLS = new Set(['footwork', 'footwork-drill', 'floor-footwork', 'foot-loading', 'balance', 'foot-strength', 'hook-strength']);
 
 const AREA_OF: Record<Capacity, WorkArea> = {
   crimp: 'FINGERS', openhand: 'FINGERS', forearm: 'FINGERS', contact: 'FINGERS',
@@ -143,6 +149,7 @@ const AREA_OF: Record<Capacity, WorkArea> = {
 export function areaOf(e: Exercise): WorkArea | null {
   if (e.block === 'WARMUP' || e.block === 'TEST') return null;
   if (BACK_PROTOCOLS.has(e.protocolId ?? '') && e.capacities[0] !== 'legs') return 'BACK';
+  if (FEET_PROTOCOLS.has(e.protocolId ?? '')) return 'FEET';
   return e.capacities.length ? AREA_OF[e.capacities[0]] : 'ARMS';
 }
 
@@ -212,6 +219,9 @@ const STACKING = new Set(['cave-05', 'cave-06']);
  * The biggest gain on a logged load, from its first real value to its latest:
  * zeros are a stepper left unset, not a load, so they are skipped.
  */
+/** Loads only: a skill score (clean reps, v43) is not a kilo and never a load gain. */
+export const loadsOnly = (log: LoadLogEntry[]) => log.filter(l => l.unit !== 'clean');
+
 export function bestGain(loadLog: LoadLogEntry[]): { name: string; from: number; to: number; since: string } | null {
   const byId = new Map<string, LoadLogEntry[]>();
   for (const e of loadLog) {
@@ -279,13 +289,13 @@ export function getInsights(input: InsightInput, max = 7): Insight[] {
   }
 
   // The biggest load gain.
-  const gain = bestGain(input.loadLog);
+  const gain = bestGain(loadsOnly(input.loadLog));
   if (gain) {
     out.push({ tone: 'good', text: `${gain.name}: ${kg(gain.from)} to ${kg(gain.to)} since ${fmtDay(gain.since)}.` });
   }
 
   // A lift stuck at one load: more of the same rarely moves it.
-  const stuck = plateaus(input.loadLog, now)[0];
+  const stuck = plateaus(loadsOnly(input.loadLog), now)[0];
   if (stuck) {
     out.push({ tone: 'warn', text: `${stuck.name} at ${stuck.value} ${stuck.unit} for ${stuck.sessions} sessions. Change the variation, add a set lighter, or retest.` });
   }
@@ -339,7 +349,7 @@ export function getInsights(input: InsightInput, max = 7): Insight[] {
   }
 
   // Loads logged as 0 after a real value.
-  const zeros = zeroDrops(input.loadLog);
+  const zeros = zeroDrops(loadsOnly(input.loadLog));
   if (zeros.length) {
     const z = zeros[0];
     out.push({

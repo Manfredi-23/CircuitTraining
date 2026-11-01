@@ -40,7 +40,8 @@ export function suggestLoad(
 ): LoadSuggestion | null {
   if (exercise.records || exercise.ramp) return null;
   const axis = getLoadAxis(exercise);
-  if (!axis) return null;
+  // A skill score is a result to beat, not a load to step on.
+  if (!axis || axis.unit === 'clean') return null;
   const sign = progressSign(exercise, axis);
   if (sign === 0) return null;
   const last = getLastLoad(loadLog, exercise.id);

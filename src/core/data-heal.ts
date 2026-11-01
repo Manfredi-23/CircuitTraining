@@ -396,6 +396,8 @@ export const DATA_HEAL: Circuit[] = [
       + 'Alternate with 02. Any pain in the finger and that exercise is gone today.',
     exercises: [
       HEAL_WARMUP,
+      // Skill while fresh (v43): the balance and stretch dose right after the warm-up.
+      { ...LUNGE_DRIVE, sets: 2 },
       {
         id: 'heal-box-jump',
         name: 'Box Jump',
@@ -528,7 +530,6 @@ export const DATA_HEAL: Circuit[] = [
       },
       PLATE_CRUNCH,
       TOE_DRAG,
-      { ...LUNGE_DRIVE, sets: 2 },
       FROGGER,
       TENDON_GLIDES,
     ],
@@ -548,6 +549,8 @@ export const DATA_HEAL: Circuit[] = [
       + 'pain in the finger and that exercise is gone today.',
     exercises: [
       HEAL_WARMUP,
+      // Skill while fresh (v43): the balance and stretch dose right after the warm-up.
+      { ...LUNGE_DRIVE, sets: 2 },
       {
         id: 'heal-nordic-curl',
         name: 'Nordic Hamstring Curl',
@@ -697,7 +700,6 @@ export const DATA_HEAL: Circuit[] = [
           mistakes: 'Lower back arching as the legs go down. Dropping the legs fast. Pushing hard through the hands.',
         },
       },
-      { ...LUNGE_DRIVE, sets: 2 },
       BACK_UNWIND,
       TENDON_GLIDES,
     ],

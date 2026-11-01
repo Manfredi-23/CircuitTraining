@@ -8,6 +8,8 @@ import FormGuide from '@/components/shared/FormGuide';
 import SessionProgressBar from '@/components/shared/SessionProgressBar';
 import ReservePicker from '@/components/shared/ReservePicker';
 import Led from '@/components/shared/Led';
+import { lastTimeNote } from '@/core/notes';
+import { localDate } from '@/core/dates';
 import styles from './RestScreen.module.css';
 
 /** The rest ring is LEDs: one goes out for each 1/48 of the rest. */
@@ -24,6 +26,9 @@ const EXTRA_REST_SEC = 60;
 
 export default function RestScreen() {
   const { currentExercise, setIndex, rampBest, endRest } = useStore();
+  const exerciseList = useStore(s => s.exerciseList);
+  const stepIndex = useStore(s => s.stepIndex);
+  const exerciseNotes = useStore(s => s.exerciseNotes);
   const startedRef = useRef(false);
   const nextRef = useRef('');
   /** Rest as written plus any time added, so the ring stays in proportion. */
@@ -70,6 +75,8 @@ export default function RestScreen() {
   const newExercise = setIndex === 1;
   const axis = ex ? getLoadAxis(ex) : null;
   const bestText = ex?.ramp && rampBest !== null && axis ? formatLoad(rampBest, axis) : null;
+  const then = exerciseList.slice(stepIndex + 1);
+  const lastNote = ex ? lastTimeNote(exerciseNotes, ex.id, localDate()) : null;
   const nextTag = !ex ? ''
     : ex.ramp ? `ATTEMPT ${setIndex} OF UP TO ${ex.ramp.maxAttempts}`
     : `SET ${setIndex}/${ex.scaledSets}`;
@@ -127,7 +134,15 @@ export default function RestScreen() {
             </div>
             <div className={styles.loadLine}>{ex.loadText}</div>
             {ex.note && <div className={styles.note}>{ex.note}</div>}
+            {lastNote && <div className={styles.lastNote}><b>LAST TIME</b> {lastNote.text}</div>}
           </div>
+
+          {/* What follows the next piece of work, so the rest can plan the room and the kit */}
+          {then.length > 0 && (
+            <div className={styles.then}>
+              <b>THEN</b> {then.slice(0, 2).map(e => e.displayName).join(', ')}{then.length > 2 ? `, +${then.length - 2}` : ''}
+            </div>
+          )}
 
           <FormGuide exercise={ex} open={formOpen} onToggle={() => setFormOpen(o => !o)} brief />
 

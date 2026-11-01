@@ -8,7 +8,7 @@ import { getOverallLevel } from '@/core/engine';
 import { CONFIG } from '@/core/config';
 import { getSortedCapacities, getOverallTrendData, getCapacityTrendData, timeFilterToDays } from '@/core/stats';
 import { getWorkSplit } from '@/core/review';
-import { getCoreVolume, getFreshness, getOneArmPath, getSkipped, primaryClimbView } from '@/core/insights';
+import { getCoreVolume, getFreshness, getOneArmPath, getSkipped, primaryClimbView, FEET_BENCHMARKS } from '@/core/insights';
 import { climbingLane, loadItems, loadRatio } from '@/core/training-load';
 import {
   climbHeadline, coreHeadline, freshnessHeadline, liftHeadline, loadHeadline, oneArmHeadline, skippedHeadline,
@@ -192,7 +192,11 @@ export default function StatsScreen({ onSettings }: { onSettings: () => void }) 
             <OneArmSection results={benchmarkResults} />
           </Section>
           <Section title="TESTS" lead={heads.tests}>
-            <BenchmarkSection results={benchmarkResults} />
+            <BenchmarkSection results={benchmarkResults} without={FEET_BENCHMARKS} />
+          </Section>
+          <Section title="FEET" lead="The feet section of ASSESS, and the scored footwork drills: clean reps in the best set.">
+            <BenchmarkSection results={benchmarkResults} only={FEET_BENCHMARKS} />
+            <LiftSection loadLog={loadLog} onPick={setExercise} scores />
           </Section>
         </>
       )}

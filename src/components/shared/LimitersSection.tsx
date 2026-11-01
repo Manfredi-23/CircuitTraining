@@ -3,6 +3,8 @@
 import { useMemo } from 'react';
 import { getLimiters, LIMITER_WINDOW_DAYS, MIN_TAGGED, type StyleStat } from '@/core/limiters';
 import type { ClimbSession } from '@/core/types';
+import { packForFalls } from '@/core/transfer';
+import { PACKS } from '@/core/session-edit';
 import styles from './LimitersSection.module.css';
 
 const pct = (r: number) => `${Math.round(r * 100)}%`;
@@ -33,8 +35,15 @@ export default function LimitersSection({ climbLog }: { climbLog: ClimbSession[]
   if (!l.climbs) return <div className={styles.empty}>Log climbs from LOG, + CLIMB, and tag their style.</div>;
 
   const maxReason = Math.max(1, ...l.reasons.map(r => r.count));
+  // From the falls to the training (v43): the pack that answers them, a suggestion only.
+  const fall = packForFalls(l);
   return (
     <div className={styles.wrap}>
+      {fall && (
+        <div className={styles.train}>
+          <b>TRAIN IT</b> {fall.reason} The {PACKS.find(p => p.id === fall.packId)?.name} pack works on it: EDIT any session, or + ADD mid-session.
+        </div>
+      )}
       {l.enough ? (
         <>
           {l.weakest.length > 0 && (

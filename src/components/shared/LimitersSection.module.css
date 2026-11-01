@@ -21,3 +21,6 @@
 .reasonCount { font-weight: 700; font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; }
 .note { font-size: 13px; line-height: 1.5; color: var(--ink); }
 .note b { font-weight: 700; }
+
+.train { font-size: 12px; line-height: 1.45; color: var(--ink); border-left: 3px solid var(--ink); padding-left: 10px; }
+.train b { font-size: 11px; letter-spacing: 0.08em; margin-right: 4px; }

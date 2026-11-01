@@ -8,6 +8,8 @@ import { legSoreness } from '@/core/activity';
 import { activeDay } from '@/core/today';
 import { isHealing } from '@/core/recommend';
 import { packsFor } from '@/core/session-edit';
+import { addCost, minutesLeft } from '@/core/session-time';
+import { scaleExercise } from '@/core/engine';
 import PackList from './PackList';
 import type { Exercise } from '@/core/types';
 import styles from './ReservePicker.module.css';
@@ -16,7 +18,7 @@ type Tab = ReserveGroup | 'PACKS';
 const TABS: Tab[] = ['PACKS', ...RESERVE_GROUPS];
 
 const GROUP_LABEL: Record<Tab, string> = {
-  PACKS: 'PACKS', CORE: 'CORE', BACK: 'BACK', PULL: 'PULL', ARMS: 'ARMS', SHOULDERS: 'SHLDR', LEGS: 'LEGS', MOBILITY: 'MOBIL', FINGERS: 'FINGR',
+  PACKS: 'PACKS', CORE: 'CORE', BACK: 'BACK', PULL: 'PULL', ARMS: 'ARMS', SHOULDERS: 'SHLDR', LEGS: 'LEGS', FEET: 'FEET', MOBILITY: 'MOBIL', FINGERS: 'FINGR',
 };
 
 function dose(e: Exercise): string {
@@ -47,6 +49,8 @@ export default function ReservePicker({ open, onClose }: { open: boolean; onClos
   const climbLog = useStore(s => s.climbLog);
   const energy = useStore(s => s.energy);
   const progress = useStore(s => s.progress);
+  const stepIndex = useStore(s => s.stepIndex);
+  const setIndex = useStore(s => s.setIndex);
   const noKit = useStore(s => activeDay(s.dayPlan).noKit);
   const [group, setGroup] = useState<Tab>('CORE');
   const [added, setAdded] = useState<string[]>([]);
@@ -74,6 +78,9 @@ export default function ReservePicker({ open, onClose }: { open: boolean; onClos
     ? packsFor({ place, mode, healing, pain: sessionPain, noKit }, exerciseList.map(e => e.id))
     : [];
   const sore = group === 'LEGS' && legSoreness(activityLog) !== null;
+  // What an addition costs, against the minutes left: sessions creep when it is invisible.
+  const leftNow = minutesLeft(exerciseList, stepIndex, setIndex);
+  const cost = (e: Exercise) => addCost([scaleExercise(e, energy, progress)], exerciseList, stepIndex, setIndex).minutes;
 
   return (
     <div
@@ -87,6 +94,7 @@ export default function ReservePicker({ open, onClose }: { open: boolean; onClos
         <button className="overlay-close" onClick={onClose} aria-label="Close">X</button>
       </div>
       <div className={styles.place}>
+        <b>{leftNow} MIN LEFT NOW.</b>{' '}
         {noKit ? 'No kit today: mat only.' : placeOf(mode, circuit.id) === 'HOME' ? 'Home: mat, band, portable edge.' : 'Gym: everything.'}
         {(mode === 'HEAL' || healing) && ' Grips and finger work are not recommended while the finger heals.'}
       </div>
@@ -111,6 +119,7 @@ export default function ReservePicker({ open, onClose }: { open: boolean; onClos
             added={packsAdded}
             energy={energy}
             progress={progress}
+            leftNow={leftNow}
             onAdd={offer => { addExtras(offer.ids); setAdded(a => [...a, ...offer.ids]); setPacksAdded(p => [...p, offer.pack.id]); }}
           />
         )}
@@ -124,7 +133,7 @@ export default function ReservePicker({ open, onClose }: { open: boolean; onClos
               <div className={styles.body}>
                 <div className={styles.name}>{exercise.name}</div>
                 <div className={styles.meta}>
-                  {dose(exercise)} &middot; {ago(lastDone)}
+                  {dose(exercise)} &middot; +{cost(exercise)} min &middot; {ago(lastDone)}
                   {curl && mode === 'DAILY' && ' · goes last'}
                 </div>
                 {caution && <div className={styles.caution}>{caution}</div>}

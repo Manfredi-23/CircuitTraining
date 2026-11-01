@@ -64,6 +64,10 @@ export function getLoadAxis(exercise: Exercise): LoadAxis | null {
     case 'finger-kg':
       return FINGER_KG_AXIS;
 
+    case 'score':
+      // A skill drill (v43): clean reps in the best set, weaker side.
+      return { unit: 'clean', step: 1, min: 0, max: Math.max(1, exercise.work), prefix: '', label: `CLEAN OF ${exercise.work}` };
+
     case 'bodyweight':
     case 'band':
     default:
@@ -117,6 +121,7 @@ export function formatLoad(value: number, axis: LoadAxis): string {
   const n = Number.isInteger(value) ? String(value) : value.toFixed(1);
   if (axis.unit === 'RPE' || axis.unit === 'LVL') return `${axis.unit} ${n}`;
   if (axis.unit === 'reps') return `${n} REPS`;
+  if (axis.unit === 'clean') return `${n} CLEAN`;
   // A negative value on a '+' axis is assistance (a counterweight on a max
   // hang), so it reads as minus rather than '+-'.
   const prefix = value < 0 && axis.prefix === '+' ? '' : axis.prefix;

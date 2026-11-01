@@ -19,6 +19,7 @@ import type { ClimbView } from './climbing';
 const kg = (n: number) => `${Math.round(n * 10) / 10} kg`;
 
 export function liftHeadline(loadLog: LoadLogEntry[]): string {
+  loadLog = loadLog.filter(l => l.unit !== 'clean');
   const real = loadLog.filter(l => l.value > 0 && !l.exerciseId.startsWith('test-'));
   if (!real.length) return 'No loads logged yet. They are saved when the last set of an exercise is done.';
   const g = bestGain(loadLog);

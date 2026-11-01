@@ -11,13 +11,15 @@ import styles from './PackList.module.css';
  * middle of one. Each row says what would go in today and how long it adds;
  * a pack with nothing left to add says why.
  */
-export default function PackList({ offers, added, energy, progress, onAdd }: {
+export default function PackList({ offers, added, energy, progress, onAdd, leftNow }: {
   offers: PackOffer[];
   /** Pack ids added in this visit, marked ADDED. */
   added: string[];
   energy: EnergyKey;
   progress: Progress;
   onAdd: (offer: PackOffer) => void;
+  /** Minutes left in the running session: the row then says what it makes in all. */
+  leftNow?: number;
 }) {
   const lib = exerciseLibrary();
   return (
@@ -32,7 +34,7 @@ export default function PackList({ offers, added, energy, progress, onAdd }: {
             <div className={styles.body}>
               <div className={styles.head}>
                 <span className={styles.name}>{pack.name}</span>
-                {exs.length > 0 && <span className={styles.minutes}>+{minutes} MIN</span>}
+                {exs.length > 0 && <span className={styles.minutes}>+{minutes} MIN{leftNow !== undefined ? `, ${leftNow + minutes} LEFT IN ALL` : ''}</span>}
               </div>
               <div className={styles.note}>{pack.note}</div>
               {caution && !closed && <div className={styles.caution}>{caution}</div>}

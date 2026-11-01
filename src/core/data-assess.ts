@@ -22,7 +22,7 @@
 // one-arm gates.
 // =============================================================================
 
-import type { Circuit, Exercise } from './types';
+import type { Circuit, Exercise, LoadAxis } from './types';
 import { WARMUP_FINGERS } from './data-cave';
 
 const WARMUP_GENERAL: Exercise = {
@@ -338,10 +338,98 @@ const sidePlank = (side: 'left' | 'right'): Exercise => ({
 });
 
 
+// ---- FEET (v43): climbing with the legs, scored -------------------------------
+// After BODY + RANGE, before anything heavy: nothing here tires the fingers or
+// the pull. Every test can be scored alone with a tape measure, a box and a wall.
+
+const feetTest = (
+  id: string, name: string, benchmarkId: string, axis: LoadAxis,
+  capacities: Exercise['capacities'], progression: string, form: Exercise['form'],
+): Exercise => ({
+  id, name, section: 'FEET', capacities,
+  block: 'TEST', intensity: 'MODERATE',
+  sets: 1, work: 60, unit: 'sec', restSec: 30,
+  load: { kind: 'bodyweight', text: 'No load' },
+  progression,
+  protocolId: 'assessment',
+  records: { benchmarkId, axis, convert: 'identity' },
+  form,
+});
+
+const FOOT_LOADING = feetTest(
+  'test-foot-loading', 'TEST — Foot Loading', 'foot-loading',
+  { unit: 'cm', step: 5, min: 20, max: 120, prefix: '', label: 'STEP HEIGHT, WEAKER' },
+  ['legs', 'mobility'],
+  'Enter the highest step stood on cleanly with the weaker leg, in cm.',
+  {
+    setup: 'Boxes or plates stacked to known heights against a wall. Face the wall, hands flat on it.',
+    execution: 'Put one foot on the step, move the hips over it and stand up without pushing off the floor foot. Go up a height until it fails. Both legs.',
+    cue: 'The lower-body test that tracks climbing grade best (Draper, r = 0.65): a high foot is only useful if the weight gets onto it.',
+    breathing: 'Exhale as you stand.',
+    mistakes: 'A hop off the floor foot. Pulling on the wall.',
+  },
+);
+
+const HIPS_FROM_WALL = feetTest(
+  'test-hips-from-wall', 'TEST — Hips From the Wall', 'hips-from-wall',
+  { unit: 'mm', step: 5, min: 40, max: 300, prefix: '', label: 'HIP TO WALL' },
+  ['mobility'],
+  'Enter the distance in mm. Lower is better: good is under 130.',
+  {
+    setup: 'Face a wall, feet a little apart and turned out, toes near the wall. A tape measure.',
+    execution: 'Squat halfway, then bring the hips as close to the wall as they go, chest up. Measure from the front of the hip bone to the wall.',
+    cue: 'Turnout and the hips in to the wall: what puts the weight over the toes on a slab or a frog position.',
+    breathing: 'Relaxed.',
+    mistakes: 'Leaning the chest on the wall. Squatting too deep.',
+  },
+);
+
+const KNEE_TO_WALL = feetTest(
+  'test-knee-to-wall', 'TEST — Knee to Wall', 'knee-to-wall',
+  { unit: 'cm', step: 1, min: 0, max: 25, prefix: '', label: 'TOE TO WALL, WEAKER' },
+  ['mobility'],
+  'Enter the weaker ankle in cm.',
+  {
+    setup: 'Lunge facing a wall, a tape on the floor.',
+    execution: 'Move the front foot back a centimetre at a time until the knee only just touches the wall with the heel flat. Measure big toe to wall. Both ankles.',
+    cue: 'Ankle bend is what lets the knee travel over a high foot and what a toe hook needs.',
+    breathing: 'Relaxed.',
+    mistakes: 'The heel lifting. The knee caving inward.',
+  },
+);
+
+const BALANCE_CLOSED = feetTest(
+  'test-sl-balance', 'TEST — Single-Leg Balance, Eyes Closed', 'sl-balance-closed',
+  { unit: 's', step: 1, min: 0, max: 120, prefix: '', label: 'SECONDS, WEAKER' },
+  ['legs', 'tension'],
+  'Enter the weaker leg, best of two, in seconds.',
+  {
+    setup: 'Barefoot, hands on the hips, near a wall in case.',
+    execution: 'Stand on one leg, close the eyes and time it until the foot moves, the other foot touches or the eyes open. Two goes a leg.',
+    cue: 'Balance with the eyes shut is the feet and the ankle doing the work alone.',
+    breathing: 'Slow and steady.',
+    mistakes: 'Hooking the free foot on the standing leg. Peeking.',
+  },
+);
+
+const TOE_TAP_TEST = feetTest(
+  'test-toe-taps', 'TEST — Toe-Tap Precision', 'toe-tap-precision',
+  { unit: 'clean', step: 1, min: 0, max: 10, prefix: '', label: 'CLEAN OF 10, WEAKER' },
+  ['legs', 'tension'],
+  'Enter the clean first touches out of ten on the weaker foot.',
+  {
+    setup: 'Ten small tape marks around one foot at different distances and angles.',
+    execution: 'Standing on one leg, touch the other toe onto each mark once, slowly. A slide or a second go is not clean. Both feet.',
+    cue: 'Look, place once, weight: the same score as the DAILY 06 drill.',
+    breathing: 'Slow.',
+    mistakes: 'Rushing. Hopping on the standing foot.',
+  },
+);
+
 export const DATA_ASSESS: Circuit[] = [
   {
     id: 'assess-01', circuitNum: '01',
-    title: 'ASSESS', subtitle: 'warm-up - range - strength - endurance - trunk',
+    title: 'ASSESS', subtitle: 'warm-up - range - feet - strength - endurance - trunk',
     focus: 'Find the limiter. Numbers now, opinions later.',
     capacities: ['crimp', 'openhand', 'forearm', 'pull', 'press', 'tension', 'mobility'],
     illustration: 'dumbbell.svg',
@@ -358,10 +446,13 @@ export const DATA_ASSESS: Circuit[] = [
       WARMUP_PULL,
       { ...WARMUP_FINGERS, section: 'WARM-UP', sets: 4 },
       BODYWEIGHT,
+      STRADDLE,
+      SIT_REACH,
+      SHOULDER_REACH,
       {
         id: 'test-hip-mobility',
         name: 'TEST — Foot Raise',
-        section: 'BODY + RANGE',
+        section: 'FEET',
         capacities: ['mobility'],
         block: 'TEST', intensity: 'MODERATE',
         sets: 1, work: 60, unit: 'sec', restSec: 30,
@@ -381,9 +472,11 @@ export const DATA_ASSESS: Circuit[] = [
           mistakes: 'Leaning the torso away to fake height. Not testing both sides.',
         },
       },
-      STRADDLE,
-      SIT_REACH,
-      SHOULDER_REACH,
+      FOOT_LOADING,
+      HIPS_FROM_WALL,
+      KNEE_TO_WALL,
+      BALANCE_CLOSED,
+      TOE_TAP_TEST,
       {
         id: 'test-max-hang',
         name: 'TEST — Max Hang 20mm, 7s Ramp',

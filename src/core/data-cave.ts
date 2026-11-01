@@ -32,6 +32,7 @@ import type { Circuit, Exercise } from './types';
 import { oneArmPath, assistedOneArm, oneArmNegative, oneArmShrug } from './data-oap';
 import { SIDE_PLANK_DIP } from './data-daily';
 import { LUNGE_DRIVE, SL_BALANCE } from './data-extras';
+import { EDGE_STAND, WALL_HIGH_STEP } from './data-feet';
 
 export const WARMUP_PULSE = {
   id: 'cave-warmup-pulse',
@@ -182,6 +183,8 @@ export const DATA_CAVE: Circuit[] = [
       + 'and well rested. If you are rushing, cut an exercise, not the rest.',
     exercises: [
       WARMUP_PULSE,
+      // Skill while fresh (v43): the balance and stretch dose opens the work.
+      { ...LUNGE_DRIVE, sets: 2 },
       { ...WARMUP_FINGERS, sets: 4 },
       {
         id: 'cave-max-hang',
@@ -307,7 +310,6 @@ export const DATA_CAVE: Circuit[] = [
           mistakes: 'Swinging into each rep. Letting the shoulders go passive at the bottom.',
         },
       },
-      { ...LUNGE_DRIVE, sets: 2 },
       {
         id: 'cave-band-er',
         name: 'Band External Rotation',
@@ -344,6 +346,8 @@ export const DATA_CAVE: Circuit[] = [
       + 'something left, then the pushing climbing never trains, then the trunk. If you '
       + 'are too cooked, pick TIRED: it keeps every exercise and takes a set off each.',
     exercises: [
+      // Skill first (v43): the balance and stretch dose while there is focus left.
+      LUNGE_DRIVE,
       {
         id: 'addon-weighted-pullup',
         name: 'Weighted Pull-Ups',
@@ -431,7 +435,6 @@ export const DATA_CAVE: Circuit[] = [
         },
       },
       RUSSIAN_TWIST,
-      LUNGE_DRIVE,
       {
         id: 'addon-cuff',
         name: 'Band External Rotation',
@@ -468,8 +471,15 @@ export const DATA_CAVE: Circuit[] = [
       + 'are complaining. Legs and back first while there is strength left, then the '
       + 'feet, then the trunk, then the hips.',
     exercises: [
+      // SKILL (v43): the high foot and the edge first, while there is focus left.
+      WALL_HIGH_STEP,
+      EDGE_STAND,
+      { ...SL_BALANCE, sets: 1 },
       {
         id: 'addon-goblet-squat',
+        // A choice slot (v43): two legs or one, whichever was done less recently.
+        slot: 'SQUAT: TWO LEGS OR ONE',
+        options: ['feet-box-pistol'],
         name: 'Goblet Squat',
         capacities: ['legs'],
         block: 'SECONDARY', intensity: 'MODERATE',
@@ -596,7 +606,6 @@ export const DATA_CAVE: Circuit[] = [
         },
       },
       SIDE_PLANK_DIP,
-      { ...SL_BALANCE, sets: 2 },
       {
         id: 'feet-frogger',
         name: 'Frogger + Active Straddle',
@@ -633,6 +642,8 @@ export const DATA_CAVE: Circuit[] = [
       + 'the balance. Stop a power set the moment a rep slows down.',
     exercises: [
       WARMUP_PULSE,
+      // Skill while fresh (v43): balance straight after the warm-up.
+      SL_BALANCE,
       { ...WARMUP_FINGERS, sets: 3 },
       {
         id: 'power-light-hang',
@@ -803,7 +814,6 @@ export const DATA_CAVE: Circuit[] = [
           mistakes: 'Hips sagging between reps. Shoulders drifting behind the hands. Swinging.',
         },
       },
-      SL_BALANCE,
       {
         id: 'power-band-face-pull',
         name: 'Band Face Pull',
@@ -883,6 +893,8 @@ export const DATA_CAVE: Circuit[] = [
       },
       {
         id: 'full-front-squat',
+        slot: 'SQUAT: TWO LEGS OR ONE',
+        options: ['feet-box-pistol'],
         name: 'Double Kettlebell Front Squat',
         capacities: ['legs'],
         block: 'PRIMARY', intensity: 'HARD',

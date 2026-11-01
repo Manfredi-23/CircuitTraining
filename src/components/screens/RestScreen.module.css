@@ -47,3 +47,8 @@
   align-self: flex-start; font-family: inherit; font-weight: 700; font-size: 12px; letter-spacing: 0.06em; color: var(--ink);
   background: none; border: 2px solid var(--ink); border-radius: var(--rad-sm); padding: 10px 14px; flex-shrink: 0;
 }
+
+/* v43 */
+.lastNote { font-size: 12px; color: var(--ink); line-height: 1.45; border: 1.5px dashed var(--ink-dim); border-radius: 4px; padding: 8px 10px; margin-top: 4px; }
+.lastNote b, .then b { font-size: 11px; letter-spacing: 0.08em; margin-right: 6px; }
+.then { font-size: 12px; color: var(--ink-dim); line-height: 1.45; }

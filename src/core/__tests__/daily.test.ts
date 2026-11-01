@@ -48,7 +48,8 @@ describe('DAILY 06 QUIET FEET', () => {
   it('exists, mat only, hands free: nothing gripped, nothing loaded', () => {
     expect(feet).toBeDefined();
     for (const ex of feet.exercises) {
-      expect(ex.load.kind, ex.id).toBe('bodyweight');
+      // Bodyweight, or a skill drill scored as clean reps (v43): nothing loaded either way.
+      expect(['bodyweight', 'score'], ex.id).toContain(ex.load.kind);
       expect(ex.block, ex.id).not.toBe('ACCESSORY');
       expect(ex.capacities.some(c => ['crimp', 'openhand', 'forearm', 'pull'].includes(c)), ex.id).toBe(false);
     }
@@ -75,6 +76,6 @@ describe('displaySubtitle', () => {
     expect(c.subtitle).toMatch(/^daily - .* - 13 min$/);
     expect(displaySubtitle(c)).toBe('mat only · abs · obliques');
     const assess = getModeData('TEST')[0];
-    expect(displaySubtitle(assess)).toBe('warm-up · range · strength · endurance · trunk');
+    expect(displaySubtitle(assess)).toBe('warm-up · range · feet · strength · endurance · trunk');
   });
 });

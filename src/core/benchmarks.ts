@@ -540,6 +540,75 @@ export const BENCHMARKS: Benchmark[] = [
     ],
     source: 'McGill torso endurance battery (side bridge roughly 95-99s in healthy young men). Approximate.',
   },
+
+  // ---- FEET (v43): the ASSESS section for climbing with the legs ----------------
+  {
+    id: 'foot-loading',
+    short: 'cm',
+    name: 'Foot loading: highest step stood on',
+    capacity: 'legs',
+    unit: 'cm, step height, weaker leg',
+    protocol:
+      'Face a wall, hands flat on it. Step onto a box or step as high as you can and stand '
+      + 'up on it without pushing off the floor foot. The highest clean one, weaker leg.',
+    standards: [],
+    source:
+      'Draper et al. (2009): the foot-loading test, a high foot plus the weight moved onto it, '
+      + 'correlated best with climbing ability (r = 0.65) of the lower-body tests. Tracked '
+      + 'against itself here: the original is scored on a purpose-built board.',
+  },
+  {
+    id: 'hips-from-wall',
+    short: 'mm',
+    name: 'Hips from the wall in a half squat',
+    capacity: 'mobility',
+    unit: 'mm from the front of the hip bone to the wall',
+    protocol:
+      'Face the wall, feet turned out, and squat halfway. Bring the hips as close to the wall '
+      + 'as they go and measure from the front of the hip bone to the wall.',
+    standards: [
+      { label: 'Fair', value: 170 },
+      { label: 'Good', value: 130 },
+    ],
+    source: 'The Climbing Doctor movement screen (J. Vagy): good under 130mm, poor over 170mm.',
+    better: 'lower',
+  },
+  {
+    id: 'knee-to-wall',
+    short: 'cm',
+    name: 'Knee to wall, weaker ankle',
+    capacity: 'mobility',
+    unit: 'cm from the big toe to the wall, heel down',
+    protocol:
+      'Lunge facing a wall. Move the foot back until the knee only just touches the wall with '
+      + 'the heel down. Measure from the big toe to the wall. Weaker ankle.',
+    standards: [{ label: 'Typical', value: 10 }],
+    source: 'Weight-bearing lunge test, standard ankle dorsiflexion screen (about 10cm is typical). Approximate.',
+  },
+  {
+    id: 'sl-balance-closed',
+    short: 's',
+    name: 'Single-leg balance, eyes closed',
+    capacity: 'tension',
+    unit: 'seconds, weaker leg',
+    protocol:
+      'Barefoot on one leg, hands on the hips, eyes closed. Time until the foot moves, the '
+      + 'other foot touches down or the eyes open. Best of two, weaker leg.',
+    standards: [],
+    source: 'Single-leg stance test (eyes closed avoids the 30s ceiling of the eyes-open version).',
+  },
+  {
+    id: 'toe-tap-precision',
+    short: 'clean',
+    name: 'Toe-tap precision',
+    capacity: 'legs',
+    unit: 'clean first touches out of 10, weaker foot',
+    protocol:
+      'Standing on one leg, touch the other toe onto ten small tape marks around the foot. A '
+      + 'touch counts only if it lands once, without sliding or a second go.',
+    standards: [],
+    source: 'Precision drill from the DAILY 06 footwork, scored (Horst, target practice).',
+  },
 ];
 
 export function getBenchmark(id: string): Benchmark | null {

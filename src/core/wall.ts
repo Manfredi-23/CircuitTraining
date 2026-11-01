@@ -95,6 +95,37 @@ export const WALL_DRILLS: WallDrill[] = [
     how: 'Easy dynos and deadpoints: aim the hand at the hold, not the area. Five goes each, stop while they stay crisp.',
     dose: '3 problems, 5 goes each', answers: ['dyno', 'deadpoint', 'coordination', 'power'],
   },
+  // v43, from the research (docs/7bit-proposal-v42.md, section 6).
+  {
+    id: 'target-practice', kind: 'TECHNIQUE', name: 'Target practice',
+    how: 'Eyes on each foot until it is weighted: the toe on the best part of the hold, still as you stand up on it. Nothing else matters, falling included (Horst).',
+    dose: '3-4 problems a grade under your flash', answers: ['feet', 'smear', 'slab', 'crimp'],
+  },
+  {
+    id: 'tracking', kind: 'TECHNIQUE', name: 'Tracking',
+    how: 'The feet may use only the holds the hands have used. It forces high feet and a weight shift onto each one (Horst).',
+    dose: '3 easy problems', answers: ['rockover', 'feet', 'vertical'],
+  },
+  {
+    id: 'pause-place', kind: 'TECHNIQUE', name: 'Pause before placing',
+    how: 'A short pause with the foot just off the hold, then place it once. Re-adjusting a placed foot is a nervous habit: none today (Gresham).',
+    dose: '3-4 stints of 1-3 min, 2 min rest', answers: ['feet', 'slab', 'smear', 'backed-off'],
+  },
+  {
+    id: 'foot-swaps', kind: 'TECHNIQUE', name: 'Foot swaps',
+    how: 'Five foot swaps on an easy traverse, each hop or slide clean. On steep ground a flick of the hips stops the swing (MacLeod).',
+    dose: '2 traverses, 5 swaps each', answers: ['feet', 'overhang', 'coordination'],
+  },
+  {
+    id: 'flag-check', kind: 'TECHNIQUE', name: 'Flag higher and closer',
+    how: 'The flag foot usually goes too low and too far away. Try each flag twice: once where it falls, once higher and closer. Feel the difference (MacLeod).',
+    dose: '4 vertical problems', answers: ['vertical', 'reach', 'crimp'],
+  },
+  {
+    id: 'toe-pull', kind: 'TECHNIQUE', name: 'Pull in with the toes',
+    how: 'On steep ground, pull the hips in with the toes before each hand move, as if dragging the wall toward you. The feet pull, not only push (MacLeod).',
+    dose: '4 steep problems', answers: ['tension', 'overhang', 'roof'],
+  },
   // Head.
   {
     id: 'try-hard', kind: 'HEAD', name: 'Three goes at 110%',
