@@ -392,7 +392,7 @@ Added in October 2026 when the athlete hurt a finger: no climbing and no
 pulling for a few weeks. Two gym sessions for the bouldering gym's training
 area: one barbell **used for the squat only**, plates, a box, a stool, a
 radiator to hook the feet under, bands, a mat. No machines, **no bench of any
-kind** (the back extension is done over a stool, the Nordic curl with the heels
+kind** (the back extension is done on the mat with the heels under the radiator, the Nordic curl with the heels
 under the radiator), no TRX foot cradles. Alternated two or three times a week. The rule: **the hands only
 rest on things or press flat.** Nothing is gripped (no dumbbell, kettlebell,
 ring, bar hang or band handle) and nothing pulls; plates are hugged to the
@@ -498,7 +498,8 @@ fists, spiderman plank (knee to the same elbow), cross-body mountain climber,
 reverse crunch, Russian twist. The band dead bug, leg lowers, press-out,
 hollow hold and slow crunch left it to fit the 20 minutes. `back-strength` covers the lower back, which is
 weak but not painful: bird dog, then prone extension, then band good morning in
-DAILY 02, then the loaded 45-degree back extension and single-leg RDL in CAVE
+DAILY 02, then the loaded floor back extension (heels under the radiator, a
+plate hugged; v41: the gym has no back extension station) and single-leg RDL in CAVE
 03. `SIDE_PLANK_DIP` is shared between DAILY 02 and CAVE 03.
 
 **BACK is its own area** (v40), apart from CORE's abs and obliques, in BUILD,
@@ -518,8 +519,10 @@ LEGS).
 
 Five sessions (v33): three for a day without climbing, two for straight after
 bouldering. The gym kit: pull-up bar, hangboard, TRX rings, kettlebells,
-dumbbells, plates, boxes, bands, a mat. **No bench, no barbell to press, no
-cables.**
+dumbbells, plates, boxes, bands, a mat, a radiator to hook the heels under.
+**No bench, no barbell to press, no cables, no back extension station**
+(`cave-training.test.ts` keeps any 45-degree, roman chair or stool setup out
+of the library).
 
 - **01 STRONG** replaces a bouldering day: max hangs, heavy weighted pull-ups,
   the one-arm path, lock-offs, front lever, hanging leg raise. 70-80 minutes.
@@ -541,7 +544,7 @@ cables.**
   so level adds no sets), band-assisted one-arms, push-ups/dips, spiderman +
   cross-body mountain climber, hanging oblique raise (ab straps allowed),
   weighted Russian twist, cuff.
-- **03 LEGS + BACK**, after bouldering: goblet squat, 45-degree back extension,
+- **03 LEGS + BACK**, after bouldering: goblet squat, floor back extension (heels under the radiator),
   single-leg RDL, toe-tip plate drag, Copenhagen plank, plate crunch, side
   plank hip dip, frogger. Nothing loads the fingers.
 - 02 and 03 are `stacksOnSession` and `check:cave` keeps them inside 45
@@ -1137,7 +1140,10 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v40.md`** — **start here.** BACK as an
+- **`7bit-handover-v41.md`** — **start here.** No back
+  extension station at the gym: the back extension is on the mat, heels under
+  the radiator, everywhere it appears.
+- **`7bit-handover-v40.md`** — BACK as an
   area of its own: seven new back exercises, the `upper-back` protocol, the
   STRONG BACK and BACK + CORE presets, a BACK pack.
 - **`7bit-handover-v39.md`** — BUILD keeps the time picked

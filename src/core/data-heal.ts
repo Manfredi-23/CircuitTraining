@@ -54,21 +54,8 @@ function shared(circuits: Circuit[], id: string): Exercise {
   return ex;
 }
 
-/**
- * Same id and history as CAVE 03's back extension. No bench here: the hips go
- * over a stool and the heels hook under the radiator.
- */
-const BACK_EXTENSION: Exercise = {
-  ...shared(DATA_CAVE, 'legs-back-extension'),
-  note: 'No bench: hips over a stool, heels hooked under the radiator. A plate hugged to the chest once bodyweight is easy.',
-  form: {
-    setup: 'Stool a little more than a leg-length from the wall. Lie face down over it with the stool under the hip bones, not the belly, so the hips can fold. Heels hooked under the radiator, legs straight. Arms crossed on the chest, or a plate hugged there. Test that the radiator takes a hard pull before the first rep.',
-    execution: 'Let the torso hang down by folding at the hips with a flat back until the hamstrings stretch. Rise until the body is one straight line from heels to head, squeeze the glutes, hold one second. Do not go past straight.',
-    cue: 'The spine stays rigid and the hips move it: that is what makes a weak lower back strong without bending it under load.',
-    breathing: 'Inhale on the way down, exhale on the way up.',
-    mistakes: 'Stool under the belly, which turns the hinge into a lower-back crunch. Arching past straight at the top. Swinging up.',
-  },
-};
+/** Same id and history as CAVE 03's back extension: on the mat, heels under the radiator. */
+const BACK_EXTENSION: Exercise = shared(DATA_CAVE, 'legs-back-extension');
 /** HEAL versions of shared exercises: same ids and history, set up on the box, plates hugged. */
 const COPENHAGEN: Exercise = {
   ...shared(DATA_CAVE, 'home-copenhagen'),
