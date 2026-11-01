@@ -14,6 +14,8 @@ import SessionCard from '@/components/shared/SessionCard';
 import DayControls from '@/components/shared/DayControls';
 import WeekRail from '@/components/shared/WeekRail';
 import WallCard from '@/components/shared/WallCard';
+import BodyWeek from '@/components/shared/BodyWeek';
+import { addsLine, mainArea, setsByArea } from '@/core/body-week';
 import { seasonLabel } from '@/core/season';
 import Led from '@/components/shared/Led';
 import { routineCircuit } from '@/core/routines';
@@ -85,6 +87,12 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
       </ScreenHeader>
 
       <WeekRail />
+
+      <BodyWeek
+        highlight={recList.length ? mainArea(setsByArea(recList)) : null}
+        listOf={launcher.listOf}
+        onOpen={t => launcher.show(t)}
+      />
 
       {derank && (
         <div className={styles.banner}>
@@ -186,13 +194,16 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
               {alternatives.map(a => {
                 const c = circuitOf(a, routines);
                 if (!c) return null;
-                const minutes = estimateDuration(launcher.listOf({ mode: a.mode, circuit: c }));
+                const altList = launcher.listOf({ mode: a.mode, circuit: c });
+                const minutes = estimateDuration(altList);
+                const adds = addsLine(setsByArea(altList), 3);
                 return (
                   <button key={a.circuitId} className={styles.altRow} onClick={() => launcher.show({ mode: a.mode, circuit: c })}>
                     <Led text={c.circuitNum} dot={4} lit="var(--ink)" unlit="none" className={styles.altNum} label={`${a.mode} ${c.circuitNum}`} />
                     <span className={styles.altBody}>
                       <span className={styles.altTitle}>{a.routineId ? 'ROUTINE' : a.mode} &middot; {c.title}</span>
                       <span className={styles.altWhy}>{a.reason}</span>
+                      {adds && <span className={styles.altAdds}>{adds}</span>}
                     </span>
                     <span className={styles.altMin}>{minutes}<small> min</small></span>
                   </button>

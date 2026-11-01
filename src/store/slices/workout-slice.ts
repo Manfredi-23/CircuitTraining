@@ -79,6 +79,8 @@ export interface WorkoutSlice {
   setExerciseNote: (exerciseId: string, text: string) => void;
   /** The session map (v43): change an exercise still to come. */
   editAhead: (action: 'later' | 'drop' | 'up' | 'down' | 'more' | 'fewer', index: number) => void;
+  /** A choice slot (v43): run another of its options instead, before its first set. */
+  chooseOption: (exerciseId: string) => void;
   /** XP across all capacities when the session started, for what it earned. */
   startXP: number;
   /** Seconds the last rest ran past its end while the app slept; 0 when it did not. */
@@ -496,6 +498,23 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       : action === 'down' ? moveAhead(list, stepIndex, index, 1)
       : setsAhead(list, stepIndex, index, action === 'more' ? 1 : -1);
     if (next !== list) set({ exerciseList: next });
+  },
+
+  chooseOption: (exerciseId) => {
+    const st = get();
+    const curr = st.currentExercise;
+    const base = exerciseLibrary().get(exerciseId);
+    if (!curr || !base || st.setIndex !== 1 || !curr.options?.includes(exerciseId)) return;
+    if (st.exerciseList.some(e => e.id === exerciseId)) return;
+    const deload = Boolean(st.circuit) && getBlockWeek(st.blockStart, st.sessionLog).deload && deloads(st.circuit!);
+    const scaled = Engine.scaleExercise(base, st.energy, st.progress, { deload, tweaks: st.tweaks });
+    const next = { ...scaled, slot: curr.slot, options: [curr.id, ...curr.options.filter(o => o !== exerciseId)] };
+    set({
+      currentExercise: next,
+      exerciseList: st.exerciseList.map((e, i) => (i === st.stepIndex ? next : e)),
+      swapActive: false,
+    });
+    get().primeLoad(next);
   },
 
   addExtras: (exerciseIds) => {

@@ -219,6 +219,9 @@ const STACKING = new Set(['cave-05', 'cave-06']);
  * The biggest gain on a logged load, from its first real value to its latest:
  * zeros are a stepper left unset, not a load, so they are skipped.
  */
+/** Loads only: a skill score (clean reps, v43) is not a kilo and never a load gain. */
+export const loadsOnly = (log: LoadLogEntry[]) => log.filter(l => l.unit !== 'clean');
+
 export function bestGain(loadLog: LoadLogEntry[]): { name: string; from: number; to: number; since: string } | null {
   const byId = new Map<string, LoadLogEntry[]>();
   for (const e of loadLog) {
@@ -286,13 +289,13 @@ export function getInsights(input: InsightInput, max = 7): Insight[] {
   }
 
   // The biggest load gain.
-  const gain = bestGain(input.loadLog);
+  const gain = bestGain(loadsOnly(input.loadLog));
   if (gain) {
     out.push({ tone: 'good', text: `${gain.name}: ${kg(gain.from)} to ${kg(gain.to)} since ${fmtDay(gain.since)}.` });
   }
 
   // A lift stuck at one load: more of the same rarely moves it.
-  const stuck = plateaus(input.loadLog, now)[0];
+  const stuck = plateaus(loadsOnly(input.loadLog), now)[0];
   if (stuck) {
     out.push({ tone: 'warn', text: `${stuck.name} at ${stuck.value} ${stuck.unit} for ${stuck.sessions} sessions. Change the variation, add a set lighter, or retest.` });
   }
@@ -346,7 +349,7 @@ export function getInsights(input: InsightInput, max = 7): Insight[] {
   }
 
   // Loads logged as 0 after a real value.
-  const zeros = zeroDrops(input.loadLog);
+  const zeros = zeroDrops(loadsOnly(input.loadLog));
   if (zeros.length) {
     const z = zeros[0];
     out.push({

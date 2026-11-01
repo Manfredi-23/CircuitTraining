@@ -97,6 +97,9 @@ export interface BenchmarkRow {
   gradeTargets: { current: number | null; next: number | null };
 }
 
+/** The FEET section of ASSESS (v43): STATS PROGRESS shows them apart from the other tests. */
+export const FEET_BENCHMARKS = ['hip-footraise', 'foot-loading', 'hips-from-wall', 'knee-to-wall', 'sl-balance-closed', 'toe-tap-precision'];
+
 /** Session order: strength, endurance, trunk, range; retired tests last. */
 const ROW_ORDER = [
   'fs-2arm-20mm', 'weighted-pullup-2rm',

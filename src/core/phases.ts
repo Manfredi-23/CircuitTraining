@@ -53,7 +53,8 @@ export function phaseOf(e: Exercise, beforeWork = false): Phase {
   if (isSkill(e)) return 'SKILL';
   if (CARE_BLOCKS.has(e.block)) return beforeWork ? 'PREP' : 'CARE';
   if (POWER_PROTOCOLS.has(e.protocolId ?? '')) return 'POWER';
-  if (areaOf(e) === 'CORE') return 'CORE';
+  // Active-range hip work leads with tension but is strength at end range, not trunk work.
+  if (areaOf(e) === 'CORE' && e.protocolId !== 'active-range') return 'CORE';
   return 'STRENGTH';
 }
 

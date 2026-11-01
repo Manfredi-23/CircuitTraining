@@ -17,6 +17,7 @@ import WeekPlanner from '@/components/shared/WeekPlanner';
 import { blankRoutine, routineCircuit, routineFromCircuit, routineMode, type Routine } from '@/core/routines';
 import { activeEdit } from '@/core/session-edit';
 import type { Circuit, Mode } from '@/core/types';
+import { addsLine, BODY_AREAS, BODY_LABEL, setsByArea, type BodyArea } from '@/core/body-week';
 import styles from './TrainScreen.module.css';
 
 type Shelf = Mode | 'MINE';
@@ -49,6 +50,8 @@ export default function TrainScreen({ onSettings }: { onSettings: () => void }) 
   const launcher = useLauncher();
   const [shelf, setShelf] = useState<Shelf>(mode);
   const [buildOpen, setBuildOpen] = useState(false);
+  // I WANT: only the sessions that put two or more working sets into an area.
+  const [want, setWant] = useState<BodyArea | null>(null);
   const today = localDate();
 
   /** MAKE IT MINE copies the session as it stands, with an edit made on its page. */
@@ -71,7 +74,11 @@ export default function TrainScreen({ onSettings }: { onSettings: () => void }) 
   );
 
   const row = (m: Mode, c: Circuit, routine?: Routine) => {
-    const minutes = estimateDuration(launcher.listOf({ mode: m, circuit: c }));
+    const list = launcher.listOf({ mode: m, circuit: c });
+    const minutes = estimateDuration(list);
+    const adds = setsByArea(list);
+    if (want && !routine && adds[want] < 2) return null;
+    const trains = addsLine(adds, 3);
     const readiness = getReadiness(c, progress);
     const last = lastDone(sessionLog, c.id);
     const recommended = recommendation?.circuitId === c.id;
@@ -91,6 +98,7 @@ export default function TrainScreen({ onSettings }: { onSettings: () => void }) 
             {recommended && <span className={styles.tag}>TODAY</span>}
           </span>
           <span className={styles.sub}>{displaySubtitle(c)}</span>
+          {trains && <span className={styles.trains}>{trains}</span>}
           <span className={readiness.level === 'ready' ? styles.meta : styles.metaWarn}>
             {readiness.level === 'ready' ? (last === null ? 'Not done yet' : `Last ${ago(daysBetween(last, today))}`) : readiness.message}
           </span>
@@ -129,8 +137,20 @@ export default function TrainScreen({ onSettings }: { onSettings: () => void }) 
               >{e}</button>
             ))}
           </div>
+          <div className={styles.wantRow} role="group" aria-label="Show sessions for one area">
+            <span className={styles.energyLabel}>I WANT</span>
+            <div className={styles.wantChips}>
+              <button className={`${styles.energyChip}${want === null ? ` ${styles.energyChipOn}` : ''}`} aria-pressed={want === null} onClick={() => setWant(null)}>ALL</button>
+              {BODY_AREAS.map(a => (
+                <button key={a} className={`${styles.energyChip}${want === a ? ` ${styles.energyChipOn}` : ''}`} aria-pressed={want === a} onClick={() => setWant(w => (w === a ? null : a))}>{BODY_LABEL[a]}</button>
+              ))}
+            </div>
+          </div>
           <div className={styles.list}>
             {getModeData(shelf).map(c => row(shelf, c))}
+            {want && getModeData(shelf).every(c => setsByArea(launcher.listOf({ mode: shelf, circuit: c }))[want] < 2) && (
+              <div className={styles.emptyMine}>Nothing in {shelf} trains {want.toLowerCase()} today. Try another tab, or a pack from EDIT.</div>
+            )}
           </div>
         </>
       )}

@@ -56,3 +56,8 @@
 .h2 { font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--ink); }
 .newBtn { height: 36px; padding: 0 12px; font-weight: 700; font-size: 12px; letter-spacing: 0.08em; border: 2px solid var(--ink); border-radius: var(--rad-sm); }
 .emptyMine { font-size: 13px; line-height: 1.5; color: var(--ink); border: 2px dashed var(--ink-ghost); border-radius: var(--rad-lg); padding: 16px; }
+
+/* v43: what each session trains, and I WANT */
+.trains { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: var(--ink); }
+.wantRow { display: flex; align-items: flex-start; gap: 10px; }
+.wantChips { display: flex; flex-wrap: wrap; gap: 6px; }

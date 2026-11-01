@@ -187,3 +187,22 @@ test('STATS: the coach, the goal ladder and goals edited, and where you fall', a
   await expect(page.getByText(/is where you fall/)).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test('BODY THIS WEEK opens TRAIN THIS; the session map moves an exercise to the end', async ({ page }) => {
+  const errors = await open(page, { ...seed.data, sessionLog: [] });
+  await expect(page.getByRole('heading', { name: 'BODY THIS WEEK' })).toBeVisible();
+  await page.getByRole('button', { name: /^FEET: / }).click();
+  await expect(page.getByText('TRAIN THIS')).toBeVisible();
+  await page.getByRole('button', { name: /HOOKS \+ HIGH FEET/ }).click();
+  await expect(page.getByText(/^SKILL · \d+ MIN/).first()).toBeVisible();
+  await expect(page.getByText(/^THIS SESSION/)).toBeVisible();
+  await page.getByRole('button', { name: /^START HOOKS \+ HIGH FEET/ }).click();
+  await expect(page.getByText(/MIN LEFT/).first()).toBeVisible();
+  await page.getByRole('button', { name: /Open the whole session/ }).click();
+  await expect(page.getByText('BACK TO THE SET')).toBeVisible();
+  const later = page.getByRole('button', { name: 'LATER', exact: true }).first();
+  await later.click();
+  await page.getByRole('button', { name: 'BACK TO THE SET' }).click();
+  await expect(page.getByRole('button', { name: 'DONE', exact: true })).toBeVisible();
+  expect(errors).toEqual([]);
+});

@@ -1,6 +1,9 @@
 # 7BIT — Proposal v42: clearer sessions, and climbing with the legs
 
-**Date:** 1 November 2026. **Status: proposal. Nothing here is built.**
+**Date:** 1 November 2026. **Status: built in v43** (`docs/handovers/7bit-handover-v43.md`), all of it
+except the weekly plan holding an area (P8, last item). The athlete's answers to section 10:
+home has a chair (maybe a sofa); every area on BODY THIS WEEK; slots pick by default; skill moves
+to the start of CAVE and HEAL; TEST 02 FEET is a section of ASSESS; all in one go.
 The athlete asked for two things:
 
 1. How the app could be structured so it is easier to use, explains more,

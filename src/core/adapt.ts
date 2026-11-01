@@ -89,7 +89,8 @@ export function plateaus(loadLog: LoadLogEntry[], now = new Date()): Plateau[] {
   const since = addDays(localDate(now), -28);
   const out: Plateau[] = [];
   for (const s of getLiftSeries(loadLog)) {
-    if (s.points.length < PLATEAU_SESSIONS) continue;
+    // A skill score that holds is a skill, not a stalled lift.
+    if (s.unit === 'clean' || s.points.length < PLATEAU_SESSIONS) continue;
     const last = s.points[s.points.length - 1];
     if (last.date < since) continue;
     let run = 1;

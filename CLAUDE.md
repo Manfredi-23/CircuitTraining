@@ -152,6 +152,14 @@ src/
     coach.ts     # the last four weeks as one text for a coach; the review's instructions
     led-font.ts  # the 5 x 7 LED glyphs and 7 x 7 icons behind the LED numerals
     week-rail.ts # this week Monday to Sunday for the rail on TODAY
+    phases.ts    # PREP, SKILL, POWER, STRENGTH, CORE, CARE, TEST: a session read as chapters
+    session-time.ts # minutes left, the finish time, what an addition costs
+    live-edit.ts # the session map: LATER, take out, move, sets on what is still to come
+    slots.ts     # choice slots: the option done least recently runs; variants for the budgets
+    body-week.ts # BODY THIS WEEK: sets per area against a weekly band, what a session adds
+    transfer.ts  # what each exercise is for on the wall, focus cues, falls -> packs
+    notes.ts     # a technique note per exercise, shown as LAST TIME
+    data-feet.ts # twenty off-wall exercises for feet, hooks, high steps (v43)
     data-daily.ts, data-cave.ts, data-assess.ts, data-heal.ts  # Session libraries, one per tab
     data-oap.ts  # One-arm pull-up path, shared by CAVE 01 and CAVE 02
     data-index.ts  # getModeData(mode) helper
@@ -170,7 +178,8 @@ src/
                  #   FormGuide, SessionProgressBar, AdjustControls, ReservePicker, DayControls,
                  #   BuildSheet, StatsOverview, SessionCard, RoutineEditor, ExercisePicker,
                  #   WeekPlanner, SessionDetail, ExerciseDetail, Led, WeekRail,
-                 #   SessionEditor, PackList, GoalSection, LimitersSection, WallCard, CoachSection
+                 #   SessionEditor, PackList, GoalSection, LimitersSection, WallCard, CoachSection,
+                 #   SessionMap, BodyWeek
 e2e/             # Playwright smoke tests, the seed history (fixtures/athlete.json), serve.mjs
   app/           # layout.tsx, page.tsx (screen router), globals.css
 ios/             # Xcode project (Capacitor 8, SPM)
@@ -195,7 +204,7 @@ design/          # pixel-grid.svg drawing template; illustrations/<name>/NN.svg 
 - **Zustand persist**: Only the keys in `PERSISTED_KEYS` (`src/core/backup.ts`)
   are persisted: `progress`, `sessionLog`, `benchmarkResults`, `loadLog`,
   `climbLog`, `activityLog`, `tweaks`, `dayPlan`, `offDays`, `blockStart`,
-  `settings`, `health`, `buildPresets`, `routines`, `weekPlan` and `sessionEdits`. `partialize` reads that list, so a
+  `settings`, `health`, `buildPresets`, `routines`, `weekPlan`, `sessionEdits` and `exerciseNotes`. `partialize` reads that list, so a
   new key is persisted and backed up by adding it there. UI state is transient. The blob
   carries `version: 2`, but legacy cleanup runs from `merge`, not `migrate`:
   persist only calls `migrate` when the stored blob has a **numeric** version,
@@ -331,7 +340,9 @@ intensity at HARD** — a tired athlete downgrades rather than grinds.
 - Benchmarks are recorded in TEST 01 ASSESS, one gym session in five sections
   (WARM-UP, BODY + RANGE, MAX STRENGTH, ENDURANCE, TRUNK), ordered as the NSCA
   and IRCRA batteries order tests. It needs only a bar and a mat, and every test
-  can be scored alone: the front lever ramp and the McGill flexor and
+  can be scored alone (v43 added a sixth, FEET, after BODY + RANGE: foot raise,
+  foot loading, hips from the wall, knee to wall, single-leg balance eyes
+  closed, toe-tap precision): the front lever ramp and the McGill flexor and
   back extension holds were replaced by toes-to-bar, a hollow body hold and
   the prone (Ito) extension hold. The old benchmarks stay for history. Maximal tests are **ramps**
   (`Exercise.ramp`): attempts get harder, each is marked MADE IT or FAILED, and
@@ -367,9 +378,9 @@ fit that week; HEAL was added as a fourth while a finger heals.
 
 | Mode | Sessions |
 |------|----------|
-| DAILY | 01 CORE + OBLIQUES, 02 OBLIQUES + BACK, 03 BAND STRENGTH, 04 FINGERS + MOBILITY, 05 LEGS + CORE, 06 QUIET FEET |
+| DAILY | 01 CORE + OBLIQUES, 02 OBLIQUES + BACK, 03 BAND STRENGTH, 04 FINGERS + MOBILITY, 05 LEGS + CORE, 06 QUIET FEET, 07 HOOKS + HIGH FEET |
 | CAVE | 01 STRONG, 04 POWER, 05 FULL BODY (no climbing); 02 PULL + PUSH, 03 LEGS + BACK (after bouldering) |
-| TEST | 01 ASSESS (five sections, ramps, ~76-88 min) |
+| TEST | 01 ASSESS (six sections with FEET, ramps, ~83 min NORMAL) |
 | HEAL | 01 LEGS + TRUNK, 02 PUSH + HINGE (injured finger, gym, ~60-70 min), 03 RING REHAB, 04 RING TEST (home, portable edge), 05 FOOTWORK (gym slabs, ~28 min) |
 
 A typical week: DAILY most mornings, CAVE 02 or 03 straight after each
@@ -461,7 +472,14 @@ Short home sessions before breakfast. `npm run check:daily` holds the rules:
   + `tension`. 16 min at every energy (TIRED 13). `legHeavy: true`: fixed
   drills normally do not count as leg load, but fifteen minutes on one leg is
   poor practice on legs sore from a descent, so the recommender steps around it
-  then.
+  then. Its toe taps are a choice slot (FOOT PLACEMENT, with step-down to a mark
+  and shift-lift-place) and are scored (clean touches).
+- **DAILY 07 HOOKS + HIGH FEET** (v43), mat and a chair against a wall:
+  knee-to-wall ankle rock (one set), wall high-step + load (SKILL, early),
+  seated leg lift, tibialis wall raise, heel-hook bridge hold, toe-pull
+  bridge, the lunge drive. Nothing curls, nothing is gripped; the toe-hook
+  sit-back (radiator or sofa) is left to the HOOKS pack at the gym. 14 min
+  NORMAL, 19 FRESH, 10 TIRED; `legHeavy`.
 
 ### Balance and power at full stretch
 
@@ -479,10 +497,15 @@ for both.
 | Every DAILY | one set of the lunge drive (before the curls; before the edge in 04) |
 | CAVE 01 STRONG | two sets of the lunge drive, before the cuff |
 | CAVE 02 PULL + PUSH | one set, before the cuff |
-| CAVE 03 LEGS + BACK | `COSSACK` (goblet Cossack, 2 x 6) and single-leg balance (2 x 30s) |
+| CAVE 03 LEGS + BACK | the SKILL block (wall high-step, edge stand, one set of single-leg balance) and `COSSACK` |
 | CAVE 04 / 05 | their own: floor pullover, rock-over drive, Cossack; single-leg balance, hop + stick |
 | HEAL 01 / 02 | two sets of the lunge drive, before the closing mobility |
 | HEAL 05 FOOTWORK | one set, last |
+
+Since v43 the dose sits **straight after the warm-up** in CAVE and HEAL
+(skill while fresh, Horst): the lunge drive in CAVE 01, 02 and HEAL 01, 02,
+single-leg balance in CAVE 04; CAVE 05 keeps power first. `routineWarnings`
+does not count skill work as the light work that should come last.
 
 Exempt (`QUALITY_EXEMPT`): TEST 01 ASSESS (extra work would move the
 scores), HEAL 03 RING REHAB and 04 RING TEST (the physio's plan). DAILY 02
@@ -532,7 +555,8 @@ of the library).
   row (hand on a box), half-kneeling dumbbell press, floor pullover (power
   from the stretch), TRX knee tuck / pike, single-leg balance, band face pull.
 - **05 FULL BODY** (`cave-08`), no climbing, about 65-70 min, no hangboard:
-  box jump, lateral hop + stick, double kettlebell front squat, dumbbell RDL,
+  box jump, lateral hop + stick, double kettlebell front squat (a choice slot
+  with the box pistol), dumbbell RDL,
   high-step rock-over drive, push-ups / ring dips, ring row, suitcase carry
   (the one grip load; `noGripId` swaps it for a plate hug carry at readiness
   40 or less), goblet Cossack squat, Copenhagen, Russian twist.
@@ -544,7 +568,9 @@ of the library).
   so level adds no sets), band-assisted one-arms, push-ups/dips, spiderman +
   cross-body mountain climber, hanging oblique raise (ab straps allowed),
   weighted Russian twist, cuff.
-- **03 LEGS + BACK**, after bouldering: goblet squat, floor back extension (heels under the radiator),
+- **03 LEGS + BACK**, after bouldering: a SKILL block first (wall high-step +
+  load, edge stand + rock-over, one set of single-leg balance), then goblet
+  squat (a choice slot with the box pistol), floor back extension (heels under the radiator),
   single-leg RDL, toe-tip plate drag, Copenhagen plank, plate crunch, side
   plank hip dip, frogger. Nothing loads the fingers.
 - 02 and 03 are `stacksOnSession` and `check:cave` keeps them inside 45
@@ -637,6 +663,40 @@ and its still. Folders starting with `_` are examples and skipped by `--all`.
 The logo must stay plain `<rect>` elements: `tools/generate-ios-assets.py`
 parses them to draw the icon (the "7", rects with `x < 32`) and the splash.
 
+## Climbing with the legs (v43)
+
+From the v42 research (`docs/7bit-proposal-v42.md`), built in v43
+(`docs/handovers/7bit-handover-v43.md`). The finding behind it: of the
+lower-body tests, the foot-loading test (a high foot plus the weight moved
+onto it) tracks climbing grade best (Draper 2009, r = 0.65); the sit-and-reach
+does not. Skill is learned fresh, varied, with an external focus.
+
+- **`data-feet.ts`**: twenty exercises, all hands free or flat on a wall, so
+  open while a finger heals. Precise feet (step-down to a mark, scored;
+  shift-lift-place; edge stand + rock-over), foot strength (towel drag,
+  toe-edge calf raise, toe-pull bridge), toe hooks (tibialis wall raise,
+  toe-hook sit-back), heel hooks (heel-hook bridge hold, slider curl), high
+  steps (wall high-step + load, box lift-off, seated leg lift, box pistol),
+  drop knees (90/90 lift-off, hip CARs), flags and stems (lateral foot reach
+  + shift, active frog, hip airplane), leg drive (high-foot drive + stick).
+  Protocols `foot-loading`, `active-range`, `hook-strength`. Skill drills are
+  `fixed` TECHNIQUE work with a `focus` cue.
+- **FEET is an area** (`FEET_PROTOCOLS` in `review.ts`: footwork, floor-
+  footwork, foot-loading, balance, foot-strength, hook-strength) in the
+  reserve, BUILD, the packs, the routine picker, WHERE THE WORK WENT and BODY
+  THIS WEEK. Its need in NOT TRAINED ENOUGH is this week's sets against the
+  band. The plate drag moved from LEGS to FEET.
+- **Scored drills**: load kind `score`, axis unit `clean` (clean reps in the
+  best set, weaker side). Logged like a load, a better score is a best (+1
+  XP), but no load is ever suggested and STATS never reads a score as kilos
+  (`loadsOnly`, plateaus skip it).
+- **`transfer.ts`**: the moves each exercise serves (HIGH STEP, HEEL HOOK,
+  EDGE...), the card's FOR line and the session page's chips; focus cues for
+  the programme's own drills; `packForFalls` points FOOT SLIPPED, FEET CUT, a
+  weak slab or hook style at the FEET or HOOKS pack (WHERE YOU FALL, TODAY).
+- **ON THE WALL** gained target practice, tracking, pause before placing,
+  foot swaps, flag higher and closer, pull in with the toes.
+
 ## Load Logging
 
 Progression on this programme is load, so what was actually lifted is recorded,
@@ -712,6 +772,18 @@ GUIDE are always shown; everything that changes the session sits in one
   after the exercise in hand and after the last remaining exercise of its
   block or heavier (`insertIndex`); in a DAILY before the curls, and an added
   curl closes it. The session log lists picks in `added`.
+- **The session map** (v43): the progress bar shows a gap between phases,
+  the minutes left and the finish time, and a tap opens the whole session
+  phase by phase (`SessionMap`, `live-edit.ts`). Anything still to come can
+  go to the end (LATER), come out (X), move up or down, or take a set more
+  or less; the exercise in hand and what is done never move, rest never shows.
+  Rest shows THEN: the two exercises after the next.
+- **The card** (v43) leads with the phase and place in it (`STRENGTH · 2 OF
+  3`), the FOR line (or the capacity levels when an exercise serves no move
+  directly), a large focus cue on SKILL work and LAST TIME's note. ADJUST
+  adds the slot's other options before the first set (`chooseOption`) and
+  NOTE FOR NEXT TIME (`exerciseNotes`, persisted, one line per exercise).
+  + ADD shows each addition's minutes and the minutes left in all.
 - **FINISH NOW** logs the session as it stands (cut short, no XP lost). No
   dialog: the complete screen offers UNDO for six seconds, which goes back to
   the set in hand.
@@ -756,6 +828,16 @@ they were set, soreness for that day and the next.
   and the date goes into `offDays`, which `checkDecay` subtracts from the
   days since a capacity was trained.
 
+**BODY THIS WEEK** (v43, `BodyWeek`, `body-week.ts`) sits under the week rail:
+every area (FINGERS, PULL, PUSH, CORE, BACK, LEGS, FEET, MOBILITY), Monday to
+today, sets against a weekly band (`BODY_BANDS`, first guesses; CORE and BACK
+from `CORE_TARGETS`; a boulder session counts 4 finger and 2 pull sets) and a
+word: DUE (behind the pace for the weekday), ON TRACK, ENOUGH, TOO MUCH,
+RECOVERING (fingers inside 48h), HEALING (fingers and pull while a finger
+heals). The area today's pick serves is orange. A row opens TRAIN THIS: the
+sessions and routines that put two or more sets into it, and its packs. ALSO
+FITS rows say what each would add.
+
 **+ LOG TODAY'S CLIMBS** shows on TODAY while no climb is logged today and
 either a CAVE session that follows bouldering was done today or bouldering is
 planned (`climbToLog` in `plan.ts`); STRONG does not ask. START is sticky
@@ -770,6 +852,9 @@ or when it was last done, and TODAY on the pick. A row opens the session
 tabs, START, and MAKE IT MINE. Every session, programme, routine or built,
 starts through `startCustom` with the list built by `sessionListFor`, so
 what is shown is what runs.
+
+Each row says what it trains (`LEGS 9 · FEET 6`), and **I WANT** filters the
+shelf to sessions that put two or more sets into one area (v43).
 
 MINE holds the athlete's routines, BUILD A SESSION, and THIS WEEK.
 
@@ -796,13 +881,21 @@ every programme session (a routine has EDIT ROUTINE instead):
   (`cautionToday`), after the recommended ones in SIMILAR; pain 3-5 labels
   finger work. Gates still substitute when it runs, and the pain check asks
   if finger work was added.
+- **Phases and the week** (v43): the list is headed by phases with their
+  minutes and purpose (`phaseRuns`), each exercise carries its move chips, a
+  choice slot names its job and its other options, and THIS SESSION / WEEK
+  AFTER say what the session adds to BODY THIS WEEK.
+- **Choice slots** (`slots.ts`): an exercise with `options` runs the one done
+  least recently (`resolveSlots` in `circuitFor`); SWAP lists the options
+  first, and a swap is marked `chosen` so the slot does not pick again.
+  `check:daily` and `check:cave` hold the budgets for every option.
 - An edit is saved as it is made and holds **for today**; KEEP FOR NEXT TIME
   keeps it until RESET (`sessionEdits`, persisted, by circuit id). The session
   keeps its circuit id, so it logs, recovers and is recommended as itself.
   `sessionListFor` and `circuitFor` apply it, so the page, TODAY's minutes
   and the workout agree. MAKE IT MINE copies the edited list.
 - **Packs** (`PACKS`): CORE FINISHER, BACK, ARMS (no XP), SHOULDER CARE, MOBILITY
-  10, BALANCE + POWER, LEGS, FINGERS LIGHT (labelled while healing or after
+  10, BALANCE + POWER, LEGS, FEET, HOOKS, FINGERS LIGHT (labelled while healing or after
   pain 3-5, closed at 6+), each with a home and a gym version. Also the first tab of + ADD
   EXERCISE mid-session (`addExtras`).
 
@@ -862,18 +955,19 @@ delete (session, climb, activity, routine) offers UNDO for six seconds
 BUILD A SESSION in TRAIN MINE (`BuildSheet`, `custom.ts`, presets in
 `build-slice.ts`) makes a session on the spot:
 
-- **PRESETS**: one tap fills in everything. Eight built in (`BUILT_IN_PRESETS`:
+- **PRESETS**: one tap fills in everything. Nine built in (`BUILT_IN_PRESETS`:
   PULL DAY, PUSH + CHEST, LEGS + BALANCE, QUICK HOME, ROCKOVER ENGINE (home,
   30: step-up + slow lower, split squat with forward shift, single-leg RDL,
   calf raise, glute bridge), HIPS + CONTROL (home, 15: 90/90, Cossack,
   high-knee hold, knee-to-wall ankle, side-lying abduction, dead bug), STRONG
-  BACK (home, 30, BACK only), BACK + CORE (gym, 45)); SAVE AS PRESET stores
+  BACK (home, 30, BACK only), BACK + CORE (gym, 45), FOOTWORK (home, 30: FEET
+  and HOOKS, v43)); SAVE AS PRESET stores
   the athlete's own in `buildPresets` (persisted, in backups); an own preset
   can be renamed or deleted. SAVE THIS LIST AS A ROUTINE freezes the preview.
 - **WHERE**: HOME (mat, band, portable edge) or CAVE (the gym, with dumbbells
   and rings / TRX). **TIME**: 15 / 30 / 45 / 60 / 90 min.
-- **GOALS** (PULL POWER, PUSH POWER, CHEST, BALANCE, ROCKOVER, HIPS) and **AREAS** (CORE,
-  BACK, PULL, ARMS, SHOULDERS, LEGS, MOBILITY, FINGERS), each tapped in, out or off
+- **GOALS** (PULL POWER, PUSH POWER, CHEST, BALANCE, ROCKOVER, HIPS, HOOKS) and **AREAS** (CORE,
+  BACK, PULL, ARMS, SHOULDERS, LEGS, FEET, MOBILITY, FINGERS), each tapped in, out or off
   (`cycleTarget`). A goal is an ordered list in `GOAL_ENTRIES`, key lift
   first; an area comes from the reserve, least recently done first. A target
   tapped out removes everything that `touches` it, wherever it came from (NO
@@ -937,7 +1031,8 @@ on the right and opens with its answer in one sentence (`stats-headlines.ts`).
   ASSESS is due, loads logged as 0 after a real value), then WEEKS.
 - **PROGRESS**: THE GOAL (ladders and the gap), LIFTS (a row opens `ExerciseDetail`: every load on a scaled
   chart, latest and best, NEXT TIME with the reason from `suggestLoad`, a
-  stall, how it progresses, recent sessions), ONE-ARM PATH, TESTS.
+  stall, how it progresses, recent sessions), ONE-ARM PATH, TESTS, FEET (the
+  ASSESS feet tests, `FEET_BENCHMARKS`, and the scored drills).
 - **BODY** (each section folds to its title and headline; a tap opens it):
   WHERE THE WORK WENT (`getWorkSplit`), LOAD, RECOVERY, FRESHNESS,
   CORE THIS WEEK, CUT SHORT, RING FINGER, FINGER LOAD, LEVELS (capacities and
@@ -1140,7 +1235,11 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v42.md`** — **start here.** No code
+- **`7bit-handover-v43.md`** — **start here.** All of the
+  v42 proposal built: BODY THIS WEEK, phases, minutes left and the session
+  map, choice slots, scored footwork and notes, twenty feet exercises, DAILY
+  07, FEET in ASSESS, BUILD and the packs.
+- **`7bit-handover-v42.md`** — No code
   changed: a proposal, `docs/7bit-proposal-v42.md`, for clearer sessions
   (BODY THIS WEEK, phases, minutes left, a session map, choice slots, scored
   footwork) and researched off-wall exercises for feet, hooks and high steps.

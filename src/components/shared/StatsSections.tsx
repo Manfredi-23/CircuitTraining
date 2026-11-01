@@ -100,10 +100,19 @@ export function CoreVolumeSection({ sessionLog }: { sessionLog: SessionLogEntry[
 
 // ---- Test results ------------------------------------------------------------------
 
-export function BenchmarkSection({ results }: { results: BenchmarkResult[] }) {
-  const rows = useMemo(() => getBenchmarkRows(results), [results]);
+export function BenchmarkSection({ results, only, without }: {
+  results: BenchmarkResult[];
+  /** Only these benchmarks (the FEET section). */
+  only?: string[];
+  /** Leave these out (TESTS, which FEET shows apart). */
+  without?: string[];
+}) {
+  const rows = useMemo(
+    () => getBenchmarkRows(results).filter(r => (!only || only.includes(r.bench.id)) && !without?.includes(r.bench.id)),
+    [results, only, without],
+  );
   const ratios = useMemo(() => getTrunkRatios(results), [results]);
-  const bw = getBodyweight(results);
+  const bw = only ? null : getBodyweight(results);
   if (!rows.length) {
     return <div className={styles.empty}>No tests recorded yet. Run TEST 01 ASSESS to fill this in.</div>;
   }
@@ -183,10 +192,17 @@ function Sparkline({ values }: { values: number[] }) {
   );
 }
 
-export function LiftSection({ loadLog, onPick }: { loadLog: LoadLogEntry[]; onPick?: (exerciseId: string) => void }) {
-  const series = useMemo(() => getLiftSeries(loadLog), [loadLog]);
+export function LiftSection({ loadLog, onPick, scores = false }: {
+  loadLog: LoadLogEntry[];
+  onPick?: (exerciseId: string) => void;
+  /** The scored skill drills (clean reps) instead of the loads (v43). */
+  scores?: boolean;
+}) {
+  const series = useMemo(() => getLiftSeries(loadLog).filter(s => (s.unit === 'clean') === scores), [loadLog, scores]);
   if (!series.length) {
-    return <div className={styles.empty}>Loads appear here once you log them on the workout stepper.</div>;
+    return <div className={styles.empty}>{scores
+      ? 'Scores appear here once a scored drill is logged: clean reps on the stepper, saved on the last DONE.'
+      : 'Loads appear here once you log them on the workout stepper.'}</div>;
   }
   return (
     <div className={styles.block}>
