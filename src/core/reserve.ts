@@ -80,7 +80,7 @@ const RESERVE: ReserveEntry[] = [
   { id: 'extra-wall-angel', group: 'BACK', place: 'HOME', grip: false },
   { id: 'daily-band-good-morning', group: 'BACK', place: 'HOME', grip: true },
   { id: 'morn-band-row', group: 'BACK', place: 'HOME', grip: true },
-  { id: 'legs-back-extension', group: 'BACK', place: 'GYM', grip: false },
+  { id: 'legs-back-extension', group: 'BACK', place: 'GYM', grip: false, floor: true },
   { id: 'extra-plate-good-morning', group: 'BACK', place: 'GYM', grip: false },
   { id: 'full-db-rdl', group: 'BACK', place: 'GYM', grip: true },
   { id: 'extra-kb-swing', group: 'BACK', place: 'GYM', grip: true },

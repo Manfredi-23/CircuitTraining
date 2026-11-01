@@ -4,6 +4,7 @@ import { recommend } from '../recommend';
 import { getBlockWeek } from '../block';
 import { getModeData } from '../data-index';
 import { PROTOCOLS } from '../protocols';
+import { exerciseLibrary } from '../reserve';
 import type { ClimbSession, SessionLogEntry } from '../types';
 
 const cave = getModeData('CAVE');
@@ -64,3 +65,17 @@ describe('recommend on a training day', () => {
     expect(recommend({ ...base, sessionLog: log, climbLog: [lastWeek] })?.mode).toBe('DAILY');
   });
 });
+
+describe('the kit the gym has', () => {
+  it('asks for no back extension station, roman chair or stool: the back extension is on the mat, heels under the radiator', () => {
+    const station = /45-degree|roman chair|\bGHD\b|hip pad|rollers|over (a|the) stool/i;
+    for (const e of exerciseLibrary().values()) {
+      const text = [e.name, e.note, e.load.text, ...(e.variations ?? []).map(v => v.name), ...Object.values(e.form ?? {})].join(' ');
+      expect(station.test(text), e.id).toBe(false);
+    }
+    const ext = exerciseLibrary().get('legs-back-extension')!;
+    expect(ext.form?.setup).toMatch(/radiator/);
+    expect(ext.load.kind).toBe('added-kg');
+  });
+});
+

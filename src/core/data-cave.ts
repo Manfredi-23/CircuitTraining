@@ -495,28 +495,31 @@ export const DATA_CAVE: Circuit[] = [
         },
       },
       {
+        // Same id as the old 45-degree back extension, so its history carries
+        // over. The gym has no back extension station (v41): on the mat, the
+        // heels hooked under the radiator.
         id: 'legs-back-extension',
-        name: '45-Degree Back Extension',
+        name: 'Floor Back Extension, Heels Anchored',
         capacities: ['tension', 'legs'],
         block: 'SECONDARY', intensity: 'MODERATE',
         sets: 3, work: 10, unit: 'reps', restSec: 90,
-        load: { kind: 'added-kg', value: 0, text: 'Bodyweight, then a plate held at the chest' },
+        load: { kind: 'added-kg', value: 0, text: 'Bodyweight, then a plate hugged to the chest' },
         progression:
-          'Three sets of ten with a one-second hold at the top on bodyweight. Then hold a '
-          + 'plate at the chest and add 2.5kg once all three sets are clean again.',
+          'Three sets of ten with a two-second hold at the top, hands by the hips. Then hands '
+          + 'behind the head, then a plate hugged to the chest, adding 2.5kg once all three sets are clean again.',
         protocolId: 'back-strength',
-        note: 'Your weak point, so this is the loaded version of the prone extension in DAILY 02. No bench: a partner on the ankles over a box works.',
+        note: 'Your weak point: the loaded version of the prone extension in DAILY 02. Mat only, heels hooked under the radiator so the back can lift higher and take a plate.',
         variations: [
-          { minLevel: 1, name: '45-Degree Back Extension' },
-          { minLevel: 3, name: '45-Degree Back Extension, 2s Hold' },
-          { minLevel: 5, name: 'Weighted 45-Degree Back Extension' },
+          { minLevel: 1, name: 'Floor Back Extension, Heels Anchored' },
+          { minLevel: 3, name: 'Floor Back Extension, Hands Behind Head' },
+          { minLevel: 5, name: 'Floor Back Extension, Plate Hugged' },
         ],
         form: {
-          setup: 'Hip pad just below the hip bones, so the hips can hinge freely. Ankles locked under the rollers. Arms crossed at the chest, or a plate held there.',
-          execution: 'Lower the torso by hinging at the hips with the back flat until you feel the hamstrings stretch. Rise until the body is a straight line from heels to head, squeeze the glutes, hold one second. Do not go past straight.',
-          cue: 'The extensors are trained here by holding the spine rigid while the hips move it through a big range against a growing load. That is what turns a weak lower back into a strong one, without ever bending it under load.',
-          breathing: 'Inhale on the way down, exhale on the way up.',
-          mistakes: 'Hyperextending at the top. Rounding at the bottom to get lower. Pad too high, which blocks the hinge and turns it into a lower-back crunch. Swinging up with momentum.',
+          setup: 'Mat in front of the radiator. Lie face down with the heels hooked under it, legs straight and hip-width, forehead on the mat. Test that the radiator takes a hard pull first. Hands by the hips, behind the head, or a plate hugged to the chest.',
+          execution: 'Squeeze the glutes, then lift the chest off the mat by extending through the whole back, the heels pulling up into the radiator. Rise until the lower ribs leave the mat, hold two seconds, lower slowly all the way down.',
+          cue: 'The anchored heels let the back lift further and carry a plate: a loaded extension with no station. Lift long, not high: the neck stays in line and the eyes stay on the floor.',
+          breathing: 'Exhale on the way up, inhale on the way down.',
+          mistakes: 'Cranking the head back. Jerking up with momentum. Glutes switching off, which hands the lift to the lumbar spine. Arching so high the lower back pinches.',
         },
       },
       {

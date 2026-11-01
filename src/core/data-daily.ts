@@ -104,7 +104,7 @@ const PRONE_EXTENSION: Exercise = {
   form: {
     setup: 'Face down on the mat, legs straight and hip-width, forehead resting on the mat. Arms by the sides to start. Squeeze the glutes before you lift.',
     execution: 'Lift the chest a few centimetres off the mat by extending through the whole back, keeping the neck long and the eyes on the floor. Hold one second at the top, lower slowly. Superman: arms overhead and the legs lift at the same time.',
-    cue: 'Your weak lower back gets stronger the same way anything else does: load it, then load it a little more. This is the bodyweight step before the 45-degree bench at the gym.',
+    cue: 'Your weak lower back gets stronger the same way anything else does: load it, then load it a little more. This is the bodyweight step before the anchored floor extension with a plate at the gym.',
     breathing: 'Exhale on the way up, inhale on the way down.',
     mistakes: 'Cranking the head back. Jerking up with momentum. Lifting so high the lower back pinches. Letting the glutes switch off, which hands the whole lift to the lumbar spine.',
   },
