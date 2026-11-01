@@ -1140,7 +1140,11 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v41.md`** — **start here.** No back
+- **`7bit-handover-v42.md`** — **start here.** No code
+  changed: a proposal, `docs/7bit-proposal-v42.md`, for clearer sessions
+  (BODY THIS WEEK, phases, minutes left, a session map, choice slots, scored
+  footwork) and researched off-wall exercises for feet, hooks and high steps.
+- **`7bit-handover-v41.md`** — No back
   extension station at the gym: the back extension is on the mat, heels under
   the radiator, everywhere it appears.
 - **`7bit-handover-v40.md`** — BACK as an
