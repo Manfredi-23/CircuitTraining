@@ -33,6 +33,8 @@ export interface EditItem {
   work?: number;
   /** The load planned for today, in the stepper's unit: the stepper opens on it. */
   target?: number;
+  /** Picked with SWAP: a choice slot keeps it rather than picking again. */
+  chosen?: boolean;
 }
 
 export interface SessionEdit {
@@ -72,6 +74,8 @@ export function editExercise(circuit: Circuit, item: EditItem): Exercise | undef
   const base = baseOf(circuit, item.id);
   if (!base) return undefined;
   const out: Exercise = { ...base };
+  // A choice made with SWAP holds: the slot does not pick again.
+  if (item.chosen) delete out.options;
   if (isEditable(base)) {
     const wb = workBounds(base);
     if (item.sets !== undefined) out.sets = clamp(Math.round(item.sets), 1, MAX_SETS);
@@ -129,7 +133,7 @@ export function moveAt(edit: SessionEdit, index: number, dir: -1 | 1): SessionEd
 /** Swap an exercise for another in the same place. Its own sets, work and load come with it. */
 export function swapAt(edit: SessionEdit, index: number, id: string): SessionEdit {
   if (edit.items.some((it, i) => it.id === id && i !== index)) return edit;
-  return replaceAt(edit, index, { id });
+  return replaceAt(edit, index, { id, chosen: true });
 }
 
 /** Change sets or work by a step, inside the bounds. Fixed protocols, tests and warm-ups do not move. */
@@ -240,11 +244,13 @@ const SIMILAR_MIN_SCORE = 6;
  * Alternatives to an exercise for SWAP, most alike first: the stand-in it
  * already has, then the same area and capacity. Only what may go in today.
  */
-export function similarTo(ex: Exercise, ctx: EditContext, taken: string[] = []): LibraryEntry[] {
-  return libraryFor(ctx.place)
-    .filter(e => e.exercise.id !== ex.id && e.exercise.name !== ex.name && !taken.includes(e.exercise.id))
+export function similarTo(ex: Exercise, ctx: EditContext, taken: string[] = [], prefer: string[] = []): LibraryEntry[] {
+  // A choice slot's other exercises come first, whatever their likeness.
+  const choice = new Set([...(ex.options ?? []), ...prefer]);
+  return libraryFor(ctx.place, '', null, [...choice])
+    .filter(e => e.exercise.id !== ex.id && (choice.has(e.exercise.id) || e.exercise.name !== ex.name) && !taken.includes(e.exercise.id))
     .filter(e => allowedToday(e.exercise, ctx) && (ex.block === 'WARMUP') === (e.exercise.block === 'WARMUP'))
-    .map(e => ({ e, s: likeness(ex, e.exercise), c: cautionToday(e.exercise, ctx) ? 1 : 0 }))
+    .map(e => ({ e, s: likeness(ex, e.exercise) + (choice.has(e.exercise.id) ? 100 : 0), c: cautionToday(e.exercise, ctx) ? 1 : 0 }))
     // Any other warm-up is an alternative to a warm-up.
     .filter(x => x.s >= SIMILAR_MIN_SCORE || ex.block === 'WARMUP')
     // What is recommended today first, then the most alike.
@@ -301,6 +307,16 @@ export const PACKS: Pack[] = [
     id: 'legs', name: 'LEGS', note: 'A short leg block.',
     home: ['daily-bw-squat', 'extra-step-down', 'daily-glute-bridge'],
     gym: ['addon-goblet-squat', 'heal-step-up', 'heal-calf-raise'],
+  },
+  {
+    id: 'feet', name: 'FEET', note: 'A foot placed once, the weight moved onto it, toes that hold. About ten minutes.',
+    home: ['feet-step-down-mark', 'feet-edge-stand', 'feet-tibialis-raise', 'feet-toe-pull-bridge'],
+    gym: ['feet-wall-high-step', 'feet-edge-stand', 'feet-toe-edge-calf', 'legs-toe-drag'],
+  },
+  {
+    id: 'hooks', name: 'HOOKS', note: 'The shin for toe hooks, the hamstring and calf for heel hooks.',
+    home: ['feet-tibialis-raise', 'feet-heel-hook-bridge', 'feet-slider-curl'],
+    gym: ['feet-tibialis-raise', 'feet-heel-hook-bridge', 'feet-toe-hook-situp'],
   },
   {
     id: 'fingers-light', name: 'FINGERS LIGHT', note: 'Density no-hangs and the wrist: keeps the fingers trained without restarting the 48h.',

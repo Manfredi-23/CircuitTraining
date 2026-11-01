@@ -570,6 +570,74 @@ export const PROTOCOLS: Record<string, Protocol> = {
       + 'rock-over performance; climbskill, rock-over technique.',
   },
 
+  'foot-loading': {
+    id: 'foot-loading',
+    name: 'High Foot, Then the Weight on It',
+    quality: 'Reaching a high foot, moving the hips over it and standing without pushing off the other foot',
+    work: '3-5 reps per side, slow, a pause before standing',
+    rest: '30-45s',
+    sets: '2-3',
+    intensity: 'Technique: a smooth low step beats a shaky high one. Raise the step only when the floor foot stays quiet.',
+    frequency: '2-4x per week, early in the session while fresh',
+    rationale:
+      'Of the lower-body flexibility tests compared in climbers, the sit-and-reach did not '
+      + 'track ability (r = 0.15) and neither did the classic foot raise. A climbing-specific '
+      + 'foot raise did (r = 0.53), and the foot-loading test, a high foot plus moving the weight '
+      + 'onto it, did best (r = 0.65) and told ability groups apart. So the high step is trained '
+      + 'as a movement: reach the foot high, then the hips over it, then stand. Skill work goes '
+      + 'early in a session, while fresh (Horst), and varies from session to session, which is '
+      + 'what transfers to new climbs (Seifert and colleagues).',
+    source:
+      'Draper et al., flexibility assessment in rock climbing, Int J Perf Anal Sport (2009); '
+      + 'physical performance testing in climbing, a systematic review, Front Sports Act Living '
+      + '(2023); Hacques et al., variable practice and gaze in climbing, PLOS ONE (2022); '
+      + 'E. Horst, Training for Climbing.',
+  },
+
+  'active-range': {
+    id: 'active-range',
+    name: 'Active Range',
+    quality: 'Strength at the end of the range: the knee high, the hip turned, with no hands',
+    work: '5-8 reps or 3-10s holds per side',
+    rest: '20-45s',
+    sets: '2-3',
+    intensity: 'Hard at the end of range, never forced. Stop when a hold turns into a cramp.',
+    frequency: '1-2x per week as strength, a little most days as mobility',
+    rationale:
+      'A high step needs the hip flexors strong while they are short, and a drop knee needs '
+      + 'the hip to turn in under load. Passive range makes a position possible; active '
+      + 'strength makes it usable on the wall. The iliopsoas works hardest in deep hip '
+      + 'flexion during leg-raising work, so the leg lifts and box lift-offs sit near the '
+      + 'top of the range. Climbing physios programme end-range work as strength, 1-2x a week.',
+    source:
+      'Hip flexor activation during common exercises, an EMG review (2024); The Climbing Doctor, '
+      + 'triple flexion and drop-knee articles; Atomic PT, hip strength for climbers; '
+      + 'Lattice Training, why flexibility matters in climbing.',
+  },
+
+  'hook-strength': {
+    id: 'hook-strength',
+    name: 'Hook and Toe Strength',
+    quality: 'The shin and toes for toe hooks, the hamstring and calf for heel hooks, the big toe for pulling on a toe',
+    work: '6-15 reps, or 5s isometric holds, per side',
+    rest: '30-60s',
+    sets: '2-3',
+    intensity: 'Moderate, controlled. Heel-hook work starts with a bent knee and a shallow hip, and goes deeper over weeks.',
+    frequency: '2-3x per week',
+    rationale:
+      'A toe hook is held by the tibialis anterior and the toe extensors working isometrically, '
+      + 'with the hip flexors and abs; most climbers never train them. A heel hook is mainly '
+      + 'hamstring and calf: the heel steers, the leg pulls. The high heel hook, a deep hip and '
+      + 'a bent knee held isometrically, is how proximal hamstrings get injured, so the angle '
+      + 'is earned gradually. The big-toe flexor (FHL) is what stands on and pulls on a small '
+      + 'edge. Honest caveat: no study links these to grades; they are low-cost and plausible.',
+    source:
+      "Hooper's Beta, top 10 undertrained muscles and full-body guide; Boulder Movement, toe "
+      + 'and heel hooks; Evolution PT, toe hooks; The Climbing Doctor, heel-hook rehab and '
+      + 'knee-injury progressions; heel-hook hamstring injury case report, Dtsch Z Sportmed (2022); '
+      + 'E. Horst, heel- and toe-hook technique.',
+  },
+
   'upper-power': {
     id: 'upper-power',
     name: 'Upper-Body Power',

@@ -59,7 +59,7 @@ export interface CoachInput {
 export const COACH_DAYS = 28;
 
 /** Tests read into the summary, when recorded. */
-const KEY_TESTS = ['weighted-pullup-2rm', 'fs-2arm-20mm', 'max-pullups', 'toes-to-bar', 'hollow-hold', 'hip-footraise', 'bodyweight'];
+const KEY_TESTS = ['weighted-pullup-2rm', 'fs-2arm-20mm', 'max-pullups', 'toes-to-bar', 'hollow-hold', 'hip-footraise', 'foot-loading', 'bodyweight'];
 
 /** A gym colour with its Font band, so the coach reads grades, not colours. */
 const GYM_FONT = new Map<string, string>(GYM_COLOURS.map(c => [c.id, c.font]));

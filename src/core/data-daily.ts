@@ -48,6 +48,7 @@
 // =============================================================================
 
 import type { Circuit, Exercise } from './types';
+import { HEEL_HOOK_BRIDGE, SEATED_LEG_LIFT, TIBIALIS_RAISE, TOE_PULL_BRIDGE, WALL_HIGH_STEP } from './data-feet';
 import { LUNGE_DRIVE, SL_REACH } from './data-extras';
 
 // ---- Shared ------------------------------------------------------------------
@@ -483,11 +484,14 @@ const TOE_TAPS: Exercise = {
   block: 'SECONDARY', intensity: 'TECHNIQUE',
   sets: 3, work: 8, unit: 'reps', restSec: 30,
   fixed: true,
-  load: { kind: 'bodyweight', text: 'Five or six small tape marks around the standing foot' },
+  load: { kind: 'score', text: 'Five or six small tape marks around the standing foot. Score the clean touches.' },
   progression: 'Smaller marks, then further away, then a one-second hover above each mark before the touch.',
   protocolId: 'floor-footwork',
   perSide: true,
-  note: 'Per foot. Score it: clean first touches out of eight. One touch, no slide, no correction.',
+  note: 'Per foot. Score it: clean first touches out of eight in the best set, weaker foot. One touch, no slide, no correction.',
+  // A choice slot (v43): the placement drill done least recently runs.
+  slot: 'FOOT PLACEMENT',
+  options: ['feet-step-down-mark', 'feet-shift-place'],
   variations: [
     { minLevel: 1, name: 'Precision Toe Taps - Large Marks' },
     { minLevel: 3, name: 'Precision Toe Taps - Small Marks' },
@@ -1034,6 +1038,31 @@ export const DATA_DAILY: Circuit[] = [
       SL_REACH,
       ROCKOVER_TRANSFER,
       FLAG_HOLD,
+      LUNGE_DRIVE,
+    ],
+  },
+  {
+    id: 'daily-07', circuitNum: '07',
+    title: 'HOOKS + HIGH FEET', subtitle: 'daily - mat + chair - hooks - high steps - 14 min',
+    focus: 'A high foot with the weight moved onto it, the shin for toe hooks, the hamstring for heel hooks.',
+    capacities: ['legs', 'tension', 'mobility'],
+    illustration: 'squats.svg',
+    duration: 14,
+    recoveryHours: 0,
+    legHeavy: true,
+    note:
+      'The other half of DAILY 06: where QUIET FEET places a foot, this one gets it high and '
+      + 'hooks it. A chair against a wall and the mat. The ankle first, then the high step '
+      + 'while fresh: the foot-loading test is the one that tracks grade. Then the toe-hook '
+      + 'shin, the heel hook and the toe pull, all on the floor. Nothing curls, nothing is '
+      + 'gripped.',
+    exercises: [
+      { ...ANKLE_WALL, sets: 1 },
+      WALL_HIGH_STEP,
+      { ...SEATED_LEG_LIFT, sets: 2 },
+      { ...TIBIALIS_RAISE, sets: 2 },
+      { ...HEEL_HOOK_BRIDGE, sets: 2 },
+      { ...TOE_PULL_BRIDGE, sets: 2 },
       LUNGE_DRIVE,
     ],
   },

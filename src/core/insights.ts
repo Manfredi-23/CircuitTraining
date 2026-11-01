@@ -102,7 +102,8 @@ const ROW_ORDER = [
   'fs-2arm-20mm', 'weighted-pullup-2rm',
   'max-pullups', 'repeaters-20mm', 'max-pushups',
   'toes-to-bar', 'hollow-hold', 'prone-extension-hold', 'side-plank-left', 'side-plank-right',
-  'hip-footraise', 'straddle', 'sit-reach', 'shoulder-reach',
+  'hip-footraise', 'foot-loading', 'hips-from-wall', 'knee-to-wall', 'sl-balance-closed', 'toe-tap-precision',
+  'straddle', 'sit-reach', 'shoulder-reach',
   'front-lever', 'trunk-flexor-hold', 'back-extension-hold',
 ];
 const rank = (id: string) => {

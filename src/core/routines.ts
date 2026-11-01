@@ -15,6 +15,7 @@
 import { exerciseLibrary, isCurl, placeOf, type Place } from './reserve';
 import { flagsOf } from './custom';
 import { getModeData } from './data-index';
+import { isSkill } from './phases';
 import { areaOf, type WorkArea } from './review';
 import { CONFIG } from './config';
 import { estimateDuration, buildList } from './engine';
@@ -87,7 +88,7 @@ export function isHomeExercise(id: string): boolean {
 
 const ILLUSTRATION: Record<WorkArea, string> = {
   FINGERS: 'hangboard.svg', PULL: 'pullups.svg', PUSH: 'pushups.svg', CORE: 'core.svg', BACK: 'core.svg',
-  LEGS: 'squats.svg', MOBILITY: 'morning.svg', ARMS: 'dumbbell.svg',
+  LEGS: 'squats.svg', FEET: 'squats.svg', MOBILITY: 'morning.svg', ARMS: 'dumbbell.svg',
 };
 
 /** The routine as a circuit the engine can run. */
@@ -210,7 +211,8 @@ export function routineWarnings(r: Routine): string[] {
       out.push('Curling work is best last on a morning session: discs are fullest after waking.');
     }
   }
-  const lightIdx = exs.findIndex(e => LIGHT.has(e.block));
+  // Skill drills sit early on purpose (phases.ts): they are not the light work that should come last.
+  const lightIdx = exs.findIndex(e => LIGHT.has(e.block) && !isSkill(e));
   const lateHeavy = lightIdx >= 0 ? exs.slice(lightIdx).find(e => HEAVY.has(e.block) && e.block === 'PRIMARY') : undefined;
   if (lateHeavy) out.push(`${lateHeavy.name} is maximal work after lighter work. Heavy first, while fresh.`);
   if (exs.filter(loadsFingersHard).length > 1) out.push('Two hard finger exercises in one session. One is plenty.');

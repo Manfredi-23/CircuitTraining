@@ -84,7 +84,7 @@ describe('a custom session', () => {
 
   it('closes what is sore, and the pull at home', () => {
     const c = closedAreas({ ...base, day: { ...NO_DAY, sore: ['LEGS', 'SHOULDERS'] }, pain: 6 });
-    expect(Object.keys(c).sort()).toEqual(['CHEST', 'FINGERS', 'LEGS', 'PULL', 'PULL POWER', 'PUSH POWER', 'ROCKOVER', 'SHOULDERS']);
+    expect(Object.keys(c).sort()).toEqual(['CHEST', 'FINGERS', 'HOOKS', 'LEGS', 'PULL', 'PULL POWER', 'PUSH POWER', 'ROCKOVER', 'SHOULDERS']);
     expect(closedAreas({ ...base, pain: 4 }).FINGERS).toBeUndefined();
     expect(cautionAreas({ ...base, pain: 4 }).FINGERS).toBe('Not recommended: finger pain 4/10.');
     const s = buildCustom({ ...base, include: ['LEGS', 'CORE'], day: { ...NO_DAY, sore: ['LEGS'] } });
@@ -176,9 +176,9 @@ describe('goals, exclusions and avoid', () => {
     expect(c).toEqual({ include: [], exclude: [] });
   });
 
-  it('ships the eight presets, each building a session, and saves new ones', () => {
+  it('ships the nine presets, each building a session, and saves new ones', () => {
     expect(BUILT_IN_PRESETS.map(p => p.name)).toEqual([
-      'PULL DAY', 'PUSH + CHEST', 'LEGS + BALANCE', 'QUICK HOME', 'ROCKOVER ENGINE', 'HIPS + CONTROL', 'STRONG BACK', 'BACK + CORE',
+      'PULL DAY', 'PUSH + CHEST', 'LEGS + BALANCE', 'QUICK HOME', 'ROCKOVER ENGINE', 'HIPS + CONTROL', 'STRONG BACK', 'BACK + CORE', 'FOOTWORK',
     ]);
     for (const p of BUILT_IN_PRESETS) {
       const s = buildCustom({ ...base, ...p });
@@ -222,7 +222,7 @@ describe('what is not trained enough', () => {
   const progress: Progress = {
     tension: at(1), pull: at(2), press: at(2), shoulder: at(2), legs: at(19), mobility: at(1), forearm: at(1),
   };
-  const core = Object.fromEntries(['daily-reverse-crunch', 'daily-side-plank-dip', 'daily-prone-extension'].map(id => [id, 8]));
+  const core = Object.fromEntries(['daily-reverse-crunch', 'daily-side-plank-dip', 'daily-prone-extension', 'daily-toe-taps'].map(id => [id, 8]));
   const log: SessionLogEntry[] = [{ date: daysAgo(1), mode: 'DAILY', circuitId: 'daily-01', circuitTitle: 'x', energy: 'NORMAL', duration: 15, sets: core }];
 
   it('puts the stalest area first, with the reason', () => {

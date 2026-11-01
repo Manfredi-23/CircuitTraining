@@ -71,7 +71,9 @@ export type LoadKind =
   | 'band'
   | 'rpe'
   // Kilos lifted on a portable edge by one finger, edge included (HEAL ring rehab).
-  | 'finger-kg';
+  | 'finger-kg'
+  // A skill drill scored as clean reps out of the set (v43): footwork gets a number.
+  | 'score';
 
 /** How the exercise is loaded, and the human-readable prescription shown in-app. */
 export interface LoadSpec {
@@ -340,6 +342,15 @@ export interface Exercise {
   /** Section heading shown on the card and in the session list, e.g. 'MAX STRENGTH'. */
   section?: string;
   /**
+   * A choice slot (v43): other exercises that do the same job. The app runs
+   * the one done least recently (`slots.ts`); SWAP lists these first.
+   */
+  options?: string[];
+  /** The job a choice slot does, e.g. 'SQUAT: TWO LEGS OR ONE'. Set on the exercise that runs. */
+  slot?: string;
+  /** One short external-focus cue shown large on skill work: what the movement does, not the body part. */
+  focus?: string;
+  /**
    * The stepper also reads the load as a percentage of a benchmark: the
    * injured ring finger against the healthy one, with the goal that clears it.
    */
@@ -550,7 +561,7 @@ export type MuscleListItem = CapacityListItem;
  * where the variation ladder does the progressing).
  */
 export interface LoadAxis {
-  unit: 'kg' | 'mm' | '%' | 'RPE' | 's' | 'cm' | 'LVL' | 'reps';
+  unit: 'kg' | 'mm' | '%' | 'RPE' | 's' | 'cm' | 'LVL' | 'reps' | 'clean';
   /** One tap of the stepper. Matched to how the equipment actually increments. */
   step: number;
   min: number;

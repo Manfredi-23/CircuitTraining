@@ -22,6 +22,7 @@
 import { CONFIG } from '@/core/config';
 import { buildList, estimateDuration } from '@/core/engine';
 import { getModeData } from '@/core/data-index';
+import { slotVariants } from '@/core/slots';
 import type { EnergyKey, Progress } from '@/core/types';
 
 const BUDGET_MINUTES = 20;
@@ -61,7 +62,8 @@ for (const circuit of getModeData('DAILY')) {
     const row: string[] = [];
     for (const energy of ENERGIES) {
       const list = buildList(circuit, energy, progressAt(level));
-      const minutes = estimateDuration(list);
+      // A choice slot may run any of its options: the budget holds for the longest.
+      const minutes = Math.max(...slotVariants(circuit).map(v => estimateDuration(buildList(v, energy, progressAt(level)))));
 
       if (level === 1) exerciseCounts.set(energy, list.length);
 

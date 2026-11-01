@@ -121,14 +121,20 @@ export function getOverview(
 
 // ---- Where the work went -----------------------------------------------------------
 
-export type WorkArea = 'FINGERS' | 'PULL' | 'PUSH' | 'CORE' | 'BACK' | 'LEGS' | 'MOBILITY' | 'ARMS';
-export const WORK_AREAS: WorkArea[] = ['FINGERS', 'PULL', 'PUSH', 'CORE', 'BACK', 'LEGS', 'MOBILITY', 'ARMS'];
+export type WorkArea = 'FINGERS' | 'PULL' | 'PUSH' | 'CORE' | 'BACK' | 'LEGS' | 'FEET' | 'MOBILITY' | 'ARMS';
+export const WORK_AREAS: WorkArea[] = ['FINGERS', 'PULL', 'PUSH', 'CORE', 'BACK', 'LEGS', 'FEET', 'MOBILITY', 'ARMS'];
 export const WORK_AREA_LABEL: Record<WorkArea, string> = {
-  FINGERS: 'Fingers', PULL: 'Pull', PUSH: 'Push + shoulder', CORE: 'Core', BACK: 'Back', LEGS: 'Legs', MOBILITY: 'Mobility', ARMS: 'Arm extras',
+  FINGERS: 'Fingers', PULL: 'Pull', PUSH: 'Push + shoulder', CORE: 'Core', BACK: 'Back', LEGS: 'Legs', FEET: 'Feet + hooks', MOBILITY: 'Mobility', ARMS: 'Arm extras',
 };
 
 /** The protocols of direct back work: the lower back, and the middle of it. */
 export const BACK_PROTOCOLS = new Set(['back-strength', 'upper-back']);
+
+/**
+ * The protocols of FEET (v43): footwork and balance skill, the high foot with
+ * the weight on it, foot and toe strength, and the hooks.
+ */
+export const FEET_PROTOCOLS = new Set(['footwork', 'footwork-drill', 'floor-footwork', 'foot-loading', 'balance', 'foot-strength', 'hook-strength']);
 
 const AREA_OF: Record<Capacity, WorkArea> = {
   crimp: 'FINGERS', openhand: 'FINGERS', forearm: 'FINGERS', contact: 'FINGERS',
@@ -143,6 +149,7 @@ const AREA_OF: Record<Capacity, WorkArea> = {
 export function areaOf(e: Exercise): WorkArea | null {
   if (e.block === 'WARMUP' || e.block === 'TEST') return null;
   if (BACK_PROTOCOLS.has(e.protocolId ?? '') && e.capacities[0] !== 'legs') return 'BACK';
+  if (FEET_PROTOCOLS.has(e.protocolId ?? '')) return 'FEET';
   return e.capacities.length ? AREA_OF[e.capacities[0]] : 'ARMS';
 }
 

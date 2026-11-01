@@ -25,7 +25,7 @@ export default function CompleteScreen() {
   const last = sessionLog[sessionLog.length - 1];
   const effort = last?.effort;
   // Loaded work that was actually done: the load suggestion reads how each felt.
-  const loaded = exerciseList.filter(ex => !ex.records && !ex.ramp && getLoadAxis(ex) && (last?.sets?.[ex.id] ?? 0) > 0);
+  const loaded = exerciseList.filter(ex => !ex.records && !ex.ramp && getLoadAxis(ex) && getLoadAxis(ex)!.unit !== 'clean' && (last?.sets?.[ex.id] ?? 0) > 0);
   const health = useStore(s => s.settings.health);
   const deload = Boolean(circuit && deloads(circuit) && getBlockWeek(blockStart, sessionLog).deload);
 
