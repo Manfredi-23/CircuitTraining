@@ -18,6 +18,9 @@ import { focusOf, transferLine } from '@/core/transfer';
 import { lastTimeNote } from '@/core/notes';
 import { exerciseLibrary } from '@/core/reserve';
 import { localDate } from '@/core/dates';
+import { editContextFor } from '@/core/alternatives';
+import SwipeRow from '@/components/shared/SwipeRow';
+import SwapPicker from '@/components/shared/SwapPicker';
 import styles from './WorkoutScreen.module.css';
 
 /** Long names step down so the name stays on two lines and the reps lead. */
@@ -40,7 +43,13 @@ export default function WorkoutScreen() {
   const exerciseNotes = useStore(s => s.exerciseNotes);
   const setExerciseNote = useStore(s => s.setExerciseNote);
   const chooseOption = useStore(s => s.chooseOption);
+  const swapLive = useStore(s => s.swapLive);
+  const sessionPain = useStore(s => s.sessionPain);
+  const sessionLog = useStore(s => s.sessionLog);
+  const climbLog = useStore(s => s.climbLog);
+  const dayPlan = useStore(s => s.dayPlan);
   const [reserveOpen, setReserveOpen] = useState(false);
+  const [swapOpen, setSwapOpen] = useState(false);
   const [adjustOpen, setAdjustOpen] = useState(false);
 
   if (!currentExercise || !circuit) return null;
@@ -60,6 +69,12 @@ export default function WorkoutScreen() {
   const todayNote = exerciseNotes[currentExercise.id]?.day === today ? exerciseNotes[currentExercise.id].text : '';
   const lib = exerciseLibrary();
   const choices = setIndex === 1 ? (currentExercise.options ?? []).filter(id => lib.has(id) && !exerciseList.some(e => e.id === id)) : [];
+  // Before its first set the exercise in hand can be swapped (v45): the rack is busy, the box is taken.
+  const canSwap = setIndex === 1 && !ramp && currentExercise.block !== 'TEST';
+  const swipe = canSwap ? [
+    { label: 'SWAP', aria: `Swap ${currentExercise.displayName}`, onClick: () => setSwapOpen(true) },
+    { label: 'OUT', aria: `Skip ${currentExercise.displayName}`, onClick: exerciseSkip },
+  ] : null;
 
   return (
     <div className={`screen screen-enter ${styles.screen}`}>
@@ -92,12 +107,14 @@ export default function WorkoutScreen() {
           </div>
         )}
 
-        <div
-          key={`name-${stepIndex}`}
-          className={`${styles.exName} ${styles.exNameEnter}${nameSize(currentExercise.displayName)}`}
-        >
-          {currentExercise.displayName}
-        </div>
+        <SwipeRow actions={swipe}>
+          <div
+            key={`name-${stepIndex}`}
+            className={`${styles.exName} ${styles.exNameEnter}${nameSize(currentExercise.displayName)}`}
+          >
+            {currentExercise.displayName}
+          </div>
+        </SwipeRow>
 
         {/* What it is for on the wall; the capacity levels when it serves no move directly. */}
         {forLine ? <div className={styles.forLine}>{forLine}</div> : (
@@ -176,6 +193,13 @@ export default function WorkoutScreen() {
               </div>
             )}
 
+            {canSwap && (
+              <button className={styles.btnSwapOther} onClick={() => setSwapOpen(true)}>
+                SWAP FOR ANOTHER EXERCISE
+                <span className={styles.swapHint}>Similar, other kit, or any. Or swipe the name left.</span>
+              </button>
+            )}
+
             {/* Progression rule */}
             <div className={styles.progressionBox}>
               <span className={styles.progressionLabel}>NEXT STEP</span>
@@ -220,6 +244,16 @@ export default function WorkoutScreen() {
       </div>
 
       <ReservePicker open={reserveOpen} onClose={() => setReserveOpen(false)} />
+      {swapOpen && canSwap && (
+        <SwapPicker
+          exercise={currentExercise}
+          ctx={editContextFor(mode, circuit.id, { sessionLog, climbLog, dayPlan }, sessionPain)}
+          taken={exerciseList.map(e => e.id)}
+          live
+          onClose={() => setSwapOpen(false)}
+          onPick={id => { swapLive(stepIndex, id); setSwapOpen(false); }}
+        />
+      )}
 
       {/* Actions */}
       {ramp ? (

@@ -16,10 +16,11 @@ const filterLabel = (f: Filter) => (f === null ? 'ALL' : f === 'WARM-UP' ? 'WARM
  * to a routine or a session and to swap one exercise for another.
  *
  * A swap opens on a short list of SIMILAR exercises, roomy enough to pick from
- * with a thumb; the whole library and its search are one tap away. Nothing
+ * with a thumb; OTHER KIT (v45) has the same job without the kit that is
+ * taken, and the whole library and its search are one tab away. Nothing
  * focuses the search by itself: the keyboard would cover half the list.
  */
-export default function ExercisePicker({ place, taken, title, onPick, onClose, similar, allow, replacing, caution }: {
+export default function ExercisePicker({ place, taken, title, onPick, onClose, similar, otherKit, kit, allow, replacing, caution }: {
   place: Place;
   /** Already in the routine: shown, not offered again. */
   taken: string[];
@@ -28,6 +29,10 @@ export default function ExercisePicker({ place, taken, title, onPick, onClose, s
   onClose: () => void;
   /** Alternatives to the exercise being swapped, shown first. */
   similar?: LibraryEntry[];
+  /** The same job without the kit the exercise needs; the tab shows when the exercise needs kit. */
+  otherKit?: LibraryEntry[];
+  /** That kit in words: "rings / TRX". */
+  kit?: string;
   /** Only what may go in today (healing, finger pain, no kit). */
   allow?: (e: Exercise) => boolean;
   /** The name of the exercise being swapped out. */
@@ -37,7 +42,11 @@ export default function ExercisePicker({ place, taken, title, onPick, onClose, s
 }) {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>(null);
-  const [browse, setBrowse] = useState(!similar?.length);
+  const swapping = similar !== undefined;
+  const [view, setView] = useState<'similar' | 'kit' | 'all'>(similar?.length ? 'similar' : kit ? 'kit' : 'all');
+  const tabs: Array<['similar' | 'kit' | 'all', string]> = [
+    ['similar', 'SIMILAR'], ...(kit ? [['kit', 'OTHER KIT'] as ['kit', string]] : []), ['all', 'SEARCH ALL'],
+  ];
   const list = useMemo(
     () => libraryFor(place, query, filter, taken).filter(e => !allow || allow(e.exercise)),
     [place, query, filter, taken, allow],
@@ -57,14 +66,33 @@ export default function ExercisePicker({ place, taken, title, onPick, onClose, s
         </div>
       )}
 
-      {!browse && similar?.length ? (
-        <>
-          <div className={styles.scroll}>
-            <div className={styles.group}>SIMILAR</div>
-            {similar.map(entry => row(entry, 'similar'))}
-          </div>
-          <button className={styles.browse} onClick={() => setBrowse(true)}>SEARCH ALL EXERCISES</button>
-        </>
+      {swapping && (
+        <div className={styles.views} role="tablist" aria-label="Alternatives">
+          {tabs.map(([v, label]) => (
+            <button
+              key={v}
+              role="tab"
+              aria-selected={view === v}
+              className={`${styles.view}${view === v ? ` ${styles.viewOn}` : ''}`}
+              onClick={() => { setView(v); setQuery(''); setFilter(null); }}
+            >{label}</button>
+          ))}
+        </div>
+      )}
+
+      {view === 'similar' && swapping ? (
+        <div className={styles.scroll}>
+          {similar.length
+            ? similar.map(entry => row(entry, 'similar'))
+            : <div className={styles.empty}>Nothing close enough. Try OTHER KIT or SEARCH ALL.</div>}
+        </div>
+      ) : view === 'kit' && swapping ? (
+        <div className={styles.scroll}>
+          <div className={styles.group}>THE SAME JOB WITHOUT: {kit?.toUpperCase()}</div>
+          {otherKit?.length
+            ? otherKit.map(entry => row(entry, 'kit'))
+            : <div className={styles.empty}>Nothing else does this job without the {kit}. Try SEARCH ALL.</div>}
+        </div>
       ) : (
         <>
           <div className={styles.tools}>
@@ -93,9 +121,6 @@ export default function ExercisePicker({ place, taken, title, onPick, onClose, s
             {list.length === 0 && <div className={styles.empty}>Nothing matches. Try another word or area.</div>}
             {list.map(entry => row(entry, 'all'))}
           </div>
-          {similar?.length ? (
-            <button className={styles.browse} onClick={() => { setBrowse(false); setQuery(''); setFilter(null); }}>BACK TO SIMILAR</button>
-          ) : null}
         </>
       )}
     </div>

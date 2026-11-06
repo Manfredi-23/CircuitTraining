@@ -1,0 +1,16 @@
+/* A row that swipes left to show SWAP and OUT. The actions sit under the
+   row's right edge and are only as wide as what the swipe has uncovered, so
+   the row needs no background of its own over the dot paper. */
+.wrap { position: relative; overflow: hidden; }
+.content { position: relative; touch-action: pan-y; }
+.settle { transition: transform 0.18s ease-out; }
+.actions {
+  position: absolute; top: 0; right: 0; bottom: 0; z-index: 1;
+  display: flex; justify-content: flex-end; overflow: hidden;
+}
+.action {
+  flex-shrink: 0; height: 100%; display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--ink);
+  border: 2px solid var(--ink); border-radius: var(--rad-sm); margin-left: 4px;
+}
+.primary { background: var(--ink); color: #E4E2DD; }

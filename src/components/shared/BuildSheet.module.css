@@ -56,3 +56,10 @@
 /* Sections after the first: a row of faint LED dots and air above. */
 .section + .section { padding-top: 24px; background-image: var(--rule); background-repeat: repeat-x; background-position: left top; background-size: 6px 2px; }
 .caution { font-size: 12px; font-weight: 700; color: var(--accent); line-height: 1.35; }
+
+/* + ADD at the bottom of the preview (v45). */
+.addMore {
+  width: 100%; height: 48px; margin-top: 4px;
+  border: 2px dashed var(--ink); border-radius: var(--rad-lg);
+  font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--ink);
+}

@@ -93,7 +93,8 @@ one-arm rungs open on a tested weighted pull-up and never on XP, and `npm test`.
 `src/core/__tests__/` in the same commit. The screens have Playwright smoke
 tests in `e2e/smoke.spec.ts` (TODAY, a session from TRAIN to LOG, the finger
 check on CAVE 04, EDIT before START, MAKE IT MINE, the weekly plan, STATS, UNDO,
-ON THE WALL and a tagged climb, THE GOAL and WHERE YOU FALL, the PATATOMETRO), run against the static build with the
+ON THE WALL and a tagged climb, THE GOAL and WHERE YOU FALL, the PATATOMETRO, a swipe with
+OTHER KIT and + ADD by group), run against the static build with the
 seed history; `e2e/serve.mjs` serves `out/`. In the cloud session set
 `PW_CHROMIUM=/opt/pw-browsers/chromium-1243/chrome-linux64/chrome`; on the Mac
 run `npx playwright install chromium` once.
@@ -160,6 +161,8 @@ src/
     transfer.ts  # what each exercise is for on the wall, focus cues, falls -> packs
     notes.ts     # a technique note per exercise, shown as LAST TIME
     patata.ts    # THE PATATOMETRO: taps at FLUELA / OERLIKON, when patata is highest
+    exercise-tags.ts # muscle groups (ABS ... FINGERS) and kit (bar, rings ...) for every exercise
+    alternatives.ts  # OTHER KIT swaps, group blocks and lists for + ADD, swaps in a running session
     data-feet.ts # twenty off-wall exercises for feet, hooks, high steps (v43)
     data-daily.ts, data-cave.ts, data-assess.ts, data-heal.ts  # Session libraries, one per tab
     data-oap.ts  # One-arm pull-up path, shared by CAVE 01 and CAVE 02
@@ -180,7 +183,7 @@ src/
                  #   BuildSheet, StatsOverview, SessionCard, RoutineEditor, ExercisePicker,
                  #   WeekPlanner, SessionDetail, ExerciseDetail, Led, WeekRail,
                  #   SessionEditor, PackList, GoalSection, LimitersSection, WallCard, CoachSection,
-                 #   SessionMap, BodyWeek, Patatometro
+                 #   SessionMap, BodyWeek, Patatometro, SwipeRow, SwapPicker, AddSheet
 e2e/             # Playwright smoke tests, the seed history (fixtures/athlete.json), serve.mjs
   app/           # layout.tsx, page.tsx (screen router), globals.css
 ios/             # Xcode project (Capacitor 8, SPM)
@@ -881,12 +884,13 @@ every programme session (a routine has EDIT ROUTINE instead):
   it (`Exercise.targetLoad`, read by `primeLoad`) instead of last time's.
   Fixed protocols, tests and warm-ups keep their sets and work. Rest is never
   on the screen. The editor shows sets and reps as they run at today's energy.
-- **SWAP** opens on **SIMILAR** only (`similarTo`: the stand-in it already
+- **SWAP** opens on **SIMILAR** (`similarTo`: the stand-in it already
   has, same area, same main capacity, protocol, block and load kind; for a
-  warm-up, the other warm-ups); SEARCH ALL EXERCISES opens the whole library.
+  warm-up, the other warm-ups), with **OTHER KIT** and **SEARCH ALL** as tabs
+  (v45, `SwapPicker`).
   The picker never focuses its search (the keyboard would cover the list) and
   the search text is 16px (under that, iOS zooms in on focus).
-- **+ EXERCISE** and **+ PACK**. Additions go where they belong (`addIds`,
+- **+ EXERCISE** (the add sheet, v45) and **+ PACK**. Additions go where they belong (`addIds`,
   `insertIndex`): heavy first, a closing mobility last, curls closing a DAILY.
 - Safety (`allowedToday`): home kit at home, NO KIT keeps it on the mat, no
   tests, no finger work after pain 6+. While a finger heals, grips, pulls,
@@ -911,6 +915,49 @@ every programme session (a routine has EDIT ROUTINE instead):
   10, BALANCE + POWER, LEGS, FEET, HOOKS, FINGERS LIGHT (labelled while healing or after
   pain 3-5, closed at 6+), each with a home and a gym version. Also the first tab of + ADD
   EXERCISE mid-session (`addExtras`).
+
+## Swipe and + ADD (v45)
+
+Asked for in November 2026: an exercise that does not fit today (the rings
+are taken, it is not the day for it) is swapped with a swipe, and more is
+added at the bottom of the list, by group or one at a time.
+
+- **A swipe left** on a row (`SwipeRow`) shows **SWAP** and **OUT**, on the
+  session page before START, the BUILD preview, the session map (what is
+  still to come, and the exercise in hand before its first set), the workout
+  card's exercise name before its first set (OUT there is SKIP), and the
+  routine editor. One row is open at a time; a tap closes it; the click after
+  a drag is swallowed. The buttons are real and focusable, with names like
+  "Swap Box Jump". The card also has SWAP FOR ANOTHER EXERCISE under ADJUST.
+- **SWAP** (`SwapPicker`): SIMILAR, **OTHER KIT** (`otherKitFor`: the same
+  job, sharing no kit with it; empty and hidden when the exercise needs
+  none) and SEARCH ALL, only what `allowedToday` lets in. In a running
+  session nothing gated is offered (`live`).
+- **Tags** (`exercise-tags.ts`, held by `exercise-tags.test.ts`): every
+  pickable exercise has its **groups** (ABS, OBLIQUES, LOWER BACK, UPPER BACK,
+  CHEST, SHOULDERS, BICEPS, TRICEPS, PULL, LEGS, GLUTES + HAMSTRINGS, FEET +
+  HOOKS, MOBILITY, FINGERS; the main one first; warm-ups none) and its
+  **kit** (BAR, HANGBOARD, RINGS, DUMBBELL, KETTLEBELL, PLATE, BOX, BARBELL,
+  BAND, EDGE, RADIATOR, WALL for the climbing wall, CABLE; a mat, the floor,
+  a house wall, a chair or a towel are never kit). A new exercise must be
+  tagged or the test fails. The nine work areas stay for STATS and BODY
+  THIS WEEK.
+- **+ ADD** (`AddSheet`) at the bottom of every list: **BY GROUP**, where a
+  tap shows ADD 3 FOR ABS with its minutes (`groupBlock`: the group's own
+  exercises first, done least recently first, working sets before prep, gym
+  kit before the band at the gym, one of a kind, two for PULL, LEGS, GLUTES
+  + HAMSTRINGS and FINGERS; never one already in, labelled NOT RECOMMENDED
+  YET, maximal, the ring-finger rehab or cable work), the group's packs
+  (READY-MADE, `PACK_GROUPS`), and **ONE BY ONE** (`groupList`, labelled
+  ones last); SEARCH ALL for the rest.
+- **What a change holds**: on the session page it is today's edit
+  (`sessionEdits`, `itemIndexOf` finds the item a running row stands for:
+  its own, a slot pick, a gate stand-in), with KEEP and RESET on the
+  page and a short UNDO after OUT. In BUILD it changes the preview; a tap on
+  a goal or an area builds it again. In a running session `swapLive`
+  replaces the exercise where it stands and `swappedIds` keeps it through an
+  ENERGY switch; additions run through `addExtras`. In a routine it is for
+  good.
 
 ## Routines
 
@@ -1248,7 +1295,10 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v44.md`** — **start here.** THE PATATOMETRO
+- **`7bit-handover-v45.md`** — **start here.** Swipe an exercise
+  for SWAP or OUT everywhere, OTHER KIT for busy kit, + ADD by muscle group
+  or one by one; groups and kit tagged on every exercise.
+- **`7bit-handover-v44.md`** — THE PATATOMETRO
   at the bottom of TODAY: one tap at FLUELA or OERLIKON, every tap timed, and
   when patata is at its highest.
 - **`7bit-handover-v43.md`** — All of the

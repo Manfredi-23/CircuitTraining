@@ -65,3 +65,12 @@
 .chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
 .chip { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: var(--ink); border: 1px solid var(--ink-dim); border-radius: 3px; padding: 1px 5px; }
 .phase .section { padding: 0; }
+
+/* + ADD at the bottom of the list, and the line on swiping (v45). */
+.addMore {
+  width: 100%; height: 52px; margin-top: 14px; flex-shrink: 0;
+  border: 2px dashed var(--ink); border-radius: var(--rad-lg);
+  font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--ink);
+}
+.swipeHint { font-size: 11px; color: var(--ink-dim); line-height: 1.4; margin: 10px 0 4px; }
+.undo { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 11px; letter-spacing: 0.06em; color: var(--ink); }

@@ -50,3 +50,12 @@
   font-weight: 700; font-size: 12px; letter-spacing: 0.1em; color: var(--ink);
 }
 .caution { font-size: 12px; font-weight: 700; color: var(--accent); line-height: 1.35; }
+
+/* SIMILAR | OTHER KIT | SEARCH ALL (v45): tab indicators, 2px under, 6px when
+   on (the extra 4px an inset shadow, so the label does not move). */
+.views { display: flex; flex-shrink: 0; }
+.view {
+  flex: 1; height: 44px; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; color: var(--ink-dim);
+  border-bottom: 2px solid var(--ink-ghost);
+}
+.viewOn { color: var(--ink); border-bottom-color: var(--ink); box-shadow: inset 0 -4px 0 var(--ink); }
