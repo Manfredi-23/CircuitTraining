@@ -1,11 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useStore } from '@/store/store';
 import { phaseRuns, PHASE_PURPOSE } from '@/core/phases';
 import { finishTime, minutesLeft } from '@/core/session-time';
 import { isAhead, setsEditable } from '@/core/live-edit';
+import { canSwapAt, editContextFor } from '@/core/alternatives';
+import { lastDoneMap } from '@/core/slots';
 import type { ScaledExercise } from '@/core/types';
+import SwipeRow from './SwipeRow';
+import SwapPicker from './SwapPicker';
+import AddSheet from './AddSheet';
 import styles from './SessionMap.module.css';
 
 function dose(ex: ScaledExercise): string {
@@ -18,6 +23,8 @@ function dose(ex: ScaledExercise): string {
  * progress bar. What is done says so; the exercise in hand is marked NOW;
  * anything still to come can go to the end (LATER, for a busy rack), come
  * out, move up or down, or take a set more or less. Rest never shows.
+ * A swipe (v45) swaps one still to come, or the one in hand before its first
+ * set; + ADD at the bottom adds by group.
  */
 export default function SessionMap({ open, onClose }: { open: boolean; onClose: () => void }) {
   const list = useStore(s => s.exerciseList);
@@ -26,7 +33,19 @@ export default function SessionMap({ open, onClose }: { open: boolean; onClose: 
   const doneSets = useStore(s => s.doneSets);
   const circuit = useStore(s => s.circuit);
   const editAhead = useStore(s => s.editAhead);
+  const swapLive = useStore(s => s.swapLive);
+  const addExtras = useStore(s => s.addExtras);
+  const mode = useStore(s => s.mode);
+  const energy = useStore(s => s.energy);
+  const progress = useStore(s => s.progress);
+  const sessionPain = useStore(s => s.sessionPain);
+  const sessionLog = useStore(s => s.sessionLog);
+  const climbLog = useStore(s => s.climbLog);
+  const dayPlan = useStore(s => s.dayPlan);
   const [entered, setEntered] = useState(false);
+  const [swapping, setSwapping] = useState<number | null>(null);
+  const [adding, setAdding] = useState(false);
+  const lastDone = useMemo(() => lastDoneMap(sessionLog), [sessionLog]);
 
   useEffect(() => {
     if (open) requestAnimationFrame(() => setEntered(true)); else setEntered(false);
@@ -41,6 +60,15 @@ export default function SessionMap({ open, onClose }: { open: boolean; onClose: 
   if (!open || !circuit) return null;
   const runs = phaseRuns(list);
   const left = minutesLeft(list, stepIndex, setIndex);
+  const ctx = editContextFor(mode, circuit.id, { sessionLog, climbLog, dayPlan }, sessionPain);
+  const swipe = (ex: ScaledExercise, i: number) => {
+    if (!canSwapAt(stepIndex, setIndex, i, list.length) || ex.block === 'TEST') return null;
+    const acts = [{ label: 'SWAP', aria: `Swap ${ex.displayName}`, onClick: () => setSwapping(i) }];
+    if (isAhead(stepIndex, i, list.length)) {
+      acts.push({ label: 'OUT', aria: `Take ${ex.displayName} out for today`, onClick: () => editAhead('drop', i) });
+    }
+    return acts;
+  };
 
   return (
     <div className={`overlay-panel ${styles.panel}${entered ? ' overlay-enter' : ''}`} role="dialog" aria-modal="true" aria-label="The whole session">
@@ -52,7 +80,7 @@ export default function SessionMap({ open, onClose }: { open: boolean; onClose: 
         <span className={styles.left}>{left} MIN LEFT</span>
         <span className={styles.finish}>DONE ~{finishTime(list, stepIndex, setIndex)}</span>
       </div>
-      <p className={styles.hint}>Anything still to come: LATER moves it to the end, X takes it out for today.</p>
+      <p className={styles.hint}>Anything still to come: LATER moves it to the end, X takes it out for today. Swipe one left to swap it.</p>
 
       <div className={styles.scroll}>
         {runs.map(run => (
@@ -70,11 +98,13 @@ export default function SessionMap({ open, onClose }: { open: boolean; onClose: 
                   : i === stepIndex ? 'NOW' : '';
                 return (
                   <li key={ex.id} className={`${styles.row}${i < stepIndex ? ` ${styles.past}` : ''}${i === stepIndex ? ` ${styles.now}` : ''}`}>
-                    <div className={styles.line}>
-                      <span className={styles.num}>{String(i + 1).padStart(2, '0')}</span>
-                      <span className={styles.name}>{ex.displayName}</span>
-                      <span className={styles.dose}>{state || dose(ex)}</span>
-                    </div>
+                    <SwipeRow actions={swipe(ex, i)}>
+                      <div className={styles.line}>
+                        <span className={styles.num}>{String(i + 1).padStart(2, '0')}</span>
+                        <span className={styles.name}>{ex.displayName}</span>
+                        <span className={styles.dose}>{state || dose(ex)}</span>
+                      </div>
+                    </SwipeRow>
                     {ahead && (
                       <div className={styles.actions}>
                         <button onClick={() => editAhead('up', i)} disabled={!isAhead(stepIndex, i - 1, list.length)} aria-label={`Move ${ex.displayName} up`}>UP</button>
@@ -91,9 +121,34 @@ export default function SessionMap({ open, onClose }: { open: boolean; onClose: 
             </ol>
           </section>
         ))}
+        <button className={styles.addMore} onClick={() => setAdding(true)}>+ ADD EXERCISES</button>
       </div>
 
       <button className={styles.back} onClick={onClose}>BACK TO THE SET</button>
+
+      {swapping !== null && list[swapping] && (
+        <SwapPicker
+          exercise={list[swapping]}
+          ctx={ctx}
+          taken={list.map(e => e.id)}
+          live
+          onClose={() => setSwapping(null)}
+          onPick={id => { swapLive(swapping, id); setSwapping(null); }}
+        />
+      )}
+      {adding && (
+        <AddSheet
+          title={circuit.title}
+          ctx={ctx}
+          taken={list.map(e => e.id)}
+          lastDone={lastDone}
+          energy={energy}
+          progress={progress}
+          leftNow={left}
+          onAdd={ids => addExtras(ids)}
+          onClose={() => setAdding(false)}
+        />
+      )}
     </div>
   );
 }

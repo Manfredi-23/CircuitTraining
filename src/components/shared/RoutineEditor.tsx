@@ -1,13 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useStore } from '@/store/store';
 import {
   addItem, isEditable, itemExercise, moveItem, removeItem, renameRoutine, routineMinutes, routineWarnings,
   stepItem, swapItem, MAX_ITEMS, NAME_MAX, type Routine,
 } from '@/core/routines';
 import { exerciseLibrary } from '@/core/reserve';
-import ExercisePicker from './ExercisePicker';
+import { lastDoneMap } from '@/core/slots';
+import type { EditContext } from '@/core/session-edit';
+import SwipeRow from './SwipeRow';
+import SwapPicker from './SwapPicker';
+import AddSheet from './AddSheet';
 import styles from './RoutineEditor.module.css';
 
 /**
@@ -25,6 +29,8 @@ export default function RoutineEditor({ routine, isNew, onClose }: {
   const energy = useStore(s => s.energy);
   const saveRoutine = useStore(s => s.saveRoutine);
   const deleteRoutine = useStore(s => s.deleteRoutine);
+  const sessionLog = useStore(s => s.sessionLog);
+  const lastDone = useMemo(() => lastDoneMap(sessionLog), [sessionLog]);
   const [r, setR] = useState<Routine>(routine);
   const [name, setName] = useState(routine.name);
   const [picker, setPicker] = useState<{ swap: number | null } | null>(null);
@@ -32,6 +38,8 @@ export default function RoutineEditor({ routine, isNew, onClose }: {
   const lib = exerciseLibrary();
   const warnings = routineWarnings(r);
   const minutes = r.items.length ? routineMinutes(r, progress, energy) : 0;
+  // A routine is a list for good, not for today: only its place decides what may go in.
+  const ctx: EditContext = { place: r.place, mode: r.place === 'HOME' ? 'DAILY' : 'CAVE', healing: false, pain: null, noKit: false };
 
   const save = () => {
     saveRoutine(renameRoutine(r, name));
@@ -94,12 +102,17 @@ export default function RoutineEditor({ routine, isNew, onClose }: {
                 const unit = ex.unit === 'sec' ? 's' : '';
                 return (
                   <li key={it.id} className={styles.item}>
+                    <SwipeRow actions={[
+                      { label: 'SWAP', aria: `Swap ${ex.name}`, onClick: () => setPicker({ swap: i }) },
+                      { label: 'OUT', aria: `Take ${ex.name} out`, onClick: () => setR(removeItem(r, i)) },
+                    ]}>
                     <div className={styles.itemTop}>
                       <span className={styles.name}>{ex.name}</span>
                       <button className={styles.icon} disabled={i === 0} onClick={() => setR(moveItem(r, i, -1))} aria-label={`Move ${ex.name} up`}>&uarr;</button>
                       <button className={styles.icon} disabled={i === r.items.length - 1} onClick={() => setR(moveItem(r, i, 1))} aria-label={`Move ${ex.name} down`}>&darr;</button>
                       <button className={styles.icon} onClick={() => setR(removeItem(r, i))} aria-label={`Remove ${ex.name}`}>X</button>
                     </div>
+                    </SwipeRow>
                     <div className={styles.itemBottom}>
                       {edit ? (
                         <>
@@ -127,7 +140,7 @@ export default function RoutineEditor({ routine, isNew, onClose }: {
           <button className={styles.add} disabled={r.items.length >= MAX_ITEMS} onClick={() => setPicker({ swap: null })}>
             + ADD EXERCISE{r.items.length >= MAX_ITEMS ? ` (${MAX_ITEMS} MAX)` : ''}
           </button>
-          <span className={styles.hint}>Rest stays as each exercise writes it. Level picks the variation; energy and the deload week still scale sets.</span>
+          <span className={styles.hint}>Swipe an exercise left: SWAP or OUT. Rest stays as each exercise writes it. Level picks the variation; energy and the deload week still scale sets.</span>
         </div>
 
         {warnings.length > 0 && (
@@ -157,17 +170,26 @@ export default function RoutineEditor({ routine, isNew, onClose }: {
         SAVE{r.items.length ? ` · ${r.items.length} EXERCISE${r.items.length === 1 ? '' : 'S'}` : ''}
       </button>
 
-      {picker && (
-        <ExercisePicker
-          place={r.place}
+      {picker && picker.swap !== null && lib.get(r.items[picker.swap]?.id) && (
+        <SwapPicker
+          exercise={lib.get(r.items[picker.swap].id)!}
+          ctx={ctx}
           taken={r.items.map(i => i.id)}
-          title={picker.swap === null ? 'ADD EXERCISE' : 'SWAP'}
-          replacing={picker.swap === null ? undefined : lib.get(r.items[picker.swap]?.id)?.name}
           onClose={() => setPicker(null)}
-          onPick={id => {
-            setR(picker.swap === null ? addItem(r, id) : swapItem(r, picker.swap, id));
-            setPicker(null);
-          }}
+          onPick={id => { setR(swapItem(r, picker.swap!, id)); setPicker(null); }}
+        />
+      )}
+      {picker && picker.swap === null && (
+        <AddSheet
+          title={name.trim() || 'THE ROUTINE'}
+          ctx={ctx}
+          taken={r.items.map(i => i.id)}
+          lastDone={lastDone}
+          energy={energy}
+          progress={progress}
+          full={r.items.length >= MAX_ITEMS}
+          onAdd={ids => setR(prev => ids.reduce((acc, id) => addItem(acc, id), prev))}
+          onClose={() => setPicker(null)}
         />
       )}
     </div>

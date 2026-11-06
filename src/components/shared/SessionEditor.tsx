@@ -12,12 +12,14 @@ import { activeDay } from '@/core/today';
 import { localDate } from '@/core/dates';
 import { formatLoad, getLoadAxis, getOpeningLoad } from '@/core/load';
 import {
-  activeEdit, addIds, allowedToday, cautionToday, clearTarget, editExercise, editFromCircuit, editWarnings, isChanged,
-  moveAt, packsFor, removeAt, similarTo, stepAt, stepTarget, swapAt, MAX_EDIT_ITEMS,
+  activeEdit, addIds, cautionToday, clearTarget, editExercise, editFromCircuit, editWarnings, isChanged,
+  moveAt, packsFor, removeAt, stepAt, stepTarget, swapAt, MAX_EDIT_ITEMS,
   type EditContext, type SessionEdit,
 } from '@/core/session-edit';
-import ExercisePicker from './ExercisePicker';
+import SwapPicker from './SwapPicker';
+import AddSheet from './AddSheet';
 import PackList from './PackList';
+import { lastDoneMap } from '@/core/slots';
 import styles from './SessionEditor.module.css';
 import packStyles from './ReservePicker.module.css';
 import type { Circuit, Exercise, Mode } from '@/core/types';
@@ -55,9 +57,6 @@ export default function SessionEditor({ mode, circuit, onClose }: {
     pain: lastPain,
     noKit: activeDay(state.dayPlan).noKit,
   };
-  const allow = useCallback((e: Exercise) => allowedToday(e, ctx),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [ctx.place, ctx.mode, ctx.healing, ctx.pain, ctx.noKit]);
   const caution = useCallback((e: Exercise) => cautionToday(e, ctx),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [ctx.place, ctx.mode, ctx.healing, ctx.pain, ctx.noKit]);
@@ -72,9 +71,7 @@ export default function SessionEditor({ mode, circuit, onClose }: {
   const warnings = editWarnings(circuit, edit, place);
   const ids = edit.items.map(i => i.id);
   const swapping = picker?.swap !== null && picker?.swap !== undefined ? editExercise(circuit, edit.items[picker.swap]) : undefined;
-  const similar = useMemo(() => (swapping ? similarTo(swapping, ctx, ids) : []),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [swapping?.id, allow]);
+  const lastDone = useMemo(() => lastDoneMap(state.sessionLog), [state.sessionLog]);
 
   return (
     <div className={`overlay-panel overlay-enter ${styles.panel}`} role="dialog" aria-modal="true" aria-label={`Edit ${circuit.title}`}>
@@ -218,20 +215,30 @@ export default function SessionEditor({ mode, circuit, onClose }: {
         DONE &middot; {edit.items.length} EXERCISE{edit.items.length === 1 ? '' : 'S'} &middot; {minutes} MIN
       </button>
 
-      {picker && (
-        <ExercisePicker
-          place={place}
+      {picker && picker.swap !== null && swapping && (
+        <SwapPicker
+          exercise={swapping}
+          ctx={ctx}
           taken={ids}
-          title={picker.swap === null ? 'ADD EXERCISE' : 'SWAP'}
-          replacing={picker.swap === null ? undefined : swapping?.name}
-          similar={picker.swap === null ? undefined : similar}
-          allow={allow}
-          caution={caution}
           onClose={() => setPicker(null)}
-          onPick={id => {
-            save(picker.swap === null ? addIds(circuit, edit, [id], mode) : swapAt(edit, picker.swap, id));
-            setPicker(null);
+          onPick={id => { save(swapAt(edit, picker.swap!, id)); setPicker(null); }}
+        />
+      )}
+      {picker && picker.swap === null && (
+        <AddSheet
+          title={circuit.title}
+          ctx={ctx}
+          taken={ids}
+          lastDone={lastDone}
+          energy={state.energy}
+          progress={state.progress}
+          full={edit.items.length >= MAX_EDIT_ITEMS}
+          onAdd={added => {
+            // The edit as it stands now: several adds in one visit stack.
+            const now = activeEdit(useStore.getState().sessionEdits, circuit.id, today) ?? editFromCircuit(circuit, today);
+            save(addIds(circuit, now, added, mode));
           }}
+          onClose={() => setPicker(null)}
         />
       )}
 

@@ -12,12 +12,20 @@ import { isHealing, PAIN_MEMORY_DAYS } from '@/core/recommend';
 import { legSoreness } from '@/core/activity';
 import { activeDay } from '@/core/today';
 import { getBlockWeek } from '@/core/block';
-import { asksPainCheck, asksReadiness, applyFingerCheck } from '@/core/engine';
+import { asksPainCheck, asksReadiness, applyFingerCheck, buildList, estimateDuration } from '@/core/engine';
+import {
+  addIds, editedCircuit, editFromCircuit, itemIndexOf, removeAt, swapAt, MAX_EDIT_ITEMS,
+  type EditContext, type SessionEdit,
+} from '@/core/session-edit';
+import { lastDoneMap } from '@/core/slots';
 import { dayOf, daysBetween, localDate } from '@/core/dates';
 import { CONFIG } from '@/core/config';
 import type { Place } from '@/core/reserve';
 import type { EnergyKey, ScaledExercise } from '@/core/types';
 import PainCheck from './PainCheck';
+import SwipeRow from './SwipeRow';
+import SwapPicker from './SwapPicker';
+import AddSheet from './AddSheet';
 import { routineFromList } from '@/core/routines';
 import styles from './BuildSheet.module.css';
 
@@ -57,6 +65,11 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
   const [renaming, setRenaming] = useState<string | null>(null);
   const [savedRoutine, setSavedRoutine] = useState<string | null>(null);
   const [painOpen, setPainOpen] = useState(false);
+  // The preview changed by hand (v45): swiped SWAP or OUT, + ADD. A new tap on a
+  // goal or an area builds the list again from scratch.
+  const [previewEdit, setPreviewEdit] = useState<SessionEdit | null>(null);
+  const [swapping, setSwapping] = useState<ScaledExercise | null>(null);
+  const [adding, setAdding] = useState(false);
 
   const today = localDate();
   const day = activeDay(dayPlan);
@@ -102,7 +115,7 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
   const chosen = (include ?? suggested).filter(t => !closed[t] && !exclude.includes(t));
   const choice: BuildChoice = { place, minutes, include: chosen, exclude, avoid };
   const deload = place === 'GYM' && getBlockWeek(blockStart, sessionLog).deload;
-  const session = useMemo(
+  const built = useMemo(
     () => (chosen.length ? buildCustom({
       ...ctx, minutes, include: chosen, exclude, avoid, energy, progress, benchmarkResults, tweaks, deload,
       title: preset?.name,
@@ -111,6 +124,28 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [chosen.join(), exclude.join(), avoid.join(), place, minutes, energy, progress, benchmarkResults, tweaks, deload, sessionLog, dayPlan, healing, recentPain, preset],
   );
+  useEffect(() => { setPreviewEdit(null); }, [built]);
+  const session = useMemo(() => {
+    if (!built || !previewEdit) return built;
+    const circuit = editedCircuit(built.circuit, previewEdit);
+    const list = buildList(circuit, energy, progress, benchmarkResults, { deload, tweaks });
+    return { ...built, circuit, list, duration: estimateDuration(list) };
+  }, [built, previewEdit, energy, progress, benchmarkResults, deload, tweaks]);
+  const lastDone = useMemo(() => lastDoneMap(sessionLog), [sessionLog]);
+  const editCtx: EditContext = {
+    place: day.noKit ? 'HOME' : place, mode: customMode(place), healing, pain: recentPain, noKit: day.noKit,
+  };
+  const workingEdit = (prev: SessionEdit | null) => prev ?? (built ? editFromCircuit(built.circuit, today) : null);
+  const rowActions = (ex: ScaledExercise) => {
+    if (!built) return null;
+    const edit = workingEdit(previewEdit);
+    const at = edit ? itemIndexOf(built.circuit, edit, ex.id) : -1;
+    if (!edit || at < 0) return null;
+    return [
+      { label: 'SWAP', aria: `Swap ${ex.displayName}`, onClick: () => setSwapping(ex) },
+      { label: 'OUT', aria: `Take ${ex.displayName} out`, onClick: () => setPreviewEdit(removeAt(edit, at)) },
+    ];
+  };
   const warnings = buildWarnings(choice, needs, climbedToday, cautions);
 
   if (!open) return null;
@@ -296,11 +331,21 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
           {warnings.map(w => <div key={w} className={styles.warn}>{w}</div>)}
           {!session && <div className={styles.hint}>Tap a goal or an area in.</div>}
           {session?.list.map(ex => (
-            <div key={ex.id} className={styles.row}>
-              <span className={styles.name}>{ex.displayName}</span>
-              <span className={styles.meta}>{dose(ex)}</span>
-            </div>
+            <SwipeRow key={ex.id} actions={rowActions(ex)}>
+              <div className={styles.row}>
+                <span className={styles.name}>{ex.displayName}</span>
+                <span className={styles.meta}>{dose(ex)}</span>
+              </div>
+            </SwipeRow>
           ))}
+          {session && (
+            <>
+              <button className={styles.addMore} onClick={() => setAdding(true)}>+ ADD EXERCISES</button>
+              <div className={styles.hint}>
+                Swipe an exercise left: SWAP or OUT. {previewEdit ? 'Changed by hand: a tap on a goal or an area builds it again.' : ''}
+              </div>
+            </>
+          )}
           {session && (
             <div className={styles.hint}>
               {session.extraSets > 0
@@ -356,6 +401,39 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
       <button className={styles.start} disabled={!session} onClick={begin}>
         START{session ? ` · ${session.duration} MIN` : ''}
       </button>
+
+      {built && swapping && (
+        <SwapPicker
+          exercise={swapping}
+          ctx={editCtx}
+          taken={session?.list.map(e => e.id) ?? []}
+          onClose={() => setSwapping(null)}
+          onPick={id => {
+            setPreviewEdit(prev => {
+              const edit = workingEdit(prev);
+              const at = edit ? itemIndexOf(built.circuit, edit, swapping.id) : -1;
+              return edit && at >= 0 ? swapAt(edit, at, id) : prev;
+            });
+            setSwapping(null);
+          }}
+        />
+      )}
+      {built && session && adding && (
+        <AddSheet
+          title={session.circuit.title}
+          ctx={editCtx}
+          taken={session.list.map(e => e.id)}
+          lastDone={lastDone}
+          energy={energy}
+          progress={progress}
+          full={(previewEdit?.items.length ?? built.circuit.exercises.length) >= MAX_EDIT_ITEMS}
+          onAdd={ids => setPreviewEdit(prev => {
+            const edit = workingEdit(prev);
+            return edit ? addIds(built.circuit, edit, ids, customMode(place)) : prev;
+          })}
+          onClose={() => setAdding(false)}
+        />
+      )}
 
       {session && (
         <PainCheck

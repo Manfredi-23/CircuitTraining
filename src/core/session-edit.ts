@@ -115,6 +115,20 @@ export function isChanged(circuit: Circuit, edit: SessionEdit | null): boolean {
     it.id !== circuit.exercises[i].id || it.sets !== undefined || it.work !== undefined || it.target !== undefined);
 }
 
+/**
+ * Where an exercise as it runs sits in the edit: its own item, or the item it
+ * stands in for (a gate's substitute, a choice slot's pick, the no-grip
+ * version). -1 when it is not in the edit.
+ */
+export function itemIndexOf(circuit: Circuit, edit: SessionEdit, runningId: string): number {
+  const own = edit.items.findIndex(i => i.id === runningId);
+  if (own >= 0) return own;
+  return edit.items.findIndex(i => {
+    const b = baseOf(circuit, i.id);
+    return Boolean(b && (b.options?.includes(runningId) || b.gate?.substituteId === runningId || b.noGripId === runningId));
+  });
+}
+
 const replaceAt = (edit: SessionEdit, index: number, item: EditItem): SessionEdit =>
   ({ ...edit, items: edit.items.map((it, i) => (i === index ? item : it)) });
 
@@ -224,7 +238,7 @@ export function cautionToday(ex: Exercise, ctx: EditContext): string | null {
 }
 
 /** How alike two exercises are: same area, same capacities, same protocol, same block and load. */
-function likeness(a: Exercise, b: Exercise): number {
+export function likeness(a: Exercise, b: Exercise): number {
   let s = 0;
   const area = areaOf(a);
   if (area && area === areaOf(b)) s += 4;

@@ -153,3 +153,11 @@
   border: none; border-bottom: 2px solid var(--ink); padding: 6px 0; border-radius: 0;
 }
 .noteInput::placeholder { color: var(--ink-dim); font-size: 13px; }
+
+/* SWAP FOR ANOTHER EXERCISE (v45): before the first set. */
+.btnSwapOther {
+  width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-align: left;
+  padding: 12px 14px; border: 2px solid var(--ink); border-radius: var(--rad-sm);
+  font-weight: 700; font-size: 12px; letter-spacing: 0.08em; color: var(--ink);
+}
+.swapHint { font-weight: 400; font-size: 11px; letter-spacing: 0; color: var(--ink-dim); }

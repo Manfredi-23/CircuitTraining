@@ -9,6 +9,7 @@ import { phaseRuns, PHASE_PURPOSE } from '@/core/phases';
 import { transferOf } from '@/core/transfer';
 import { addsLine, afterLine, bodyWeek, setsByArea } from '@/core/body-week';
 import { exerciseLibrary } from '@/core/reserve';
+import SwipeRow, { type SwipeAction } from './SwipeRow';
 import styles from './SessionInfo.module.css';
 
 interface SessionInfoProps {
@@ -31,6 +32,14 @@ interface SessionInfoProps {
   edited?: 'TODAY' | 'KEPT' | null;
   /** Back to the session as written. */
   onReset?: () => void;
+  /** Keep today's edit for next time. */
+  onKeep?: () => void;
+  /** A swipe on a row (v45): SWAP and OUT, or null for a row that does not swipe. */
+  rowActions?: (ex: ScaledExercise, index: number) => SwipeAction[] | null;
+  /** + ADD at the bottom of the list (v45). */
+  onAdd?: () => void;
+  /** The last OUT, for a few seconds. */
+  undo?: { text: string; onUndo: () => void } | null;
 }
 
 /**
@@ -54,7 +63,8 @@ function dose(ex: ScaledExercise): string {
  * stand-ins.
  */
 export default function SessionInfo({
-  open, mode, circuit, list, energy, duration, onClose, onStart, onEnergy, extra, onEdit, edited, onReset,
+  open, mode, circuit, list, energy, duration, onClose, onStart, onEnergy, extra, onEdit, edited, onReset, onKeep,
+  rowActions, onAdd, undo,
 }: SessionInfoProps) {
   const [entered, setEntered] = useState(false);
   const sessionLog = useStore(s => s.sessionLog);
@@ -106,7 +116,14 @@ export default function SessionInfo({
         {edited && (
           <div className={styles.edited}>
             {edited === 'KEPT' ? 'YOUR VERSION, KEPT' : 'EDITED FOR TODAY'}
+            {edited === 'TODAY' && onKeep && <button className={styles.reset} onClick={onKeep}>KEEP</button>}
             {onReset && <button className={styles.reset} onClick={onReset}>RESET</button>}
+          </div>
+        )}
+        {undo && (
+          <div className={styles.undo} role="status">
+            <span>{undo.text}</span>
+            <button className={styles.reset} onClick={undo.onUndo}>UNDO</button>
           </div>
         )}
         <div className={styles.focus}>{circuit.focus}</div>
@@ -144,6 +161,7 @@ export default function SessionInfo({
                 <span className={styles.purpose}>{PHASE_PURPOSE[runAt.get(i)!.phase]}</span>
               </div>
             )}
+            <SwipeRow actions={rowActions?.(ex, i) ?? null}>
             <div className={styles.row}>
             <span className={styles.num}>{String(i + 1).padStart(2, '0')}</span>
             <div className={styles.body}>
@@ -161,9 +179,16 @@ export default function SessionInfo({
             </div>
             <div className={styles.dose}>{ex.ramp ? `ramp, ${ex.scaledSets}-${ex.ramp.maxAttempts}` : dose(ex)}</div>
             </div>
+            </SwipeRow>
           </li>
         ))}
       </ol>
+      {onAdd && (
+        <>
+          <button className={styles.addMore} onClick={onAdd}>+ ADD EXERCISES</button>
+          <p className={styles.swipeHint}>Swipe an exercise left: SWAP or OUT. Changes hold for today.</p>
+        </>
+      )}
 
       {circuit.note && <div className={styles.note}>{circuit.note}</div>}
       </div>

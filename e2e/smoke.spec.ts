@@ -16,6 +16,20 @@ async function open(page: Page, data: unknown = seed.data) {
 
 const tab = (page: Page, name: string) => page.getByRole('tab', { name, exact: true }).first().click();
 
+/** A finger's swipe to the left across a row, as a mouse drag. */
+async function swipeLeft(page: Page, text: RegExp) {
+  const row = page.getByText(text).first();
+  await row.scrollIntoViewIfNeeded();
+  const box = (await row.boundingBox())!;
+  const y = box.y + box.height / 2;
+  const x = box.x + Math.min(box.width / 2, 120);
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x - 100, y, { steps: 6 });
+  await page.mouse.move(x - 200, y, { steps: 6 });
+  await page.mouse.up();
+}
+
 test('TODAY leads with one session and a START', async ({ page }) => {
   const errors = await open(page);
   await expect(page.getByText(/RECOMMENDED|PLANNED/).first()).toBeVisible();
@@ -79,7 +93,7 @@ test('EDIT changes a session before START: remove, swap, a pack, kept or reset',
   await page.getByRole('button', { name: 'Remove Box Jump' }).click();
   await page.getByRole('button', { name: 'SWAP', exact: true }).nth(2).click();
   await expect(page.getByText('SIMILAR', { exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'SEARCH ALL EXERCISES' })).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'SEARCH ALL' })).toBeVisible();
   await page.getByRole('button', { name: /Goblet Squat/ }).first().click();
   await page.getByRole('button', { name: '+ PACK' }).click();
   await page.getByRole('button', { name: 'ADD', exact: true }).first().click();
@@ -232,5 +246,62 @@ test('PATATOMETRO takes a tap at a gym, keeps its time, and finds when patata is
   await page.getByRole('button', { name: /^PATATOMETRO/ }).click();
   await expect(page.getByRole('button', { name: 'OERLIKON', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByRole('button', { name: /^Delete \d\d:\d\d NO PATATA at OERLIKON/ })).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('a swipe swaps for other kit, + ADD adds a group, and the swap runs and holds mid-session', async ({ page }) => {
+  const errors = await open(page, { ...seed.data, sessionLog: [] });
+  await tab(page, 'TRAIN');
+  await tab(page, 'CAVE');
+  await page.getByRole('button', { name: /FULL BODY/ }).first().click();
+  await expect(page.getByText(/12 exercises/i)).toBeVisible();
+
+  // The rings are taken: swipe the ring row, SWAP, OTHER KIT.
+  await swipeLeft(page, /^Ring Row/);
+  await page.getByRole('button', { name: /^Swap Ring Row/ }).click();
+  await page.getByRole('tab', { name: 'OTHER KIT' }).click();
+  await expect(page.getByText(/THE SAME JOB WITHOUT: RINGS/)).toBeVisible();
+  await page.getByRole('button', { name: /Single-Arm Dumbbell Row/ }).first().click();
+  await expect(page.getByText('EDITED FOR TODAY')).toBeVisible();
+  await expect(page.getByText(/^Single-Arm Dumbbell Row/).first()).toBeVisible();
+  await expect(page.getByText(/^Ring Row/)).toHaveCount(0);
+
+  // + ADD: three for the abs in one tap.
+  await page.getByRole('button', { name: '+ ADD EXERCISES' }).click();
+  await page.getByRole('button', { name: 'ABS', exact: true }).click();
+  await page.getByRole('button', { name: /^ADD 3 FOR ABS/ }).click();
+  await expect(page.getByText(/^Added: /)).toBeVisible();
+  await page.getByRole('button', { name: 'DONE (3 ADDED)' }).click();
+  await expect(page.getByText(/15 exercises/i)).toBeVisible();
+
+  // OUT, then UNDO.
+  await swipeLeft(page, /^Box Jump/);
+  await page.getByRole('button', { name: /^Take Box Jump/ }).click();
+  await expect(page.getByText(/14 exercises/i)).toBeVisible();
+  await page.getByRole('button', { name: 'UNDO', exact: true }).click();
+  await expect(page.getByText(/15 exercises/i)).toBeVisible();
+
+  // It runs as shown; in the session map, a swipe swaps one still to come.
+  await page.getByRole('button', { name: /^START FULL BODY/ }).click();
+  // The suitcase carry is a grip: the finger check asks first.
+  await page.getByRole('radio', { name: '1', exact: true }).click();
+  await page.getByRole('button', { name: 'START', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'DONE', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: /Open the whole session/ }).click();
+  await expect(page.getByText(/^Single-Arm Dumbbell Row/).first()).toBeVisible();
+  await swipeLeft(page, /^Suitcase Carry/);
+  await page.getByRole('button', { name: /^Swap Suitcase Carry/ }).click();
+  await page.getByRole('tab', { name: 'SIMILAR' }).click();
+  await page.getByRole('button', { name: /Plate Hug Carry/ }).first().click();
+  await expect(page.getByText(/^Plate Hug Carry/).first()).toBeVisible();
+  await page.getByRole('button', { name: 'BACK TO THE SET' }).click();
+
+  // Feeling worse: the rest is rebuilt at TIRED, and the swaps hold.
+  await page.getByRole('button', { name: /^ADJUST/ }).click();
+  await page.getByRole('button', { name: 'TIRED', exact: true }).click();
+  await page.getByRole('button', { name: /Open the whole session/ }).click();
+  await expect(page.getByText(/^Plate Hug Carry/).first()).toBeVisible();
+  await expect(page.getByText(/^Suitcase Carry/)).toHaveCount(0);
+  await expect(page.getByText(/^Ring Row/)).toHaveCount(0);
   expect(errors).toEqual([]);
 });

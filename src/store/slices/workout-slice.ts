@@ -15,6 +15,7 @@ import { localDate } from '@/core/dates';
 import { resolveSlots } from '@/core/slots';
 import { withNote, type ExerciseNotes } from '@/core/notes';
 import { doLater, dropAhead, moveAhead, setsAhead } from '@/core/live-edit';
+import { canSwapAt, swapInList } from '@/core/alternatives';
 
 /**
  * The session as it will run: level, energy, gates, and the deload week. The
@@ -81,6 +82,13 @@ export interface WorkoutSlice {
   editAhead: (action: 'later' | 'drop' | 'up' | 'down' | 'more' | 'fewer', index: number) => void;
   /** A choice slot (v43): run another of its options instead, before its first set. */
   chooseOption: (exerciseId: string) => void;
+  /**
+   * SWAP from a swipe (v45): another exercise in place of one still to come,
+   * or of the one in hand before its first set.
+   */
+  swapLive: (index: number, exerciseId: string) => void;
+  /** Programme exercises swapped out this session, and what runs instead: an energy switch keeps them. */
+  swappedIds: Record<string, string>;
   /** XP across all capacities when the session started, for what it earned. */
   startXP: number;
   /** Seconds the last rest ran past its end while the app slept; 0 when it did not. */
@@ -146,6 +154,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
   sessionPBs: [],
   tweaks: {},
   addedIds: [],
+  swappedIds: {},
   exerciseNotes: {},
   startXP: 0,
   restOverrun: 0,
@@ -183,6 +192,7 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       sessionPBs: [],
       sessionLevelUps: [],
       addedIds: [],
+      swappedIds: {},
       startXP: Engine.totalXP(get().progress),
       restOverrun: 0,
       screen: 'workout',
@@ -517,6 +527,33 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
     get().primeLoad(next);
   },
 
+  swapLive: (index, exerciseId) => {
+    const st = get();
+    const base = exerciseLibrary().get(exerciseId);
+    const old = st.exerciseList[index];
+    // A gate substitutes when a session is built, not when an exercise is dropped in.
+    if (!base || base.gate || !old || !canSwapAt(st.stepIndex, st.setIndex, index, st.exerciseList.length)) return;
+    const deload = Boolean(st.circuit) && getBlockWeek(st.blockStart, st.sessionLog).deload && deloads(st.circuit!);
+    const scaled = Engine.scaleExercise(base, st.energy, st.progress, { deload, tweaks: st.tweaks });
+    const list = swapInList(st.exerciseList, st.stepIndex, st.setIndex, index, scaled);
+    if (list === st.exerciseList) return;
+    // An extra swapped out is simply gone; a programme exercise is remembered by its own id.
+    const wasExtra = st.addedIds.includes(old.id);
+    const swappedIds = { ...st.swappedIds };
+    if (!wasExtra) {
+      const original = Object.keys(swappedIds).find(k => swappedIds[k] === old.id) ?? old.id;
+      swappedIds[original] = exerciseId;
+    }
+    const inHand = index === st.stepIndex;
+    set({
+      exerciseList: list,
+      addedIds: [...st.addedIds.filter(id => id !== old.id), exerciseId],
+      swappedIds,
+      ...(inHand ? { currentExercise: scaled, swapActive: false } : {}),
+    });
+    if (inHand) get().primeLoad(scaled);
+  },
+
   addExtras: (exerciseIds) => {
     for (const id of exerciseIds) get().addExtra(id);
   },
@@ -546,9 +583,15 @@ export const createWorkoutSlice: StateCreator<Store, [], [], WorkoutSlice> = (se
       circuit,
       ex => Engine.scaleExercise(ex, energy, st.progress, { deload, tweaks: st.tweaks }),
     );
+    // What was swapped out stays out: what runs instead takes its place.
+    const lib = exerciseLibrary();
+    const swappedIn = built.map(e => {
+      const base = st.swappedIds[e.id] ? lib.get(st.swappedIds[e.id]) : undefined;
+      return base ? Engine.scaleExercise(base, energy, st.progress, { deload, tweaks: st.tweaks }) : e;
+    });
     const head = st.exerciseList.slice(0, st.stepIndex + 1);
     const seen = new Set(head.map(e => e.id));
-    const list = [...head, ...built.filter(e => !seen.has(e.id))];
+    const list = [...head, ...swappedIn.filter(e => !seen.has(e.id))];
     // Extras added from the reserve stay, at the new energy.
     for (const extra of st.exerciseList.slice(st.stepIndex + 1).filter(e => st.addedIds.includes(e.id))) {
       const base = exerciseLibrary().get(extra.id);
