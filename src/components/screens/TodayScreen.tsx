@@ -15,6 +15,7 @@ import DayControls from '@/components/shared/DayControls';
 import WeekRail from '@/components/shared/WeekRail';
 import WallCard from '@/components/shared/WallCard';
 import BodyWeek from '@/components/shared/BodyWeek';
+import Patatometro from '@/components/shared/Patatometro';
 import { addsLine, mainArea, setsByArea } from '@/core/body-week';
 import { seasonLabel } from '@/core/season';
 import Led from '@/components/shared/Led';
@@ -213,6 +214,8 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
           )}
         </section>
       )}
+
+      <Patatometro />
 
       <p className={styles.humor}>{humorLine}</p>
       {launcher.element}

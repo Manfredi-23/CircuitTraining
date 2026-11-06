@@ -206,3 +206,31 @@ test('BODY THIS WEEK opens TRAIN THIS; the session map moves an exercise to the 
   await expect(page.getByRole('button', { name: 'DONE', exact: true })).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test('PATATOMETRO takes a tap at a gym, keeps its time, and finds when patata is highest', async ({ page }) => {
+  const tuesday = (m: number, d: number) => new Date(2026, m, d, 18, 30).toISOString();
+  const patataLog = [
+    { id: 'p1', at: tuesday(9, 27), gym: 'FLUELA', patata: true },
+    { id: 'p2', at: tuesday(10, 3), gym: 'FLUELA', patata: true },
+  ];
+  const errors = await open(page, { ...seed.data, patataLog });
+  const head = page.getByRole('button', { name: /^PATATOMETRO/ });
+  await expect(head).toContainText('Most patata: FLUELA, TUE 18-20');
+  await head.click();
+  await expect(page.getByText('Most patata: FLUELA, TUE 18-20, 2 of 2.')).toBeVisible();
+  await expect(page.getByRole('cell', { name: 'TUE 18-20: patata 2 of 2, the most' })).toBeVisible();
+  await page.getByRole('button', { name: 'OERLIKON', exact: true }).click();
+  await page.getByRole('button', { name: 'PATATA', exact: true }).click();
+  await expect(head).toContainText(/Today: PATATA at OERLIKON, \d\d:\d\d/);
+  await expect(page.getByRole('button', { name: /^Delete \d\d:\d\d PATATA at OERLIKON/ })).toBeVisible();
+  await page.getByRole('button', { name: 'UNDO' }).click();
+  await expect(page.getByRole('button', { name: /^Delete / })).toHaveCount(0);
+  await page.getByRole('button', { name: 'NO PATATA', exact: true }).click();
+  await expect(head).toContainText(/Today: NO PATATA at OERLIKON/);
+  // Kept across a reload: the gym too, from the last tap.
+  await page.reload();
+  await page.getByRole('button', { name: /^PATATOMETRO/ }).click();
+  await expect(page.getByRole('button', { name: 'OERLIKON', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('button', { name: /^Delete \d\d:\d\d NO PATATA at OERLIKON/ })).toBeVisible();
+  expect(errors).toEqual([]);
+});

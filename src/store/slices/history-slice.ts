@@ -5,7 +5,7 @@ import { patchSession, removeSession, type SessionPatch } from '@/core/history';
 /** What a delete (or FINISH NOW) took away, put back by UNDO. */
 export interface UndoOffer {
   text: string;
-  restore: Partial<Pick<Store, 'sessionLog' | 'loadLog' | 'climbLog' | 'activityLog' | 'routines' | 'weekPlan' | 'progress' | 'screen'>>;
+  restore: Partial<Pick<Store, 'sessionLog' | 'loadLog' | 'climbLog' | 'activityLog' | 'routines' | 'weekPlan' | 'progress' | 'screen' | 'patataLog'>>;
   /** For keying the toast, so a second delete restarts its timer. */
   at: number;
 }
