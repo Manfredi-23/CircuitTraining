@@ -10,13 +10,13 @@
 export const PERSISTED_KEYS = [
   'progress', 'sessionLog', 'benchmarkResults', 'loadLog', 'climbLog',
   'activityLog', 'tweaks', 'dayPlan', 'offDays', 'blockStart', 'settings', 'health', 'buildPresets',
-  'routines', 'weekPlan', 'sessionEdits', 'exerciseNotes',
+  'routines', 'weekPlan', 'sessionEdits', 'exerciseNotes', 'patataLog',
 ] as const;
 
 export type PersistedKey = typeof PERSISTED_KEYS[number];
 
 /** Keys that hold arrays; every other persisted key holds a plain object or a string. */
-const ARRAY_KEYS: PersistedKey[] = ['sessionLog', 'benchmarkResults', 'loadLog', 'climbLog', 'activityLog', 'offDays', 'buildPresets', 'routines'];
+const ARRAY_KEYS: PersistedKey[] = ['sessionLog', 'benchmarkResults', 'loadLog', 'climbLog', 'activityLog', 'offDays', 'buildPresets', 'routines', 'patataLog'];
 
 export const BACKUP_FORMAT = 1;
 

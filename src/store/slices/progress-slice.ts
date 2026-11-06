@@ -100,6 +100,9 @@ export const createProgressSlice: StateCreator<Store, [], [], ProgressSlice> = (
     buildPresets: [],
     routines: [],
     weekPlan: {},
+    sessionEdits: {},
+    exerciseNotes: {},
+    patataLog: [],
   }),
 
   // A backup replaces, never merges: two histories of the same days would

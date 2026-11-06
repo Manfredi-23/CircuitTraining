@@ -93,7 +93,7 @@ one-arm rungs open on a tested weighted pull-up and never on XP, and `npm test`.
 `src/core/__tests__/` in the same commit. The screens have Playwright smoke
 tests in `e2e/smoke.spec.ts` (TODAY, a session from TRAIN to LOG, the finger
 check on CAVE 04, EDIT before START, MAKE IT MINE, the weekly plan, STATS, UNDO,
-ON THE WALL and a tagged climb, THE GOAL and WHERE YOU FALL), run against the static build with the
+ON THE WALL and a tagged climb, THE GOAL and WHERE YOU FALL, the PATATOMETRO), run against the static build with the
 seed history; `e2e/serve.mjs` serves `out/`. In the cloud session set
 `PW_CHROMIUM=/opt/pw-browsers/chromium-1243/chrome-linux64/chrome`; on the Mac
 run `npx playwright install chromium` once.
@@ -159,6 +159,7 @@ src/
     body-week.ts # BODY THIS WEEK: sets per area against a weekly band, what a session adds
     transfer.ts  # what each exercise is for on the wall, focus cues, falls -> packs
     notes.ts     # a technique note per exercise, shown as LAST TIME
+    patata.ts    # THE PATATOMETRO: taps at FLUELA / OERLIKON, when patata is highest
     data-feet.ts # twenty off-wall exercises for feet, hooks, high steps (v43)
     data-daily.ts, data-cave.ts, data-assess.ts, data-heal.ts  # Session libraries, one per tab
     data-oap.ts  # One-arm pull-up path, shared by CAVE 01 and CAVE 02
@@ -179,7 +180,7 @@ src/
                  #   BuildSheet, StatsOverview, SessionCard, RoutineEditor, ExercisePicker,
                  #   WeekPlanner, SessionDetail, ExerciseDetail, Led, WeekRail,
                  #   SessionEditor, PackList, GoalSection, LimitersSection, WallCard, CoachSection,
-                 #   SessionMap, BodyWeek
+                 #   SessionMap, BodyWeek, Patatometro
 e2e/             # Playwright smoke tests, the seed history (fixtures/athlete.json), serve.mjs
   app/           # layout.tsx, page.tsx (screen router), globals.css
 ios/             # Xcode project (Capacitor 8, SPM)
@@ -204,7 +205,7 @@ design/          # pixel-grid.svg drawing template; illustrations/<name>/NN.svg 
 - **Zustand persist**: Only the keys in `PERSISTED_KEYS` (`src/core/backup.ts`)
   are persisted: `progress`, `sessionLog`, `benchmarkResults`, `loadLog`,
   `climbLog`, `activityLog`, `tweaks`, `dayPlan`, `offDays`, `blockStart`,
-  `settings`, `health`, `buildPresets`, `routines`, `weekPlan`, `sessionEdits` and `exerciseNotes`. `partialize` reads that list, so a
+  `settings`, `health`, `buildPresets`, `routines`, `weekPlan`, `sessionEdits`, `exerciseNotes` and `patataLog`. `partialize` reads that list, so a
   new key is persisted and backed up by adding it there. UI state is transient. The blob
   carries `version: 2`, but legacy cleanup runs from `merge`, not `migrate`:
   persist only calls `migrate` when the stored blob has a **numeric** version,
@@ -843,6 +844,18 @@ either a CAVE session that follows bouldering was done today or bouldering is
 planned (`climbToLog` in `plan.ts`); STRONG does not ask. START is sticky
 just above the tab bar, and the card is the shorter `compact` one.
 
+**THE PATATOMETRO** (v44, `Patatometro`, `patata.ts`, `patata-slice.ts`)
+closes TODAY, folded to one line (today's last tap, else where and when
+patata is highest, else the ask). Open: a FLUELA | OERLIKON toggle (it opens
+on the gym tapped last), PATATA and NO PATATA. Every tap is kept with its
+time in `patataLog` (persisted, in backups), with UNDO; today's taps are
+listed with X to delete. Under them, WHEN THERE IS PATATA: the peak in one
+sentence, now and the rest of today at each gym, visits with patata per gym,
+and the gym's weekday x time grid (before 12, 12-16, 16-18, 18-20, after 20,
+DAY, ALL). A gym, a day and a slot count once, with patata if any tap in it
+said so; a cell is named the most only when seen twice (`MIN_SAMPLE`), and
+cells rank by (yes + 1) / (n + 2). Nothing else in the app reads it.
+
 ## TRAIN
 
 The library (`TrainScreen`): DAILY, CAVE, TEST, HEAL and MINE as tabs. Each
@@ -1235,7 +1248,10 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v43.md`** — **start here.** All of the
+- **`7bit-handover-v44.md`** — **start here.** THE PATATOMETRO
+  at the bottom of TODAY: one tap at FLUELA or OERLIKON, every tap timed, and
+  when patata is at its highest.
+- **`7bit-handover-v43.md`** — All of the
   v42 proposal built: BODY THIS WEEK, phases, minutes left and the session
   map, choice slots, scored footwork and notes, twenty feet exercises, DAILY
   07, FEET in ASSESS, BUILD and the packs.
