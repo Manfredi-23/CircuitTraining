@@ -72,6 +72,7 @@ const RESERVE: ReserveEntry[] = [
   { id: 'full-plate-carry', group: 'CORE', place: 'GYM', grip: false },
   // The anchor is the gym's: the home band has none.
   { id: 'extra-band-pallof', group: 'CORE', place: 'GYM', grip: false },
+  { id: 'extra-weighted-knee-raise', group: 'CORE', place: 'GYM', grip: true, curl: true },
 
   // BACK: the lower back (extension, the hinge) and the middle of it, between
   // the shoulder blades (prone raises, rows). A group of its own since v40, so
@@ -82,6 +83,7 @@ const RESERVE: ReserveEntry[] = [
   { id: 'extra-prone-cobra', group: 'BACK', place: 'HOME', grip: false, floor: true },
   { id: 'extra-bw-good-morning', group: 'BACK', place: 'HOME', grip: false },
   { id: 'extra-wall-angel', group: 'BACK', place: 'HOME', grip: false },
+  { id: 'extra-doorway-pec', group: 'MOBILITY', place: 'HOME', grip: false },
   { id: 'extra-bent-ytw', group: 'BACK', place: 'HOME', grip: false },
   { id: 'daily-band-good-morning', group: 'BACK', place: 'HOME', grip: true },
   { id: 'morn-band-row', group: 'BACK', place: 'HOME', grip: true },

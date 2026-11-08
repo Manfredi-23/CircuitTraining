@@ -34,7 +34,7 @@ describe('exercise tags', () => {
     // band, no-hangs on the portable edge, the ring finger is a finger, and
     // the ring dips in "Push-Ups / Ring Dips" are optional.
     const notKit = [
-      'home-leg-raise (HANGBOARD)', 'addon-hanging-oblique (HANGBOARD)', 'morn-band-row (BAR)',
+      'home-leg-raise (HANGBOARD)', 'addon-hanging-oblique (HANGBOARD)', 'extra-weighted-knee-raise (HANGBOARD)', 'morn-band-row (BAR)',
       'daily-edge-density (HANGBOARD)', 'heal-ring-left (RINGS)', 'addon-pushup (RINGS)',
     ];
     expect(wrong.filter(w => !notKit.includes(w))).toEqual([]);

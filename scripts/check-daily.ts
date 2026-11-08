@@ -23,6 +23,7 @@ import { CONFIG } from '@/core/config';
 import { buildList, estimateDuration } from '@/core/engine';
 import { getModeData } from '@/core/data-index';
 import { slotVariants } from '@/core/slots';
+import { WAKE_UP_IDS } from '@/core/data-week';
 import type { EnergyKey, Progress } from '@/core/types';
 
 const BUDGET_MINUTES = 20;
@@ -70,6 +71,10 @@ for (const circuit of getModeData('DAILY')) {
       if (minutes > worstMinutes) {
         worstMinutes = minutes;
         worstLabel = `${circuit.circuitNum} L${level} ${energy}`;
+      }
+      // v47: WAKE UP is 15 minutes at most.
+      if (WAKE_UP_IDS.includes(circuit.id) && minutes > 15) {
+        fail(`${circuit.circuitNum} L${level} ${energy} is ${minutes} min, WAKE UP is 15 at most`);
       }
       if (minutes > BUDGET_MINUTES) {
         failures++;

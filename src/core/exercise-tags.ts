@@ -194,6 +194,8 @@ export const EXERCISE_TAGS: Record<string, Tags> = {
   'extra-wall-angel': t([UPB, SHO]),
   'extra-bent-ytw': t([UPB, SHO]),
   'extra-band-pallof': t([OBL, ABS], ['BAND']),
+  'extra-weighted-knee-raise': t([ABS, OBL], ['BAR', 'DUMBBELL']),
+  'extra-doorway-pec': t([MOB, CHE]),
 
   // --- Feet, hooks and high steps (v43) ---
   'feet-wall-high-step': t([FEE, LEG]),

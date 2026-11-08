@@ -7,10 +7,12 @@ import { DATA_DAILY } from './data-daily';
 import { DATA_CAVE } from './data-cave';
 import { DATA_ASSESS } from './data-assess';
 import { DATA_HEAL } from './data-heal';
+import { WEEK_CAVE, WEEK_DAILY } from './data-week';
 
 const MODE_DATA: Record<Mode, Circuit[]> = {
-  DAILY: DATA_DAILY,
-  CAVE: DATA_CAVE,
+  // The week of v47 after the older sessions: same tabs, TODAY suggests these.
+  DAILY: [...DATA_DAILY, ...WEEK_DAILY],
+  CAVE: [...DATA_CAVE, ...WEEK_CAVE],
   TEST: DATA_ASSESS,
   HEAL: DATA_HEAL,
 };

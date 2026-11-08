@@ -13,12 +13,13 @@
 
 import { getModeData } from './data-index';
 import { getReadiness, asksPainCheck } from './engine';
-import { daysBetween, dayOf, localDate, mondayOf } from './dates';
+import { addDays, daysBetween, dayOf, localDate, mondayOf } from './dates';
+import { CAVE_DAY_IDS, CORE_LEGS_ID, STRAIGHT_BACK_ID, WAKE_UP_IDS } from './data-week';
 import { resultHistory } from './benchmarks';
 import { getRingRecovery, REHAB_BENCHMARKS, RING_RIGHT_BENCHMARK } from './rehab';
 import { FOOTWORK_ID, HEAL_GYM_IDS, RING_REHAB_ID, RING_TEST_ID } from './data-heal';
 import type { BlockWeek } from './block';
-import { PHASE_TRAINING_DAY, type SeasonPhase } from './season';
+import type { SeasonPhase } from './season';
 import { ACTIVITY_SPEC, isLegHeavy, legSoreness, type ActivitySession } from './activity';
 import { NO_DAY, loadsArea, needsKit, type ActiveDay, type SoreArea } from './today';
 import type { BenchmarkResult, Circuit, ClimbSession, LoadLogEntry, Mode, Progress, SessionLogEntry } from './types';
@@ -97,6 +98,30 @@ export function isHealing(sessionLog: SessionLogEntry[], climbLog: ClimbSession[
   if (ring?.left) return !ring.reached;
   if (heal.some(s => s.circuitId === RING_REHAB_ID && daysBetween(dayOf(s.date), today) <= HEAL_MEMORY_DAYS)) return true;
   return inHealBlock(sessionLog, climbLog, now);
+}
+
+/** Before this hour a weekday opens with WAKE UP (v47). */
+export const MORNING_ENDS = 12;
+
+/** Training days in a row after which rest is suggested (v47). */
+export const REST_AFTER_DAYS = 3;
+
+/**
+ * A rest day is due (v47): the last three days each had a climb or a training
+ * session (WAKE UP and the other short DAILYs do not count), and nothing is
+ * done yet today.
+ */
+export function restDue(sessionLog: SessionLogEntry[], climbLog: ClimbSession[], now = new Date()): boolean {
+  const today = localDate(now);
+  const trained = new Set<string>([
+    ...climbLog.map(c => c.date),
+    ...sessionLog.filter(s => s.mode !== 'DAILY' && s.circuitId !== RING_REHAB_ID).map(s => dayOf(s.date)),
+  ]);
+  if (trained.has(today)) return false;
+  for (let i = 1; i <= REST_AFTER_DAYS; i++) {
+    if (!trained.has(addDays(today, -i))) return false;
+  }
+  return true;
 }
 
 /** `isHealing` from the store's logs, the ring finger's numbers included when they are there. */
@@ -244,18 +269,69 @@ export function recommend(input: RecommendInput): Recommendation | null {
     return { mode: 'DAILY', circuitId: pick.id, reason: why(fingerFree, pick, 'Finger healing: no finger work today.') };
   }
 
-  // 3. Climbed today: the after-bouldering session, alternating 02 and 03.
-  const stacking = cave.filter(c => c.stacksOnSession);
-  if (climbedToday && !doneToday('CAVE') && stacking.length) {
-    const pick = leastRecent(spare(stacking), sessionLog);
-    return { mode: 'CAVE', circuitId: pick.id, reason: why(stacking, pick, 'You climbed today. This one stacks on it.') };
+  // ---- The week of v47 (`data-week.ts`) ----------------------------------------
+  // TODAY suggests WAKE UP, the three CAVE days and STRAIGHT BACK. The older
+  // sessions stay in TRAIN; the rules above (pain, no kit, the HEAL block)
+  // still come first.
+  const byIdIn = (list: Circuit[]) => (id: string) => list.find(c => c.id === id);
+  const wakeUps = WAKE_UP_IDS.map(byIdIn(daily)).filter((c): c is Circuit => Boolean(c));
+  const caveDays = CAVE_DAY_IDS.map(byIdIn(cave)).filter((c): c is Circuit => Boolean(c));
+  const straightBack = cave.find(c => c.id === STRAIGHT_BACK_ID);
+  const doneId = (id: string) => lastDone(sessionLog, id) === today;
+  const caveDayDone = caveDays.some(c => doneId(c.id));
+
+  // 3. Climbed today: STRAIGHT BACK, the opposite side of the wall.
+  if (climbedToday && straightBack && !doneId(straightBack.id)) {
+    return { mode: 'CAVE', circuitId: straightBack.id, reason: 'You climbed today. Now the opposite side.' };
   }
 
+  // 4. A weekday morning: WAKE UP first, whatever the day holds later.
+  const weekday = daysBetween(mondayOf(today), today); // 0 = Monday
+  const morning = now.getHours() < MORNING_ENDS;
+  if (weekday < 5 && morning && wakeUps.length && !wakeUps.some(c => doneId(c.id))) {
+    const pick = leastRecent(wakeUps, sessionLog);
+    const later = day.kind === 'CAVE' ? ' CAVE later.' : day.kind === 'CLIMB' ? ' Climbing later.' : '';
+    return { mode: 'DAILY', circuitId: pick.id, reason: `Morning: wake up the feet.${later}` };
+  }
+
+  // 5. CLIMB today: STRAIGHT BACK after the wall.
+  if (day.kind === 'CLIMB') {
+    if (!straightBack || doneId(straightBack.id)) return null;
+    return { mode: 'CAVE', circuitId: straightBack.id, reason: 'Climbing today. This one goes after it.' };
+  }
+
+  const climbs = [...new Set(climbLog.map(c => c.date))].filter(d => d <= today);
+  const lastClimb = climbs.length ? climbs.sort()[climbs.length - 1] : null;
+  /** The next CAVE day: legs within two days of a climb, otherwise the one done longest ago. */
+  const nextCaveDay = (): { pick: Circuit; reason: string } | null => {
+    const pool = spare(caveDays);
+    if (!pool.length) return null;
+    const legs = pool.find(c => c.id === CORE_LEGS_ID);
+    const sinceClimb = lastClimb ? daysBetween(lastClimb, today) : null;
+    if (legs && sinceClimb !== null && sinceClimb >= 1 && sinceClimb <= 2) {
+      const legsLast = lastDone(sessionLog, legs.id);
+      if (!legsLast || daysBetween(legsLast, today) > 2) {
+        return { pick: legs, reason: `Climbed ${sinceClimb === 1 ? 'yesterday' : 'two days ago'}: legs while the arms recover.` };
+      }
+    }
+    const pick = leastRecent(pool, sessionLog);
+    return { pick, reason: why(caveDays, pick, `Next CAVE day: ${pick.title}.`) };
+  };
+
+  // 6. CAVE today: the CAVE day done longest ago.
+  if (day.kind === 'CAVE') {
+    if (caveDayDone) return null;
+    const next = nextCaveDay();
+    return next && { mode: 'CAVE', circuitId: next.pick.id, reason: next.reason };
+  }
+
+  // 7. Three training days in a row: rest is due (`restDue`).
+  if (restDue(sessionLog, climbLog, now)) return null;
+
+  // 8. ASSESS due, fresh fingers, not a deload week, no climbing today, and
+  // not a TIRED day: a test on a bad night measures the night.
   const strong = cave.find(c => c.id === STRONG_ID);
   const fingersReady = strong ? getReadiness(strong, progress).level === 'ready' : false;
-
-  // 4. ASSESS due, fresh fingers, not a deload week, no climbing today, and
-  // not a TIRED day: a test on a bad night measures the night.
   if (test[0] && !input.tired && !forearms && !shortDay && !climbedToday && !block.deload && fingersReady && !doneToday('TEST')
       && assessDue(benchmarkResults, sessionLog, now)) {
     const never = resultHistory(benchmarkResults, 'fs-2arm-20mm').length === 0;
@@ -265,54 +341,11 @@ export function recommend(input: RecommendInput): Recommendation | null {
     };
   }
 
-  // 5. A training day: from Thursday, in a week with fewer than two climbing
-  // days, each missing bouldering day can be a no-climbing CAVE session.
-  // STRONG first while the fingers are fresh and it is not done this week,
-  // otherwise POWER or FULL BODY, whichever was done least recently. Only once
-  // climbs are being logged: with an empty climb log the app cannot tell a
-  // skipped bouldering day from one that was never written down.
-  const monday = mondayOf(today);
-  const weekday = daysBetween(monday, today); // 0 = Monday
-  const climbsThisWeek = new Set(climbLog.filter(c => c.date >= monday && c.date <= today).map(c => c.date)).size;
-  const training = cave.filter(c => !c.stacksOnSession);
-  const trainingThisWeek = new Set(sessionLog
-    .filter(s => training.some(c => c.id === s.circuitId) && dayOf(s.date) >= monday)
-    .map(s => dayOf(s.date))).size;
-  const strongThisWeek = strong ? sessionLog.some(s => s.circuitId === strong.id && dayOf(s.date) >= monday) : true;
-  // A peak week adds no training days: the trip is the training.
-  if (climbLog.length > 0 && !input.tired && !shortDay && weekday >= 3 && climbsThisWeek + trainingThisWeek < 2
-      && !climbedToday && !doneToday('CAVE') && input.season !== 'PEAK') {
-    const reason = (title: string) =>
-      `${climbsThisWeek} climbing day${climbsThisWeek === 1 ? '' : 's'} this week. ${title} instead.`;
-    if (strong && !forearms && fingersReady && !strongThisWeek) {
-      return { mode: 'CAVE', circuitId: strong.id, reason: reason(strong.title) };
-    }
-    const others = training.filter(c => c.id !== strong?.id
-      && getReadiness(c, progress).level === 'ready' && !(forearms && asksPainCheck(c)));
-    if (others.length) {
-      // BASE prefers FULL BODY and POWER prefers POWER, unless done this week.
-      const phaseId = input.season ? PHASE_TRAINING_DAY[input.season] : undefined;
-      const phasePick = others.find(c => c.id === phaseId
-        && !sessionLog.some(s => s.circuitId === c.id && dayOf(s.date) >= monday));
-      const pick = phasePick ?? leastRecent(spare(others), sessionLog);
-      const text = phasePick ? `${reason(pick.title)} ${input.season!.charAt(0)}${input.season!.slice(1).toLowerCase()} phase.` : reason(pick.title);
-      return { mode: 'CAVE', circuitId: pick.id, reason: why(others, pick, text) };
-    }
-  }
-
-  // 6. The morning DAILY, rotating through the five.
-  if (doneToday('DAILY')) return null;
-  if (input.tired) {
-    const pick = leastRecent(spare(daily), sessionLog);
-    return { mode: 'DAILY', circuitId: pick.id, reason: why(daily, pick, 'A TIRED day: something light instead.') };
-  }
-  const pick = leastRecent(spare(daily), sessionLog);
-  if (why(daily, pick, '')) return { mode: 'DAILY', circuitId: pick.id, reason: soreReason };
-  const last = lastDone(sessionLog, pick.id);
-  const ago = last ? daysBetween(last, today) : null;
-  return {
-    mode: 'DAILY', circuitId: pick.id,
-    reason: ago === null ? 'Next in the DAILY rotation.' : `Next in rotation, last done ${ago === 1 ? 'yesterday' : `${ago} days ago`}.`,
-  };
+  // 9. Nothing said yet: the next CAVE day, and the switch above says the rest.
+  if (caveDayDone || doneToday('CAVE')) return null;
+  const next = nextCaveDay();
+  if (!next) return null;
+  if (input.tired) return { mode: 'CAVE', circuitId: next.pick.id, reason: 'A TIRED day: CAVE at TIRED, or rest.' };
+  return { mode: 'CAVE', circuitId: next.pick.id, reason: `CAVE or CLIMB today? ${next.reason}` };
 }
 

@@ -15,8 +15,8 @@ describe('the day plan', () => {
   const plan = { date: '2026-10-13', minutes: 15, noKit: true, sore: ['LEGS' as const], off: 'REST' as const };
 
   it('holds time, kit and off for the day, soreness for two', () => {
-    expect(activeDay(plan, NOW)).toEqual({ minutes: 15, noKit: true, sore: ['LEGS'], off: 'REST' });
-    expect(activeDay(plan, new Date(2026, 9, 14, 9))).toEqual({ minutes: null, noKit: false, sore: ['LEGS'], off: null });
+    expect(activeDay(plan, NOW)).toEqual({ minutes: 15, noKit: true, sore: ['LEGS'], off: 'REST', kind: null });
+    expect(activeDay(plan, new Date(2026, 9, 14, 9))).toEqual({ minutes: null, noKit: false, sore: ['LEGS'], off: null, kind: null });
     expect(activeDay(plan, new Date(2026, 9, 15, 9))).toEqual(NO_DAY);
     expect(describeDay(activeDay(plan, NOW))).toBe('REST DAY · 15 MIN · NO KIT · SORE LEGS');
   });
@@ -96,20 +96,23 @@ describe('the recommendation', () => {
     expect(r?.reason).toBe('No kit today: a mat-only DAILY.');
   });
 
-  it('steers the after-bouldering session around sore shoulders', () => {
-    expect(recommend({ ...base, climbLog: [climb] })?.circuitId).toBe('cave-05');
-    const r = recommend({ ...base, climbLog: [climb], day: { ...NO_DAY, sore: ['SHOULDERS'] } });
-    expect(r?.circuitId).toBe('cave-06');
+  it('steers the CAVE day around sore shoulders', () => {
+    const evening = { ...base, now: new Date(2026, 9, 13, 18), day: { ...NO_DAY, kind: 'CAVE' as const } };
+    const done = ['cave-11', 'cave-10', 'cave-09'].map((id, i) => ({
+      date: new Date(2026, 9, 2 + i, 18).toISOString(), mode: 'CAVE' as const, circuitId: id,
+      circuitTitle: id, energy: 'NORMAL' as const, duration: 70,
+    }));
+    expect(recommend({ ...evening, sessionLog: done })?.circuitId).toBe('cave-11');
+    const r = recommend({ ...evening, sessionLog: done, day: { ...evening.day, sore: ['SHOULDERS'] } });
+    expect(r?.circuitId).toBe('cave-10');
     expect(r?.reason).toBe('Shoulders sore. Something else today.');
   });
 
-  it('keeps finger DAILYs off with sore forearms', () => {
-    const done = ['daily-01', 'daily-02', 'daily-03'].map((id, i) => ({
-      date: new Date(2026, 9, 6 + i, 8).toISOString(), mode: 'DAILY' as const, circuitId: id,
-      circuitTitle: id, energy: 'NORMAL' as const, duration: 15,
-    }));
-    expect(recommend({ ...base, sessionLog: done })?.circuitId).toBe('daily-04');
-    expect(recommend({ ...base, sessionLog: done, day: { ...NO_DAY, sore: ['FOREARMS'] } })?.circuitId).toBe('daily-05');
+  it('holds CAVE or CLIMB for the day it was said, and REST clears it', () => {
+    expect(activeDay({ date: '2026-10-13', kind: 'CAVE' }, NOW).kind).toBe('CAVE');
+    expect(activeDay({ date: '2026-10-12', kind: 'CAVE' }, NOW).kind).toBeNull();
+    expect(activeDay({ date: '2026-10-13', kind: 'CLIMB', off: 'REST' }, NOW).kind).toBeNull();
+    expect(recommend({ ...base, now: new Date(2026, 9, 13, 18), day: { ...NO_DAY, off: 'REST' } })).toBeNull();
   });
 });
 

@@ -1,0 +1,18 @@
+.wrap { display: flex; flex-direction: column; gap: 8px; }
+.label { font-weight: 700; font-size: 12px; letter-spacing: 0.12em; color: var(--ink); }
+.row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.btn {
+  position: relative;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
+  min-height: 56px; padding: 10px 12px; text-align: left;
+  border: 2px solid var(--ink-ghost); border-radius: var(--rad-sm);
+  /* The active state adds an inset bar, never a wider border, so nothing moves. */
+}
+.name { font-weight: 700; font-size: 14px; letter-spacing: 0.06em; color: var(--ink-dim); }
+.hint { font-size: 11px; line-height: 1.3; color: var(--ink-dim); }
+.on { border-color: var(--ink); }
+.on::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 4px;
+  background: var(--accent); border-radius: 0 0 2px 2px; pointer-events: none;
+}
+.on .name { color: var(--ink); }
