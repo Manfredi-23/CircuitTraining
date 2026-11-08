@@ -164,6 +164,7 @@ src/
     exercise-tags.ts # muscle groups (ABS ... FINGERS) and kit (bar, rings ...) for every exercise
     alternatives.ts  # OTHER KIT swaps, group blocks and lists for + ADD, swaps in a running session
     data-feet.ts # twenty off-wall exercises for feet, hooks, high steps (v43)
+    data-week.ts # the week of v47: WAKE UP, the CAVE days, STRAIGHT BACK
     data-daily.ts, data-cave.ts, data-assess.ts, data-heal.ts  # Session libraries, one per tab
     data-oap.ts  # One-arm pull-up path, shared by CAVE 01 and CAVE 02
     data-index.ts  # getModeData(mode) helper
@@ -183,7 +184,7 @@ src/
                  #   BuildSheet, StatsOverview, SessionCard, RoutineEditor, ExercisePicker,
                  #   WeekPlanner, SessionDetail, ExerciseDetail, Led, WeekRail,
                  #   SessionEditor, PackList, GoalSection, LimitersSection, WallCard, CoachSection,
-                 #   SessionMap, BodyWeek, Patatometro, SwipeRow, SwapPicker, AddSheet
+                 #   SessionMap, BodyWeek, Patatometro, SwipeRow, SwapPicker, AddSheet, DayKindSwitch
 e2e/             # Playwright smoke tests, the seed history (fixtures/athlete.json), serve.mjs
   app/           # layout.tsx, page.tsx (screen router), globals.css
 ios/             # Xcode project (Capacitor 8, SPM)
@@ -382,12 +383,13 @@ fit that week; HEAL was added as a fourth while a finger heals.
 
 | Mode | Sessions |
 |------|----------|
-| DAILY | 01 CORE + OBLIQUES, 02 OBLIQUES + BACK, 03 BAND STRENGTH, 04 FINGERS + MOBILITY, 05 LEGS + CORE, 06 QUIET FEET, 07 HOOKS + HIGH FEET |
-| CAVE | 01 STRONG, 04 POWER, 05 FULL BODY (no climbing); 02 PULL + PUSH, 03 LEGS + BACK (after bouldering) |
+| DAILY | 01 CORE + OBLIQUES, 02 OBLIQUES + BACK, 03 BAND STRENGTH, 04 FINGERS + MOBILITY, 05 LEGS + CORE, 06 QUIET FEET, 07 HOOKS + HIGH FEET; 08 WAKE UP FEET, 09 WAKE UP FLAGS (v47) |
+| CAVE | 01 STRONG, 04 POWER, 05 FULL BODY (no climbing); 02 PULL + PUSH, 03 LEGS + BACK (after bouldering); 06 CORE + PULL, 07 CORE + LEGS, 08 CORE + PUSH, 09 STRAIGHT BACK (v47) |
 | TEST | 01 ASSESS (six sections with FEET, ramps, ~83 min NORMAL) |
 | HEAL | 01 LEGS + TRUNK, 02 PUSH + HINGE (injured finger, gym, ~60-70 min), 03 RING REHAB, 04 RING TEST (home, portable edge), 05 FOOTWORK (gym slabs, ~28 min) |
 
-A typical week: DAILY most mornings, CAVE 02 or 03 straight after each
+**Since v47 TODAY suggests only the week below (The week of v47).** Before it,
+a typical week was: DAILY most mornings, CAVE 02 or 03 straight after each
 bouldering session, and a training day in place of a skipped bouldering day:
 CAVE 01 STRONG first (once a week, fingers fresh), then 04 POWER or 05 FULL
 BODY, least recently done (recommender rule 5, from Thursday, while climbing
@@ -490,6 +492,34 @@ Short home sessions before breakfast. `npm run check:daily` holds the rules:
   bridge, the lunge drive. Nothing curls, nothing is gripped; the toe-hook
   sit-back (radiator or sofa) is left to the HOOKS pack at the gym. 14 min
   NORMAL, 19 FRESH, 10 TIRED; `legHeavy`.
+
+### The week of v47
+
+Asked for in November 2026 (`docs/handovers/7bit-handover-v47.md`,
+`data-week.ts`, added to the DAILY and CAVE tabs through `data-index.ts`):
+
+- **TODAY IS: CAVE / CLIMB / REST** (`DayKindSwitch`, `DayPlan.kind`; REST
+  is the REST DAY). What was said today wins over the weekly plan.
+- **WAKE UP** (DAILY 08 FEET, 09 FLAGS): weekdays before 12, home, 15 min at
+  most (`check:daily`), standing, nothing that bends the stomach. Leads TODAY
+  on a weekday morning whatever the day holds later.
+- **CAVE days** (CAVE 06 CORE + PULL, 07 CORE + LEGS, 08 CORE + PUSH):
+  60-75 min NORMAL (`check:cave`), skill first, the main 40 minutes, then a
+  core block of about 25 led by the **Weighted Hanging Knee Raise**
+  (`extra-weighted-knee-raise`, a dumbbell between the feet, ab straps while
+  a finger heals). CAVE today runs the one done longest ago; within two days
+  of a climb, CORE + LEGS (arms recover).
+- **STRAIGHT BACK** (CAVE 09, `stacksOnSession`, 25-35 min): after any climb
+  or on a CLIMB day. Face pull, pull-apart, bent-over Y-T-W, reverse fly, the
+  cuff, a push, wall angel, the doorway chest stretch (`extra-doorway-pec`).
+- **Rest** (`restDue`): three days in a row with a climb or a non-DAILY
+  session and nothing said: no pick, "Rest today."
+- The recommender order: pain 6+, no kit, the HEAL block, climbed today
+  (STRAIGHT BACK), weekday morning (WAKE UP), CLIMB, CAVE, rest due, ASSESS
+  due, else the next CAVE day with "CAVE or CLIMB today?". ALSO FITS offers
+  only these sessions (and ASSESS when due). The older sessions stay in
+  TRAIN, unchanged; STRONG, the season's training day and the DAILY rotation
+  are no longer suggested.
 
 ### Not picked (v46)
 
@@ -1331,7 +1361,10 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v46.md`** — **start here.** The four-week review:
+- **`7bit-handover-v47.md`** — **start here.** The week: TODAY IS CAVE /
+  CLIMB / REST, WAKE UP mornings, three CAVE days with a 25-minute core
+  block, STRAIGHT BACK after climbing, the weighted hanging knee raise.
+- **`7bit-handover-v46.md`** — The four-week review:
   the always-skipped and face-down exercises out of the sessions and never
   picked, the back trained held flat (bent-over Y-T-W, Pallof press), and a
   healing finger that lasts until 80%, climbs or not.

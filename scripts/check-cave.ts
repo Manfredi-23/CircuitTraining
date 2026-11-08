@@ -11,6 +11,7 @@
 //   1b. 04 and 05 each carry core, a balance drill and power at full stretch;
 //      nothing in them needs a bench or a barbell; 04 keeps its finger work
 //      below HARD so it never restarts the 48h; 05 has no hangboard.
+//   1c. (v47) CAVE 06-08 run 60-75 minutes NORMAL, 09 STRAIGHT BACK 25-35.
 //   2. The one-arm pull-up rungs open on a tested weighted pull-up and nothing
 //      else: no benchmark shows the lopsided substitute, 131% (2RM) opens
 //      assisted one-arms, 141% opens negatives. At max level with no benchmark, none of
@@ -26,7 +27,13 @@ import { slotVariants } from '@/core/slots';
 import { OAP_ASSISTED_GATE, OAP_NEGATIVE_GATE } from '@/core/data-oap';
 import type { BenchmarkResult, EnergyKey, Progress } from '@/core/types';
 
-const NORMAL_BUDGET_MINUTES: Record<string, number> = { 'cave-05': 45, 'cave-06': 45, 'cave-07': 75, 'cave-08': 75 };
+const NORMAL_BUDGET_MINUTES: Record<string, number> = {
+  'cave-05': 45, 'cave-06': 45, 'cave-07': 75, 'cave-08': 75,
+  // v47: the CAVE days are an hour or more, STRAIGHT BACK 25-35 after climbing.
+  'cave-09': 75, 'cave-10': 75, 'cave-11': 75, 'cave-12': 35,
+};
+/** v47: at least this long at NORMAL, every level. */
+const NORMAL_FLOOR_MINUTES: Record<string, number> = { 'cave-09': 60, 'cave-10': 60, 'cave-11': 60, 'cave-12': 25 };
 const ENERGIES: EnergyKey[] = ['TIRED', 'NORMAL', 'FRESH'];
 
 function progressAt(level: number): Progress {
@@ -57,6 +64,10 @@ for (const circuit of cave) {
       const minutes = Math.max(...slotVariants(circuit).map(v => estimateDuration(buildList(v, energy, progressAt(level)))));
       if (budget && energy === 'NORMAL' && minutes > budget) {
         fail(`${circuit.circuitNum} L${level} NORMAL is ${minutes} min, budget ${budget}`);
+      }
+      const floor = NORMAL_FLOOR_MINUTES[circuit.id];
+      if (floor && energy === 'NORMAL' && minutes < floor) {
+        fail(`${circuit.circuitNum} L${level} NORMAL is ${minutes} min, at least ${floor}`);
       }
       return `${energy} ${String(minutes).padStart(2)}`;
     });

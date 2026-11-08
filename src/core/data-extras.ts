@@ -733,6 +733,61 @@ export const LYING_LEG_RAISE: Exercise = {
   },
 };
 
+// ---- The week of v47 ------------------------------------------------------------------
+
+/**
+ * The athlete's own pick (v47): the hanging knee raise with a dumbbell held
+ * between the feet. The lead exercise of every CAVE core block. Abs when the
+ * pelvis curls at the top; mostly hip flexors when the knees stop at 90.
+ */
+export const WEIGHTED_KNEE_RAISE: Exercise = {
+  id: 'extra-weighted-knee-raise',
+  name: 'Weighted Hanging Knee Raise',
+  capacities: ['tension'],
+  hangs: true,
+  block: 'SECONDARY', intensity: 'HARD',
+  sets: 3, work: 8, unit: 'reps', restSec: 90,
+  load: { kind: 'added-kg', value: 2, text: 'A light dumbbell between the feet. Ab straps while a finger heals.' },
+  progression:
+    'Eight slow reps with the pelvis curling at the top on every set, then 1 kg more. '
+    + 'From 2 kg to 4, 6, 8. Straight legs (a hanging leg raise) once 8 kg is easy.',
+  protocolId: 'trunk-hypertrophy',
+  note: 'The abs work only when the hips roll up at the top. Knees to 90 and down again is the hip flexors.',
+  variations: [
+    { minLevel: 1, name: 'Weighted Hanging Knee Raise' },
+    { minLevel: 4, name: 'Weighted Hanging Knee Raise - 3s Lower' },
+    { minLevel: 6, name: 'Weighted Hanging Leg Raise', load: 'Straight legs, the dumbbell between the feet' },
+  ],
+  form: {
+    setup: 'Hang from the bar, or with the elbows in ab straps while a finger heals. Shoulders engaged. Squeeze a light dumbbell between the feet, ankles crossed over the handle, before you leave the floor: a helper or a box.',
+    execution: 'Draw the knees up to the chest, then curl the pelvis up toward the bar. Pause, lower slowly to straight. No swing.',
+    cue: 'The knees go up, then the hips roll up: the second half is the abs. Feet back on the wall in a roof.',
+    breathing: 'Exhale as the hips curl.',
+    mistakes: 'Swinging. Stopping with the knees at 90. Dropping the legs. Losing the dumbbell: start light, over a mat, nobody under you.',
+  },
+};
+
+/** The chest opened after climbing (v47). Done gently, nothing forced. */
+export const DOORWAY_PEC_STRETCH: Exercise = {
+  id: 'extra-doorway-pec',
+  name: 'Doorway Chest Stretch',
+  capacities: ['mobility', 'shoulder'],
+  block: 'MOBILITY', intensity: 'EASY',
+  sets: 2, work: 30, unit: 'sec', restSec: 15,
+  load: { kind: 'bodyweight', text: 'A door frame, a pillar or a wall corner' },
+  progression: 'Thirty seconds at elbow height, then an arm a little higher, then a step further through.',
+  protocolId: 'mobility',
+  perSide: true,
+  note: 'Per side. Climbing pulls the shoulders forward; this opens the chest after it. A stretch, never a pain.',
+  form: {
+    setup: 'Forearm flat on the door frame, elbow at shoulder height. Feet split, the same-side foot back.',
+    execution: 'Step through with the front foot until the chest stretches. Breathe, hold, turn the chest a little away.',
+    cue: 'Ribs down, shoulder blade back and down. The stretch is in the chest, not the front of the shoulder.',
+    breathing: 'Long breaths out, sink a little further each one.',
+    mistakes: 'Arching the lower back to go further. A pinch in the front of the shoulder: lower the elbow.',
+  },
+};
+
 export { BW_GOOD_MORNING };
 
 export const BACK_EXERCISES: Exercise[] = [
@@ -746,7 +801,7 @@ export const GOAL_EXERCISES: Exercise[] = [
 
 export const EXTRA_EXERCISES: Exercise[] = [
   BAND_CURL, BAND_HAMMER, BAND_TRICEPS, DIAMOND_PUSHUP, DB_CURL, CHINUP_NEGATIVE, BAND_LATERAL, FACE_PULL,
-  ...GOAL_EXERCISES, ...BACK_EXERCISES, BAND_PALLOF,
+  ...GOAL_EXERCISES, ...BACK_EXERCISES, BAND_PALLOF, WEIGHTED_KNEE_RAISE, DOORWAY_PEC_STRETCH,
 ];
 
 // ---- Balance and power at full stretch, in every session ---------------------------

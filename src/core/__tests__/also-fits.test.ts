@@ -28,12 +28,20 @@ describe('alsoFits', () => {
     expect(alsoFits(input, null)).toEqual([]);
   });
 
-  it('offers the other after-bouldering session on a climbing day', () => {
+  it('offers WAKE UP beside STRAIGHT BACK on a climbing day, no CAVE day', () => {
     const input = { ...base, sessionLog: [], climbLog: [climb('2026-10-08')] };
     const primary = recommend(input);
     const ids = alsoFits(input, primary).map(a => a.circuitId);
-    expect(primary?.circuitId).toBe('cave-05');
-    expect(ids).toContain('cave-06');
+    expect(primary?.circuitId).toBe('cave-12');
+    expect(ids.some(id => ['daily-08', 'daily-09'].includes(id))).toBe(true);
+    expect(ids).not.toContain('cave-09');
+  });
+
+  it('offers only the week of v47', () => {
+    const input = { ...base, now: new Date(2026, 9, 8, 18), sessionLog: [], climbLog: [] };
+    for (const a of alsoFits(input, recommend(input), 10)) {
+      expect(['daily-08', 'daily-09', 'cave-09', 'cave-10', 'cave-11', 'cave-12', 'assess-01']).toContain(a.circuitId);
+    }
   });
 
   it('keeps finger sessions off after pain 6+', () => {

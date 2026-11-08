@@ -100,13 +100,4 @@ describe('the season', () => {
     expect(getSeason(goals('2026-10-01'), log('2026-10-26'), at(NOW)).toward).toBeNull();
   });
 
-  it('picks the training day by phase, and a peak week adds none', () => {
-    const now = new Date(2026, 9, 29, 9); // Thursday
-    const climb: ClimbSession = { id: 'c', date: '2026-10-20', venue: 'GYM', discipline: 'BOULDER', climbs: [] };
-    const strong: SessionLogEntry = { date: new Date(2026, 9, 27, 18).toISOString(), mode: 'CAVE', circuitId: 'cave-01', circuitTitle: 'STRONG', energy: 'NORMAL', duration: 80 };
-    const base = { sessionLog: [strong], climbLog: [climb], progress: {}, benchmarkResults: [{ benchmarkId: 'fs-2arm-20mm', value: 150, date: '2026-10-01' }], block: getBlockWeek(null, [strong], now), now };
-    expect(recommend({ ...base, season: 'POWER' })?.circuitId).toBe('cave-07');
-    expect(recommend({ ...base, season: 'BASE' })?.circuitId).toBe('cave-08');
-    expect(recommend({ ...base, season: 'PEAK' })?.mode).not.toBe('CAVE');
-  });
 });

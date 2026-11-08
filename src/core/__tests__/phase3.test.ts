@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { loadItems, weeklyLoad, loadRatio, zoneOf } from '../training-load';
 import { getBlockWeek, deloads } from '../block';
 import { suggestLoad, isPersonalBest } from '../progression';
-import { recommend, assessDue } from '../recommend';
+import { recommend, assessDue, restDue } from '../recommend';
 import { buildList, getReadiness, applyXP } from '../engine';
 import { getModeData } from '../data-index';
 import type { ClimbSession, Exercise, SessionLogEntry } from '../types';
@@ -123,10 +123,12 @@ describe('recommend', () => {
   const block = getBlockWeek(null, [], NOW);
   const base = { progress: {}, benchmarkResults: [{ benchmarkId: 'fs-2arm-20mm', value: 120, date: iso(2026, 9, 20) }], block, now: NOW };
 
-  it('picks the after-bouldering session on a climbing day, alternating', () => {
+  it('picks STRAIGHT BACK on a climbing day, once', () => {
     const climb: ClimbSession = { id: 'c', date: '2026-10-08', venue: 'GYM', discipline: 'BOULDER', climbs: [] };
-    const r = recommend({ ...base, sessionLog: [session(iso(2026, 10, 6, 19), 'cave-05', 'CAVE')], climbLog: [climb] });
-    expect(r).toMatchObject({ mode: 'CAVE', circuitId: 'cave-06' });
+    const r = recommend({ ...base, sessionLog: [], climbLog: [climb] });
+    expect(r).toMatchObject({ mode: 'CAVE', circuitId: 'cave-12' });
+    const done = recommend({ ...base, sessionLog: [session(iso(2026, 10, 8, 8), 'cave-12', 'CAVE')], climbLog: [climb] });
+    expect(done?.circuitId).not.toBe('cave-12');
   });
 
   it('keeps finger work off after a pain score of 6+', () => {
@@ -135,21 +137,23 @@ describe('recommend', () => {
     expect(r?.circuitId).not.toBe('daily-04');
   });
 
-  it('suggests STRONG late in a week with under two climbing days', () => {
-    const lastWeek: ClimbSession = { id: 'c', date: '2026-09-29', venue: 'GYM', discipline: 'BOULDER', climbs: [] };
-    const r = recommend({ ...base, sessionLog: [session(iso(2026, 10, 5), 'daily-01', 'DAILY')], climbLog: [lastWeek] });
-    expect(r).toMatchObject({ mode: 'CAVE', circuitId: 'cave-01' });
+  it('opens a weekday morning with WAKE UP, alternating', () => {
+    expect(recommend({ ...base, sessionLog: [], climbLog: [] })?.circuitId).toBe('daily-08');
+    const log = [session(iso(2026, 10, 7), 'daily-08', 'DAILY')];
+    expect(recommend({ ...base, sessionLog: log, climbLog: [] })?.circuitId).toBe('daily-09');
+    const sat = recommend({ ...base, now: new Date(2026, 9, 10, 9), sessionLog: [], climbLog: [] });
+    expect(sat?.mode).toBe('CAVE');
   });
 
-  it('never suggests STRONG to an athlete who has logged no climbing', () => {
-    const r = recommend({ ...base, sessionLog: [], climbLog: [] });
-    expect(r?.mode).toBe('DAILY');
-  });
-
-  it('rotates DAILY once nothing else is due', () => {
-    const climbs: ClimbSession[] = ['2026-10-05', '2026-10-07'].map((date, i) => ({ id: String(i), date, venue: 'GYM', discipline: 'BOULDER', climbs: [] }));
-    const log = ['daily-01', 'daily-02', 'daily-03'].map((id, i) => session(iso(2026, 10, 5 + i), id, 'DAILY'));
-    expect(recommend({ ...base, sessionLog: log, climbLog: climbs })?.circuitId).toBe('daily-04');
+  it('suggests rest after three training days in a row', () => {
+    const evening = { ...base, now: new Date(2026, 9, 8, 18) };
+    const log = [session(iso(2026, 10, 5, 18), 'cave-09', 'CAVE'), session(iso(2026, 10, 7, 18), 'cave-10', 'CAVE')];
+    const climb: ClimbSession = { id: 'c', date: '2026-10-06', venue: 'GYM', discipline: 'BOULDER', climbs: [] };
+    expect(restDue(log, [climb], evening.now)).toBe(true);
+    expect(recommend({ ...evening, sessionLog: log, climbLog: [climb] })).toBeNull();
+    expect(restDue(log.slice(1), [climb], evening.now)).toBe(false);
+    // A DAILY or the ring rehab does not make a training day.
+    expect(restDue([session(iso(2026, 10, 5), 'daily-08', 'DAILY'), ...log.slice(1)], [climb], evening.now)).toBe(false);
   });
 
   it('ASSESS is due after seven weeks', () => {

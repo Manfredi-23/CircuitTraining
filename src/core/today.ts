@@ -14,6 +14,8 @@
 //   sore forearms also keep finger sessions off it.
 // - REST DAY or SICK. Nothing is recommended and the day does not count
 //   towards capacity decay: planned rest and illness are never punished.
+// - CAVE or CLIMB (v47), the switch on top of TODAY: what kind of day it is.
+//   The pick follows it (`recommend.ts`). REST on the switch is the REST DAY.
 //
 // Time, kit and off apply to the day they were set; soreness to that day and
 // the next. Pure functions, no React.
@@ -26,6 +28,8 @@ import type { BlockType, Circuit, Exercise, LoadKind, ScaledExercise } from './t
 export type SoreArea = 'LEGS' | 'BACK' | 'SHOULDERS' | 'FOREARMS';
 export const SORE_AREAS: SoreArea[] = ['LEGS', 'BACK', 'SHOULDERS', 'FOREARMS'];
 export type OffKind = 'REST' | 'SICK';
+/** What today is (v47): the athlete says it on TODAY; REST is `off`. */
+export type DayKind = 'CAVE' | 'CLIMB';
 
 export const TIME_CAPS = [10, 15, 20, 30, 45];
 
@@ -36,6 +40,8 @@ export interface DayPlan {
   noKit?: boolean;
   sore?: SoreArea[];
   off?: OffKind;
+  /** CAVE or CLIMB today (v47). */
+  kind?: DayKind;
 }
 
 /** What still holds now. */
@@ -44,9 +50,10 @@ export interface ActiveDay {
   noKit: boolean;
   sore: SoreArea[];
   off: OffKind | null;
+  kind: DayKind | null;
 }
 
-export const NO_DAY: ActiveDay = { minutes: null, noKit: false, sore: [], off: null };
+export const NO_DAY: ActiveDay = { minutes: null, noKit: false, sore: [], off: null, kind: null };
 
 /** Days soreness lasts, the day it was set included. */
 export const SORE_DAYS = 2;
@@ -62,6 +69,7 @@ export function activeDay(plan: DayPlan | null | undefined, now = new Date()): A
     noKit: sameDay && Boolean(plan.noKit),
     sore: age < SORE_DAYS ? plan.sore ?? [] : [],
     off: sameDay ? plan.off ?? null : null,
+    kind: sameDay && !plan.off ? plan.kind ?? null : null,
   };
 }
 

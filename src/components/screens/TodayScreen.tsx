@@ -12,6 +12,8 @@ import { useLauncher } from '@/hooks/use-launcher';
 import ScreenHeader from '@/components/shell/ScreenHeader';
 import SessionCard from '@/components/shared/SessionCard';
 import DayControls from '@/components/shared/DayControls';
+import DayKindSwitch from '@/components/shared/DayKindSwitch';
+import { restDue } from '@/core/recommend';
 import WeekRail from '@/components/shared/WeekRail';
 import WallCard from '@/components/shared/WallCard';
 import BodyWeek from '@/components/shared/BodyWeek';
@@ -68,6 +70,7 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
   const readiness = rec ? getReadiness(rec, progress) : null;
   // The climb is the athlete's own training: offered here on the day it happens.
   const climbAsk = climbToLog(weekPlan, sessionLog, climbLog);
+  const resting = !day.kind && restDue(sessionLog, climbLog);
 
   const derank = useMemo(() => {
     const e = pendingDecayEvents[0];
@@ -86,6 +89,8 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
       >
         <Image src="/images/logo.svg" alt="7Bit" width={80} height={32} className={styles.logo} priority />
       </ScreenHeader>
+
+      <DayKindSwitch day={day} />
 
       <WeekRail />
 
@@ -159,14 +164,16 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
       ) : (
         <section className={`${styles.emptyWrap} dot-rule`}><div className={styles.empty}>
           <div className={styles.emptyTitle}>
-            {day.off ? (day.off === 'SICK' ? 'Sick day.' : 'Rest day.') : doneToday.length ? 'Done for today.' : 'Nothing is due.'}
+            {day.off ? (day.off === 'SICK' ? 'Sick day.' : 'Rest day.') : doneToday.length ? 'Done for today.' : resting ? 'Rest today.' : 'Nothing is due.'}
           </div>
           <p className={styles.emptyText}>
             {day.off
               ? 'Nothing is due, and levels do not fade today.'
               : doneToday.length
                 ? doneToday.map(s => s.circuitTitle).join(', ') + '. Recovery is where it turns into strength.'
-                : 'Pick anything from TRAIN, or build your own.'}
+                : resting
+                  ? 'Three training days in a row. Say CAVE or CLIMB above if today is one anyway.'
+                  : 'Pick anything from TRAIN, or build your own.'}
           </p>
           <button className={styles.secondary} onClick={() => setTab('train')}>OPEN TRAIN</button>
         </div></section>
@@ -174,7 +181,7 @@ export default function TodayScreen({ onSettings }: { onSettings: () => void }) 
 
       <WallCard
         focus={wall}
-        today={plannedOn(weekPlan, new Date()).some(i => i.kind === 'CLIMB') || climbLog.some(c => c.date === today)}
+        today={day.kind === 'CLIMB' || plannedOn(weekPlan, new Date()).some(i => i.kind === 'CLIMB') || climbLog.some(c => c.date === today)}
       />
 
       <DayControls />

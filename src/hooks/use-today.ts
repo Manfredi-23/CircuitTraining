@@ -56,8 +56,12 @@ export function useToday() {
     [sessionLog, climbLog, activityLog, progress, benchmarkResults, block, healthDay, dayPlan, season.phase],
   );
   const recommended = useMemo(() => recommend(input), [input]);
-  // The athlete's weekly plan leads unless a safety rule stops it.
-  const outcome = useMemo(() => applyPlan(weekPlan, routines, input, recommended), [weekPlan, routines, input, recommended]);
+  // The athlete's weekly plan leads unless a safety rule stops it, or
+  // CAVE / CLIMB was said for today (v47): what was said today wins.
+  const outcome = useMemo(
+    () => (input.day?.kind ? { pick: recommended, also: null, note: null } : applyPlan(weekPlan, routines, input, recommended)),
+    [weekPlan, routines, input, recommended],
+  );
   const recommendation: TodayPick | null = outcome.pick;
   const alternatives: TodayPick[] = useMemo(() => {
     const fits = alsoFits(input, recommendation);

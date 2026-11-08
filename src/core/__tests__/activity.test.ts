@@ -5,6 +5,7 @@ import {
 } from '../activity';
 import { loadItems, climbingLane, weeklyLoad } from '../training-load';
 import { recommend } from '../recommend';
+import { NO_DAY } from '../today';
 import { getWeekStrip } from '../insights';
 import { getModeData } from '../data-index';
 import { creditActivity } from '../../store/slices/activity-slice';
@@ -85,24 +86,26 @@ describe('sore legs', () => {
   });
 
   it('keeps the recommender off leg sessions while the window is open', () => {
-    // DAILY 05 would be next: never done, last in rotation after the others were done.
-    const done = ['daily-06', 'daily-01', 'daily-02', 'daily-03', 'daily-04'].map((id, i) => ({
-      date: new Date(2026, 9, 5 + i, 8).toISOString(), mode: 'DAILY' as const, circuitId: id,
-      circuitTitle: id, energy: 'NORMAL' as const, duration: 15,
+    // v47: CAVE today, after the morning; CORE + LEGS is the CAVE day done longest ago.
+    const noon = new Date(2026, 9, 12, 12, 30);
+    const done = ['cave-10', 'cave-09', 'cave-11'].map((id, i) => ({
+      date: new Date(2026, 9, 5 + i, 18).toISOString(), mode: 'CAVE' as const, circuitId: id,
+      circuitTitle: id, energy: 'NORMAL' as const, duration: 70,
     }));
-    const base = { sessionLog: done, climbLog: [], progress: {}, benchmarkResults: [], block, now: NOW };
-    expect(recommend(base)?.circuitId).toBe('daily-05');
+    const base = { sessionLog: done, climbLog: [], progress: {}, benchmarkResults: [], block, now: noon, day: { ...NO_DAY, kind: 'CAVE' as const } };
+    expect(recommend(base)?.circuitId).toBe('cave-10');
     const sore = recommend({ ...base, activityLog: [weekend] });
-    expect(sore?.circuitId).toBe('daily-01');
+    expect(sore?.circuitId).not.toBe('cave-10');
+    expect(sore?.mode).toBe('CAVE');
     expect(sore?.reason).toBe('Legs sore from the hike. Upper body.');
     expect(sore!.reason.length).toBeLessThanOrEqual(45);
   });
 
-  it('picks PULL + PUSH over LEGS + BACK after bouldering', () => {
+  it('picks STRAIGHT BACK after bouldering, sore legs or not', () => {
     const climb = { id: 'c', date: '2026-10-12', venue: 'GYM' as const, discipline: 'BOULDER' as const, climbs: [] };
     const base = { sessionLog: [], climbLog: [climb], progress: {}, benchmarkResults: [], block, now: NOW };
     const sore = recommend({ ...base, activityLog: [weekend] });
-    expect(sore?.circuitId).toBe('cave-05');
+    expect(sore?.circuitId).toBe('cave-12');
   });
 });
 

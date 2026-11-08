@@ -10,7 +10,8 @@
 import { getModeData } from './data-index';
 import { asksPainCheck, getReadiness } from './engine';
 import { dayOf, daysBetween, localDate, mondayOf } from './dates';
-import { assessDue, isHealing, lastDone, PAIN_MEMORY_DAYS, type Recommendation, type RecommendInput } from './recommend';
+import { assessDue, inHealBlock, isHealing, lastDone, PAIN_MEMORY_DAYS, type Recommendation, type RecommendInput } from './recommend';
+import { CAVE_DAY_IDS, STRAIGHT_BACK_ID, WAKE_UP_IDS } from './data-week';
 import { HEAL_GYM_IDS } from './data-heal';
 import { isLegHeavy, legSoreness } from './activity';
 import { NO_DAY, loadsArea, needsKit } from './today';
@@ -45,25 +46,24 @@ export function alsoFits(input: RecommendInput, primary: Recommendation | null, 
   const pool: Candidate[] = [];
   const add = (mode: Mode, circuit: Circuit, reason: string) => pool.push({ mode, circuit, reason });
 
-  if (healing) {
+  // v47: only the week's sessions (`data-week.ts`); the rest stay in TRAIN.
+  if (inHealBlock(sessionLog, climbLog, now)) {
     for (const c of getModeData('HEAL').filter(c => HEAL_GYM_IDS.includes(c.id))) add('HEAL', c, 'The other gym session for the healing finger.');
   }
+  const ago = (id: string) => { const d = lastDone(sessionLog, id); return agoText(d === null ? null : daysBetween(d, today)); };
   if (!day.noKit) {
     const cave = getModeData('CAVE');
-    if (climbedToday) for (const c of cave.filter(c => c.stacksOnSession)) add('CAVE', c, 'Also built to follow a climbing session.');
-    const strong = cave.find(c => !c.stacksOnSession);
-    // STRONG stands in for a bouldering day, so only in a week short of two.
-    const monday = mondayOf(today);
-    const climbDays = new Set(climbLog.filter(c => c.date >= monday && c.date <= today).map(c => c.date)).size;
-    if (strong && climbLog.length > 0 && climbDays < 2 && !climbedToday && !input.tired && !shortDay && !healing) {
-      add('CAVE', strong, 'Under two climbing days this week.');
+    const straight = cave.find(c => c.id === STRAIGHT_BACK_ID);
+    if (straight && (climbedToday || day.kind === 'CLIMB')) add('CAVE', straight, 'After climbing: the opposite side.');
+    if (day.kind !== 'CLIMB' && !climbedToday && !cave.some(c => CAVE_DAY_IDS.includes(c.id) && lastDone(sessionLog, c.id) === today)) {
+      for (const c of cave.filter(c => CAVE_DAY_IDS.includes(c.id))) add('CAVE', c, ago(c.id));
     }
     const test = getModeData('TEST')[0];
     if (test && !input.tired && !shortDay && !healing && assessDue(input.benchmarkResults, sessionLog, now)) add('TEST', test, 'ASSESS is due.');
   }
-  for (const c of getModeData('DAILY')) {
-    const ago = lastDone(sessionLog, c.id);
-    add('DAILY', c, agoText(ago === null ? null : daysBetween(ago, today)));
+  const daily = getModeData('DAILY');
+  if (!WAKE_UP_IDS.some(id => lastDone(sessionLog, id) === today)) {
+    for (const c of daily.filter(c => WAKE_UP_IDS.includes(c.id))) add('DAILY', c, ago(c.id));
   }
 
   const fits = pool.filter(({ circuit }) => {

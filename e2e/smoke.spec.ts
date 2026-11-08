@@ -41,6 +41,25 @@ test('TODAY leads with one session and a START', async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
+test('TODAY asks CAVE, CLIMB or REST, and the pick follows', async ({ page }) => {
+  // The evening, so the weekday WAKE UP does not lead.
+  const evening = new Date();
+  evening.setHours(19, 0, 0, 0);
+  await page.clock.setFixedTime(evening);
+  const errors = await open(page);
+  const group = page.getByRole('group').filter({ has: page.getByRole('button', { name: /^CLIMB/ }) });
+  await group.getByRole('button', { name: /^CAVE/ }).click();
+  await expect(group.getByRole('button', { name: /^CAVE/ })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByText(/CORE \+ (PULL|LEGS|PUSH)/).first()).toBeVisible();
+  await group.getByRole('button', { name: /^CLIMB/ }).click();
+  await expect(page.getByText('STRAIGHT BACK').first()).toBeVisible();
+  await group.getByRole('button', { name: /^REST/ }).click();
+  await expect(page.getByText('Rest day.')).toBeVisible();
+  await group.getByRole('button', { name: /^REST/ }).click();
+  await expect(group.getByRole('button', { name: /^REST/ })).toHaveAttribute('aria-pressed', 'false');
+  expect(errors).toEqual([]);
+});
+
 test('a session runs from TRAIN, finishes, and lands in LOG', async ({ page }) => {
   await open(page, { ...seed.data, sessionLog: [] });
   await tab(page, 'TRAIN');
