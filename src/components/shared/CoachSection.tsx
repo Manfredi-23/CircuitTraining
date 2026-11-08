@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useStore } from '@/store/store';
 import { coachSummary, daysSince } from '@/core/coach';
-import { isHealing } from '@/core/recommend';
+import { fingerHealing } from '@/core/recommend';
 import { askCoach, getCoachKey, getCoachNote, getLastReview, setCoachNote, type StoredReview } from '@/coach/client';
 import styles from './CoachSection.module.css';
 
@@ -48,7 +48,7 @@ export default function CoachSection() {
   const editNote = (text: string) => { setAthleteNote(text); setCoachNote(text); };
 
   const summary = useMemo(() => coachSummary({
-    sessionLog, climbLog, activityLog, loadLog, benchmarkResults, goals, healing: isHealing(sessionLog, climbLog),
+    sessionLog, climbLog, activityLog, loadLog, benchmarkResults, goals, healing: fingerHealing({ sessionLog, climbLog, loadLog, benchmarkResults }),
     blockStart, offDays, dayPlan, weekPlan, routines, note: athleteNote,
   }), [sessionLog, climbLog, activityLog, loadLog, benchmarkResults, goals, blockStart, offDays, dayPlan, weekPlan, routines, athleteNote]);
 

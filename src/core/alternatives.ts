@@ -14,12 +14,13 @@
 // =============================================================================
 
 import { exerciseLibrary, placeOf } from './reserve';
-import { isHealing } from './recommend';
+import { fingerHealing } from './recommend';
 import { activeDay, type DayPlan } from './today';
 import { libraryFor, type LibraryEntry } from './routines';
 import { allowedToday, cautionToday, likeness, PACKS, type EditContext, type Pack } from './session-edit';
+import { isPickable } from './not-picked';
 import { groupsOf, kitOf, sharesKit, type MuscleGroup } from './exercise-tags';
-import type { ClimbSession, Exercise, Mode, ScaledExercise, SessionLogEntry } from './types';
+import type { BenchmarkResult, ClimbSession, Exercise, LoadLogEntry, Mode, ScaledExercise, SessionLogEntry } from './types';
 
 /**
  * What may go into this session today: its place, a healing finger, the last
@@ -28,14 +29,14 @@ import type { ClimbSession, Exercise, Mode, ScaledExercise, SessionLogEntry } fr
  */
 export function editContextFor(
   mode: Mode, circuitId: string,
-  s: { sessionLog: SessionLogEntry[]; climbLog: ClimbSession[]; dayPlan: DayPlan | null },
+  s: { sessionLog: SessionLogEntry[]; climbLog: ClimbSession[]; dayPlan: DayPlan | null; loadLog?: LoadLogEntry[]; benchmarkResults?: BenchmarkResult[] },
   pain?: number | null,
 ): EditContext {
   const lastPain = [...s.sessionLog].reverse().find(x => x.pain !== undefined)?.pain ?? null;
   return {
     place: placeOf(mode, circuitId),
     mode,
-    healing: isHealing(s.sessionLog, s.climbLog),
+    healing: fingerHealing(s),
     pain: pain !== undefined && pain !== null ? pain : lastPain,
     noKit: activeDay(s.dayPlan).noKit,
   };
@@ -68,7 +69,7 @@ export function otherKitFor(ex: Exercise, ctx: EditContext, taken: string[] = []
   return libraryFor(ctx.place, '', null, taken)
     .filter(e => e.exercise.id !== ex.id && e.exercise.name !== ex.name && !taken.includes(e.exercise.id) && !names.has(e.exercise.name))
     .filter(e => allowedToday(e.exercise, ctx) && (ex.block === 'WARMUP') === (e.exercise.block === 'WARMUP'))
-    .filter(e => !sharesKit(ex, e.exercise) && !(opts.liveSession && e.exercise.gate))
+    .filter(e => !sharesKit(ex, e.exercise) && !(opts.liveSession && e.exercise.gate) && isPickable(e.exercise.id))
     .map(e => ({ e, s: jobScore(ex, e.exercise), c: cautionToday(e.exercise, ctx) ? 1 : 0 }))
     .filter(x => x.s >= OTHER_KIT_MIN_SCORE || ex.block === 'WARMUP')
     .sort((x, y) => x.c - y.c || y.s - x.s || x.e.exercise.name.localeCompare(y.e.exercise.name))
@@ -98,7 +99,7 @@ export interface GroupEntry extends LibraryEntry {
  */
 export function groupList(group: MuscleGroup, ctx: EditContext, taken: string[], lastDone: Map<string, string>): GroupEntry[] {
   return libraryFor(ctx.place, '', null, taken)
-    .filter(e => e.exercise.block !== 'WARMUP' && !e.exercise.gate && groupsOf(e.exercise).includes(group))
+    .filter(e => e.exercise.block !== 'WARMUP' && !e.exercise.gate && groupsOf(e.exercise).includes(group) && isPickable(e.exercise.id))
     .filter(e => allowedToday(e.exercise, ctx))
     .map(e => ({
       ...e,

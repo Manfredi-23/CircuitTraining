@@ -60,7 +60,7 @@ describe('finger readiness', () => {
     const list = buildList(full, 'NORMAL', {});
     const out = applyFingerCheck(list, { readiness: 40 }, full, scale());
     expect(out.some(e => e.id === 'full-suitcase-carry')).toBe(false);
-    const carry = out.find(e => e.id === 'full-plate-carry');
+    const carry = out.find(e => e.id === 'extra-band-pallof');
     expect(carry).toBeDefined();
     expect(out.indexOf(carry!)).toBe(list.findIndex(e => e.id === 'full-suitcase-carry'));
     // Pulling stays at 40.
@@ -77,7 +77,7 @@ describe('finger readiness', () => {
     expect(out.some(e => e.hangs || e.capacities.includes('pull'))).toBe(false);
     const legsDay = applyFingerCheck(buildList(full, 'NORMAL', {}), { readiness: 20 }, full, scale());
     expect(legsDay.some(e => e.id === 'full-front-squat')).toBe(true);
-    expect(legsDay.some(e => e.id === 'full-plate-carry')).toBe(true);
+    expect(legsDay.some(e => e.id === 'extra-band-pallof')).toBe(true);
   });
 
   it('lets the stricter of pain and readiness win', () => {

@@ -448,7 +448,9 @@ export function buildCustom(input: CustomInput): CustomSession {
   const LIGHT = new Set<BlockType>(['MOBILITY', 'PREHAB']);
   const picks: Exercise[] = [];
   const full = () => picks.filter(e => !LIGHT.has(e.block)).length >= most || picks.length >= 18;
-  const sameAsPicked = (e: Exercise) => picks.some(p => p.id === e.id)
+  // A twin under another id (the home and the gym Russian twist) is the same
+  // exercise: one is enough (v46; the athlete kept getting two).
+  const sameAsPicked = (e: Exercise) => picks.some(p => p.id === e.id || p.name === e.name)
     || SAME_MOVEMENT.some(group => group.includes(e.id) && picks.some(p => group.includes(p.id)));
   const build = (list: Exercise[]) => {
     const circuit = circuitOf(input, include, order(openers, list), 0);

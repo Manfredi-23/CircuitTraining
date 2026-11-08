@@ -292,15 +292,15 @@ test('a swipe swaps for other kit, + ADD adds a group, and the swap runs and hol
   await swipeLeft(page, /^Suitcase Carry/);
   await page.getByRole('button', { name: /^Swap Suitcase Carry/ }).click();
   await page.getByRole('tab', { name: 'SIMILAR' }).click();
-  await page.getByRole('button', { name: /Plate Hug Carry/ }).first().click();
-  await expect(page.getByText(/^Plate Hug Carry/).first()).toBeVisible();
+  await page.getByRole('button', { name: /Band Pallof Press/ }).first().click();
+  await expect(page.getByText(/^Band Pallof Press/).first()).toBeVisible();
   await page.getByRole('button', { name: 'BACK TO THE SET' }).click();
 
   // Feeling worse: the rest is rebuilt at TIRED, and the swaps hold.
   await page.getByRole('button', { name: /^ADJUST/ }).click();
   await page.getByRole('button', { name: 'TIRED', exact: true }).click();
   await page.getByRole('button', { name: /Open the whole session/ }).click();
-  await expect(page.getByText(/^Plate Hug Carry/).first()).toBeVisible();
+  await expect(page.getByText(/^Band Pallof Press/).first()).toBeVisible();
   await expect(page.getByText(/^Suitcase Carry/)).toHaveCount(0);
   await expect(page.getByText(/^Ring Row/)).toHaveCount(0);
   expect(errors).toEqual([]);

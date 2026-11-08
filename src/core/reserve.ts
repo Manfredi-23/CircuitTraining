@@ -23,6 +23,7 @@
 import { CONFIG } from './config';
 import { getModeData } from './data-index';
 import { EXTRA_EXERCISES } from './data-extras';
+import { isPickable, OUT_OF_SESSIONS } from './not-picked';
 import { FEET_EXERCISES } from './data-feet';
 import { fingerCaution, PAIN_REMOVE_FROM } from './engine';
 import { dayOf } from './dates';
@@ -69,6 +70,8 @@ const RESERVE: ReserveEntry[] = [
   { id: 'daily-plank-climber', group: 'CORE', place: 'HOME', grip: false, floor: true },
   { id: 'power-trx-pike', group: 'CORE', place: 'GYM', grip: false, floor: true },
   { id: 'full-plate-carry', group: 'CORE', place: 'GYM', grip: false },
+  // The anchor is the gym's: the home band has none.
+  { id: 'extra-band-pallof', group: 'CORE', place: 'GYM', grip: false },
 
   // BACK: the lower back (extension, the hinge) and the middle of it, between
   // the shoulder blades (prone raises, rows). A group of its own since v40, so
@@ -79,6 +82,7 @@ const RESERVE: ReserveEntry[] = [
   { id: 'extra-prone-cobra', group: 'BACK', place: 'HOME', grip: false, floor: true },
   { id: 'extra-bw-good-morning', group: 'BACK', place: 'HOME', grip: false },
   { id: 'extra-wall-angel', group: 'BACK', place: 'HOME', grip: false },
+  { id: 'extra-bent-ytw', group: 'BACK', place: 'HOME', grip: false },
   { id: 'daily-band-good-morning', group: 'BACK', place: 'HOME', grip: true },
   { id: 'morn-band-row', group: 'BACK', place: 'HOME', grip: true },
   { id: 'legs-back-extension', group: 'BACK', place: 'GYM', grip: false, floor: true },
@@ -187,6 +191,8 @@ export function exerciseLibrary(): Map<string, Exercise> {
   }
   for (const e of EXTRA_EXERCISES) library.set(e.id, e);
   for (const e of FEET_EXERCISES) if (!library.has(e.id)) library.set(e.id, e);
+  // Out of every session since v46, kept so SEARCH ALL finds them and their history has a name.
+  for (const e of OUT_OF_SESSIONS) if (!library.has(e.id)) library.set(e.id, e);
   return library;
 }
 
@@ -244,7 +250,7 @@ export function reserveFor(ctx: ReserveContext): Record<ReserveGroup, ReserveIte
   for (const entry of RESERVE) {
     if (closed[entry.group]) continue;
     if (place === 'HOME' && entry.place === 'GYM') continue;
-    if (inSession.has(entry.id)) continue;
+    if (inSession.has(entry.id) || !isPickable(entry.id)) continue;
     const exercise = lib.get(entry.id);
     if (!exercise || (ctx.noKit && (entry.grip || needsKit(exercise))) || exercise.gate || exercise.records || exercise.block === 'WARMUP' || exercise.block === 'TEST') continue;
     const caution = fingerCaution(exercise, { healing, pain: ctx.pain }, Boolean(entry.grip));

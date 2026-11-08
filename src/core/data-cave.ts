@@ -31,7 +31,7 @@
 import type { Circuit, Exercise } from './types';
 import { oneArmPath, assistedOneArm, oneArmNegative, oneArmShrug } from './data-oap';
 import { SIDE_PLANK_DIP } from './data-daily';
-import { LUNGE_DRIVE, SL_BALANCE } from './data-extras';
+import { BAND_PALLOF, BW_GOOD_MORNING, LUNGE_DRIVE, LYING_LEG_RAISE, SL_BALANCE } from './data-extras';
 import { EDGE_STAND, WALL_HIGH_STEP } from './data-feet';
 
 export const WARMUP_PULSE = {
@@ -169,6 +169,138 @@ export const COSSACK: Exercise = {
   },
 };
 
+/** The front lever: CAVE 01 STRONG, and since v46 CAVE 04 POWER in place of the TRX tuck. */
+export const FRONT_LEVER: Exercise = {
+  id: 'cave-front-lever',
+  name: 'Front Lever Progression',
+  capacities: ['tension'],
+  hangs: true,
+  block: 'SECONDARY', intensity: 'HARD',
+  sets: 4, work: 10, unit: 'sec', restSec: 90,
+  load: { kind: 'bodyweight', text: 'Hardest progression you can hold with a flat lower back' },
+  progression: 'Hold 4 x 12s clean, then move to the next progression and reset to 8s.',
+  protocolId: 'tension-iso',
+  variations: [
+    { minLevel: 1, name: 'Tuck Front Lever' },
+    { minLevel: 3, name: 'Advanced Tuck Front Lever' },
+    { minLevel: 5, name: 'One-Leg Front Lever' },
+    { minLevel: 6, name: 'Straddle Front Lever' },
+    { minLevel: 7, name: 'Full Front Lever' },
+  ],
+  form: {
+    setup: 'Hang from a bar or rings, arms straight, shoulders depressed and protracted slightly.',
+    execution: 'Pull the body to horizontal in your chosen progression and hold. Lower back stays flat against an imaginary wall.',
+    cue: 'Push the bar away with straight arms rather than pulling. Ribs down, glutes squeezed, pelvis tucked.',
+    breathing: 'Short controlled breaths. Do not hold your breath for the whole set.',
+    mistakes: 'Arching the lower back, which makes the hold easier and trains nothing. Bent arms. Chasing the next progression before the current one is clean.',
+  },
+};
+
+// ---- Out of the sessions (v46) ---------------------------------------------------
+// Taken out of CAVE and HEAL at the athlete's request: the floor back
+// extension arches face down (an old D12 fracture makes that feel wrong), the
+// plate crunch was always skipped, the TRX tuck / pike felt awkward, and the
+// plate hug carry meant walking round the gym. Same ids, so history stays and
+// SEARCH ALL still finds them; nothing picks them automatically (`not-picked.ts`).
+
+export const FLOOR_BACK_EXTENSION: Exercise = {
+  // Same id as the old 45-degree back extension, so its history carries
+  // over. The gym has no back extension station (v41): on the mat, the
+  // heels hooked under the radiator.
+  id: 'legs-back-extension',
+  name: 'Floor Back Extension, Heels Anchored',
+  capacities: ['tension', 'legs'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 3, work: 10, unit: 'reps', restSec: 90,
+  load: { kind: 'added-kg', value: 0, text: 'Bodyweight, then a plate hugged to the chest' },
+  progression:
+    'Three sets of ten with a two-second hold at the top, hands by the hips. Then hands '
+    + 'behind the head, then a plate hugged to the chest, adding 2.5kg once all three sets are clean again.',
+  protocolId: 'back-strength',
+  note: 'Your weak point: the loaded version of the prone extension in DAILY 02. Mat only, heels hooked under the radiator so the back can lift higher and take a plate.',
+  variations: [
+    { minLevel: 1, name: 'Floor Back Extension, Heels Anchored' },
+    { minLevel: 3, name: 'Floor Back Extension, Hands Behind Head' },
+    { minLevel: 5, name: 'Floor Back Extension, Plate Hugged' },
+  ],
+  form: {
+    setup: 'Mat in front of the radiator. Lie face down with the heels hooked under it, legs straight and hip-width, forehead on the mat. Test that the radiator takes a hard pull first. Hands by the hips, behind the head, or a plate hugged to the chest.',
+    execution: 'Squeeze the glutes, then lift the chest off the mat by extending through the whole back, the heels pulling up into the radiator. Rise until the lower ribs leave the mat, hold two seconds, lower slowly all the way down.',
+    cue: 'The anchored heels let the back lift further and carry a plate: a loaded extension with no station. Lift long, not high: the neck stays in line and the eyes stay on the floor.',
+    breathing: 'Exhale on the way up, inhale on the way down.',
+    mistakes: 'Cranking the head back. Jerking up with momentum. Glutes switching off, which hands the lift to the lumbar spine. Arching so high the lower back pinches.',
+  },
+};
+
+export const PLATE_CRUNCH: Exercise = {
+  id: 'legs-plate-crunch',
+  name: 'Plate Crunch',
+  capacities: ['tension'],
+  block: 'SECONDARY', intensity: 'HARD',
+  sets: 3, work: 12, unit: 'reps', restSec: 60,
+  load: { kind: 'added-kg', value: 5, text: 'A plate held on the chest, then behind the head' },
+  progression:
+    'Twelve slow reps with a one-second squeeze, then add 2.5kg, then move the plate '
+    + 'from the chest to behind the head, then a decline.',
+  protocolId: 'trunk-hypertrophy',
+  note: 'The upper abs with real load. The spine is warm by now, so this is the place for curling under weight.',
+  variations: [
+    { minLevel: 1, name: 'Plate Crunch' },
+    { minLevel: 4, name: 'Plate Crunch - Plate Behind Head' },
+    { minLevel: 6, name: 'Decline Plate Crunch' },
+  ],
+  form: {
+    setup: 'On your back, knees bent, feet flat or hooked under something. Plate held on the chest with both hands.',
+    execution: 'Curl the ribcage toward the pelvis until the shoulder blades leave the floor, squeeze one second, lower slowly. A short range: this is a crunch, not a sit-up.',
+    cue: 'Size comes from load and hard sets. The daily crunch keeps the habit; this one adds the weight that grows the muscle.',
+    breathing: 'Exhale fully on the curl.',
+    mistakes: 'Pulling the head forward with the hands. Sitting all the way up. Bouncing off the floor. Load so heavy the range shrinks.',
+  },
+};
+
+export const TRX_PIKE: Exercise = {
+  id: 'power-trx-pike',
+  name: 'TRX Knee Tuck / Pike',
+  capacities: ['tension'],
+  block: 'SECONDARY', intensity: 'HARD',
+  sets: 3, work: 10, unit: 'reps', restSec: 60,
+  load: { kind: 'bodyweight', text: 'Feet in the TRX straps, hands on the floor' },
+  progression: 'Knee tucks with a pause, then body saws, then straight-leg pikes.',
+  protocolId: 'trunk-hypertrophy',
+  note: 'Wrists sore: fists, push-up handles, or the forearms for the body saw.',
+  variations: [
+    { minLevel: 1, name: 'TRX Knee Tuck' },
+    { minLevel: 3, name: 'TRX Body Saw', load: 'On the forearms, rock back and forth from the shoulders' },
+    { minLevel: 5, name: 'TRX Pike' },
+  ],
+  form: {
+    setup: 'Toes in the TRX foot cradles at mid-shin height, high plank, hands under the shoulders.',
+    execution: 'Tuck: knees to the chest, back to plank. Pike: hips straight up with straight legs, back to plank. Slow on the way out.',
+    cue: 'The same lower-abs pull that brings a foot up to a high hold on a steep wall.',
+    breathing: 'Exhale as the knees or hips come up.',
+    mistakes: 'Hips sagging between reps. Shoulders drifting behind the hands. Swinging.',
+  },
+};
+
+export const PLATE_CARRY: Exercise = {
+  id: 'full-plate-carry',
+  name: 'Plate Hug Carry',
+  capacities: ['tension', 'legs'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 3, work: 30, unit: 'sec', restSec: 60,
+  load: { kind: 'added-kg', value: 15, text: 'A plate hugged to the chest, nothing gripped' },
+  progression: 'Walk the time tall, then a heavier plate.',
+  protocolId: 'tension-iso',
+  note: 'The carry without the grip: the plate rests on the forearms against the chest.',
+  form: {
+    setup: 'A plate hugged flat against the chest, forearms under it, hands open.',
+    execution: 'Walk slowly for the time, standing tall with the ribs down.',
+    cue: 'The trunk holds, the hands rest.',
+    breathing: 'Short, steady breaths under the brace.',
+    mistakes: 'Leaning back to hold the plate. Gripping the edge.',
+  },
+};
+
 export const DATA_CAVE: Circuit[] = [
   {
     id: 'cave-01', circuitNum: '01',
@@ -261,31 +393,7 @@ export const DATA_CAVE: Circuit[] = [
           mistakes: 'Sinking through positions instead of holding them. Shrugging into the ears.',
         },
       },
-      {
-        id: 'cave-front-lever',
-        name: 'Front Lever Progression',
-        capacities: ['tension'],
-        hangs: true,
-        block: 'SECONDARY', intensity: 'HARD',
-        sets: 4, work: 10, unit: 'sec', restSec: 90,
-        load: { kind: 'bodyweight', text: 'Hardest progression you can hold with a flat lower back' },
-        progression: 'Hold 4 x 12s clean, then move to the next progression and reset to 8s.',
-        protocolId: 'tension-iso',
-        variations: [
-          { minLevel: 1, name: 'Tuck Front Lever' },
-          { minLevel: 3, name: 'Advanced Tuck Front Lever' },
-          { minLevel: 5, name: 'One-Leg Front Lever' },
-          { minLevel: 6, name: 'Straddle Front Lever' },
-          { minLevel: 7, name: 'Full Front Lever' },
-        ],
-        form: {
-          setup: 'Hang from a bar or rings, arms straight, shoulders depressed and protracted slightly.',
-          execution: 'Pull the body to horizontal in your chosen progression and hold. Lower back stays flat against an imaginary wall.',
-          cue: 'Push the bar away with straight arms rather than pulling. Ribs down, glutes squeezed, pelvis tucked.',
-          breathing: 'Short controlled breaths. Do not hold your breath for the whole set.',
-          mistakes: 'Arching the lower back, which makes the hold easier and trains nothing. Bent arms. Chasing the next progression before the current one is clean.',
-        },
-      },
+      FRONT_LEVER,
       {
         id: 'home-leg-raise',
         name: 'Hanging Leg Raise',
@@ -504,34 +612,7 @@ export const DATA_CAVE: Circuit[] = [
           mistakes: 'Cutting depth to move weight. Heels lifting - park them on a 2cm plate if the ankles are stiff. Knees collapsing inward. Rounding the lower back at the bottom.',
         },
       },
-      {
-        // Same id as the old 45-degree back extension, so its history carries
-        // over. The gym has no back extension station (v41): on the mat, the
-        // heels hooked under the radiator.
-        id: 'legs-back-extension',
-        name: 'Floor Back Extension, Heels Anchored',
-        capacities: ['tension', 'legs'],
-        block: 'SECONDARY', intensity: 'MODERATE',
-        sets: 3, work: 10, unit: 'reps', restSec: 90,
-        load: { kind: 'added-kg', value: 0, text: 'Bodyweight, then a plate hugged to the chest' },
-        progression:
-          'Three sets of ten with a two-second hold at the top, hands by the hips. Then hands '
-          + 'behind the head, then a plate hugged to the chest, adding 2.5kg once all three sets are clean again.',
-        protocolId: 'back-strength',
-        note: 'Your weak point: the loaded version of the prone extension in DAILY 02. Mat only, heels hooked under the radiator so the back can lift higher and take a plate.',
-        variations: [
-          { minLevel: 1, name: 'Floor Back Extension, Heels Anchored' },
-          { minLevel: 3, name: 'Floor Back Extension, Hands Behind Head' },
-          { minLevel: 5, name: 'Floor Back Extension, Plate Hugged' },
-        ],
-        form: {
-          setup: 'Mat in front of the radiator. Lie face down with the heels hooked under it, legs straight and hip-width, forehead on the mat. Test that the radiator takes a hard pull first. Hands by the hips, behind the head, or a plate hugged to the chest.',
-          execution: 'Squeeze the glutes, then lift the chest off the mat by extending through the whole back, the heels pulling up into the radiator. Rise until the lower ribs leave the mat, hold two seconds, lower slowly all the way down.',
-          cue: 'The anchored heels let the back lift further and carry a plate: a loaded extension with no station. Lift long, not high: the neck stays in line and the eyes stay on the floor.',
-          breathing: 'Exhale on the way up, inhale on the way down.',
-          mistakes: 'Cranking the head back. Jerking up with momentum. Glutes switching off, which hands the lift to the lumbar spine. Arching so high the lower back pinches.',
-        },
-      },
+      BW_GOOD_MORNING,
       {
         id: 'legs-sl-rdl',
         name: 'Single-Leg Romanian Deadlift',
@@ -580,31 +661,7 @@ export const DATA_CAVE: Circuit[] = [
         },
       },
       COPENHAGEN,
-      {
-        id: 'legs-plate-crunch',
-        name: 'Plate Crunch',
-        capacities: ['tension'],
-        block: 'SECONDARY', intensity: 'HARD',
-        sets: 3, work: 12, unit: 'reps', restSec: 60,
-        load: { kind: 'added-kg', value: 5, text: 'A plate held on the chest, then behind the head' },
-        progression:
-          'Twelve slow reps with a one-second squeeze, then add 2.5kg, then move the plate '
-          + 'from the chest to behind the head, then a decline.',
-        protocolId: 'trunk-hypertrophy',
-        note: 'The upper abs with real load. The spine is warm by now, so this is the place for curling under weight.',
-        variations: [
-          { minLevel: 1, name: 'Plate Crunch' },
-          { minLevel: 4, name: 'Plate Crunch - Plate Behind Head' },
-          { minLevel: 6, name: 'Decline Plate Crunch' },
-        ],
-        form: {
-          setup: 'On your back, knees bent, feet flat or hooked under something. Plate held on the chest with both hands.',
-          execution: 'Curl the ribcage toward the pelvis until the shoulder blades leave the floor, squeeze one second, lower slowly. A short range: this is a crunch, not a sit-up.',
-          cue: 'Size comes from load and hard sets. The daily crunch keeps the habit; this one adds the weight that grows the muscle.',
-          breathing: 'Exhale fully on the curl.',
-          mistakes: 'Pulling the head forward with the hands. Sitting all the way up. Bouncing off the floor. Load so heavy the range shrinks.',
-        },
-      },
+      LYING_LEG_RAISE,
       SIDE_PLANK_DIP,
       {
         id: 'feet-frogger',
@@ -791,29 +848,7 @@ export const DATA_CAVE: Circuit[] = [
           mistakes: 'Ribs flaring to fake the range. Bending the elbows into a press. Bouncing out of the bottom.',
         },
       },
-      {
-        id: 'power-trx-pike',
-        name: 'TRX Knee Tuck / Pike',
-        capacities: ['tension'],
-        block: 'SECONDARY', intensity: 'HARD',
-        sets: 3, work: 10, unit: 'reps', restSec: 60,
-        load: { kind: 'bodyweight', text: 'Feet in the TRX straps, hands on the floor' },
-        progression: 'Knee tucks with a pause, then body saws, then straight-leg pikes.',
-        protocolId: 'trunk-hypertrophy',
-        note: 'Wrists sore: fists, push-up handles, or the forearms for the body saw.',
-        variations: [
-          { minLevel: 1, name: 'TRX Knee Tuck' },
-          { minLevel: 3, name: 'TRX Body Saw', load: 'On the forearms, rock back and forth from the shoulders' },
-          { minLevel: 5, name: 'TRX Pike' },
-        ],
-        form: {
-          setup: 'Toes in the TRX foot cradles at mid-shin height, high plank, hands under the shoulders.',
-          execution: 'Tuck: knees to the chest, back to plank. Pike: hips straight up with straight legs, back to plank. Slow on the way out.',
-          cue: 'The same lower-abs pull that brings a foot up to a high hold on a steep wall.',
-          breathing: 'Exhale as the knees or hips come up.',
-          mistakes: 'Hips sagging between reps. Shoulders drifting behind the hands. Swinging.',
-        },
-      },
+      { ...FRONT_LEVER, sets: 3 },
       {
         id: 'power-band-face-pull',
         name: 'Band Face Pull',
@@ -991,7 +1026,7 @@ export const DATA_CAVE: Circuit[] = [
         progression: 'Walk the time tall and level, then 4kg heavier.',
         protocolId: 'tension-iso',
         perSide: true,
-        noGripId: 'full-plate-carry',
+        noGripId: 'extra-band-pallof',
         note: 'Per side. One weight, so the trunk stops you leaning: the obliques and the grip together.',
         form: {
           setup: 'A heavy bell in one hand at your side, shoulders level, standing tall.',
@@ -1006,24 +1041,7 @@ export const DATA_CAVE: Circuit[] = [
       RUSSIAN_TWIST,
     ],
     substitutes: [
-      {
-        id: 'full-plate-carry',
-        name: 'Plate Hug Carry',
-        capacities: ['tension', 'legs'],
-        block: 'SECONDARY', intensity: 'MODERATE',
-        sets: 3, work: 30, unit: 'sec', restSec: 60,
-        load: { kind: 'added-kg', value: 15, text: 'A plate hugged to the chest, nothing gripped' },
-        progression: 'Walk the time tall, then a heavier plate.',
-        protocolId: 'tension-iso',
-        note: 'The carry without the grip: the plate rests on the forearms against the chest.',
-        form: {
-          setup: 'A plate hugged flat against the chest, forearms under it, hands open.',
-          execution: 'Walk slowly for the time, standing tall with the ribs down.',
-          cue: 'The trunk holds, the hands rest.',
-          breathing: 'Short, steady breaths under the brace.',
-          mistakes: 'Leaning back to hold the plate. Gripping the edge.',
-        },
-      },
+      BAND_PALLOF,
     ],
   },
 ];

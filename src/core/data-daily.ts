@@ -7,12 +7,12 @@
 //
 // Five sessions:
 //   01 CORE + OBLIQUES   — mat only. Push-ups, spiderman plank, cross-body
-//                          mountain climber, then the reverse crunch and the
+//                          mountain climber, then the lying leg raise and the
 //                          Russian twist last.
 //   02 OBLIQUES + BACK   — rotation and side-bending for the obliques, and the
-//                          graded lower-back progression: bird dog, prone
-//                          extension, band good morning. The Russian twist
-//                          closes it.
+//                          back with the spine held flat: bird dog, the
+//                          bent-over Y-T-W, band good morning. The Russian
+//                          twist closes it.
 //   03 BAND STRENGTH     — the pulling, pushing and legs that a bar and a
 //                          kettlebell used to do, with a band.
 //   04 FINGERS + MOBILITY — the tired-morning session. Hips, spine and wrists,
@@ -20,7 +20,13 @@
 //   05 LEGS + CORE       — mat only and gentle on the belly: no jumping, no
 //                          curling. Back and hip mobility, slow squats, glute
 //                          bridges, push-ups, slow mountain climbers, then
-//                          the cobra and open book to unwind the back.
+//                          the 90/90 hip switch to finish.
+//
+// v46: nothing here arches face down any more. The athlete broke a vertebra
+// (D12) years ago and the prone extension, the superman and the cobra feel
+// constricted; they stay in the library (SEARCH ALL) but sessions and BUILD
+// no longer use them (`not-picked.ts`). The reverse crunch went too: never
+// learned, always skipped. The lying leg raise does its job.
 //
 // Constraints, all enforced by `npm run check:daily`:
 //
@@ -42,14 +48,14 @@
 //
 // DAILY 01 is weighted to the obliques at the athlete's request (October
 // 2026): spiderman, cross-body climber and twist are all waist work, and the
-// reverse crunch is the only straight-abs exercise left in it. STATS core
+// lying leg raise is the only straight-abs exercise left in it. STATS core
 // volume counts the week against the trunk-hypertrophy and back-strength
 // targets, so a shortfall on the abs shows there.
 // =============================================================================
 
 import type { Circuit, Exercise } from './types';
 import { HEEL_HOOK_BRIDGE, SEATED_LEG_LIFT, TIBIALIS_RAISE, TOE_PULL_BRIDGE, WALL_HIGH_STEP } from './data-feet';
-import { LUNGE_DRIVE, SL_REACH } from './data-extras';
+import { BENT_YTW, LUNGE_DRIVE, LYING_LEG_RAISE, SL_REACH } from './data-extras';
 
 // ---- Shared ------------------------------------------------------------------
 
@@ -84,7 +90,7 @@ export const SIDE_PLANK_DIP: Exercise = {
 
 // ---- New in DAILY --------------------------------------------------------------
 
-const PRONE_EXTENSION: Exercise = {
+export const PRONE_EXTENSION: Exercise = {
   id: 'daily-prone-extension',
   name: 'Prone Back Extension',
   capacities: ['tension'],
@@ -137,7 +143,7 @@ const BAND_GOOD_MORNING: Exercise = {
   },
 };
 
-const REVERSE_CRUNCH: Exercise = {
+export const REVERSE_CRUNCH: Exercise = {
   id: 'daily-reverse-crunch',
   name: 'Reverse Crunch',
   capacities: ['tension'],
@@ -378,7 +384,7 @@ const PLANK_CLIMBER: Exercise = {
   },
 };
 
-const BACK_UNWIND: Exercise = {
+export const BACK_UNWIND: Exercise = {
   id: 'daily-back-unwind',
   name: 'Cobra + Open Book',
   capacities: ['mobility'],
@@ -558,6 +564,30 @@ const FLAG_HOLD: Exercise = {
   },
 };
 
+/** The 90/90 hip switch, shared by DAILY 04, DAILY 05 and HEAL 02. */
+export const HIP_9090: Exercise = {
+  id: 'morn-hip-9090',
+  name: '90/90 Hip Switch',
+  capacities: ['mobility', 'legs'],
+  block: 'MOBILITY', intensity: 'TECHNIQUE',
+  sets: 1, work: 12, unit: 'reps', restSec: 15,
+  load: { kind: 'bodyweight', text: 'No load, no hands' },
+  progression: 'Lose the hands first, then pause with the knees off the floor mid-rotation.',
+  protocolId: 'mobility',
+  note: 'Left plus right is 2 reps',
+  variations: [
+    { minLevel: 1, name: '90/90 Hip Switch' },
+    { minLevel: 4, name: '90/90 Hip Switch + Lift' },
+  ],
+  form: {
+    setup: 'Sit with both knees bent at 90 degrees, one leg in front and one out to the side, both shins on the floor. Sit tall, hands light for balance.',
+    execution: 'Without pushing off the hands, lift both knees and rotate them through the middle to the mirror-image position on the other side. Slow and controlled. The lift variation pauses with the knees off the floor mid-rotation.',
+    cue: 'Climbers lose internal hip rotation faster than almost any other range, and losing it is what stops you getting your hip into the wall. Three minutes a day beats an hour of stretching once a month.',
+    breathing: 'Exhale through the rotation, inhale in the settled position.',
+    mistakes: 'Pushing off the hands. Rounding the lower back to compensate for tight hips — sit on a folded edge of the mat instead. Rushing the middle rather than controlling it.',
+  },
+};
+
 export const DATA_DAILY: Circuit[] = [
   {
     id: 'daily-01', circuitNum: '01',
@@ -570,7 +600,7 @@ export const DATA_DAILY: Circuit[] = [
     note:
       'Mat only. Breathing and the dead bug wake the trunk, push-ups wake the top half, '
       + 'then the two plank drills for the obliques: knee to the same elbow, knee across '
-      + 'the body. The curling work closes it: reverse crunch, then the Russian twist. '
+      + 'the body. The curling work closes it: lying leg raise, then the Russian twist. '
       + 'Wrists sore: fists or push-up handles for every plank.',
     exercises: [
       {
@@ -672,22 +702,22 @@ export const DATA_DAILY: Circuit[] = [
           mistakes: 'Going fast and bouncing. Hips piking. Twisting the shoulders instead of the hips. Feet hopping instead of the knee being pulled in.',
         },
       },
-      REVERSE_CRUNCH,
+      { ...LYING_LEG_RAISE, sets: 2, work: 10, restSec: 45 },
       RUSSIAN_TWIST,
     ],
   },
   {
     id: 'daily-02', circuitNum: '02',
     title: 'OBLIQUES + BACK', subtitle: 'daily - waist - lower back - 14 min',
-    focus: 'Turn and side-bend against resistance, and build the lower back in steps.',
+    focus: 'Turn and side-bend against resistance, and build the back with the spine held flat.',
     capacities: ['tension', 'legs'],
     illustration: 'kettlebell.svg',
     duration: 14,
     recoveryHours: 0,
     note:
-      'The lower back goes from holding still (bird dog) to extending against bodyweight '
-      + 'to hinging under a band. The obliques get side-bending and rotation. '
-      + 'The Russian twist closes the session, tall and slow.',
+      'The back goes from holding still (bird dog) to the middle of the back bent over '
+      + '(Y-T-W) to hinging under a band. Nothing arches face down. The obliques get '
+      + 'side-bending and rotation. The Russian twist closes the session, tall and slow.',
     exercises: [
       {
         id: 'morn-breathing',
@@ -736,7 +766,7 @@ export const DATA_DAILY: Circuit[] = [
           mistakes: 'Hips rotating open as the leg lifts. Kicking the leg above hip height and arching the back. Reaching too fast. Head lifting out of line with the spine.',
         },
       },
-      PRONE_EXTENSION,
+      BENT_YTW,
       SIDE_PLANK_DIP,
       LUNGE_DRIVE,
       BAND_GOOD_MORNING,
@@ -902,28 +932,7 @@ export const DATA_DAILY: Circuit[] = [
       + 'Mobility first so the fingers are warm by the time they load.',
     exercises: [
       CAT_COW,
-      {
-        id: 'morn-hip-9090',
-        name: '90/90 Hip Switch',
-        capacities: ['mobility', 'legs'],
-        block: 'MOBILITY', intensity: 'TECHNIQUE',
-        sets: 1, work: 12, unit: 'reps', restSec: 15,
-        load: { kind: 'bodyweight', text: 'No load, no hands' },
-        progression: 'Lose the hands first, then pause with the knees off the floor mid-rotation.',
-        protocolId: 'mobility',
-        note: 'Left plus right is 2 reps',
-        variations: [
-          { minLevel: 1, name: '90/90 Hip Switch' },
-          { minLevel: 4, name: '90/90 Hip Switch + Lift' },
-        ],
-        form: {
-          setup: 'Sit with both knees bent at 90 degrees, one leg in front and one out to the side, both shins on the floor. Sit tall, hands light for balance.',
-          execution: 'Without pushing off the hands, lift both knees and rotate them through the middle to the mirror-image position on the other side. Slow and controlled. The lift variation pauses with the knees off the floor mid-rotation.',
-          cue: 'Climbers lose internal hip rotation faster than almost any other range, and losing it is what stops you getting your hip into the wall. Three minutes a day beats an hour of stretching once a month.',
-          breathing: 'Exhale through the rotation, inhale in the settled position.',
-          mistakes: 'Pushing off the hands. Rounding the lower back to compensate for tight hips — sit on a folded edge of the mat instead. Rushing the middle rather than controlling it.',
-        },
-      },
+      HIP_9090,
       {
         id: 'home-hip-flow',
         name: 'Hip Mobility Flow',
@@ -1003,7 +1012,7 @@ export const DATA_DAILY: Circuit[] = [
     note:
       'Mat only, and the gentle one for the belly: nothing jumps, nothing curls. Cat-cow, '
       + 'spiderman lunges and Cossack shifts wake the back and hips, then squats, bridges, '
-      + 'push-ups and slow mountain climbers. The cobra and open book unwind the back last. '
+      + 'push-ups and slow mountain climbers. The 90/90 hip switch closes it. '
       + 'Wrists sore: fists or push-up handles for every plank.',
     exercises: [
       CAT_COW,
@@ -1014,7 +1023,7 @@ export const DATA_DAILY: Circuit[] = [
       GLUTE_BRIDGE,
       PUSH_UP,
       PLANK_CLIMBER,
-      BACK_UNWIND,
+      HIP_9090,
     ],
   },
   {

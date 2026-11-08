@@ -12,7 +12,7 @@ import { activeDay } from '@/core/today';
 import { daysBetween, localDate } from '@/core/dates';
 import { getSeason } from '@/core/season';
 import { wallFocus } from '@/core/wall';
-import { isHealing } from '@/core/recommend';
+import { fingerHealing } from '@/core/recommend';
 import { getRingRecovery } from '@/core/rehab';
 
 /**
@@ -75,7 +75,7 @@ export function useToday() {
     const today = localDate();
     const roped = climbLog.some(c => c.discipline === 'ROPE' && daysBetween(c.date, today) <= 60);
     return wallFocus({
-      climbLog, phase: season.phase, rope: roped, healing: isHealing(sessionLog, climbLog),
+      climbLog, phase: season.phase, rope: roped, healing: fingerHealing({ sessionLog, climbLog, loadLog, benchmarkResults }),
       ringPct: getRingRecovery(loadLog, benchmarkResults).pct,
     });
   }, [climbLog, season.phase, sessionLog, loadLog, benchmarkResults]);

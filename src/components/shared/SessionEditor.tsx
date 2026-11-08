@@ -7,7 +7,7 @@ import { sessionListFor } from '@/store/slices/workout-slice';
 import { estimateDuration } from '@/core/engine';
 import { isEditable, MAX_SETS } from '@/core/routines';
 import { placeOf } from '@/core/reserve';
-import { isHealing } from '@/core/recommend';
+import { fingerHealing } from '@/core/recommend';
 import { activeDay } from '@/core/today';
 import { localDate } from '@/core/dates';
 import { formatLoad, getLoadAxis, getOpeningLoad } from '@/core/load';
@@ -53,7 +53,7 @@ export default function SessionEditor({ mode, circuit, onClose }: {
   const lastPain = [...state.sessionLog].reverse().find(s => s.pain !== undefined)?.pain ?? null;
   const ctx: EditContext = {
     place, mode,
-    healing: isHealing(state.sessionLog, state.climbLog),
+    healing: fingerHealing(state),
     pain: lastPain,
     noKit: activeDay(state.dayPlan).noKit,
   };

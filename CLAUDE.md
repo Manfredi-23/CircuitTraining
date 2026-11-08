@@ -417,7 +417,10 @@ plate crunch, toe drag, frogger. 02 PUSH + HINGE: Nordic curl, weighted
 push-up, pike push-up, calf raise, prone Y-T-W on the floor, band ER, Russian
 twist (plate hugged), side plank dip, lying leg raise, cobra + open book. Both
 open with `heal-warmup` (no rower: it is a grip) and close with pain-free
-tendon glides.
+tendon glides. v46: 01's back extension and plate crunch became the good
+morning (hands behind head) and the lying leg raise; 02's prone Y-T-W and
+cobra + open book became the bent-over Y-T-W and the 90/90 hip switch (see
+**Not picked** below).
 
 03 RING REHAB and 04 RING TEST are the physio's plan for the left ring finger
 (tendon or lumbrical): the finger alone lifts the portable edge with weights
@@ -460,11 +463,14 @@ Short home sessions before breakfast. `npm run check:daily` holds the rules:
   a session. Extension and hinging may sit anywhere.
 - **Fingers last and light.** DAILY 04 does density no-hangs on the portable
   edge (`density-hang`, about 40%) after the mobility work.
+- **DAILY 01** closes with the lying leg raise (`morn-leg-lowers`, shared
+  with HEAL 02, now in `data-extras.ts`) and the twist since v46; **DAILY 02**
+  has the bent-over Y-T-W where the prone extension was.
 - **DAILY 05 LEGS + CORE** is mat only and gentle on the belly: nothing jumps,
   nothing curls. Cat-cow, spiderman lunge + reach and Cossack shifts (MOBILITY)
   open it; bodyweight squat (tempo progressions to the skater squat), glute
   bridge, push-up and a slow straight mountain climber are the working sets;
-  cobra + open book closes it, extension and rotation only. `PUSH_UP` and
+  the 90/90 hip switch closes it (v46; the cobra + open book before). `PUSH_UP` and
   `CAT_COW` are shared constants, so their ids and history are the ones
   DAILY 01 and 04 already use. 13 min NORMAL, 18 FRESH, 9 TIRED.
 - **DAILY 06 QUIET FEET** is floor footwork, hands free, from the October 2026
@@ -485,7 +491,35 @@ Short home sessions before breakfast. `npm run check:daily` holds the rules:
   sit-back (radiator or sofa) is left to the HOOKS pack at the gym. 14 min
   NORMAL, 19 FRESH, 10 TIRED; `legHeavy`.
 
-### Balance and power at full stretch
+### Not picked (v46)
+
+From the athlete's four-week review, November 2026 (`docs/handovers/7bit-handover-v46.md`).
+They broke a vertebra (D12) years ago: lying face down and arching (prone
+extension, superman, floor back extension, swimmer, cobra hold, prone
+Y-T-W, cobra + open book) feels constricted. Others were always skipped
+(reverse crunch, plate crunch, TRX tuck / pike, plate hug good morning,
+plate hug carry). `not-picked.ts`:
+
+- `NOT_PICKED`: out of every session, and **never chosen by the app**: not
+  BUILD, the reserve, a group block or ONE BY ONE, SIMILAR (unless it is the
+  slot's own option), OTHER KIT, or a pack. `not-picked.test.ts` holds it.
+- `OUT_OF_SESSIONS` keeps their objects in `exerciseLibrary`, so the ids,
+  history and SEARCH ALL still work.
+- In their place, the back held flat: `BENT_YTW` (bent-over Y-T-W, home,
+  `upper-back`), `BW_GOOD_MORNING`, the bird dog, the dumbbell RDL;
+  `BAND_PALLOF` (gym: the home band has no anchor) is CAVE 05's no-grip
+  stand-in for the suitcase carry; the front lever replaces the TRX tuck in
+  CAVE 04; the lying leg raise the crunches.
+- BUILD never picks one exercise twice under two ids (the home and the gym
+  Russian twist share a name).
+
+**A healing finger** (v46): `isHealing` now lasts until the left ring finger
+reaches 80% of the right (`fingerHealing` reads the ring numbers from the
+store), climbs or not; without the numbers, a ring rehab in the last ten
+days keeps it. `inHealBlock` is the old rule (a climb ends it) and only
+decides whether TODAY runs the HEAL routine.
+
+## Balance and power at full stretch
 
 Since v34 every training session carries a dose of both, in proportion to its
 length (`qualities.ts`, held by `qualities.test.ts`, TIRED included). What
@@ -557,13 +591,14 @@ of the library).
   50% (MODERATE, so `lastHard` does not move), explosive pull-ups, explosive
   push-ups, weighted pull-ups for volume (RPE 7-8, 3 x 6), single-arm dumbbell
   row (hand on a box), half-kneeling dumbbell press, floor pullover (power
-  from the stretch), TRX knee tuck / pike, single-leg balance, band face pull.
+  from the stretch), front lever 3 sets (v46, was the TRX knee tuck / pike),
+  single-leg balance, band face pull.
 - **05 FULL BODY** (`cave-08`), no climbing, about 65-70 min, no hangboard:
   box jump, lateral hop + stick, double kettlebell front squat (a choice slot
   with the box pistol), dumbbell RDL,
   high-step rock-over drive, push-ups / ring dips, ring row, suitcase carry
-  (the one grip load; `noGripId` swaps it for a plate hug carry at readiness
-  40 or less), goblet Cossack squat, Copenhagen, Russian twist.
+  (the one grip load; `noGripId` swaps it for the band Pallof press at
+  readiness 40 or less, v46), goblet Cossack squat, Copenhagen, Russian twist.
 - 04 and 05 always carry **core, a balance drill and power at full stretch**
   (protocol `end-range-strength`: three seconds into the stretch, drive out
   fast). Box jumps use `lower-power`. `PUSH_DIP`, `RUSSIAN_TWIST` and
@@ -574,9 +609,10 @@ of the library).
   weighted Russian twist, cuff.
 - **03 LEGS + BACK**, after bouldering: a SKILL block first (wall high-step +
   load, edge stand + rock-over, one set of single-leg balance), then goblet
-  squat (a choice slot with the box pistol), floor back extension (heels under the radiator),
-  single-leg RDL, toe-tip plate drag, Copenhagen plank, plate crunch, side
-  plank hip dip, frogger. Nothing loads the fingers.
+  squat (a choice slot with the box pistol), good morning with the hands
+  behind the head (v46, was the floor back extension), single-leg RDL,
+  toe-tip plate drag, Copenhagen plank, lying leg raise (v46, was the plate
+  crunch), side plank hip dip, frogger. Nothing loads the fingers.
 - 02 and 03 are `stacksOnSession` and `check:cave` keeps them inside 45
   minutes NORMAL; 04 and 05 (24h, not stacking) inside 75.
 - The athlete's wrists and fingers are symptomatic: plank-based cards name a
@@ -1295,7 +1331,11 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v45.md`** — **start here.** Swipe an exercise
+- **`7bit-handover-v46.md`** — **start here.** The four-week review:
+  the always-skipped and face-down exercises out of the sessions and never
+  picked, the back trained held flat (bent-over Y-T-W, Pallof press), and a
+  healing finger that lasts until 80%, climbs or not.
+- **`7bit-handover-v45.md`** — Swipe an exercise
   for SWAP or OUT everywhere, OTHER KIT for busy kit, + ADD by muscle group
   or one by one; groups and kit tagged on every exercise.
 - **`7bit-handover-v44.md`** — THE PATATOMETRO

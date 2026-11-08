@@ -192,6 +192,8 @@ export const EXERCISE_TAGS: Record<string, Tags> = {
   'extra-kb-swing': t([GLU, LOW], ['KETTLEBELL']),
   'extra-bw-good-morning': t([LOW]),
   'extra-wall-angel': t([UPB, SHO]),
+  'extra-bent-ytw': t([UPB, SHO]),
+  'extra-band-pallof': t([OBL, ABS], ['BAND']),
 
   // --- Feet, hooks and high steps (v43) ---
   'feet-wall-high-step': t([FEE, LEG]),

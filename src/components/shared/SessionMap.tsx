@@ -41,6 +41,8 @@ export default function SessionMap({ open, onClose }: { open: boolean; onClose: 
   const sessionPain = useStore(s => s.sessionPain);
   const sessionLog = useStore(s => s.sessionLog);
   const climbLog = useStore(s => s.climbLog);
+  const loadLog = useStore(s => s.loadLog);
+  const benchmarkResults = useStore(s => s.benchmarkResults);
   const dayPlan = useStore(s => s.dayPlan);
   const [entered, setEntered] = useState(false);
   const [swapping, setSwapping] = useState<number | null>(null);
@@ -60,7 +62,7 @@ export default function SessionMap({ open, onClose }: { open: boolean; onClose: 
   if (!open || !circuit) return null;
   const runs = phaseRuns(list);
   const left = minutesLeft(list, stepIndex, setIndex);
-  const ctx = editContextFor(mode, circuit.id, { sessionLog, climbLog, dayPlan }, sessionPain);
+  const ctx = editContextFor(mode, circuit.id, { sessionLog, climbLog, dayPlan, loadLog, benchmarkResults }, sessionPain);
   const swipe = (ex: ScaledExercise, i: number) => {
     if (!canSwapAt(stepIndex, setIndex, i, list.length) || ex.block === 'TEST') return null;
     const acts = [{ label: 'SWAP', aria: `Swap ${ex.displayName}`, onClick: () => setSwapping(i) }];

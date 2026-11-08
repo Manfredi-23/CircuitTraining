@@ -29,7 +29,7 @@ const BUDGET_MINUTES = 20;
 const ENERGIES: EnergyKey[] = ['TIRED', 'NORMAL', 'FRESH'];
 
 /** Exercises that load the spine in flexion. Each must close its session. */
-const FLEXION_IDS = new Set(['daily-reverse-crunch', 'daily-crunch', 'morn-bw-russian-twist']);
+const FLEXION_IDS = new Set(['daily-reverse-crunch', 'daily-crunch', 'morn-leg-lowers', 'morn-bw-russian-twist']);
 
 function progressAt(level: number): Progress {
   const xp = CONFIG.levels.find(l => l.level === level)?.cumul ?? 0;
