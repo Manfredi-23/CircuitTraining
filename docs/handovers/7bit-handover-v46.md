@@ -120,8 +120,11 @@ MOBILITY 10 ends with cat-cow.
 
 ## 4. Repo state
 
-Branch `claude/v46-review-cleanup` from `main` at `da359d8`. One PR into
-`main`.
+Branch `claude/v46-review-cleanup` from `main` at `da359d8`, pushed. The
+GitHub CLI had no working login in the cloud session, so **the PR is not
+opened or merged yet**: open it from
+https://github.com/Manfredi-23/CircuitTraining/pull/new/claude/v46-review-cleanup
+and merge it, then run the Mac clean update. `main` is unchanged until then.
 
 ## 5. Open items
 
