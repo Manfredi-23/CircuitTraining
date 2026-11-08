@@ -8,7 +8,7 @@ import {
   suggestAreas, targetState,
   type Avoid, type BuildChoice, type BuildPreset, type CustomContext, type Target,
 } from '@/core/custom';
-import { isHealing, PAIN_MEMORY_DAYS } from '@/core/recommend';
+import { fingerHealing, PAIN_MEMORY_DAYS } from '@/core/recommend';
 import { legSoreness } from '@/core/activity';
 import { activeDay } from '@/core/today';
 import { getBlockWeek } from '@/core/block';
@@ -74,7 +74,8 @@ export default function BuildSheet({ open, onClose }: { open: boolean; onClose: 
   const today = localDate();
   const day = activeDay(dayPlan);
   const climbedToday = climbLog.some(c => c.date === today);
-  const healing = isHealing(sessionLog, climbLog);
+  const loadLog = useStore(s => s.loadLog);
+  const healing = fingerHealing({ sessionLog, climbLog, loadLog, benchmarkResults });
   const recentPain = [...sessionLog].reverse().find(
     s => s.pain !== undefined && daysBetween(dayOf(s.date), today) <= PAIN_MEMORY_DAYS,
   )?.pain ?? null;

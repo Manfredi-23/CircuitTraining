@@ -26,7 +26,7 @@ import { addDays, dayOf, daysBetween, localDate } from './dates';
 import { estimateActivity, type ActivitySession } from './activity';
 import { plateaus } from './adapt';
 import { exerciseLibrary } from './reserve';
-import { isHealing, lastAssess, RETEST_WEEKS } from './recommend';
+import { fingerHealing, lastAssess, RETEST_WEEKS } from './recommend';
 import type { BenchmarkResult, Capacity, ClimbSession, Exercise, LoadLogEntry, SessionLogEntry } from './types';
 
 /** Days in one period of the overview. */
@@ -271,7 +271,7 @@ export function getInsights(input: InsightInput, max = 7): Insight[] {
 
   // Pulling while a finger heals: HEAL's rule is no pulling until the physio clears it.
   let healingSince: string | null = null;
-  if (isHealing(input.sessionLog, input.climbLog, now)) {
+  if (fingerHealing(input, now)) {
     const lastClimb = input.climbLog.map(c => c.date).sort().pop() ?? '';
     const heal = input.sessionLog.filter(s => s.mode === 'HEAL' && dayOf(s.date) > lastClimb);
     const since = heal.length ? dayOf(heal[0].date) : today;

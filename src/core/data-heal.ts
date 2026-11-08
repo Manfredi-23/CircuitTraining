@@ -17,9 +17,13 @@
 //
 // Two sessions, 50-75 minutes NORMAL, alternated, two or three a week:
 //   01 LEGS + TRUNK  — box jumps, the back squat, step-up, split squat,
-//                      back extension, then the hollow body and the abs.
+//                      the good morning, then the hollow body and the abs.
 //   02 PUSH + HINGE  — Nordic curl, weighted push-up, pike push-up, the
-//                      shoulder blades, then rotation and leg raises.
+//                      shoulder blades bent over, then rotation and leg raises.
+//
+// v46: nothing lies face down and arches (an old D12 fracture). The floor back
+// extension, the plate crunch, the prone Y-T-W and the cobra are out; the good
+// morning, the lying leg raise, the bent-over Y-T-W and the 90/90 hip switch in.
 // Both close with pain-free tendon glides for the injured finger.
 //
 // Two short home sessions follow the physio's plan for the left ring finger
@@ -39,8 +43,8 @@
 
 import type { Exercise, Circuit } from './types';
 import { DATA_CAVE } from './data-cave';
-import { DATA_DAILY, SIDE_PLANK_DIP } from './data-daily';
-import { LUNGE_DRIVE } from './data-extras';
+import { HIP_9090, SIDE_PLANK_DIP } from './data-daily';
+import { BENT_YTW, BW_GOOD_MORNING, LUNGE_DRIVE, LYING_LEG_RAISE } from './data-extras';
 import { FINGER_KG_AXIS } from './load';
 import { RING_GOAL_PCT, RING_LEFT_EXERCISE, RING_RIGHT_BENCHMARK } from './rehab';
 
@@ -54,21 +58,12 @@ function shared(circuits: Circuit[], id: string): Exercise {
   return ex;
 }
 
-/** Same id and history as CAVE 03's back extension: on the mat, heels under the radiator. */
-const BACK_EXTENSION: Exercise = shared(DATA_CAVE, 'legs-back-extension');
 /** HEAL versions of shared exercises: same ids and history, set up on the box, plates hugged. */
 const COPENHAGEN: Exercise = {
   ...shared(DATA_CAVE, 'home-copenhagen'),
   form: {
     ...shared(DATA_CAVE, 'home-copenhagen').form!,
     setup: 'Side plank on the forearm, top leg resting on the box: inside of the knee on it for the easier version, inside of the ankle for the full one.',
-  },
-};
-const PLATE_CRUNCH: Exercise = {
-  ...shared(DATA_CAVE, 'legs-plate-crunch'),
-  form: {
-    ...shared(DATA_CAVE, 'legs-plate-crunch').form!,
-    setup: 'On your back, knees bent, feet flat. Plate hugged flat on the chest with the forearms crossed over it, fingers open.',
   },
 };
 const TOE_DRAG: Exercise = {
@@ -79,12 +74,40 @@ const TOE_DRAG: Exercise = {
   },
 };
 const FROGGER = shared(DATA_CAVE, 'feet-frogger');
-const BACK_UNWIND = shared(DATA_DAILY, 'daily-back-unwind');
 /** Same id and history as CAVE 02's twist; the plate is hugged, never held by the fingers. */
 const RUSSIAN_TWIST: Exercise = {
   ...shared(DATA_CAVE, 'addon-russian-twist'),
   load: { kind: 'added-kg', text: 'A plate hugged to the chest with the forearms, or none to start' },
   note: 'Left plus right is 2 reps. Plate hugged, fingers open against it. The obliques do the turning, not the arms.',
+};
+
+/**
+ * Out of HEAL 02 since v46: lying face down hurts the athlete's old D12
+ * fracture. The bent-over Y-T-W does the job. Same id, history kept; SEARCH
+ * ALL still finds it, nothing picks it automatically (`not-picked.ts`).
+ */
+export const PRONE_YTW: Exercise = {
+  id: 'heal-prone-ytw',
+  name: 'Prone Y-T-W',
+  capacities: ['shoulder'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 3, work: 8, unit: 'reps', restSec: 60,
+  load: { kind: 'bodyweight', text: 'No weight. Open hands, thumbs up.' },
+  progression: 'A two-second hold at every top, then five seconds. Holds before load: the hands cannot hold a plate yet.',
+  protocolId: 'prehab',
+  note: 'Eight of each letter is one set. Open hands, nothing held.',
+  variations: [
+    { minLevel: 1, name: 'Prone Y-T-W' },
+    { minLevel: 3, name: 'Prone Y-T-W - 2s Hold' },
+    { minLevel: 5, name: 'Prone Y-T-W - 5s Hold' },
+  ],
+  form: {
+    setup: 'Face down on the mat, forehead on a folded towel, legs relaxed. Arms on the floor in the letter you are about to make.',
+    execution: 'Y: arms straight overhead and out, thumbs up, lift them a few centimetres off the floor. T: arms straight out to the sides, lift. W: elbows bent at the sides, lift and squeeze the shoulder blades down and together. Slow up, slow down.',
+    cue: 'The lower and middle traps that set the shoulder blade before every pull. Not pulling for a few weeks is the time to make them strong, not to lose them.',
+    breathing: 'Exhale on each lift.',
+    mistakes: 'Shrugging up into the ears. Lifting the chest off the floor to get the arms higher. Rushing.',
+  },
 };
 
 /** The two strength sessions, alternated every other day. */
@@ -500,7 +523,7 @@ export const DATA_HEAL: Circuit[] = [
           mistakes: 'Front foot too close, which drives the knee far over the toes. Bouncing off the bottom. Doing more reps on the strong leg.',
         },
       },
-      BACK_EXTENSION,
+      BW_GOOD_MORNING,
       COPENHAGEN,
       {
         id: 'morn-hollow',
@@ -528,7 +551,7 @@ export const DATA_HEAL: Circuit[] = [
           mistakes: 'Lower back arching off the floor. Legs so high it gets easy. Neck cranked forward.',
         },
       },
-      PLATE_CRUNCH,
+      LYING_LEG_RAISE,
       TOE_DRAG,
       FROGGER,
       TENDON_GLIDES,
@@ -648,59 +671,12 @@ export const DATA_HEAL: Circuit[] = [
           mistakes: 'Bouncing at the bottom. Half reps. Leaning on the wall instead of balancing.',
         },
       },
-      {
-        id: 'heal-prone-ytw',
-        name: 'Prone Y-T-W',
-        capacities: ['shoulder'],
-        block: 'SECONDARY', intensity: 'MODERATE',
-        sets: 3, work: 8, unit: 'reps', restSec: 60,
-        load: { kind: 'bodyweight', text: 'No weight. Open hands, thumbs up.' },
-        progression: 'A two-second hold at every top, then five seconds. Holds before load: the hands cannot hold a plate yet.',
-        protocolId: 'prehab',
-        note: 'Eight of each letter is one set. Open hands, nothing held.',
-        variations: [
-          { minLevel: 1, name: 'Prone Y-T-W' },
-          { minLevel: 3, name: 'Prone Y-T-W - 2s Hold' },
-          { minLevel: 5, name: 'Prone Y-T-W - 5s Hold' },
-        ],
-        form: {
-          setup: 'Face down on the mat, forehead on a folded towel, legs relaxed. Arms on the floor in the letter you are about to make.',
-          execution: 'Y: arms straight overhead and out, thumbs up, lift them a few centimetres off the floor. T: arms straight out to the sides, lift. W: elbows bent at the sides, lift and squeeze the shoulder blades down and together. Slow up, slow down.',
-          cue: 'The lower and middle traps that set the shoulder blade before every pull. Not pulling for a few weeks is the time to make them strong, not to lose them.',
-          breathing: 'Exhale on each lift.',
-          mistakes: 'Shrugging up into the ears. Lifting the chest off the floor to get the arms higher. Rushing.',
-        },
-      },
+      BENT_YTW,
       HEAL_BAND_ER,
       RUSSIAN_TWIST,
       SIDE_PLANK_DIP,
-      {
-        id: 'morn-leg-lowers',
-        name: 'Lying Leg Raise',
-        capacities: ['tension'],
-        block: 'SECONDARY', intensity: 'HARD',
-        sets: 3, work: 10, unit: 'reps', restSec: 60,
-        load: { kind: 'bodyweight', text: 'Mat only. Hands flat under the hips.' },
-        progression:
-          'Ten slow reps with the lower back flat, then straight legs, then a three-second '
-          + 'lowering, then lift the hips off the mat at the top.',
-        protocolId: 'trunk-hypertrophy',
-        note: 'Hands flat on the mat under the hips, fingers straight.',
-        variations: [
-          { minLevel: 1, name: 'Lying Leg Raise - Bent Knees' },
-          { minLevel: 3, name: 'Lying Leg Raise' },
-          { minLevel: 5, name: 'Lying Leg Raise - 3s Lower' },
-          { minLevel: 7, name: 'Lying Leg Raise + Hip Lift' },
-        ],
-        form: {
-          setup: 'On your back, legs straight, hands flat under the hips with the fingers straight. Press the lower back into the mat.',
-          execution: 'Lift the legs together to vertical, then lower them slowly, stopping just before the lower back peels off the floor. Bend the knees if it does.',
-          cue: 'Lifting the legs against a still trunk: the hanging leg raise from CAVE, done on the floor while the hands cannot hang. Feet back on the wall in a roof.',
-          breathing: 'Exhale as the legs come up.',
-          mistakes: 'Lower back arching as the legs go down. Dropping the legs fast. Pushing hard through the hands.',
-        },
-      },
-      BACK_UNWIND,
+      LYING_LEG_RAISE,
+      HIP_9090,
       TENDON_GLIDES,
     ],
   },

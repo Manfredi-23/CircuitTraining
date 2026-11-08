@@ -6,7 +6,7 @@ import { RESERVE_GROUPS, closedGroups, placeOf, reserveFor, type ReserveGroup } 
 import { daysBetween, localDate } from '@/core/dates';
 import { legSoreness } from '@/core/activity';
 import { activeDay } from '@/core/today';
-import { isHealing } from '@/core/recommend';
+import { fingerHealing } from '@/core/recommend';
 import { packsFor } from '@/core/session-edit';
 import { addCost, minutesLeft } from '@/core/session-time';
 import { scaleExercise } from '@/core/engine';
@@ -47,6 +47,8 @@ export default function ReservePicker({ open, onClose }: { open: boolean; onClos
   const addExtra = useStore(s => s.addExtra);
   const addExtras = useStore(s => s.addExtras);
   const climbLog = useStore(s => s.climbLog);
+  const loadLog = useStore(s => s.loadLog);
+  const benchmarkResults = useStore(s => s.benchmarkResults);
   const energy = useStore(s => s.energy);
   const progress = useStore(s => s.progress);
   const stepIndex = useStore(s => s.stepIndex);
@@ -61,7 +63,7 @@ export default function ReservePicker({ open, onClose }: { open: boolean; onClos
     if (open) { setAdded([]); setPacksAdded([]); requestAnimationFrame(() => setEntered(true)); } else setEntered(false);
   }, [open]);
 
-  const healing = isHealing(sessionLog, climbLog);
+  const healing = fingerHealing({ sessionLog, climbLog, loadLog, benchmarkResults });
   const ctx = circuit ? { mode, circuitId: circuit.id, list: exerciseList, pain: sessionPain, sessionLog, noKit, healing } : null;
   // Keep what was added in this visit on screen, marked ADDED, instead of letting it vanish.
   const reserve = useMemo(

@@ -47,6 +47,8 @@ export default function WorkoutScreen() {
   const sessionPain = useStore(s => s.sessionPain);
   const sessionLog = useStore(s => s.sessionLog);
   const climbLog = useStore(s => s.climbLog);
+  const loadLog = useStore(s => s.loadLog);
+  const benchmarkResults = useStore(s => s.benchmarkResults);
   const dayPlan = useStore(s => s.dayPlan);
   const [reserveOpen, setReserveOpen] = useState(false);
   const [swapOpen, setSwapOpen] = useState(false);
@@ -247,7 +249,7 @@ export default function WorkoutScreen() {
       {swapOpen && canSwap && (
         <SwapPicker
           exercise={currentExercise}
-          ctx={editContextFor(mode, circuit.id, { sessionLog, climbLog, dayPlan }, sessionPain)}
+          ctx={editContextFor(mode, circuit.id, { sessionLog, climbLog, dayPlan, loadLog, benchmarkResults }, sessionPain)}
           taken={exerciseList.map(e => e.id)}
           live
           onClose={() => setSwapOpen(false)}

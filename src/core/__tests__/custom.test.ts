@@ -4,6 +4,7 @@ import {
   BUILT_IN_PRESETS, CUSTOM_TIMES, EXTRA_SETS, type CustomInput,
 } from '../custom';
 import { isCurl, exerciseLibrary } from '../reserve';
+import { NOT_PICKED } from '../not-picked';
 import { loadsFingers } from '../engine';
 import { NO_DAY } from '../today';
 import { useStore } from '../../store/store';
@@ -155,7 +156,9 @@ describe('goals, exclusions and avoid', () => {
     for (const energy of ENERGIES) {
       const s = buildCustom({ ...input, energy });
       expect(s.duration).toBeLessThanOrEqual(60);
-      expect(s.duration).toBeGreaterThanOrEqual(55);
+      // v46 took four core exercises out of the picks (`not-picked.ts`), so at
+      // NORMAL and TIRED the fill reaches its two-set cap before the hour.
+      expect(s.duration).toBeGreaterThanOrEqual(energy === 'FRESH' ? 55 : 35);
       expect(s.extraSets).toBeGreaterThan(0);
       for (const e of s.circuit.exercises) {
         const written = lib.get(e.id)!;
@@ -287,20 +290,29 @@ describe('BACK, apart from CORE', () => {
         if (healing) for (const e of s.list) expect(flagsOf(e.id).grip ?? false, e.id).toBe(false);
       }
     }
+    // v46: the back held flat, nothing face down (the athlete's old D12 fracture).
     const ids = buildCustom({ ...base, ...preset('strong-back') }).list.map(e => e.id);
-    expect(ids).toContain('extra-prone-swimmer');
-    expect(ids).toContain('extra-prone-cobra');
+    expect(ids).toContain('extra-bw-good-morning');
+    expect(ids).toContain('extra-bent-ytw');
+    for (const id of ids) expect(NOT_PICKED.has(id), id).toBe(false);
   });
 
-  it('builds BACK + CORE at the gym with the loaded back work, the plate hinge kept while a finger heals', () => {
+  it('builds BACK + CORE at the gym with the loaded hinge, a bodyweight hinge while a finger heals', () => {
     const s = buildCustom({ ...base, ...preset('back-core') });
     expect(s.duration).toBeLessThanOrEqual(45);
     const ids = s.list.map(e => e.id);
-    expect(ids).toContain('legs-back-extension');
-    expect(ids).toContain('extra-plate-good-morning');
+    expect(ids).toContain('full-db-rdl');
     const healing = buildCustom({ ...base, ...preset('back-core'), healing: true }).list.map(e => e.id);
-    expect(healing).toContain('extra-plate-good-morning');
+    expect(healing).toContain('extra-bw-good-morning');
     for (const id of healing) expect(flagsOf(id).grip ?? false, id).toBe(false);
+    for (const id of [...ids, ...healing]) expect(NOT_PICKED.has(id), id).toBe(false);
+  });
+
+  it('never picks the same exercise twice under two ids', () => {
+    for (const place of ['HOME', 'GYM'] as const) {
+      const names = buildCustom({ ...base, place, minutes: 60, include: ['CORE'] }).list.map(e => e.name);
+      expect(new Set(names).size).toBe(names.length);
+    }
   });
 
   it('keeps the back when CORE is out, and the abs when BACK is out', () => {

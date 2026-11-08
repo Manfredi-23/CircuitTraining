@@ -651,8 +651,92 @@ const WALL_ANGEL: Exercise = {
   },
 };
 
+// ---- The back without arching (v46) ------------------------------------------------
+// The athlete broke a vertebra (D12) years ago. Lying face down and arching
+// (prone extensions, supermen, the cobra, prone Y-T-W) feels constricted, so
+// those were taken out of the sessions and are never picked automatically
+// (`not-picked.ts`). The same muscles train here with the back held flat:
+// bent over in the good-morning position, standing, or on all fours.
+
+export const BENT_YTW: Exercise = {
+  id: 'extra-bent-ytw',
+  name: 'Bent-Over Y-T-W',
+  capacities: ['shoulder', 'tension'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 2, work: 10, unit: 'reps', restSec: 45,
+  load: { kind: 'bodyweight', text: 'Open hands, thumbs up. Later a small weight or a water bottle in each hand.' },
+  progression: 'Ten of each letter with a one-second squeeze at the top, then 0.5 kg in each hand, then 1 kg, then 2 kg. Small weights are right: these muscles are small.',
+  protocolId: 'upper-back',
+  note: 'Ten of each letter is one set. The middle of the back without lying face down: the back stays flat, nothing arches.',
+  variations: [
+    { minLevel: 1, name: 'Bent-Over Y-T-W' },
+    { minLevel: 3, name: 'Bent-Over Y-T-W - 2s Hold' },
+    { minLevel: 5, name: 'Bent-Over Y-T-W - 3s Lower' },
+  ],
+  form: {
+    setup: 'Feet hip-width, soft knees. Hinge forward to about 45 degrees with a flat back, as at the bottom of a good morning. Arms hang under the shoulders, hands open, thumbs up.',
+    execution: 'Y: raise the straight arms forward and out to the ears. T: raise them straight out to the sides. W: elbows bent at the ribs, squeeze them back and the shoulder blades together. Slow up, one second at the top, slow down.',
+    cue: 'The shoulder blades slide back and down before the arms move. The hinge holds still: the back is the frame, the shoulder blades do the work.',
+    breathing: 'Exhale on each lift.',
+    mistakes: 'Standing up out of the hinge as you tire. Shrugging into the ears. Swinging the arms up. Rounding the back.',
+  },
+};
+
+export const BAND_PALLOF: Exercise = {
+  id: 'extra-band-pallof',
+  name: 'Band Pallof Press',
+  capacities: ['tension'],
+  block: 'SECONDARY', intensity: 'MODERATE',
+  sets: 3, work: 10, unit: 'reps', restSec: 45,
+  load: { kind: 'band', text: 'Band anchored at chest height, the end held between flat palms' },
+  progression: 'Ten slow presses with a two-second hold out front, then a step further from the anchor, then a heavier band, then half-kneeling.',
+  protocolId: 'tension-iso',
+  perSide: true,
+  note: 'Per side. The obliques stopping a twist, which is their job on the wall. The palms press the band flat together: nothing is gripped.',
+  form: {
+    setup: 'Stand side-on to the anchor, feet hip-width, soft knees. The band end between the palms pressed flat together at the chest. Step out until the band pulls.',
+    execution: 'Press the hands straight out in front of the chest, hold two seconds without turning toward the anchor, bring them back. Ten, then turn around.',
+    cue: 'The band tries to turn you; the trunk says no. Ribs down, hips square, the arms only carry the load out.',
+    breathing: 'Exhale as the hands press out, breathe through the hold.',
+    mistakes: 'Rotating toward the anchor. Leaning away from it. Shrugging. Gripping the band in a fist.',
+  },
+};
+
+/**
+ * The floor leg raise: in HEAL 02, and since v46 in DAILY 01 where the
+ * reverse crunch was. Same id, so its history carries.
+ */
+export const LYING_LEG_RAISE: Exercise = {
+  id: 'morn-leg-lowers',
+  name: 'Lying Leg Raise',
+  capacities: ['tension'],
+  block: 'SECONDARY', intensity: 'HARD',
+  sets: 3, work: 10, unit: 'reps', restSec: 60,
+  load: { kind: 'bodyweight', text: 'Mat only. Hands flat under the hips.' },
+  progression:
+    'Ten slow reps with the lower back flat, then straight legs, then a three-second '
+    + 'lowering, then lift the hips off the mat at the top.',
+  protocolId: 'trunk-hypertrophy',
+  note: 'Hands flat on the mat under the hips, fingers straight.',
+  variations: [
+    { minLevel: 1, name: 'Lying Leg Raise - Bent Knees' },
+    { minLevel: 3, name: 'Lying Leg Raise' },
+    { minLevel: 5, name: 'Lying Leg Raise - 3s Lower' },
+    { minLevel: 7, name: 'Lying Leg Raise + Hip Lift' },
+  ],
+  form: {
+    setup: 'On your back, legs straight, hands flat under the hips with the fingers straight. Press the lower back into the mat.',
+    execution: 'Lift the legs together to vertical, then lower them slowly, stopping just before the lower back peels off the floor. Bend the knees if it does.',
+    cue: 'Lifting the legs against a still trunk: the hanging leg raise from CAVE, done on the floor while the hands cannot hang. Feet back on the wall in a roof.',
+    breathing: 'Exhale as the legs come up.',
+    mistakes: 'Lower back arching as the legs go down. Dropping the legs fast. Pushing hard through the hands.',
+  },
+};
+
+export { BW_GOOD_MORNING };
+
 export const BACK_EXERCISES: Exercise[] = [
-  PRONE_SWIMMER, PRONE_COBRA, PLATE_GOOD_MORNING, DB_REVERSE_FLY, KB_SWING, BW_GOOD_MORNING, WALL_ANGEL,
+  PRONE_SWIMMER, PRONE_COBRA, PLATE_GOOD_MORNING, DB_REVERSE_FLY, KB_SWING, BW_GOOD_MORNING, WALL_ANGEL, BENT_YTW,
 ];
 
 export const GOAL_EXERCISES: Exercise[] = [
@@ -662,7 +746,7 @@ export const GOAL_EXERCISES: Exercise[] = [
 
 export const EXTRA_EXERCISES: Exercise[] = [
   BAND_CURL, BAND_HAMMER, BAND_TRICEPS, DIAMOND_PUSHUP, DB_CURL, CHINUP_NEGATIVE, BAND_LATERAL, FACE_PULL,
-  ...GOAL_EXERCISES, ...BACK_EXERCISES,
+  ...GOAL_EXERCISES, ...BACK_EXERCISES, BAND_PALLOF,
 ];
 
 // ---- Balance and power at full stretch, in every session ---------------------------

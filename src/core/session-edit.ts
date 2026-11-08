@@ -24,6 +24,7 @@ import { getLoadAxis, clampToAxis } from './load';
 import { fingerCaution, loadsFingers, PAIN_REMOVE_FROM } from './engine';
 import { needsKit } from './today';
 import type { Circuit, Exercise, Mode } from './types';
+import { isPickable } from './not-picked';
 
 export interface EditItem {
   id: string;
@@ -264,6 +265,8 @@ export function similarTo(ex: Exercise, ctx: EditContext, taken: string[] = [], 
   return libraryFor(ctx.place, '', null, [...choice])
     .filter(e => e.exercise.id !== ex.id && (choice.has(e.exercise.id) || e.exercise.name !== ex.name) && !taken.includes(e.exercise.id))
     .filter(e => allowedToday(e.exercise, ctx) && (ex.block === 'WARMUP') === (e.exercise.block === 'WARMUP'))
+    // What the athlete dropped (v46) is never suggested, unless it is one of this slot's own options.
+    .filter(e => choice.has(e.exercise.id) || isPickable(e.exercise.id))
     .map(e => ({ e, s: likeness(ex, e.exercise) + (choice.has(e.exercise.id) ? 100 : 0), c: cautionToday(e.exercise, ctx) ? 1 : 0 }))
     // Any other warm-up is an alternative to a warm-up.
     .filter(x => x.s >= SIMILAR_MIN_SCORE || ex.block === 'WARMUP')
@@ -291,13 +294,13 @@ export interface Pack {
 export const PACKS: Pack[] = [
   {
     id: 'core-finisher', name: 'CORE FINISHER', note: 'Obliques and lower abs to close a session.',
-    home: ['daily-side-plank-dip', 'daily-reverse-crunch', 'morn-bw-russian-twist'],
-    gym: ['daily-side-plank-dip', 'legs-plate-crunch', 'addon-russian-twist'],
+    home: ['daily-side-plank-dip', 'morn-leg-lowers', 'morn-bw-russian-twist'],
+    gym: ['daily-side-plank-dip', 'home-leg-raise', 'addon-russian-twist'],
   },
   {
-    id: 'back', name: 'BACK', note: 'The lower back and the middle of it, nothing that curls.',
-    home: ['daily-prone-extension', 'extra-prone-swimmer', 'extra-prone-cobra'],
-    gym: ['legs-back-extension', 'extra-plate-good-morning', 'extra-db-reverse-fly'],
+    id: 'back', name: 'BACK', note: 'The lower back and the middle of it, the back held flat: nothing curls, nothing arches face down.',
+    home: ['morn-birddog', 'extra-bw-good-morning', 'extra-bent-ytw'],
+    gym: ['full-db-rdl', 'extra-bw-good-morning', 'extra-db-reverse-fly'],
   },
   {
     id: 'arms', name: 'ARMS', note: 'Biceps and triceps. Recorded, no XP.',
@@ -306,12 +309,12 @@ export const PACKS: Pack[] = [
   },
   {
     id: 'shoulder-care', name: 'SHOULDER CARE', note: 'The cuff and the back of the shoulder.',
-    home: ['heal-band-er', 'heal-prone-ytw', 'morn-pullapart'],
-    gym: ['heal-band-er', 'heal-prone-ytw', 'extra-face-pull'],
+    home: ['heal-band-er', 'extra-bent-ytw', 'morn-pullapart'],
+    gym: ['heal-band-er', 'extra-bent-ytw', 'power-band-face-pull'],
   },
   {
     id: 'mobility-10', name: 'MOBILITY 10', note: 'Hips, spine and ankles, about ten minutes.',
-    home: ['morn-hip-9090', 'daily-spiderman-lunge', 'daily-cossack-shift', 'daily-back-unwind'],
+    home: ['morn-hip-9090', 'daily-spiderman-lunge', 'daily-cossack-shift', 'morn-catcow'],
   },
   {
     id: 'balance-power', name: 'BALANCE + POWER', note: 'Drive from the deep stretch, then stand still on one leg.',
@@ -359,7 +362,7 @@ export function packsFor(ctx: EditContext, inSession: string[]): PackOffer[] {
     }
     const ids = all.filter(id => {
       const ex = lib.get(id);
-      return ex && !inSession.includes(id) && allowedToday(ex, ctx);
+      return ex && !inSession.includes(id) && allowedToday(ex, ctx) && isPickable(id);
     });
     const closed = ids.length ? null
       : all.every(id => inSession.includes(id)) ? 'Already in the session.'

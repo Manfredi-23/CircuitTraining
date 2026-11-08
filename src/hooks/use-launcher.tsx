@@ -36,7 +36,7 @@ export function useLauncher() {
   // other change (a timer tick, a stats filter) would rebuild every list.
   const state = useStore(useShallow(s => ({
     energy: s.energy, progress: s.progress, benchmarkResults: s.benchmarkResults, blockStart: s.blockStart,
-    sessionLog: s.sessionLog, tweaks: s.tweaks, dayPlan: s.dayPlan, sessionEdits: s.sessionEdits, climbLog: s.climbLog,
+    sessionLog: s.sessionLog, tweaks: s.tweaks, dayPlan: s.dayPlan, sessionEdits: s.sessionEdits, climbLog: s.climbLog, loadLog: s.loadLog,
     setEnergy: s.setEnergy, selectCircuit: s.selectCircuit, startCustom: s.startCustom, setSessionEdit: s.setSessionEdit,
   })));
   const [info, setInfo] = useState<LaunchTarget | null>(null);

@@ -3,6 +3,7 @@ import { loadsFingers } from '../engine';
 import { adjust, describeTweak, setBounds } from '../adjust';
 import { buildList, scaleExercise } from '../engine';
 import { exerciseLibrary, insertIndex, placeOf, reserveFor, RESERVE_GROUPS, closedGroups } from '../reserve';
+import { NOT_PICKED } from '../not-picked';
 import { EXTRA_EXERCISES } from '../data-extras';
 import { getModeData } from '../data-index';
 import { CONFIG } from '../config';
@@ -62,16 +63,16 @@ describe('HARDER and EASIER', () => {
   });
 
   it('is applied wherever the exercise appears, and never to rest', () => {
-    const tweaks = { 'daily-prone-extension': { variation: 1, work: 2 } };
+    const tweaks = { 'daily-band-good-morning': { variation: 1, work: 2 } };
     const plain = buildList(daily('daily-02'), 'NORMAL', L1);
     const tweaked = buildList(daily('daily-02'), 'NORMAL', L1, [], { tweaks });
-    const a = plain.find(e => e.id === 'daily-prone-extension')!;
-    const b = tweaked.find(e => e.id === 'daily-prone-extension')!;
-    expect(b.displayName).toBe('Prone Back Extension - Hands Behind Head');
+    const a = plain.find(e => e.id === 'daily-band-good-morning')!;
+    const b = tweaked.find(e => e.id === 'daily-band-good-morning')!;
+    expect(b.displayName).toBe('Band Good Morning, 3s Lower');
     expect(b.scaledWork).toBe(a.scaledWork + 2);
     expect(b.scaledRest).toBe(a.scaledRest);
     expect(b.scaledSets).toBe(a.scaledSets);
-    expect(describeTweak(b, tweaks['daily-prone-extension'])).toBe('YOUR CHANGE: harder variation, +2 reps');
+    expect(describeTweak(b, tweaks['daily-band-good-morning'])).toBe('YOUR CHANGE: harder variation, +2 reps');
   });
 
   it('lets sets move today between the sets done and eight', () => {
@@ -111,10 +112,11 @@ describe('the reserve', () => {
     const home = reserveFor({ mode: 'DAILY', circuitId: 'daily-01', list: [], pain: null, sessionLog: [] });
     const gym = reserveFor({ mode: 'CAVE', circuitId: 'cave-05', list: [], pain: null, sessionLog: [] });
     const homeIds = home.BACK.map(i => i.exercise.id);
-    expect(homeIds).toEqual(expect.arrayContaining(['daily-prone-extension', 'extra-prone-swimmer', 'extra-prone-cobra', 'extra-bw-good-morning']));
+    expect(homeIds).toEqual(expect.arrayContaining(['morn-birddog', 'extra-bw-good-morning', 'extra-bent-ytw']));
     expect(homeIds).not.toContain('extra-plate-good-morning');
-    expect(gym.BACK.map(i => i.exercise.id)).toEqual(expect.arrayContaining(['legs-back-extension', 'extra-plate-good-morning', 'extra-db-reverse-fly']));
-    expect(home.CORE.map(i => i.exercise.id)).not.toContain('daily-prone-extension');
+    expect(gym.BACK.map(i => i.exercise.id)).toEqual(expect.arrayContaining(['full-db-rdl', 'extra-bw-good-morning', 'extra-db-reverse-fly']));
+    // v46: nothing that arches face down is offered (an old D12 fracture).
+    for (const i of [...home.BACK, ...gym.BACK]) expect(NOT_PICKED.has(i.exercise.id), i.exercise.id).toBe(false);
     for (const i of gym.BACK) expect(i.curl).toBe(false);
   });
 
@@ -179,7 +181,7 @@ describe('where an added exercise goes', () => {
     const list = buildList(daily('daily-01'), 'NORMAL', L1);
     expect(insertIndex(list, 1, ex('legs-plate-crunch'), 'DAILY')).toBe(list.length);
     const at = insertIndex(list, 1, ex('daily-side-plank-dip'), 'DAILY');
-    expect(list[at].id).toBe('daily-reverse-crunch');
+    expect(list[at].id).toBe('morn-leg-lowers');
     expect(scaled('daily-side-plank-dip').scaledSets).toBeGreaterThan(0);
   });
 

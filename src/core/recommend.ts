@@ -15,13 +15,13 @@ import { getModeData } from './data-index';
 import { getReadiness, asksPainCheck } from './engine';
 import { daysBetween, dayOf, localDate, mondayOf } from './dates';
 import { resultHistory } from './benchmarks';
-import { REHAB_BENCHMARKS, RING_RIGHT_BENCHMARK } from './rehab';
+import { getRingRecovery, REHAB_BENCHMARKS, RING_RIGHT_BENCHMARK } from './rehab';
 import { FOOTWORK_ID, HEAL_GYM_IDS, RING_REHAB_ID, RING_TEST_ID } from './data-heal';
 import type { BlockWeek } from './block';
 import { PHASE_TRAINING_DAY, type SeasonPhase } from './season';
 import { ACTIVITY_SPEC, isLegHeavy, legSoreness, type ActivitySession } from './activity';
 import { NO_DAY, loadsArea, needsKit, type ActiveDay, type SoreArea } from './today';
-import type { BenchmarkResult, Circuit, ClimbSession, Mode, Progress, SessionLogEntry } from './types';
+import type { BenchmarkResult, Circuit, ClimbSession, LoadLogEntry, Mode, Progress, SessionLogEntry } from './types';
 
 export interface Recommendation {
   mode: Mode;
@@ -60,12 +60,52 @@ export const PAIN_MEMORY_DAYS = 2;
 /** Days after the last HEAL session that the athlete still counts as injured. */
 export const HEAL_MEMORY_DAYS = 10;
 
-/** A finger is healing: a HEAL session in the last ten days and no climb logged since. */
-export function isHealing(sessionLog: SessionLogEntry[], climbLog: ClimbSession[], now = new Date()): boolean {
+/**
+ * The HEAL block: a HEAL session in the last ten days and no climb logged
+ * since. It decides whether TODAY runs the HEAL routine (rule 2). Climbing
+ * again ends the block, not the healing (`isHealing`).
+ */
+export function inHealBlock(sessionLog: SessionLogEntry[], climbLog: ClimbSession[], now = new Date()): boolean {
   const heal = sessionLog.filter(s => s.mode === 'HEAL');
   if (!heal.length) return false;
   const last = dayOf(heal[heal.length - 1].date);
   return daysBetween(last, localDate(now)) <= HEAL_MEMORY_DAYS && !climbLog.some(c => c.date >= last);
+}
+
+/** How far the injured finger is, when the caller has it (`rehab.getRingRecovery`). */
+export interface RingStatus {
+  /** A rehab load is on record. */
+  left: unknown;
+  /** The left lifts 80% of the right: cleared. */
+  reached: boolean;
+}
+
+/**
+ * A finger is healing: grips, pulls and finger work are labelled NOT
+ * RECOMMENDED YET, and the coach is told. It needs a HEAL session in the last
+ * ten days (the ring rehab counts). Then, since v46, the physio's 80% decides
+ * and climbing again does not end it:
+ * - with the ring finger's numbers: healing until the left reaches 80% of the right;
+ * - without them: healing while the ring rehab ran in the last ten days, else
+ *   until a climb is logged (the old rule).
+ */
+export function isHealing(sessionLog: SessionLogEntry[], climbLog: ClimbSession[], now = new Date(), ring?: RingStatus | null): boolean {
+  const heal = sessionLog.filter(s => s.mode === 'HEAL');
+  if (!heal.length) return false;
+  const today = localDate(now);
+  if (daysBetween(dayOf(heal[heal.length - 1].date), today) > HEAL_MEMORY_DAYS) return false;
+  if (ring?.left) return !ring.reached;
+  if (heal.some(s => s.circuitId === RING_REHAB_ID && daysBetween(dayOf(s.date), today) <= HEAL_MEMORY_DAYS)) return true;
+  return inHealBlock(sessionLog, climbLog, now);
+}
+
+/** `isHealing` from the store's logs, the ring finger's numbers included when they are there. */
+export function fingerHealing(
+  s: { sessionLog: SessionLogEntry[]; climbLog: ClimbSession[]; loadLog?: LoadLogEntry[]; benchmarkResults?: BenchmarkResult[] },
+  now = new Date(),
+): boolean {
+  const ring = s.loadLog && s.benchmarkResults ? getRingRecovery(s.loadLog, s.benchmarkResults) : null;
+  return isHealing(s.sessionLog, s.climbLog, now, ring && ring.right ? ring : null);
 }
 
 /** Last day a circuit was done, or null. */
@@ -169,10 +209,11 @@ export function recommend(input: RecommendInput): Recommendation | null {
   // A gym day every other day runs the ring rehab first if it is due (the
   // right-hand test once, before the first), then FOOTWORK, then 01 or 02.
   // Between gym days: the rehab when due, otherwise a finger-free DAILY.
-  // Logging a climb ends it.
+  // Logging a climb ends the block (the finger may still be healing: the
+  // labels follow `isHealing`, the routine follows the block).
   const heal = getModeData('HEAL');
   const healLog = sessionLog.filter(s => s.mode === 'HEAL');
-  if (isHealing(sessionLog, climbLog, now)) {
+  if (inHealBlock(sessionLog, climbLog, now)) {
     const byId = (id: string) => heal.find(c => c.id === id);
     const gym = HEAL_GYM_IDS.map(byId).filter((c): c is Circuit => Boolean(c));
     const gymLog = healLog.filter(s => HEAL_GYM_IDS.includes(s.circuitId));

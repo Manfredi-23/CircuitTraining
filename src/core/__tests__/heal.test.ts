@@ -60,7 +60,9 @@ describe('HEAL', () => {
   });
 
   it('uses the barbell for the squat only, and no TRX or bench of any kind', () => {
-    const banned = /hip thrust|good morning|landmine|trx|incline/i;
+    // The barbell good morning went in v19 (the bar is for the squat); the
+    // bodyweight one, hands behind the head, came in v46.
+    const banned = /hip thrust|landmine|trx|incline/i;
     const text = (e: { form?: { setup: string } }) => e.form?.setup ?? '';
     for (const ex of all.flatMap(c => c.exercises)) {
       expect(banned.test(ex.name), ex.id).toBe(false);
@@ -79,7 +81,7 @@ describe('HEAL', () => {
 
   it('shares exercises with CAVE and DAILY as the same objects, so history carries over', () => {
     const others = [...DATA_CAVE, ...DATA_DAILY].flatMap(c => c.exercises);
-    for (const id of ['daily-back-unwind', 'daily-side-plank-dip', 'feet-frogger']) {
+    for (const id of ['morn-hip-9090', 'daily-side-plank-dip', 'feet-frogger']) {
       const here = heal.flatMap(c => c.exercises).find(e => e.id === id);
       expect(here, id).toBeDefined();
       expect(others.find(e => e.id === id)).toBe(here);
@@ -90,8 +92,12 @@ describe('HEAL', () => {
 describe('HEAL in STATS', () => {
   it('counts its trunk and hinge sets in core volume', () => {
     const ids = heal.flatMap(c => c.exercises).map(e => e.id);
-    for (const id of ['morn-hollow', 'morn-leg-lowers', 'legs-plate-crunch']) {
+    for (const id of ['morn-hollow', 'morn-leg-lowers']) {
       expect(CORE_EXERCISES.abs).toContain(id);
+      expect(ids).toContain(id);
+    }
+    for (const id of ['extra-bw-good-morning', 'extra-bent-ytw']) {
+      expect(CORE_EXERCISES.back).toContain(id);
       expect(ids).toContain(id);
     }
     expect(CORE_EXERCISES.obliques).toContain('addon-russian-twist');
