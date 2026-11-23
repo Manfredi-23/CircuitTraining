@@ -164,6 +164,7 @@ const RESERVE: ReserveEntry[] = [
   { id: 'extra-high-knee-hold', group: 'MOBILITY', place: 'HOME', grip: false },
   { id: 'feet-box-lift-off', group: 'MOBILITY', place: 'HOME', grip: false },
   { id: 'feet-seated-leg-lift', group: 'MOBILITY', place: 'HOME', grip: false, floor: true },
+  { id: 'feet-seated-lift-over', group: 'MOBILITY', place: 'HOME', grip: false, floor: true },
   { id: 'feet-9090-lift', group: 'MOBILITY', place: 'HOME', grip: false, floor: true },
   { id: 'feet-hip-cars', group: 'MOBILITY', place: 'HOME', grip: false },
   { id: 'feet-active-frog', group: 'MOBILITY', place: 'HOME', grip: false, floor: true },

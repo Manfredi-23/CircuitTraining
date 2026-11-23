@@ -369,6 +369,35 @@ export const SEATED_LEG_LIFT: Exercise = {
   },
 };
 
+// v48: from a reel the athlete sent (November 2026). The seated leg lift works
+// the hip flexors with the legs straight in front; this one lifts a bent leg up
+// and over a target, the knee turned out, which is the high step to the side.
+export const SEATED_LIFT_OVER: Exercise = {
+  id: 'feet-seated-lift-over',
+  name: 'Seated Lift-Over',
+  capacities: ['mobility', 'legs'],
+  block: 'MOBILITY', intensity: 'MODERATE',
+  sets: 2, work: 6, unit: 'reps', restSec: 20,
+  load: { kind: 'bodyweight', text: 'A shoe, a bottle or a dumbbell on end beside the foot' },
+  progression: 'A taller target, then a two-second pause above it, then the hands off the floor.',
+  protocolId: 'active-range',
+  perSide: true,
+  note: 'Per leg: over and back is one rep. The foot goes high, the trunk stays tall.',
+  focus: 'Clear the target. Set the foot down without a sound.',
+  variations: [
+    { minLevel: 1, name: 'Seated Lift-Over - Low Target' },
+    { minLevel: 3, name: 'Seated Lift-Over - Dumbbell on End' },
+    { minLevel: 5, name: 'Seated Lift-Over - Hands Off the Floor' },
+  ],
+  form: {
+    setup: 'Sit tall on the mat, one leg straight out to the side. Bend the other knee, foot flat in front of you, and stand a shoe, a bottle or a dumbbell just outside that foot. Hands flat on the floor in front, or on the fists if the wrists complain.',
+    execution: 'Lift the bent leg from the hip, the foot higher than the target, carry it over and set it down on the far side. Back over the same way. Finish the reps, then switch legs.',
+    cue: 'The high step without a wall: the hip lifts the foot while the front of the hip is short, the knee turned out as on a high foot to the side. Clearing a target gives the foot somewhere to go.',
+    breathing: 'Exhale as the foot lifts.',
+    mistakes: 'Leaning back to make room. Swinging the leg over. Pushing hard through the hands. Knocking the target.',
+  },
+};
+
 export const BOX_PISTOL: Exercise = {
   id: 'feet-box-pistol',
   name: 'Box Pistol',
@@ -426,10 +455,16 @@ export const HIP_CARS: Exercise = {
   block: 'MOBILITY', intensity: 'EASY',
   sets: 2, work: 3, unit: 'reps', restSec: 15,
   load: { kind: 'bodyweight', text: 'Standing, a hand flat on the wall' },
-  progression: 'Slower and bigger circles, then without the wall.',
+  progression: 'Slower and bigger circles, then without the wall, then a light weight on the foot.',
   protocolId: 'active-range',
   perSide: true,
   note: 'Per leg, three circles each way.',
+  // v48: the top rung from the athlete's reel, a light dumbbell held by the foot.
+  variations: [
+    { minLevel: 1, name: 'Hip CARs - Hand on the Wall' },
+    { minLevel: 4, name: 'Hip CARs - Free-Standing' },
+    { minLevel: 6, name: 'Hip CARs - Free-Standing, Weight on the Foot', load: 'A 1-2.5 kg dumbbell held by the toes, or a heavy shoe' },
+  ],
   form: {
     setup: 'Stand tall on one leg, a hand flat on a wall.',
     execution: 'Lift the knee high, take it out to the side, turn it so the knee points down and the foot goes up behind you, then back to the start. The biggest, slowest circle the hip makes. Reverse.',
@@ -548,7 +583,7 @@ export const FEET_EXERCISES: Exercise[] = [
   TOWEL_DRAG, TOE_EDGE_CALF, TOE_PULL_BRIDGE,
   TIBIALIS_RAISE, TOE_HOOK_SITUP,
   HEEL_HOOK_BRIDGE, SLIDER_CURL,
-  WALL_HIGH_STEP, BOX_LIFT_OFF, SEATED_LEG_LIFT, BOX_PISTOL,
+  WALL_HIGH_STEP, BOX_LIFT_OFF, SEATED_LEG_LIFT, SEATED_LIFT_OVER, BOX_PISTOL,
   IR_LIFT_OFF, HIP_CARS,
   LATERAL_REACH, ACTIVE_FROG, HIP_AIRPLANE,
   HIGH_FOOT_DRIVE,

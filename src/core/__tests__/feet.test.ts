@@ -14,13 +14,16 @@ import { getLoadAxis, formatLoad } from '../load';
 import { suggestLoad, isPersonalBest } from '../progression';
 import { getBenchmark } from '../benchmarks';
 import { WALL_DRILLS } from '../wall';
-import type { Exercise } from '../types';
+import { resolveSlots } from '../slots';
+import { groupsOf } from '../exercise-tags';
+import { transferOf } from '../transfer';
+import type { Exercise, SessionLogEntry } from '../types';
 
 const lib = exerciseLibrary();
 
 describe('the feet catalogue (v43)', () => {
-  it('has twenty exercises, each complete, each in the library', () => {
-    expect(FEET_EXERCISES).toHaveLength(20);
+  it('has twenty-one exercises, each complete, each in the library', () => {
+    expect(FEET_EXERCISES).toHaveLength(21);
     for (const e of FEET_EXERCISES) {
       expect(lib.get(e.id), e.id).toBeDefined();
       expect(e.progression.length, e.id).toBeGreaterThan(10);
@@ -155,5 +158,34 @@ describe('ON THE WALL', () => {
   it('has the drills from the research', () => {
     const ids = WALL_DRILLS.map(d => d.id);
     for (const id of ['target-practice', 'tracking', 'pause-place', 'foot-swaps', 'flag-check', 'toe-pull']) expect(ids).toContain(id);
+  });
+});
+
+describe('v48: the reel', () => {
+  const flags = getModeData('DAILY').find(c => c.id === 'daily-09')!;
+  const entry = (date: string, sets: Record<string, number>): SessionLogEntry =>
+    ({ date, mode: 'DAILY', circuitId: 'daily-09', circuitTitle: 'WAKE UP FLAGS', energy: 'NORMAL', duration: 14, sets });
+
+  it('puts the seated lift-over on the floor after the 90/90, in a slot with the high-knee hold', () => {
+    const ids = flags.exercises.map(e => e.id);
+    expect(ids.indexOf('feet-seated-lift-over')).toBe(ids.indexOf('morn-hip-9090') + 1);
+    expect(ids).not.toContain('extra-high-knee-hold');
+    expect(resolveSlots(flags, []).exercises[1].id).toBe('feet-seated-lift-over');
+    const after = resolveSlots(flags, [entry(new Date(2026, 10, 20, 8).toISOString(), { 'feet-seated-lift-over': 2 })]);
+    expect(after.exercises[1].id).toBe('extra-high-knee-hold');
+  });
+
+  it('files the lift-over as a hands-flat home drill for the high step', () => {
+    const e = lib.get('feet-seated-lift-over')!;
+    expect(reserveEntry(e.id)).toMatchObject({ group: 'MOBILITY', place: 'HOME', grip: false });
+    expect(isHomeExercise(e.id)).toBe(true);
+    expect(groupsOf(e)[0]).toBe('MOBILITY');
+    expect(transferOf(e)).toContain('HIGH STEP');
+  });
+
+  it('gives hip CARs the weighted top rung', () => {
+    const cars = lib.get('feet-hip-cars')!;
+    expect(cars.variations?.map(v => v.minLevel)).toEqual([1, 4, 6]);
+    expect(cars.variations?.at(-1)?.load).toMatch(/dumbbell/);
   });
 });

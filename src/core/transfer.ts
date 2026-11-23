@@ -55,6 +55,7 @@ const T: Record<string, Transfer[]> = {
   'feet-wall-high-step': ['HIGH STEP', 'ROCK-OVER'],
   'feet-box-lift-off': ['HIGH STEP'],
   'feet-seated-leg-lift': ['HIGH STEP', 'FEET ON'],
+  'feet-seated-lift-over': ['HIGH STEP'],
   'feet-box-pistol': ['HIGH STEP', 'ROCK-OVER'],
   'feet-9090-lift': ['DROP KNEE'],
   'feet-hip-cars': ['DROP KNEE', 'HIGH STEP'],
