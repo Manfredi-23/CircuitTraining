@@ -213,6 +213,7 @@ export const EXERCISE_TAGS: Record<string, Tags> = {
   'feet-slider-curl': t([FEE, GLU]),
   'feet-box-lift-off': t([MOB, FEE], ['BOX']),
   'feet-box-pistol': t([LEG], ['BOX']),
+  'feet-seated-lift-over': t([MOB, FEE]),
   'feet-9090-lift': t([MOB]),
   'feet-hip-cars': t([MOB]),
   'feet-lateral-reach': t([FEE, MOB]),

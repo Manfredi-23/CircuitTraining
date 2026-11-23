@@ -122,6 +122,7 @@ const GOAL_ENTRIES: Record<Goal, GoalEntry[]> = {
     { id: 'extra-dead-bug', place: 'HOME', grip: false, floor: true },
     { id: 'feet-9090-lift', place: 'HOME', grip: false, floor: true },
     { id: 'feet-hip-cars', place: 'HOME', grip: false },
+    { id: 'feet-seated-lift-over', place: 'HOME', grip: false, floor: true },
   ],
   // v43: the shin for toe hooks, the hamstring and calf for heel hooks, the big
   // toe for pulling on a toe. Home but for the sit-back (the radiator) and the Nordic.

@@ -91,9 +91,11 @@ export const WEEK_DAILY: Circuit[] = [
     note: WAKE_NOTE,
     exercises: [
       ex('morn-hip-9090'),
+      // v48: a choice slot, still on the floor after the 90/90; the standing
+      // high-knee hold runs on the mornings the lift-over was done last.
+      { ...ex('feet-seated-lift-over'), slot: 'HIGH KNEE: SEATED OR STANDING', options: ['extra-high-knee-hold'] },
       { ...ex('feet-lateral-reach'), sets: 2 },
       { ...ex('daily-flag-hold'), sets: 2 },
-      ex('extra-high-knee-hold'),
       ex('feet-hip-airplane'),
       SL_REACH,
       LUNGE_DRIVE,

@@ -163,7 +163,7 @@ src/
     patata.ts    # THE PATATOMETRO: taps at FLUELA / OERLIKON, when patata is highest
     exercise-tags.ts # muscle groups (ABS ... FINGERS) and kit (bar, rings ...) for every exercise
     alternatives.ts  # OTHER KIT swaps, group blocks and lists for + ADD, swaps in a running session
-    data-feet.ts # twenty off-wall exercises for feet, hooks, high steps (v43)
+    data-feet.ts # twenty-one off-wall exercises for feet, hooks, high steps (v43, v48)
     data-week.ts # the week of v47: WAKE UP, the CAVE days, STRAIGHT BACK
     data-daily.ts, data-cave.ts, data-assess.ts, data-heal.ts  # Session libraries, one per tab
     data-oap.ts  # One-arm pull-up path, shared by CAVE 01 and CAVE 02
@@ -502,7 +502,9 @@ Asked for in November 2026 (`docs/handovers/7bit-handover-v47.md`,
   is the REST DAY). What was said today wins over the weekly plan.
 - **WAKE UP** (DAILY 08 FEET, 09 FLAGS): weekdays before 12, home, 15 min at
   most (`check:daily`), standing, nothing that bends the stomach. Leads TODAY
-  on a weekday morning whatever the day holds later.
+  on a weekday morning whatever the day holds later. In 09 FLAGS the seated
+  lift-over follows the 90/90 on the floor, a choice slot (HIGH KNEE: SEATED
+  OR STANDING) with the standing high-knee hold (v48).
 - **CAVE days** (CAVE 06 CORE + PULL, 07 CORE + LEGS, 08 CORE + PUSH):
   60-75 min NORMAL (`check:cave`), skill first, the main 40 minutes, then a
   core block of about 25 led by the **Weighted Hanging Knee Raise**
@@ -741,13 +743,14 @@ lower-body tests, the foot-loading test (a high foot plus the weight moved
 onto it) tracks climbing grade best (Draper 2009, r = 0.65); the sit-and-reach
 does not. Skill is learned fresh, varied, with an external focus.
 
-- **`data-feet.ts`**: twenty exercises, all hands free or flat on a wall, so
+- **`data-feet.ts`**: twenty-one exercises, all hands free or flat on a wall, so
   open while a finger heals. Precise feet (step-down to a mark, scored;
   shift-lift-place; edge stand + rock-over), foot strength (towel drag,
   toe-edge calf raise, toe-pull bridge), toe hooks (tibialis wall raise,
   toe-hook sit-back), heel hooks (heel-hook bridge hold, slider curl), high
-  steps (wall high-step + load, box lift-off, seated leg lift, box pistol),
-  drop knees (90/90 lift-off, hip CARs), flags and stems (lateral foot reach
+  steps (wall high-step + load, box lift-off, seated leg lift, seated
+  lift-over (v48), box pistol), drop knees (90/90 lift-off, hip CARs, whose
+  top rung since v48 holds a light dumbbell with the toes), flags and stems (lateral foot reach
   + shift, active frog, hip airplane), leg drive (high-foot drive + stick).
   Protocols `foot-loading`, `active-range`, `hook-strength`. Skill drills are
   `fixed` TECHNIQUE work with a `focus` cue.
@@ -1361,7 +1364,11 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v47.md`** — **start here.** The week: TODAY IS CAVE /
+- **`7bit-handover-v48.md`** — **start here.** From a reel: the seated
+  lift-over (in WAKE UP FLAGS, a slot with the high-knee hold) and a weighted
+  top rung on hip CARs; the prone swimmer, the windshield wiper with
+  overpressure and the reclined half-hero left out, and why.
+- **`7bit-handover-v47.md`** — The week: TODAY IS CAVE /
   CLIMB / REST, WAKE UP mornings, three CAVE days with a 25-minute core
   block, STRAIGHT BACK after climbing, the weighted hanging knee raise.
 - **`7bit-handover-v46.md`** — The four-week review:
