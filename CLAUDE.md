@@ -1364,7 +1364,11 @@ Screenshots taken for review go in `docs/screenshots/`, not the repo root
 (root `*.png` is git-ignored). `docs/sample-backup.json` is an example of the
 export format.
 
-- **`7bit-handover-v48.md`** — **start here.** From a reel: the seated
+- **`7bit-handover-v49.md`** — **start here.** No app code changed: v2
+  planning starts. The plan is `docs/v2/7bit-v2-plan.md` (input log,
+  decisions, the session builder with sliders and sore joints, questions
+  V01-V22); the printed review is `docs/v2/7bit-v2-review-R1.pdf`.
+- **`7bit-handover-v48.md`** — From a reel: the seated
   lift-over (in WAKE UP FLAGS, a slot with the high-knee hold) and a weighted
   top rung on hip CARs; the prone swimmer, the windshield wiper with
   overpressure and the reclined half-hero left out, and why.
