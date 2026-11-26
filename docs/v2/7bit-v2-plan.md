@@ -16,6 +16,7 @@ How this file works:
   F01-F76, Q01-Q40, S1-S4): `docs/v2/7bit-v2-review-R1.pdf`.
 - **6. Plan of work**: planning steps first, building last.
 - **7. Changes to R1**: where a later input overrules the printed review.
+- **8. Design skills**: the research behind the visual redesign.
 
 ---
 
@@ -51,6 +52,15 @@ What the athlete said, in short:
 - **Do not build yet**: log this, and plan the redesign of the whole logic
   and system first.
 
+### I3 — 26 November 2026: redesign the look too
+
+> "I think we also ought to redesign the app. I kind of like the general
+> design concept, but I really am not fully convinced of the execution."
+
+Before anything else: an in-depth search for Claude skills (GitHub, blogs,
+directories) that would make the design work better. The athlete offered to
+download them if needed. Findings: section 8.
+
 ---
 
 ## 2. Decisions
@@ -67,6 +77,8 @@ What the athlete said, in short:
 | D08 | R1's advice to cut BUILD (F24) is **reversed**: the builder is the heart of v2. R1's fixed rotation (C3) becomes at most an input to the suggestion. | PROPOSED | I2 vs R1 |
 | D09 | Rebuild on a v2 track and import the history, rather than refactor v1 (R1 C7). | OPEN | Q02 |
 | D10 | One set of tags per exercise (areas, pattern, role, joint loads, kit, flags) replaces v1's six overlapping systems (R1 B4). | PROPOSED | R1 B4, needed by D01-D06 |
+| D11 | The visual design is redesigned too. The concept stays (LED, dot matrix, Kode Mono, parchment, one orange); the execution changes. | AGREED (concept kept: PROPOSED) | I3 |
+| D12 | A few vetted design skills, not a pile: Impeccable, Emil Kowalski's skills, an Apple HIG reviewer. The current design is captured in a DESIGN.md first, so no skill can overwrite the brand (section 8). | PROPOSED | I3 |
 
 ---
 
@@ -295,6 +307,20 @@ Answer by ID. Short is fine.
 - **V22** Should an area also say how: HEAVY (few reps, long rest) or VOLUME
   (more reps, shorter rest)?
 
+**The look (I3)**
+
+- **V23** "Not convinced of the execution": which parts? For example: the LED
+  numerals, the dot paper, the outlined cards, the density, the type sizes,
+  the tab bar, the colours, the animations. Name two or three screens that
+  bother you most.
+- **V24** Which skills to install (section 8)? Draft: Impeccable, Emil
+  Kowalski's skills, an Apple HIG reviewer.
+- **V25** How to install them: committed to the repo's `.claude/skills/`
+  (every cloud session has them, where the licence allows), installed on
+  your Mac only, or enabled as claude.ai plugins?
+- **V26** Is there an app (any app) whose look or feel you want 7Bit closer
+  to? Screenshots welcome.
+
 ---
 
 ## 6. Plan of work
@@ -306,7 +332,8 @@ Planning first. Building starts only once P1-P4 are agreed.
 | **P0** | R1 comments back; answers to V01-V22; section 2 filled in | WAITING ON THE ATHLETE |
 | **P1** | **The exercise sheet**: every exercise with areas, pattern, role, joint loads, kit and flags, as a table to correct (`docs/v2/`) | NEXT, once V01, V11, V12 and V14 are answered |
 | **P2** | **Builder rules** written out, with four worked examples: the gym legs day, the same with a sore elbow, home 30 minutes, after climbing | After P1 |
-| **P3** | **Screen flows** and the R2 sketches: TODAY, how I feel, mix, time, list, run, log | After P2 |
+| **P2b** | **Design tools and brand anchor**: install the agreed skills (V24, V25); capture today's visual system in `DESIGN.md`; a scored critique of every v1 screen at phone size | After V23-V25; can run beside P1-P2 |
+| **P3** | **Screen flows** and the R2 sketches: TODAY, how I feel, mix, time, list, run, log | After P2 and P2b |
 | **P4** | **Data and migration**: what v1's history (sessions, loads, climbs, tests) becomes in v2 | With P3 |
 | **P5** | Build order, then building | After P1-P4 are agreed |
 
@@ -322,3 +349,55 @@ Planning first. Building starts only once P1-P4 are agreed.
   saved mixes (R2).
 - **Q05 Who decides**: partly answered by I2. The app suggests, the athlete
   sets the mix.
+- **Q33 The look**: I3 says keep the concept, change the execution (D11).
+
+---
+
+## 8. Design skills (research, 26 November 2026)
+
+Searched: GitHub (stars, licence and last push read from GitHub search on
+26 November), eight blog roundups, the skill directories, and claude.ai's
+plugin catalog. Each shortlisted README was read. No skill code was run or
+installed.
+
+### What 7Bit needs from a skill
+
+It must improve an **existing app with its own identity**, on a **phone**
+(Capacitor webview on iOS), through **review of rendered screens**. A skill
+that generates a new aesthetic works against that.
+
+### The candidates
+
+| Skill | Stars | Licence | Last push | What it is | Verdict |
+|---|---|---|---|---|---|
+| **Impeccable** (`pbakaus/impeccable`) | 117k | Apache-2.0 | 26 Nov | 24 commands: critique (scored UX review), audit (P0-P3), polish, harden, clarify, adapt, quieter, bolder, distill... `document` writes a DESIGN.md of the existing system. `PRODUCT.md` takes Platform: ios, so the commands follow Apple HIG. A 62-rule detector, no LLM. | **Take.** The best fit: built for refining existing screens, with a brand anchor. Turn telemetry off. Skip `live`: it can run the agent with sandboxing off. It downloads an engine binary, and its hooks run even when commands are denied. |
+| **Emil Kowalski's skills** (`emilkowalski/skills`) | 60k | MIT | 15 Nov | Motion and interaction: `emil-design-eng`, `review-animations`, `improve-animations`, `gestures`, `mobile-native` (safe areas, the 100vh bug, tap highlight, input zoom), `break-ui`, `learn-taste`. | **Take.** It fixes feel, not look, so it cannot fight the brand. `mobile-native` is exactly the webview-on-iPhone problem. |
+| **Apple HIG reviewer** (`dickwu/apple-design-skill`) | 3.9k | none stated (the HIG text is Apple's) | 26 Nov | A reviewer grounded in 123 HIG pages: tab bars, sheets, safe areas, control sizes with numbers, accessibility as blocking. Modes for navigation, forms, onboarding. | **Take, as a reviewer only.** It pushes Apple's conventions; the brand wins where they clash. No licence, so install it locally rather than committing it. |
+| Interface Design (`Dammyjay93/interface-design`) | 6k | MIT | 20 Jun | App and dashboard UI. Remembers decisions in `.interface-design/system.md`; `design-review` and `design-deslop`. | Optional. It overlaps Impeccable's DESIGN.md. Pick one. |
+| UI UX Pro Max (`nextlevelbuilder/ui-ux-pro-max-skill`) | 155k | MIT | 26 Nov | A searchable library of styles, palettes and font pairings, plus a generator that writes a new design system. Python, standard library only, no network (per its README). Upsells a paid tier. | **Skip for now.** A generator for new products. It would propose a new look, not refine this one. |
+| Taste (`Leonxlnx/taste-skill`) | 122k | MIT | 26 Nov | v2 builds company websites: deals a palette and fonts by trade, eleven hero layouts. Node scripts, a Stop hook, network fetches. v1 (used for the v28 and v31 reviews, with its app-screens reference) survives as `design-taste-frontend-v1`. | **Skip v2.** Websites only, with its own aesthetic. |
+| Anthropic frontend-design (`anthropics/skills`) | 201k (whole repo) | per skill | 16 Nov | One file: plan, critique, build, distinctive web UI. | **Skip.** Web-first, and it lists "monospace for small data labels" and "warm cream background" as signs of generated UI. That describes 7Bit's identity. |
+| Designer Skills (`Owl-Listener/designer-skills`) | 3.5k | MIT | 19 Nov | 273 skills and 76 commands in 33 plugins. Has a platform audit and a screen critique. | **Skip.** The size is the problem v1 has. |
+| Vercel agent skills (`vercel-labs/agent-skills`) | 35k | none stated | 20 Nov | Vercel's web interface guidelines, React practices. | Not read in detail. Web standards; may help the Next.js side later. |
+
+### Already available, nothing to install
+
+- **This cloud session** has Anthropic's design plugin: `design-critique`,
+  `design-system`, `ux-copy`, `accessibility-review`, `user-research`.
+- **claude.ai's plugin catalog** offers, among others: Anthropic
+  `frontend-design` (same caveat as above); **UI Design Review** (UXKIN,
+  community: reviews rendered phone screens, fixes "in your app's own style",
+  compares with real iOS app screens through its own MCP server); **UI/UX
+  Behaves** (community: rules for every screen state, such as empty,
+  invalid, undo, grounded in Norman and Nielsen).
+
+### How to use them safely
+
+- A skill runs with the agent's permissions. Read its SKILL.md and scripts
+  before installing, pin a version, turn telemetry off, and use no hooks
+  you do not need.
+- **The brand goes first.** Run `/impeccable document` (or write DESIGN.md by
+  hand) before any steering command, and keep CLAUDE.md's styling rules as
+  the authority, as the taste-skill reviews did in v28 and v31.
+- **Few, not many.** Three skills with distinct jobs: review and polish
+  (Impeccable), feel and motion (Emil), platform conventions (HIG).

@@ -23,6 +23,10 @@ Planning only. **No app code changed.**
    and replace**, **suggestions from what they usually do**, and **how they
    feel today** (a sore elbow takes out what loads it). They asked to log
    it and plan the redesign before building anything.
+3. **26 November, later.** The athlete wants the look redesigned too: they
+   like the concept but not the execution. Before anything else they asked
+   for an in-depth search for Claude design skills. Done. The findings are
+   in plan section 8.
 
 ## 2. What changed
 
@@ -36,6 +40,18 @@ Planning only. **No app code changed.**
   - what v1 already has, questions V01-V22, planning steps P0-P5, and where
     I2 overrules R1
 - **New: `docs/v2/7bit-v2-review-R1.pdf`**, the printed review.
+- **Plan, second update (I3)**:
+  - input I3 (redesign the look, keep the concept)
+  - decisions D11 and D12
+  - questions V23-V26 on the look and the skills
+  - step P2b: install the skills, capture the brand in DESIGN.md, critique
+    every screen
+  - **section 8, the design-skills research**: nine candidates with stars,
+    licence and last push from GitHub search on 26 November, and a verdict
+    each. Recommended: Impeccable, Emil Kowalski's skills, the
+    `dickwu/apple-design-skill` HIG reviewer. Skipped: UI UX Pro Max, Taste
+    v2 and Anthropic frontend-design. The last one names monospace labels and
+    cream backgrounds as signs of generated UI, which is 7Bit's identity.
 - `CLAUDE.md`: the Handoff Documents list points here.
 
 One correction from the review: CLAUDE.md is **1,483 lines**, not the
@@ -49,8 +65,12 @@ One correction from the review: CLAUDE.md is **1,483 lines**, not the
 
 ## 4. Repo state
 
-Branch `claude/fervent-pascal-41gtrv` from `main` at `89a3e39` (v48). Docs
-only. The PR state is in the session's last message.
+Branch `claude/fervent-pascal-41gtrv`. Docs only.
+
+- First change: PR #67, merged into `main` as `a097631`, both Vercel checks
+  green.
+- Second change (I3, design skills): the same branch, restarted from
+  `a097631`. Its PR state is in the session's last message.
 
 ## 5. Open items
 
@@ -60,6 +80,9 @@ only. The PR state is in the session's last message.
   can start once V01, V11, V12 and V14 are answered.
 - **D08** (the builder becomes the core; R1's cut of BUILD reversed) and
   **D10** (one tag set per exercise) are PROPOSED, waiting for an OK.
+- **The look**: V23-V26. Which parts of the execution bother the athlete,
+  which skills to install, and how (repo, Mac or claude.ai plugins). Nothing
+  is installed yet.
 - **No real data yet**: R1 Q01 asks for a backup export. The suggestion
   design (plan 3.5) depends on what the real logs look like.
 - Carried from v48: the lift-over is a read of two frames; the WAKE UP note
@@ -71,7 +94,9 @@ only. The PR state is in the session's last message.
 2. Fill section 2 of the plan from the answers.
 3. P1: the exercise sheet, every exercise with areas, pattern, role, joint
    loads, kit and flags, for the athlete to correct.
-4. P2-P4: builder rules with worked examples, screen flows and R2 sketches,
+4. P2b, beside P1-P2: install the agreed design skills, capture the current
+   brand in DESIGN.md, critique every v1 screen at phone size.
+5. P2-P4: builder rules with worked examples, screen flows and R2 sketches,
    data migration. Building only after that.
 
 ## 7. Mac clean update
