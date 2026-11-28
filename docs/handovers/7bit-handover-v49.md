@@ -27,6 +27,9 @@ Planning only. **No app code changed.**
    like the concept but not the execution. Before anything else they asked
    for an in-depth search for Claude design skills. Done. The findings are
    in plan section 8.
+4. **28 November.** The athlete wants sessions of up to 2 hours, and a
+   control for the balance between volume and power, backed by evidence
+   rather than guesswork. Done. The literature review is in plan section 9.
 
 ## 2. What changed
 
@@ -52,6 +55,18 @@ Planning only. **No app code changed.**
     `dickwu/apple-design-skill` HIG reviewer. Skipped: UI UX Pro Max, Taste
     v2 and Anthropic frontend-design. The last one names monospace labels and
     cream backgrounds as signs of generated UI, which is 7Bit's identity.
+- **Plan, third update (I4)**:
+  - input I4 (long sessions, the power-volume balance)
+  - decisions D13 (up to 120 min, built in blocks: WARM-UP, QUALITY,
+    VOLUME, EASY, COOL-DOWN) and D14 (a VOLUME / POWER dial inside caps
+    set by the evidence)
+  - questions V27-V32
+  - **section 9**: twelve rules (R1-R12), each graded STRONG, MODERATE,
+    WEAK, PRACTICE or DERIVED, with sources; the block design; minute
+    splits at 120 min; the honest limits. Most of the evidence comes from
+    meta-analyses on general resistance training, not climbers. The
+    per-session volume ceilings come from a preprint, and finger-training
+    order is coaching consensus only.
 - `CLAUDE.md`: the Handoff Documents list points here.
 
 One correction from the review: CLAUDE.md is **1,483 lines**, not the
@@ -69,8 +84,10 @@ Branch `claude/fervent-pascal-41gtrv`. Docs only.
 
 - First change: PR #67, merged into `main` as `a097631`, both Vercel checks
   green.
-- Second change (I3, design skills): the same branch, restarted from
-  `a097631`. Its PR state is in the session's last message.
+- Second change (I3, design skills): PR #68, merged as `bdac06f`, both
+  checks green.
+- Third change (I4, long sessions): the same branch, restarted from
+  `bdac06f`. Its PR state is in the session's last message.
 
 ## 5. Open items
 
@@ -83,6 +100,10 @@ Branch `claude/fervent-pascal-41gtrv`. Docs only.
 - **The look**: V23-V26. Which parts of the execution bother the athlete,
   which skills to install, and how (repo, Mac or claude.ai plugins). Nothing
   is installed yet.
+- **Long sessions**: V27-V32. One dial or one per area, the longest
+  session, a dial suggested from the week, what fills the EASY block, a
+  fuel reminder, how many long sessions a week. R12 and the minute splits
+  are derived rules, to be tested on the logs.
 - **No real data yet**: R1 Q01 asks for a backup export. The suggestion
   design (plan 3.5) depends on what the real logs look like.
 - Carried from v48: the lift-over is a read of two frames; the WAKE UP note
@@ -97,7 +118,9 @@ Branch `claude/fervent-pascal-41gtrv`. Docs only.
 4. P2b, beside P1-P2: install the agreed design skills, capture the current
    brand in DESIGN.md, critique every v1 screen at phone size.
 5. P2-P4: builder rules with worked examples, screen flows and R2 sketches,
-   data migration. Building only after that.
+   data migration. Building only after that. The builder rules (P2) now
+   include section 9's blocks and the dial. Worked examples should include
+   a 120-minute POWER session and a 120-minute VOLUME session.
 
 ## 7. Mac clean update
 

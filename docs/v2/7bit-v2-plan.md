@@ -17,6 +17,8 @@ How this file works:
 - **6. Plan of work**: planning steps first, building last.
 - **7. Changes to R1**: where a later input overrules the printed review.
 - **8. Design skills**: the research behind the visual redesign.
+- **9. Long sessions and the power-volume balance**: the evidence and the
+  rules behind the dial.
 
 ---
 
@@ -61,6 +63,16 @@ Before anything else: an in-depth search for Claude skills (GitHub, blogs,
 directories) that would make the design work better. The athlete offered to
 download them if needed. Findings: section 8.
 
+### I4 — 28 November 2026: long sessions, and the power-volume balance
+
+> "I would also really love to have rather long sessions, like 2 hours, and
+> of course I can't do 2 hours at full power, so maybe there must be also
+> some sort of a way to control the balance between length, as in mostly
+> workout, and [...] power building. [...] I really need scientific
+> approach and proof instead of just randomly throw shit in."
+
+Answered with a literature review. Findings and rules: section 9.
+
 ---
 
 ## 2. Decisions
@@ -79,6 +91,8 @@ download them if needed. Findings: section 8.
 | D10 | One set of tags per exercise (areas, pattern, role, joint loads, kit, flags) replaces v1's six overlapping systems (R1 B4). | PROPOSED | R1 B4, needed by D01-D06 |
 | D11 | The visual design is redesigned too. The concept stays (LED, dot matrix, Kode Mono, parchment, one orange); the execution changes. | AGREED (concept kept: PROPOSED) | I3 |
 | D12 | A few vetted design skills, not a pile: Impeccable, Emil Kowalski's skills, an Apple HIG reviewer. The current design is captured in a DESIGN.md first, so no skill can overwrite the brand (section 8). | PROPOSED | I3 |
+| D13 | Sessions up to **120 minutes**. Every session is built in blocks: WARM-UP, QUALITY, VOLUME, EASY, COOL-DOWN. | AGREED (length) / PROPOSED (blocks) | I4 |
+| D14 | A **VOLUME / POWER dial** moves minutes between the QUALITY and VOLUME blocks, inside caps set by the evidence (section 9). Time left over goes to EASY work, never to more heavy sets. | PROPOSED | I4 |
 
 ---
 
@@ -321,6 +335,22 @@ Answer by ID. Short is fine.
 - **V26** Is there an app (any app) whose look or feel you want 7Bit closer
   to? Screenshots welcome.
 
+**Long sessions and the dial (I4)**
+
+- **V27** One dial for the whole session, or one per area (legs POWER, core
+  VOLUME)? Draft: one dial, with a per-area override later if it is missed.
+  This replaces V22.
+- **V28** The longest session: 120 minutes, or more?
+- **V29** Should the app suggest the dial from the week? For example, POWER
+  after two VOLUME days. Varying intensity across the week has a small
+  strength edge for trained people (section 9, R10).
+- **V30** In a long session, what should fill the EASY block: technique and
+  footwork drills, mobility, easy aerobic (ARC on the wall, bike), or prehab?
+- **V31** May the app remind you to eat around minute 60 in a long session
+  (section 9, R8)?
+- **V32** How many 2-hour sessions a week do you expect? It decides how the
+  weekly load check treats them.
+
 ---
 
 ## 6. Plan of work
@@ -401,3 +431,127 @@ that generates a new aesthetic works against that.
   the authority, as the taste-skill reviews did in v28 and v31.
 - **Few, not many.** Three skills with distinct jobs: review and polish
   (Impeccable), feel and motion (Emil), platform conventions (HIG).
+
+---
+
+## 9. Long sessions and the power-volume balance (research, 28 November 2026)
+
+### The question (I4)
+
+Sessions of up to two hours, which cannot be all-out, and a control for the
+balance between volume ("length") and power and strength ("power building").
+Built on evidence.
+
+### The short answer
+
+Power and volume are not two ends of one effort scale. They are different
+kinds of work with different rules:
+
+- **QUALITY work** (power, maximal strength, maximal finger loads) needs
+  fresh muscles, long rests and few reps, and stops well short of failure.
+  Its benefit per session flattens after a few sets. More of it does not
+  make a session better, only longer, and the extra time is mostly rest.
+- **VOLUME work** (hypertrophy, strength endurance) keeps paying with more
+  hard sets taken close to failure, on moderate rest. That holds up to about
+  10-12 sets per muscle per session, where the data run out.
+- **EASY work** (technique, mobility, prehab, easy aerobic) costs little
+  recovery, so it can fill a long session without spoiling the rest.
+
+So a two-hour session is: QUALITY first and short, VOLUME spread across the
+areas, EASY last. The dial moves minutes between QUALITY and VOLUME, inside
+caps that the evidence sets.
+
+### The evidence, rule by rule
+
+Grades: **STRONG** consistent meta-analyses; **MODERATE** meta-analyses with
+caveats; **WEAK** a preprint or single studies; **PRACTICE** coaching
+consensus, no direct study; **DERIVED** my inference from the rows above,
+to be tested on the athlete's logs.
+
+| # | Rule | Evidence | Grade |
+|---|---|---|---|
+| R1 | QUALITY work comes first, straight after the warm-up. | Strength gains are largest in the exercises done first in a session (Nunes 2021, 11 studies: the overall effect was null, but the multi-joint comparison favoured doing them first). Fatigue blunts power gains: stopping sets at 20% velocity loss gave the same squat strength as 40% with about 40% fewer reps, and more jump gain (Pareja-Blanco 2017). Aerobic work in the same session blunts explosive strength more than sessions 3 h or more apart (Schumann 2022, 43 studies). | MODERATE |
+| R2 | QUALITY work stays short and stops well before failure. | Strength gains are similar across a wide range of reps in reserve; hypertrophy improves closer to failure (Robinson 2024, 55 studies). The per-session strength benefit flattens at about 2 direct sets per muscle (Pelland preprint; few high-volume studies). | MODERATE (failure) / WEAK (sets) |
+| R3 | Rest follows the work: 2-5 min on QUALITY, at least 60-90 s on VOLUME. Rest is never cut to fit the time (as in v1). | More than 2 min maximises strength in trained people (Grgic 2018). For hypertrophy, more than 60 s has a small edge, with no further gain past 90 s (Singer 2024, Bayesian meta-analysis, 9 studies). | MODERATE |
+| R4 | VOLUME per muscle per session has a ceiling of about 10-12 hard sets. Past it, the time goes to another area or to EASY work. | Hypertrophy keeps rising with per-session volume up to about 11 fractional sets; above that there is not enough data (Pelland preprint). Weekly volume matters more than how it is split (Iversen 2021). | WEAK-MODERATE |
+| R5 | VOLUME work goes close to failure: 0-3 reps in reserve. | Robinson 2024. | MODERATE |
+| R6 | Endurance or conditioning comes after strength, or in another session 3 h or more later. | Resistance before endurance gave more lower-body dynamic strength than the reverse (+6.9%; Eddens 2018, 10 studies). Schumann 2022 as in R1. | MODERATE |
+| R7 | Supersets (agonist-antagonist pairs) in the VOLUME block, never in the QUALITY block. | Supersets roughly halve session time with similar strength and hypertrophy when the pair is agonist-antagonist. Same-muscle pairs lose volume load, and both kinds raise fatigue and perceived effort (Zhang 2025, 19 studies). Multi-joint supersets somewhat hampered maximal strength in a 10-week trial (Iversen 2024). | MODERATE |
+| R8 | Long sessions need fuel: carbohydrate before and during a session over 45 min with 8-10 or more sets. | More volume completed (King 2022, meta-analysis). Fed, with 10 sets per muscle or fewer, no effect (Henselmans 2022). | MODERATE |
+| R9 | Length itself is not the problem. | No evidence was found for a 60-minute limit. The acute rise in hormones does not predict hypertrophy (West & Phillips 2012, 56 men). The real limits are fatigue on QUALITY work (R1) and the weekly load (R10). | MODERATE (hormones) / no direct study of length |
+| R10 | Judge the week, not only the session: effort x minutes, as v1 does. Vary the dial across the week. | Session-RPE is valid across many sports (Haddad 2017, 36 studies), less established for resistance training. Varying intensity across the week (undulating) gave trained people a small strength edge and the same hypertrophy (Sports Medicine 2022, volume-equated meta-analysis). | MODERATE |
+| R11 | Maximal finger work comes first and fresh: before climbing and before any other gripping. | No study compares the order. Coaching consensus says fresh first. Hangboard training adds finger strength on top of climbing (randomised trial in advanced climbers, 2021). | PRACTICE |
+| R12 | The QUALITY block rarely needs more than about 35-40 min, even at full POWER. TIRED shortens it first. | From R1-R3: 2-4 sets per exercise, a few exercises, long rests. Past that the time is rest that buys little more strength, and power under fatigue trains slowness. | DERIVED |
+
+### What it means for the builder (draft)
+
+| Block | What | Rules |
+|---|---|---|
+| WARM-UP | general, then specific ramp-up sets | about 10 min (practice) |
+| QUALITY | power, maximal strength, maximal fingers | R1, R2, R3, R11, R12. 2-4 sets per exercise; stop at the first slow rep; 2-5 min rest; no supersets |
+| VOLUME | hypertrophy and strength endurance across the chosen areas | R3, R4, R5, R7. At most 10-12 hard sets per area; 0-3 reps in reserve; 60-120 s rest; agonist-antagonist supersets allowed |
+| EASY | technique, footwork, mobility, prehab, easy aerobic | R6. Last; low recovery cost (V30) |
+| COOL-DOWN | | a few minutes |
+
+**The dial, VOLUME to POWER**, sets the share of QUALITY and VOLUME. The
+QUALITY block is capped (R12) and each area's VOLUME is capped (R4).
+Whatever time is left after both caps goes to EASY. So a POWER-leaning two
+hours is not two hours of heavy work. It is a long QUALITY block (mostly
+rest), a shorter VOLUME block, and more EASY work.
+
+Illustrative minute splits at 120 min. These are draft numbers, to be tuned
+on the logs:
+
+| Dial | Warm-up | Quality | Volume | Easy | Cool-down |
+|---|---|---|---|---|---|
+| POWER | 12 | 40 | 40 | 23 | 5 |
+| BALANCED | 12 | 25 | 60 | 18 | 5 |
+| VOLUME | 10 | 10 | 75 | 20 | 5 |
+
+At full VOLUME, 75 minutes is about 30 hard sets. With the R4 ceiling that
+needs at least three areas. With only one area picked, the builder says so:
+"LEGS can take about 12 hard sets today; the rest goes to another area or to
+EASY." This is where the area sliders (D02) and the length meet.
+
+How the rest of the plan connects:
+
+- **TIRED** (3.6) shortens QUALITY first (R1, R12), then VOLUME.
+- **A sore joint** (3.6) filters every block the same way.
+- **Fuel** (R8): in a session over 75 minutes with 8-10 or more sets, a
+  one-line reminder around minute 60 (V31).
+- **v1 already holds** "rest is physiology" (R3), heavy blocks first (R1)
+  and the TIRED intensity cap. It lacks the dial, the per-area ceiling,
+  supersets, the EASY block, fuel, and any time over 90 minutes.
+
+### Honest limits
+
+- Most studies are on young, often untrained or recreationally trained men,
+  on general lifts. They are not studies of climbers.
+- The per-session volume thresholds (R2, R4) come from one preprint with few
+  high-volume studies.
+- The order of finger training (R11) has no direct study.
+- R12 and the minute splits are rules derived from the above, to be checked
+  against the athlete's logs (effort, sets done, loads). They are not
+  measured thresholds.
+
+### Sources
+
+- Nunes et al. 2021, exercise order, *Eur J Sport Sci* 21(2):149-157: https://pubmed.ncbi.nlm.nih.gov/32077380/
+- Pareja-Blanco et al. 2017, velocity loss 20% vs 40%: https://accedacris.ulpgc.es/handle/10553/35727
+- Schumann et al. 2022, concurrent training, *Sports Med* 52(3):601-612: https://pubmed.ncbi.nlm.nih.gov/34757594/
+- Robinson et al. 2024, proximity to failure, *Sports Med* 54(9): https://rke.abertay.ac.uk/en/publications/exploring-the-dose-response-relationship-between-estimated-resist/
+- Pelland et al., per-session volume (preprint): https://sportrxiv.org/index.php/server/preprint/view/537
+- Pelland et al., weekly volume and frequency (preprint): https://www.researchgate.net/publication/384628335
+- Grgic et al. 2018, rest and strength, *Sports Med* 48(1):137-151: https://vuir.vu.edu.au/38537/
+- Singer et al. 2024, rest and hypertrophy, *Front Sports Act Living*: https://pubmed.ncbi.nlm.nih.gov/39205815/
+- Iversen et al. 2021, time-efficient training, *Sports Med* 51(10):2079-2095: https://pubmed.ncbi.nlm.nih.gov/34125411/
+- Eddens et al. 2018, intra-session sequence, *Sports Med* 48(1):177-188: https://pubmed.ncbi.nlm.nih.gov/28917030/
+- Zhang, Weakley et al. 2025, supersets meta-analysis, *Sports Med*: https://eprints.leedsbeckett.ac.uk/id/eprint/11908
+- Iversen et al. 2024, superset trial: https://pubmed.ncbi.nlm.nih.gov/39072654/
+- King et al. 2022, carbohydrate and resistance exercise, *Sports Med*: https://link.springer.com/article/10.1007/s40279-022-01716-w
+- Henselmans et al. 2022, carbohydrate and strength, *Nutrients*: https://pubmed.ncbi.nlm.nih.gov/35215506/
+- West & Phillips 2012, hormones and hypertrophy, *Eur J Appl Physiol*: https://pmc.ncbi.nlm.nih.gov/articles/PMC3371329
+- Haddad et al. 2017, session-RPE, *Front Neurosci*: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5673663/
+- Periodization meta-analysis 2022, *Sports Med*: https://pubmed.ncbi.nlm.nih.gov/35044672/
+- Hangboard training in advanced climbers, randomised trial, 2021: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8241953/
+- Stien et al. 2023, climbing and resistance training meta-analysis: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9806751/
